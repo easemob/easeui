@@ -40,10 +40,6 @@ public class EaseMessageAdapter extends BaseAdapter{
 
 	private final static String TAG = "msg";
 
-	public static final String IMAGE_DIR = "chat/image/";
-	public static final String VOICE_DIR = "chat/audio/";
-	public static final String VIDEO_DIR = "chat/video";
-
 	private Context context;
 	
 	private static final int HANDLER_MESSAGE_REFRESH_LIST = 0;

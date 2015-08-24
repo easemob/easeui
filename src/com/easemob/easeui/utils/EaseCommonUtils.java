@@ -20,12 +20,15 @@ import android.app.ActivityManager.RunningTaskInfo;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.text.TextUtils;
 
 import com.easemob.chat.EMMessage;
 import com.easemob.chat.TextMessageBody;
 import com.easemob.easeui.EaseConstant;
 import com.easemob.easeui.R;
+import com.easemob.easeui.domain.EaseUser;
 import com.easemob.util.EMLog;
+import com.easemob.util.HanziToPinyin;
 
 public class EaseCommonUtils {
 	private static final String TAG = "CommonUtils";
@@ -117,7 +120,11 @@ public class EaseCommonUtils {
         return context.getResources().getString(resId);
     }
 	
-	
+	/**
+	 * 获取栈顶的activity
+	 * @param context
+	 * @return
+	 */
 	public static String getTopActivity(Context context) {
 		ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
 		List<RunningTaskInfo> runningTaskInfos = manager.getRunningTasks(1);
@@ -127,5 +134,30 @@ public class EaseCommonUtils {
 		else
 			return "";
 	}
+	
+	/**
+     * 设置user昵称(没有昵称取username)的首字母属性，方便通讯中对联系人按header分类显示，以及通过右侧ABCD...字母栏快速定位联系人
+     * 
+     * @param username
+     * @param user
+     */
+    public static void setUserInitialLetter(EaseUser user) {
+        String headerName = null;
+        if (!TextUtils.isEmpty(user.getNick())) {
+            headerName = user.getNick();
+        } else {
+            headerName = user.getUsername();
+        }
+        if (Character.isDigit(headerName.charAt(0))) {
+            user.setInitialLetter("#");
+        } else {
+            user.setInitialLetter(HanziToPinyin.getInstance().get(headerName.substring(0, 1)).get(0).target.substring(0, 1)
+                    .toUpperCase());
+            char header = user.getInitialLetter().toLowerCase().charAt(0);
+            if (header < 'a' || header > 'z') {
+                user.setInitialLetter("#");
+            }
+        }
+    }
 
 }
