@@ -192,7 +192,7 @@ public class EaseChatPrimaryMenu extends RelativeLayout implements OnClickListen
     public void onEmojiconInputEvent(String name){
         try {
             // 这里用的反射，所以混淆的时候不要混淆SmileUtils这个类
-            Class clz = Class.forName("com.easemob.easeui.utils.SmileUtils");
+            Class clz = Class.forName("com.easemob.easeui.utils.EaseSmileUtils");
             Field field = clz.getField(name);
             editText.append(EaseSmileUtils.getSmiledText(context,(String) field.get(null)));
         } catch (Exception e) {

@@ -25,16 +25,15 @@ import android.widget.ListView;
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMConversation;
 import com.easemob.chat.EMMessage;
-import com.easemob.easeui.EaseConstant;
 import com.easemob.easeui.widget.EaseChatMessageList.MessageListItemClickListener;
 import com.easemob.easeui.widget.chatrow.EaseChatRow;
-import com.easemob.easeui.widget.chatrow.EaseChatRowCall;
 import com.easemob.easeui.widget.chatrow.EaseChatRowFile;
 import com.easemob.easeui.widget.chatrow.EaseChatRowImage;
 import com.easemob.easeui.widget.chatrow.EaseChatRowLocation;
 import com.easemob.easeui.widget.chatrow.EaseChatRowText;
 import com.easemob.easeui.widget.chatrow.EaseChatRowVideo;
 import com.easemob.easeui.widget.chatrow.EaseChatRowVoice;
+import com.easemob.easeui.widget.chatrow.EaseCustomChatRowProvider;
 
 public class EaseMessageAdapter extends BaseAdapter{
 
@@ -43,25 +42,20 @@ public class EaseMessageAdapter extends BaseAdapter{
 	private Context context;
 	
 	private static final int HANDLER_MESSAGE_REFRESH_LIST = 0;
-	private static final int HANDLER_MESSAGE_SELECT_LAST = 1;
-	private static final int HANDLER_MESSAGE_SEEK_TO = 2;
 
-	private static final int MESSAGE_TYPE_RECV_TXT = 0;
-	private static final int MESSAGE_TYPE_SENT_TXT = 1;
-	private static final int MESSAGE_TYPE_SENT_IMAGE = 2;
-	private static final int MESSAGE_TYPE_SENT_LOCATION = 3;
-	private static final int MESSAGE_TYPE_RECV_LOCATION = 4;
-	private static final int MESSAGE_TYPE_RECV_IMAGE = 5;
-	private static final int MESSAGE_TYPE_SENT_VOICE = 6;
-	private static final int MESSAGE_TYPE_RECV_VOICE = 7;
-	private static final int MESSAGE_TYPE_SENT_VIDEO = 8;
-	private static final int MESSAGE_TYPE_RECV_VIDEO = 9;
-	private static final int MESSAGE_TYPE_SENT_FILE = 10;
-	private static final int MESSAGE_TYPE_RECV_FILE = 11;
-	private static final int MESSAGE_TYPE_SENT_VOICE_CALL = 12;
-	private static final int MESSAGE_TYPE_RECV_VOICE_CALL = 13;
-	private static final int MESSAGE_TYPE_SENT_VIDEO_CALL = 14;
-	private static final int MESSAGE_TYPE_RECV_VIDEO_CALL = 15;
+	private static final int MESSAGE_TYPE_RECV_TXT = 1;
+	private static final int MESSAGE_TYPE_SENT_TXT = 2;
+	private static final int MESSAGE_TYPE_SENT_IMAGE = 3;
+	private static final int MESSAGE_TYPE_SENT_LOCATION = 4;
+	private static final int MESSAGE_TYPE_RECV_LOCATION = 5;
+	private static final int MESSAGE_TYPE_RECV_IMAGE = 6;
+	private static final int MESSAGE_TYPE_SENT_VOICE = 7;
+	private static final int MESSAGE_TYPE_RECV_VOICE = 8;
+	private static final int MESSAGE_TYPE_SENT_VIDEO = 9;
+	private static final int MESSAGE_TYPE_RECV_VIDEO = 10;
+	private static final int MESSAGE_TYPE_SENT_FILE = 11;
+	private static final int MESSAGE_TYPE_RECV_FILE = 12;
+	
 	
 	public int itemTypeCount; 
 	
@@ -69,20 +63,18 @@ public class EaseMessageAdapter extends BaseAdapter{
 	private EMConversation conversation;
 	EMMessage[] messages = null;
 	
-	ListView listView;
-
     private String toChatUsername;
 
-    public MessageListItemClickListener itemClickListener;
+    private MessageListItemClickListener itemClickListener;
+    private EaseCustomChatRowProvider customRowProvider;
     
-    public boolean showUserNick;
-    public boolean showAvatar;
-    public Drawable myBubbleBg;
-    public Drawable otherBuddleBg;
+    private boolean showUserNick;
+    private boolean showAvatar;
+    private Drawable myBubbleBg;
+    private Drawable otherBuddleBg;
 
-	public EaseMessageAdapter(Context context, String username, int chatType, ListView listView) {
+	public EaseMessageAdapter(Context context, String username, int chatType) {
 		this.context = context;
-		this.listView = listView;
 		toChatUsername = username;
 		this.conversation = EMChatManager.getInstance().getConversation(username);
 	}
@@ -105,15 +97,6 @@ public class EaseMessageAdapter extends BaseAdapter{
 			case HANDLER_MESSAGE_REFRESH_LIST:
 				refreshList();
 				break;
-			case HANDLER_MESSAGE_SELECT_LAST:
-				if (messages.length > 0) {
-					listView.setSelection(messages.length - 1);
-				}
-				break;
-			case HANDLER_MESSAGE_SEEK_TO:
-				int position = message.arg1;
-				listView.setSelection(position);
-				break;
 			default:
 				break;
 			}
@@ -132,23 +115,6 @@ public class EaseMessageAdapter extends BaseAdapter{
 		handler.sendMessage(msg);
 	}
 	
-	/**
-	 * 刷新页面, 选择最后一个
-	 */
-	public void refreshSelectLast() {
-		handler.sendMessage(handler.obtainMessage(HANDLER_MESSAGE_REFRESH_LIST));
-		handler.sendMessage(handler.obtainMessage(HANDLER_MESSAGE_SELECT_LAST));
-	}
-	
-	/**
-	 * 刷新页面, 选择Position
-	 */
-	public void refreshSeekTo(int position) {
-		handler.sendMessage(handler.obtainMessage(HANDLER_MESSAGE_REFRESH_LIST));
-		android.os.Message msg = handler.obtainMessage(HANDLER_MESSAGE_SEEK_TO);
-		msg.arg1 = position;
-		handler.sendMessage(msg);
-	}
 
 	public EMMessage getItem(int position) {
 		if (messages != null && position < messages.length) {
@@ -172,7 +138,10 @@ public class EaseMessageAdapter extends BaseAdapter{
 	 * 获取item类型数
 	 */
 	public int getViewTypeCount() {
-        return 16;
+	    if(customRowProvider != null && customRowProvider.getCustomChatRowTypeCount() > 0){
+	        return customRowProvider.getCustomChatRowTypeCount() + 12;
+	    }
+        return 12;
     }
 	
 
@@ -184,11 +153,12 @@ public class EaseMessageAdapter extends BaseAdapter{
 		if (message == null) {
 			return -1;
 		}
+		
+		if(customRowProvider != null && customRowProvider.getCustomChatRowType(message) > 0){
+		    return customRowProvider.getCustomChatRowType(message) + 12;
+		}
+		
 		if (message.getType() == EMMessage.Type.TXT) {
-			if (message.getBooleanAttribute(EaseConstant.MESSAGE_ATTR_IS_VOICE_CALL, false))
-			    return message.direct == EMMessage.Direct.RECEIVE ? MESSAGE_TYPE_RECV_VOICE_CALL : MESSAGE_TYPE_SENT_VOICE_CALL;
-			else if (message.getBooleanAttribute(EaseConstant.MESSAGE_ATTR_IS_VIDEO_CALL, false))
-			    return message.direct == EMMessage.Direct.RECEIVE ? MESSAGE_TYPE_RECV_VIDEO_CALL : MESSAGE_TYPE_SENT_VIDEO_CALL;
 			return message.direct == EMMessage.Direct.RECEIVE ? MESSAGE_TYPE_RECV_TXT : MESSAGE_TYPE_SENT_TXT;
 		}
 		if (message.getType() == EMMessage.Type.IMAGE) {
@@ -213,14 +183,12 @@ public class EaseMessageAdapter extends BaseAdapter{
 	
 	protected EaseChatRow createChatRow(Context context, EMMessage message, int position) {
         EaseChatRow chatRow = null;
+        if(customRowProvider != null && customRowProvider.getCustomChatRow(message, position, this) != null){
+            return customRowProvider.getCustomChatRow(message, position, this);
+        }
         switch (message.getType()) {
         case TXT:
-            // 语音通话,  视频通话
-            if (message.getBooleanAttribute(EaseConstant.MESSAGE_ATTR_IS_VOICE_CALL, false) ||
-                message.getBooleanAttribute(EaseConstant.MESSAGE_ATTR_IS_VIDEO_CALL, false))
-                chatRow = new EaseChatRowCall(context, message, position, this);
-            else
-                chatRow = new EaseChatRowText(context, message, position, this);
+            chatRow = new EaseChatRowText(context, message, position, this);
             break;
         case LOCATION:
             chatRow = new EaseChatRowLocation(context, message, position, this);
@@ -261,4 +229,57 @@ public class EaseMessageAdapter extends BaseAdapter{
 	public String getToChatUsername(){
 	    return toChatUsername;
 	}
+	
+	
+	
+	public void setShowUserNick(boolean showUserNick) {
+        this.showUserNick = showUserNick;
+    }
+
+
+    public void setShowAvatar(boolean showAvatar) {
+        this.showAvatar = showAvatar;
+    }
+
+
+    public void setMyBubbleBg(Drawable myBubbleBg) {
+        this.myBubbleBg = myBubbleBg;
+    }
+
+
+    public void setOtherBuddleBg(Drawable otherBuddleBg) {
+        this.otherBuddleBg = otherBuddleBg;
+    }
+
+
+    public void setItemClickListener(MessageListItemClickListener listener){
+	    itemClickListener = listener;
+	}
+	
+	public void setCustomChatRowProvider(EaseCustomChatRowProvider rowProvider){
+	    customRowProvider = rowProvider;
+	}
+
+
+    public boolean isShowUserNick() {
+        return showUserNick;
+    }
+
+
+    public boolean isShowAvatar() {
+        return showAvatar;
+    }
+
+
+    public Drawable getMyBubbleBg() {
+        return myBubbleBg;
+    }
+
+
+    public Drawable getOtherBuddleBg() {
+        return otherBuddleBg;
+    }
+	
+	
+	
 }

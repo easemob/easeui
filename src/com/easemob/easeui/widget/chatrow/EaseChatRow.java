@@ -125,24 +125,24 @@ public abstract class EaseChatRow extends LinearLayout {
         }
 
         if (adapter instanceof EaseMessageAdapter) {
-            if (((EaseMessageAdapter) adapter).showAvatar)
+            if (((EaseMessageAdapter) adapter).isShowAvatar())
                 userAvatarView.setVisibility(View.VISIBLE);
             else
                 userAvatarView.setVisibility(View.GONE);
             if (usernickView != null) {
-                if (((EaseMessageAdapter) adapter).showUserNick)
+                if (((EaseMessageAdapter) adapter).isShowUserNick())
                     usernickView.setVisibility(View.VISIBLE);
                 else
                     usernickView.setVisibility(View.GONE);
             }
             if (message.direct == Direct.SEND) {
-                if (((EaseMessageAdapter) adapter).myBubbleBg != null)
-                    bubbleLayout.setBackgroundDrawable(((EaseMessageAdapter) adapter).myBubbleBg);
+                if (((EaseMessageAdapter) adapter).getMyBubbleBg() != null)
+                    bubbleLayout.setBackgroundDrawable(((EaseMessageAdapter) adapter).getMyBubbleBg());
                 // else
                 // bubbleLayout.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.chatto_bg));
             } else if (message.direct == Direct.RECEIVE) {
-                if (((EaseMessageAdapter) adapter).otherBuddleBg != null)
-                    bubbleLayout.setBackgroundDrawable(((EaseMessageAdapter) adapter).otherBuddleBg);
+                if (((EaseMessageAdapter) adapter).getOtherBuddleBg() != null)
+                    bubbleLayout.setBackgroundDrawable(((EaseMessageAdapter) adapter).getOtherBuddleBg());
 //                else
 //                    bubbleLayout.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.ease_chatfrom_bg));
             }
@@ -223,29 +223,31 @@ public abstract class EaseChatRow extends LinearLayout {
     }
     
     private void setClickListener() {
-        bubbleLayout.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                if (itemClickListener != null){
-                    if(!itemClickListener.onBubbleClick(message)){
-                        //如果listener返回false不处理这个事件，执行lib默认的处理
-                        onBuubleClick();
+        if(bubbleLayout != null){
+            bubbleLayout.setOnClickListener(new OnClickListener() {
+    
+                @Override
+                public void onClick(View v) {
+                    if (itemClickListener != null){
+                        if(!itemClickListener.onBubbleClick(message)){
+                            //如果listener返回false不处理这个事件，执行lib默认的处理
+                            onBuubleClick();
+                        }
                     }
                 }
-            }
-        });
-
-        bubbleLayout.setOnLongClickListener(new OnLongClickListener() {
-
-            @Override
-            public boolean onLongClick(View v) {
-                if (itemClickListener != null) {
-                    itemClickListener.onBubbleLongClick(message);
+            });
+    
+            bubbleLayout.setOnLongClickListener(new OnLongClickListener() {
+    
+                @Override
+                public boolean onLongClick(View v) {
+                    if (itemClickListener != null) {
+                        itemClickListener.onBubbleLongClick(message);
+                    }
+                    return true;
                 }
-                return true;
-            }
-        });
+            });
+        }
 
         if (statusView != null) {
             statusView.setOnClickListener(new OnClickListener() {
@@ -281,20 +283,11 @@ public abstract class EaseChatRow extends LinearLayout {
                 if (message.status == EMMessage.Status.FAIL) {
 
                     if (message.getError() == EMError.MESSAGE_SEND_INVALID_CONTENT) {
-                        Toast.makeText(
-                                activity,
-                                activity.getString(R.string.send_fail)
-                                        + activity.getString(R.string.error_send_invalid_content), 0).show();
+                        Toast.makeText(activity,activity.getString(R.string.send_fail) + activity.getString(R.string.error_send_invalid_content), 0).show();
                     } else if (message.getError() == EMError.MESSAGE_SEND_NOT_IN_THE_GROUP) {
-                        Toast.makeText(
-                                activity,
-                                activity.getString(R.string.send_fail)
-                                        + activity.getString(R.string.error_send_not_in_the_group), 0).show();
+                        Toast.makeText(activity,activity.getString(R.string.send_fail) + activity.getString(R.string.error_send_not_in_the_group), 0).show();
                     } else {
-                        Toast.makeText(
-                                activity,
-                                activity.getString(R.string.send_fail)
-                                        + activity.getString(R.string.connect_failuer_toast), 0).show();
+                        Toast.makeText(activity,activity.getString(R.string.send_fail) + activity.getString(R.string.connect_failuer_toast), 0).show();
                     }
                 }
 

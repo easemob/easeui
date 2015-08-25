@@ -35,8 +35,8 @@ import com.easemob.chat.EMContactManager;
 import com.easemob.chat.EMGroupManager;
 import com.easemob.easeui.domain.EaseUser;
 import com.easemob.easeui.model.EaseNotifier;
-import com.easemob.easeui.model.EaseSDKModel;
 import com.easemob.easeui.model.EaseNotifier.HXNotificationInfoProvider;
+import com.easemob.easeui.model.EaseSDKModel;
 import com.easemob.exceptions.EaseMobException;
 import com.easemob.util.EMLog;
 

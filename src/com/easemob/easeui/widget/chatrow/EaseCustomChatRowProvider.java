@@ -1,0 +1,31 @@
+package com.easemob.easeui.widget.chatrow;
+
+import android.widget.BaseAdapter;
+
+import com.easemob.chat.EMMessage;
+
+/**
+ * 自定义chat row提供者
+ *
+ */
+public interface EaseCustomChatRowProvider {
+    /**
+     * 获取多少种类型的自定义chatrow<br/>
+     * 注意，每一种chatrow至少有两种type：发送type和接收type
+     * @return
+     */
+    int getCustomChatRowTypeCount(); 
+    
+    /**
+     * 获取type，必须大于0
+     * @return
+     */
+    int getCustomChatRowType(EMMessage message);
+    
+    /**
+     * 根据给定message返回chat row
+     * @return
+     */
+    EaseChatRow getCustomChatRow(EMMessage message, int position, BaseAdapter adapter);
+    
+}

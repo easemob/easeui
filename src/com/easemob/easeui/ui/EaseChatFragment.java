@@ -1,9 +1,7 @@
 package com.easemob.easeui.ui;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -42,7 +40,6 @@ import com.easemob.chat.EMGroup;
 import com.easemob.chat.EMGroupManager;
 import com.easemob.chat.EMMessage;
 import com.easemob.chat.EMMessage.ChatType;
-import com.easemob.chat.EMMessage.Type;
 import com.easemob.chat.ImageMessageBody;
 import com.easemob.chat.TextMessageBody;
 import com.easemob.easeui.EaseConstant;
@@ -59,6 +56,7 @@ import com.easemob.easeui.widget.EaseChatInputMenu.ChatInputMenuListener;
 import com.easemob.easeui.widget.EaseChatMessageList;
 import com.easemob.easeui.widget.EaseTitleBar;
 import com.easemob.easeui.widget.EaseVoiceRecorderView;
+import com.easemob.easeui.widget.chatrow.EaseCustomChatRowProvider;
 import com.easemob.util.EMLog;
 import com.easemob.util.PathUtil;
 
@@ -135,6 +133,9 @@ public class EaseChatFragment extends Fragment implements EMEventListener {
         setUpView();
     }
 
+    /**
+     * init view
+     */
     protected void initView() {
         // 标题栏
         titleBar = (EaseTitleBar) getView().findViewById(R.id.title_bar);
@@ -165,7 +166,7 @@ public class EaseChatFragment extends Fragment implements EMEventListener {
             @Override
             public void onSendVoiceMessage(String filePath, String fileName, int length) {
                 // 发送语音消息
-                sendVoiceMessage(filePath, fileName, length);
+                sendVoiceMessage(filePath, length);
             }
         });
 
@@ -178,6 +179,9 @@ public class EaseChatFragment extends Fragment implements EMEventListener {
         getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
     }
 
+    /**
+     * 设置属性，监听等
+     */
     protected void setUpView() {
         titleBar.setTitle(toChatUsername);
         if (chatType == EaseConstant.CHATTYPE_SINGLE) { // 单聊
@@ -270,7 +274,7 @@ public class EaseChatFragment extends Fragment implements EMEventListener {
     }
     
     protected void onMessageListInit(){
-        messageList.init(toChatUsername, chatType);
+        messageList.init(toChatUsername, chatType, onSetCustomChatRowProvider());
         //设置list item里的控件的点击事件
         setListItemClickListener();
         
@@ -579,40 +583,47 @@ public class EaseChatFragment extends Fragment implements EMEventListener {
         }
 
     }
+    
 
     //发送消息方法
     //==========================================================================
     protected void sendTextMessage(String content) {
-        messageList.sendTextMessage(content, getMessageAttributesMap(EMMessage.Type.TXT));
+        EMMessage message = EMMessage.createTxtSendMessage(content, toChatUsername);
+        onSetMessageAttributes(message);
+        messageList.sendMessage(message);
     }
 
-    protected void sendVoiceMessage(String filePath, String fileName, int length) {
-        messageList.sendVoiceMessage(filePath, fileName, length, getMessageAttributesMap(EMMessage.Type.VOICE));
+    protected void sendVoiceMessage(String filePath, int length) {
+        EMMessage message = EMMessage.createVoiceSendMessage(filePath, length, toChatUsername);
+        onSetMessageAttributes(message);
+        messageList.sendMessage(message);
     }
 
     protected void sendImageMessage(String imagePath) {
-        messageList.sendImageMessage(imagePath, false, getMessageAttributesMap(EMMessage.Type.IMAGE));
+        EMMessage message = EMMessage.createImageSendMessage(imagePath, false, toChatUsername);
+        onSetMessageAttributes(message);
+        messageList.sendMessage(message);
     }
 
     protected void sendLocationMessage(double latitude, double longitude, String locationAddress) {
-        messageList.sendLocationMessage(latitude, longitude, locationAddress, getMessageAttributesMap(EMMessage.Type.LOCATION));
+        EMMessage message = EMMessage.createLocationSendMessage(latitude, longitude, locationAddress, toChatUsername);
+        onSetMessageAttributes(message);
+        messageList.sendMessage(message);
     }
 
     protected void sendVideoMessage(String filePath, String thumbPath, int length) {
-        messageList.sendVideoMessage(filePath, thumbPath, length, getMessageAttributesMap(EMMessage.Type.VIDEO));
+        EMMessage message = EMMessage.createVideoSendMessage(filePath, thumbPath, length, toChatUsername);
+        onSetMessageAttributes(message);
+        messageList.sendMessage(message);
     }
 
-    protected void sendFileMessage(Uri uri) {
-        messageList.sendFileMessage(uri, getMessageAttributesMap(EMMessage.Type.FILE));
+    protected void sendFileMessage(String filePath) {
+        EMMessage message = EMMessage.createFileSendMessage(filePath, toChatUsername);
+        onSetMessageAttributes(message);
+        messageList.sendMessage(message);
     }
     
     //===================================================================================
-    
-    private Map<String, Object> getMessageAttributesMap(Type txt){
-        Map<String, Object> map = new HashMap<String, Object>();
-        onSetMessageAttributes(map, txt);
-        return map;
-    }
     
 
     /**
@@ -649,6 +660,37 @@ public class EaseChatFragment extends Fragment implements EMEventListener {
             sendImageMessage(file.getAbsolutePath());
         }
 
+    }
+    
+    protected void sendFileByUri(Uri uri){
+        String filePath = null;
+        if ("content".equalsIgnoreCase(uri.getScheme())) {
+            String[] filePathColumn = { MediaStore.Images.Media.DATA };
+            Cursor cursor = null;
+
+            try {
+                cursor = getActivity().getContentResolver().query(uri, filePathColumn, null, null, null);
+                int column_index = cursor.getColumnIndexOrThrow("_data");
+                if (cursor.moveToFirst()) {
+                    filePath = cursor.getString(column_index);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else if ("file".equalsIgnoreCase(uri.getScheme())) {
+            filePath = uri.getPath();
+        }
+        File file = new File(filePath);
+        if (file == null || !file.exists()) {
+            Toast.makeText(getActivity(), R.string.File_does_not_exist, 0).show();
+            return;
+        }
+        //大于10M不让发送
+        if (file.length() > 10 * 1024 * 1024) {
+            Toast.makeText(getActivity(), R.string.The_file_is_not_greater_than_10_m, 0).show();
+            return;
+        }
+        sendFileMessage(filePath);
     }
 
     /**
@@ -801,10 +843,8 @@ public class EaseChatFragment extends Fragment implements EMEventListener {
     
     /**
      * 设置消息扩展属性
-     * @param attrsMap 把扩展属性存入此map
-     * @param type 消息类型
      */
-    protected void onSetMessageAttributes(Map<String, Object> attrsMap, EMMessage.Type type){
+    protected void onSetMessageAttributes(EMMessage message){
     }
     
     /**
@@ -853,5 +893,9 @@ public class EaseChatFragment extends Fragment implements EMEventListener {
         default:
             break;
         }
+    }
+    
+    protected EaseCustomChatRowProvider onSetCustomChatRowProvider(){
+        return null;
     }
 }

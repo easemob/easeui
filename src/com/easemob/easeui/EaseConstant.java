@@ -14,9 +14,9 @@
 package com.easemob.easeui;
 
 public class EaseConstant {
-	public static final String MESSAGE_ATTR_IS_VOICE_CALL = "is_voice_call";
-	public static final String MESSAGE_ATTR_IS_VIDEO_CALL = "is_video_call";
-	
+    public static final String MESSAGE_ATTR_IS_VOICE_CALL = "is_voice_call";
+    public static final String MESSAGE_ATTR_IS_VIDEO_CALL = "is_video_call";
+    
 	public static final int CHATTYPE_SINGLE = 1;
     public static final int CHATTYPE_GROUP = 2;
     public static final int CHATTYPE_CHATROOM = 3;
