@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.easemob.easeui.adapter;
+package com.easemob.easeui.widget.chatrow;
 
 import java.io.File;
 
@@ -34,7 +34,7 @@ import com.easemob.easeui.R;
 import com.easemob.easeui.controller.EaseSDKHelper;
 import com.easemob.util.EMLog;
 
-public class EaseVoicePlayClickListener implements View.OnClickListener {
+public class EaseChatRowVoicePlayClickListener implements View.OnClickListener {
 	private static final String TAG = "VoicePlayClickListener";
 	EMMessage message;
 	VoiceMessageBody voiceBody;
@@ -48,10 +48,10 @@ public class EaseVoicePlayClickListener implements View.OnClickListener {
 	private BaseAdapter adapter;
 
 	public static boolean isPlaying = false;
-	public static EaseVoicePlayClickListener currentPlayListener = null;
+	public static EaseChatRowVoicePlayClickListener currentPlayListener = null;
 	public static String playMsgId;
 
-	public EaseVoicePlayClickListener(EMMessage message, ImageView v, ImageView iv_read_status, BaseAdapter adapter, Activity activity) {
+	public EaseChatRowVoicePlayClickListener(EMMessage message, ImageView v, ImageView iv_read_status, BaseAdapter adapter, Activity activity) {
 		this.message = message;
 		voiceBody = (VoiceMessageBody) message.getBody();
 		this.iv_read_status = iv_read_status;

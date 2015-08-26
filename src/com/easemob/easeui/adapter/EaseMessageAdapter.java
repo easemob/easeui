@@ -42,6 +42,8 @@ public class EaseMessageAdapter extends BaseAdapter{
 	private Context context;
 	
 	private static final int HANDLER_MESSAGE_REFRESH_LIST = 0;
+	private static final int HANDLER_MESSAGE_SELECT_LAST = 1;
+    private static final int HANDLER_MESSAGE_SEEK_TO = 2;
 
 	private static final int MESSAGE_TYPE_RECV_TXT = 1;
 	private static final int MESSAGE_TYPE_SENT_TXT = 2;
@@ -73,8 +75,11 @@ public class EaseMessageAdapter extends BaseAdapter{
     private Drawable myBubbleBg;
     private Drawable otherBuddleBg;
 
-	public EaseMessageAdapter(Context context, String username, int chatType) {
+    private ListView listView;
+
+	public EaseMessageAdapter(Context context, String username, int chatType, ListView listView) {
 		this.context = context;
+		this.listView = listView;
 		toChatUsername = username;
 		this.conversation = EMChatManager.getInstance().getConversation(username);
 	}
@@ -97,6 +102,15 @@ public class EaseMessageAdapter extends BaseAdapter{
 			case HANDLER_MESSAGE_REFRESH_LIST:
 				refreshList();
 				break;
+			case HANDLER_MESSAGE_SELECT_LAST:
+                if (messages.length > 0) {
+                    listView.setSelection(messages.length - 1);
+                }
+                break;
+            case HANDLER_MESSAGE_SEEK_TO:
+                int position = message.arg1;
+                listView.setSelection(position);
+                break;
 			default:
 				break;
 			}
@@ -114,6 +128,24 @@ public class EaseMessageAdapter extends BaseAdapter{
 		android.os.Message msg = handler.obtainMessage(HANDLER_MESSAGE_REFRESH_LIST);
 		handler.sendMessage(msg);
 	}
+	
+	/**
+     * 刷新页面, 选择最后一个
+     */
+    public void refreshSelectLast() {
+        handler.sendMessage(handler.obtainMessage(HANDLER_MESSAGE_REFRESH_LIST));
+        handler.sendMessage(handler.obtainMessage(HANDLER_MESSAGE_SELECT_LAST));
+    }
+    
+    /**
+     * 刷新页面, 选择Position
+     */
+    public void refreshSeekTo(int position) {
+        handler.sendMessage(handler.obtainMessage(HANDLER_MESSAGE_REFRESH_LIST));
+        android.os.Message msg = handler.obtainMessage(HANDLER_MESSAGE_SEEK_TO);
+        msg.arg1 = position;
+        handler.sendMessage(msg);
+    }
 	
 
 	public EMMessage getItem(int position) {

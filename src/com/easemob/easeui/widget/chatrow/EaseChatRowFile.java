@@ -103,8 +103,6 @@ public class EaseChatRowFile extends EaseChatRow{
                 percentageView.setText(message.progress + "%");
             }
             statusView.setVisibility(View.INVISIBLE);
-            // 发送消息
-            sendMsgInBackground(message);
             break;
         }
     }

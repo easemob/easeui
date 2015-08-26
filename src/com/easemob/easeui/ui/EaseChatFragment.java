@@ -307,7 +307,7 @@ public class EaseChatFragment extends Fragment implements EMEventListener {
                         if (!confirmed) {
                             return;
                         }
-                        messageList.resendMessage(message);
+                        resendMessage(message);
                     }
                 }, true).show();
             }
@@ -401,8 +401,8 @@ public class EaseChatFragment extends Fragment implements EMEventListener {
     @Override
     public void onResume() {
         super.onResume();
-        if(isMessageListInited)
-            messageList.refresh();
+//        if(isMessageListInited)
+//            messageList.refresh();
         EaseSDKHelper sdkHelper = EaseSDKHelper.getInstance();
         sdkHelper.pushActivity(getActivity());
         // register the event listener when enter the foreground
@@ -589,38 +589,48 @@ public class EaseChatFragment extends Fragment implements EMEventListener {
     //==========================================================================
     protected void sendTextMessage(String content) {
         EMMessage message = EMMessage.createTxtSendMessage(content, toChatUsername);
-        onSetMessageAttributes(message);
-        messageList.sendMessage(message);
+        sendMessage(message);
     }
 
     protected void sendVoiceMessage(String filePath, int length) {
         EMMessage message = EMMessage.createVoiceSendMessage(filePath, length, toChatUsername);
-        onSetMessageAttributes(message);
-        messageList.sendMessage(message);
+        sendMessage(message);
     }
 
     protected void sendImageMessage(String imagePath) {
         EMMessage message = EMMessage.createImageSendMessage(imagePath, false, toChatUsername);
-        onSetMessageAttributes(message);
-        messageList.sendMessage(message);
+        sendMessage(message);
     }
 
     protected void sendLocationMessage(double latitude, double longitude, String locationAddress) {
         EMMessage message = EMMessage.createLocationSendMessage(latitude, longitude, locationAddress, toChatUsername);
-        onSetMessageAttributes(message);
-        messageList.sendMessage(message);
+        sendMessage(message);
     }
 
     protected void sendVideoMessage(String filePath, String thumbPath, int length) {
         EMMessage message = EMMessage.createVideoSendMessage(filePath, thumbPath, length, toChatUsername);
-        onSetMessageAttributes(message);
-        messageList.sendMessage(message);
+        sendMessage(message);
     }
 
     protected void sendFileMessage(String filePath) {
         EMMessage message = EMMessage.createFileSendMessage(filePath, toChatUsername);
+        sendMessage(message);
+    }
+    
+    protected void sendMessage(EMMessage message){
+        //设置扩展属性
         onSetMessageAttributes(message);
-        messageList.sendMessage(message);
+        //发送消息
+        EMChatManager.getInstance().sendMessage(message, null);
+        //刷新ui
+        messageList.refreshSelectLast();
+    }
+    
+    
+    public void resendMessage(EMMessage message){
+        message.status = EMMessage.Status.CREATE;
+        EMChatManager.getInstance().sendMessage(message, null);
+        messageList.refresh();
     }
     
     //===================================================================================

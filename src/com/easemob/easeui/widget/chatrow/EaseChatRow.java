@@ -214,13 +214,6 @@ public abstract class EaseChatRow extends LinearLayout {
         message.setMessageStatusCallback(messageReceiveCallback);
     }
     
-    /**
-     * 发送消息
-     * @param message
-     */
-    protected void sendMsgInBackground(final EMMessage message) {
-        EMChatManager.getInstance().sendMessage(message, null);
-    }
     
     private void setClickListener() {
         if(bubbleLayout != null){

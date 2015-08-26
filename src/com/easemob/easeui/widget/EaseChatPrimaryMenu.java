@@ -22,10 +22,13 @@ import android.widget.Toast;
 
 import com.easemob.EMError;
 import com.easemob.easeui.R;
-import com.easemob.easeui.adapter.EaseVoicePlayClickListener;
 import com.easemob.easeui.utils.EaseSmileUtils;
+import com.easemob.easeui.widget.chatrow.EaseChatRowVoicePlayClickListener;
 
-
+/**
+ * 聊天输入栏主菜单栏
+ *
+ */
 public class EaseChatPrimaryMenu extends RelativeLayout implements OnClickListener {
     private EditText editText;
     private View buttonSetModeKeyboard;
@@ -127,8 +130,8 @@ public class EaseChatPrimaryMenu extends RelativeLayout implements OnClickListen
                 switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
                     try {
-                        if (EaseVoicePlayClickListener.isPlaying)
-                            EaseVoicePlayClickListener.currentPlayListener.stopPlayVoice();
+                        if (EaseChatRowVoicePlayClickListener.isPlaying)
+                            EaseChatRowVoicePlayClickListener.currentPlayListener.stopPlayVoice();
                         v.setPressed(true);
                         voiceRecorderView.startRecording();
                     } catch (Exception e) {

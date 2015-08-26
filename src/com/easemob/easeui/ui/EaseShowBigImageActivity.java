@@ -32,7 +32,7 @@ import android.widget.ProgressBar;
 import com.easemob.EMCallBack;
 import com.easemob.chat.EMChatManager;
 import com.easemob.easeui.R;
-import com.easemob.easeui.utils.EaseImageCache;
+import com.easemob.easeui.model.EaseImageCache;
 import com.easemob.easeui.utils.EaseLoadLocalBigImgTask;
 import com.easemob.easeui.widget.photoview.EasePhotoView;
 import com.easemob.util.EMLog;

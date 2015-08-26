@@ -35,6 +35,7 @@ import com.easemob.chat.EMGroup;
 import com.easemob.chat.EMGroupManager;
 import com.easemob.chat.EMMessage;
 import com.easemob.easeui.R;
+import com.easemob.easeui.adapter.EaseConverastionAdapater;
 import com.easemob.easeui.domain.EaseUser;
 import com.easemob.easeui.utils.EaseCommonUtils;
 import com.easemob.easeui.utils.EaseSmileUtils;
@@ -55,7 +56,7 @@ public class EaseConversationList extends ListView {
     
     protected Context context;
     protected EaseConverastionAdapater adapter;
-    protected List<EMConversation> allConversations = new ArrayList<EMConversation>();
+    protected List<EMConversation> conversationList = new ArrayList<EMConversation>();
     
     
     public EaseConversationList(Context context, AttributeSet attrs) {
@@ -84,10 +85,15 @@ public class EaseConversationList extends ListView {
     }
     
     public void init(){
-        adapter = new EaseConverastionAdapater(context, 0, allConversations);
+        conversationList.addAll(loadConversationsWithRecentChat());
+        adapter = new EaseConverastionAdapater(context, 0, conversationList);
+        adapter.setPrimaryColor(primaryColor);
+        adapter.setPrimarySize(primarySize);
+        adapter.setSecondaryColor(secondaryColor);
+        adapter.setSecondarySize(secondarySize);
+        adapter.setTimeColor(timeColor);
+        adapter.setTimeSize(timeSize);
         setAdapter(adapter);
-
-        refresh();
     }
     
     Handler handler = new Handler() {
@@ -96,8 +102,8 @@ public class EaseConversationList extends ListView {
             switch (message.what) {
             case MSG_REFRESH_ADAPTER_DATA:
                 if (adapter != null) {
-                    adapter.conversationList.clear();
-                    adapter.conversationList.addAll(allConversations);
+                    conversationList.clear();
+                    conversationList.addAll(loadConversationsWithRecentChat());
                     adapter.notifyDataSetChanged();
                 }
                 break;
@@ -172,7 +178,7 @@ public class EaseConversationList extends ListView {
     }
     
     public void refresh() {
-        allConversations = loadConversationsWithRecentChat();
+        conversationList = loadConversationsWithRecentChat();
 
         handler.sendEmptyMessage(MSG_REFRESH_ADAPTER_DATA);
     }
@@ -181,216 +187,6 @@ public class EaseConversationList extends ListView {
         adapter.getFilter().filter(str);
     }
     
-    /**
-     * adapter
-     *
-     */
-    class EaseConverastionAdapater extends ArrayAdapter<EMConversation> {
-        List<EMConversation> conversationList;
-        private ConversationFilter conversationFilter;
-
-        public EaseConverastionAdapater(Context context, int resource,
-                List<EMConversation> objects) {
-            super(context, resource, objects);
-            conversationList = objects;
-        }
-
-        @Override
-        public int getCount() {
-            return conversationList.size();
-        }
-
-        @Override
-        public EMConversation getItem(int arg0) {
-            if (arg0 < conversationList.size()) {
-                return conversationList.get(arg0);
-            }
-            return null;
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return position;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            if (convertView == null) {
-                convertView = LayoutInflater.from(context).inflate(R.layout.ease_row_chat_history, parent, false);
-            }
-            ViewHolder holder = (ViewHolder) convertView.getTag();
-            if (holder == null) {
-                holder = new ViewHolder();
-                holder.name = (TextView) convertView.findViewById(R.id.name);
-                holder.unreadLabel = (TextView) convertView.findViewById(R.id.unread_msg_number);
-                holder.message = (TextView) convertView.findViewById(R.id.message);
-                holder.time = (TextView) convertView.findViewById(R.id.time);
-                holder.avatar = (ImageView) convertView.findViewById(R.id.avatar);
-                holder.msgState = convertView.findViewById(R.id.msg_state);
-                holder.list_itease_layout = (RelativeLayout) convertView.findViewById(R.id.list_itease_layout);
-                convertView.setTag(holder);
-            }
-            holder.list_itease_layout.setBackgroundResource(R.drawable.ease_mm_listitem);
-
-            // 获取与此用户/群组的会话
-            EMConversation conversation = getItem(position);
-            // 获取用户username或者群组groupid
-            String username = conversation.getUserName();
-            
-            if (conversation.getType() == EMConversationType.GroupChat) {
-                // 群聊消息，显示群聊头像
-                holder.avatar.setImageResource(R.drawable.ease_group_icon);
-                EMGroup group = EMGroupManager.getInstance().getGroup(username);
-                holder.name.setText(group != null ? group.getGroupName() : username);
-            } else if(conversation.getType() == EMConversationType.ChatRoom){
-                holder.avatar.setImageResource(R.drawable.ease_group_icon);
-                EMChatRoom room = EMChatManager.getInstance().getChatRoom(username);
-                holder.name.setText(room != null && !TextUtils.isEmpty(room.getName()) ? room.getName() : username);
-            }else {
-                EaseUserUtils.setUserAvatar(getContext(), username, holder.avatar);
-                EaseUserUtils.setUserNick(username, holder.name);
-            }
-
-            if (conversation.getUnreadMsgCount() > 0) {
-                // 显示与此用户的消息未读数
-                holder.unreadLabel.setText(String.valueOf(conversation.getUnreadMsgCount()));
-                holder.unreadLabel.setVisibility(View.VISIBLE);
-            } else {
-                holder.unreadLabel.setVisibility(View.INVISIBLE);
-            }
-
-            if (conversation.getMsgCount() != 0) {
-                // 把最后一条消息的内容作为item的message内容
-                EMMessage lastMessage = conversation.getLastMessage();
-                holder.message.setText(EaseSmileUtils.getSmiledText(getContext(), EaseCommonUtils.getMessageDigest(lastMessage, (this.getContext()))),
-                        BufferType.SPANNABLE);
-
-                holder.time.setText(DateUtils.getTimestampString(new Date(lastMessage.getMsgTime())));
-                if (lastMessage.direct == EMMessage.Direct.SEND && lastMessage.status == EMMessage.Status.FAIL) {
-                    holder.msgState.setVisibility(View.VISIBLE);
-                } else {
-                    holder.msgState.setVisibility(View.GONE);
-                }
-            }
-            
-            //设置自定义属性
-            holder.name.setTextColor(primaryColor);
-            holder.message.setTextColor(secondaryColor);
-            holder.time.setTextColor(timeColor);
-            if(primarySize != 0)
-                holder.name.setTextSize(TypedValue.COMPLEX_UNIT_PX, primarySize);
-            if(secondarySize != 0)
-                holder.message.setTextSize(TypedValue.COMPLEX_UNIT_PX, secondarySize);
-            if(timeSize != 0)
-                holder.time.setTextSize(TypedValue.COMPLEX_UNIT_PX, timeSize);
-
-            return convertView;
-        }
-        
-        @Override
-        public Filter getFilter() {
-            if (conversationFilter == null) {
-                conversationFilter = new ConversationFilter();
-            }
-            return conversationFilter;
-        }
-        
-        class ConversationFilter extends Filter {
-
-            @Override
-            protected FilterResults performFiltering(CharSequence filter) {
-                FilterResults results = new FilterResults();
-
-                if (filter == null || filter.length() == 0) {
-                    results.values = allConversations;
-                    results.count = allConversations.size();
-                } else {
-                    String prefixString = filter.toString();
-                    final int count = allConversations.size();
-                    final List<EMConversation> newValues = new ArrayList<EMConversation>();
-                    Map<String, EMConversation> container = new HashMap<String, EMConversation>();
-                    
-                    // prepare container data, if data match filter
-                    // data will be added to newValues, and removed from container 
-                    for (int i = 0; i < count; i++) {
-                        final EMConversation conversation = allConversations.get(i);
-                        String username = conversation.getUserName();
-
-                        EMGroup group = EMGroupManager.getInstance().getGroup(
-                                username);
-                        if (group != null) {
-                            username = group.getGroupName();
-                        } else {
-                            EaseUser user = EaseUserUtils.getUserInfo(username);
-                            if(user != null && user.getNick() != null)
-                                username = user.getNick();
-                        }
-                        container.put(username, conversation);
-                    }
-                    
-                    // startWith
-                    List<String> toRemove = new ArrayList<String>();
-                    for (String username : container.keySet()) {
-                        if (username.startsWith(prefixString)) {
-                            newValues.add(container.get(username));
-                            toRemove.add(username);
-                        }
-                    }
-                    for (String username : toRemove) {
-                        container.remove(username);
-                    }
-                    
-                    // contains
-                    for (String username : container.keySet()) {
-                        if (username.contains(prefixString)) {
-                            newValues.add(container.get(username));
-                            toRemove.add(username);
-                        }
-                    }
-                    for (String username : toRemove) {
-                        container.remove(username);
-                    }
-
-                    results.values = newValues;
-                    results.count = newValues.size();
-                }
-                return results;
-            }
-
-            @SuppressWarnings("unchecked")
-            @Override
-            protected void publishResults(CharSequence constraint, FilterResults results) {
-                conversationList.clear();
-                conversationList.addAll((List<EMConversation>) results.values);
-                if (results.count > 0) {
-//                  notiyfyByFilter = true;
-                    notifyDataSetChanged();
-                } else {
-                    notifyDataSetInvalidated();
-                }
-            }
-        }
-    }
     
-    
-    
-    private static class ViewHolder {
-        /** 和谁的聊天记录 */
-        TextView name;
-        /** 消息未读数 */
-        TextView unreadLabel;
-        /** 最后一条消息的内容 */
-        TextView message;
-        /** 最后一条消息的时间 */
-        TextView time;
-        /** 用户头像 */
-        ImageView avatar;
-        /** 最后一条消息的发送状态 */
-        View msgState;
-        /** 整个list中每一行总布局 */
-        RelativeLayout list_itease_layout;
-
-    }
-
     
 }

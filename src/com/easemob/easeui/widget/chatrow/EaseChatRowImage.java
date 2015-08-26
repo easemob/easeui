@@ -17,9 +17,9 @@ import com.easemob.chat.EMMessage;
 import com.easemob.chat.EMMessage.ChatType;
 import com.easemob.chat.ImageMessageBody;
 import com.easemob.easeui.R;
+import com.easemob.easeui.model.EaseImageCache;
 import com.easemob.easeui.ui.EaseShowBigImageActivity;
 import com.easemob.easeui.utils.EaseCommonUtils;
-import com.easemob.easeui.utils.EaseImageCache;
 import com.easemob.easeui.utils.EaseImageUtils;
 
 public class EaseChatRowImage extends EaseChatRowFile{

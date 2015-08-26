@@ -10,7 +10,6 @@ import android.widget.TextView;
 import com.easemob.chat.EMMessage;
 import com.easemob.chat.VoiceMessageBody;
 import com.easemob.easeui.R;
-import com.easemob.easeui.adapter.EaseVoicePlayClickListener;
 import com.easemob.util.EMLog;
 
 public class EaseChatRowVoice extends EaseChatRowFile{
@@ -46,8 +45,8 @@ public class EaseChatRowVoice extends EaseChatRowFile{
         }else{
             voiceLengthView.setVisibility(View.INVISIBLE);
         }
-        if (EaseVoicePlayClickListener.playMsgId != null
-                && EaseVoicePlayClickListener.playMsgId.equals(message.getMsgId()) && EaseVoicePlayClickListener.isPlaying) {
+        if (EaseChatRowVoicePlayClickListener.playMsgId != null
+                && EaseChatRowVoicePlayClickListener.playMsgId.equals(message.getMsgId()) && EaseChatRowVoicePlayClickListener.isPlaying) {
             AnimationDrawable voiceAnimation;
             if (message.direct == EMMessage.Direct.RECEIVE) {
                 voiceImageView.setImageResource(R.anim.voice_from_icon);
@@ -93,7 +92,7 @@ public class EaseChatRowVoice extends EaseChatRowFile{
 
     @Override
     protected void onBuubleClick() {
-        new EaseVoicePlayClickListener(message, voiceImageView, readStutausView, adapter, activity).onClick(bubbleLayout);
+        new EaseChatRowVoicePlayClickListener(message, voiceImageView, readStutausView, adapter, activity).onClick(bubbleLayout);
     }
     
 }

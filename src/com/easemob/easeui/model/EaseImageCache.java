@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.easemob.easeui.utils;
+package com.easemob.easeui.model;
 
 import android.graphics.Bitmap;
 import android.support.v4.util.LruCache;

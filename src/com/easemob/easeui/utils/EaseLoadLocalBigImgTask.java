@@ -21,6 +21,7 @@ import android.view.View;
 import android.widget.ProgressBar;
 
 import com.easemob.easeui.R;
+import com.easemob.easeui.model.EaseImageCache;
 import com.easemob.easeui.widget.photoview.EasePhotoView;
 import com.easemob.util.ImageUtils;
 

@@ -64,7 +64,7 @@ public class EaseChatMessageList extends RelativeLayout{
         this.toChatUsername = toChatUsername;
         
         conversation = EMChatManager.getInstance().getConversation(toChatUsername);
-        messageAdapter = new EaseMessageAdapter(context, toChatUsername, chatType);
+        messageAdapter = new EaseMessageAdapter(context, toChatUsername, chatType, listView);
         messageAdapter.setShowAvatar(showAvatar);
         messageAdapter.setShowUserNick(showUserNick);
         messageAdapter.setMyBubbleBg(myBubbleBg);
@@ -87,22 +87,6 @@ public class EaseChatMessageList extends RelativeLayout{
     
     
     /**
-     * 发送消息
-     * @param message 要发送的消息.
-     */
-    public void sendMessage(EMMessage message){
-        // 把messgage加到conversation中
-        conversation.addMessage(message);
-        // 通知adapter有消息变动，adapter会根据加入的这条message显示消息和调用sdk的发送方法
-        refreshSelectLast();
-    }
-    
-    public void resendMessage(EMMessage message){
-        message.status = EMMessage.Status.CREATE;
-        refresh();
-    }
-    
-    /**
      * 刷新列表
      */
     public void refresh(){
@@ -113,8 +97,7 @@ public class EaseChatMessageList extends RelativeLayout{
      * 刷新列表，并且跳至最后一个item
      */
     public void refreshSelectLast(){
-        messageAdapter.refresh();
-        listView.setSelection(listView.getCount());
+        messageAdapter.refreshSelectLast();
     }
     
     /**
@@ -122,8 +105,7 @@ public class EaseChatMessageList extends RelativeLayout{
      * @param position
      */
     public void refreshSeekTo(int position){
-        messageAdapter.refresh();
-        listView.setSelection(position);
+        messageAdapter.refreshSeekTo(position);;
     }
     
     

@@ -89,11 +89,8 @@ public class EaseContactList extends RelativeLayout {
     /*
      * init view
      */
-    public void init(){
-        if(contactList == null){
-            EMLog.e(TAG, "plese set contact list before invoke init method");
-            return;
-        }
+    public void init(List<EaseUser> contactList){
+        this.contactList = contactList;
         adapter = new EaseContactAdapter(context, 0, contactList);
         adapter.setPrimaryColor(primaryColor).setPrimarySize(primarySize).setInitialLetterBg(initialLetterBg)
             .setInitialLetterColor(initialLetterColor);
@@ -104,13 +101,6 @@ public class EaseContactList extends RelativeLayout {
         }
     }
     
-    /**
-     * 设置联系人列表,init方法需在此方法后面调用
-     * @param contactList
-     */
-    public void setContactList(List<EaseUser> contactList){
-        this.contactList = contactList;
-    }
     
     public void refresh(){
         Message msg = handler.obtainMessage(MSG_UPDATE_LIST);
