@@ -274,7 +274,8 @@ public class EaseChatFragment extends Fragment implements EMEventListener {
     }
     
     protected void onMessageListInit(){
-        messageList.init(toChatUsername, chatType, onSetCustomChatRowProvider());
+        messageList.init(toChatUsername, chatType, chatFragmentListener != null ? 
+                chatFragmentListener.onSetCustomChatRowProvider() : null);
         //设置list item里的控件的点击事件
         setListItemClickListener();
         
@@ -296,7 +297,9 @@ public class EaseChatFragment extends Fragment implements EMEventListener {
             
             @Override
             public void onUserAvatarClick(String username) {
-                onAvatarClick(username);
+                if(chatFragmentListener != null){
+                    chatFragmentListener.onAvatarClick(username);
+                }
             }
             
             @Override
@@ -315,12 +318,17 @@ public class EaseChatFragment extends Fragment implements EMEventListener {
             @Override
             public void onBubbleLongClick(EMMessage message) {
                 contextMenuMessage = message;
-                onMessageBubbleLongClick(message);
+                if(chatFragmentListener != null){
+                    chatFragmentListener.onMessageBubbleLongClick(message);
+                }
             }
             
             @Override
             public boolean onBubbleClick(EMMessage message) {
-                return onMessageBubbleClick(message);
+                if(chatFragmentListener != null){
+                    chatFragmentListener.onMessageBubbleClick(message);
+                }
+                return false; 
             }
         });
     }
@@ -579,7 +587,25 @@ public class EaseChatFragment extends Fragment implements EMEventListener {
 
         @Override
         public void onClick(int itemId, View view) {
-            onExtendMenuItemClick(itemId, view);
+            if(chatFragmentListener != null){
+                if(chatFragmentListener.onExtendMenuItemClick(itemId, view)){
+                    return;
+                }
+            }
+            switch (itemId) {
+            case ITEM_TAKE_PICTURE: // 拍照
+                selectPicFromCamera();
+                break;
+            case ITEM_PICTURE:
+                selectPicFromLocal(); // 图库选择图片
+                break;
+            case ITEM_LOCATION: // 位置
+                startActivityForResult(new Intent(getActivity(), EaseBaiduMapActivity.class), REQUEST_CODE_MAP);
+                break;
+
+            default:
+                break;
+            }
         }
 
     }
@@ -618,8 +644,10 @@ public class EaseChatFragment extends Fragment implements EMEventListener {
     }
     
     protected void sendMessage(EMMessage message){
-        //设置扩展属性
-        onSetMessageAttributes(message);
+        if(chatFragmentListener != null){
+            //设置扩展属性
+            chatFragmentListener.onSetMessageAttributes(message);
+        }
         //发送消息
         EMChatManager.getInstance().sendMessage(message, null);
         //刷新ui
@@ -767,7 +795,9 @@ public class EaseChatFragment extends Fragment implements EMEventListener {
                 Toast.makeText(getActivity(), R.string.gorup_not_found, 0).show();
                 return;
             }
-            onEnterToChatDetails();
+            if(chatFragmentListener != null){
+                chatFragmentListener.onEnterToChatDetails();
+            }
         }
     }
 
@@ -851,61 +881,53 @@ public class EaseChatFragment extends Fragment implements EMEventListener {
 
     }
     
-    /**
-     * 设置消息扩展属性
-     */
-    protected void onSetMessageAttributes(EMMessage message){
+   
+    protected EaseChatFragmentListener chatFragmentListener;
+    public void setChatFragmentListener(EaseChatFragmentListener chatFragmentListener){
+        this.chatFragmentListener = chatFragmentListener;
     }
     
-    /**
-     * 进入会话详情
-     */
-    protected void onEnterToChatDetails(){
+    public interface EaseChatFragmentListener{
+        /**
+         * 设置消息扩展属性
+         */
+        void onSetMessageAttributes(EMMessage message);
+        
+        /**
+         * 进入会话详情
+         */
+        void onEnterToChatDetails();
+        
+        /**
+         * 用户头像点击事件
+         * @param username
+         */
+        void onAvatarClick(String username);
+        
+        /**
+         * 消息气泡框点击事件
+         */
+        boolean onMessageBubbleClick(EMMessage message);
+        
+        /**
+         * 消息气泡框长按事件
+         */
+        void onMessageBubbleLongClick(EMMessage message);
+        
+        /**
+         * 扩展输入栏item点击事件,如果要覆盖EaseChatFragment已有的点击事件，return true
+         * @param view 
+         * @param itemId 
+         * @return
+         */
+        boolean onExtendMenuItemClick(int itemId, View view);
+        
+        /**
+         * 设置自定义chatrow提供者
+         * @return
+         */
+        EaseCustomChatRowProvider onSetCustomChatRowProvider();
     }
     
-    /**
-     * 用户头像点击事件
-     * @param username
-     */
-    protected void onAvatarClick(String username){
-    }
     
-    /**
-     * 消息气泡框点击事件
-     */
-    protected boolean onMessageBubbleClick(EMMessage message){
-        return false;
-    }
-    
-    /**
-     * 消息气泡框长按事件
-     */
-    protected void onMessageBubbleLongClick(EMMessage message) {
-    }
-    
-    /**
-     * 扩展输入栏item点击事件
-     * @param view 
-     * @param itemId 
-     */
-    protected void onExtendMenuItemClick(int itemId, View view) {
-        switch (itemId) {
-        case ITEM_TAKE_PICTURE: // 拍照
-            selectPicFromCamera();
-            break;
-        case ITEM_PICTURE:
-            selectPicFromLocal(); // 图库选择图片
-            break;
-        case ITEM_LOCATION: // 位置
-            startActivityForResult(new Intent(getActivity(), EaseBaiduMapActivity.class), REQUEST_CODE_MAP);
-            break;
-
-        default:
-            break;
-        }
-    }
-    
-    protected EaseCustomChatRowProvider onSetCustomChatRowProvider(){
-        return null;
-    }
 }

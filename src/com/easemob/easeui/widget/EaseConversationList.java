@@ -84,8 +84,8 @@ public class EaseConversationList extends ListView {
         
     }
     
-    public void init(){
-        conversationList.addAll(loadConversationsWithRecentChat());
+    public void init(List<EMConversation> conversationList){
+        this.conversationList = conversationList;
         adapter = new EaseConverastionAdapater(context, 0, conversationList);
         adapter.setPrimaryColor(primaryColor);
         adapter.setPrimarySize(primarySize);
