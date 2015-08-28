@@ -22,7 +22,9 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.HeaderViewListAdapter;
 import android.widget.ListView;
+import android.widget.SectionIndexer;
 import android.widget.TextView;
 
 import com.easemob.easeui.R;
@@ -35,6 +37,8 @@ public class EaseSidebar extends View{
 	private float height;
 	private ListView mListView;
 	private Context context;
+	
+	private SectionIndexer sectionIndexter = null;
 	
 	public void setListView(ListView listView){
 		mListView = listView;
@@ -87,12 +91,15 @@ public class EaseSidebar extends View{
 		    }
 		String headerString = sections[sectionForPoint(event.getY())];
 		header.setText(headerString);
-		EaseContactAdapter adapter = (EaseContactAdapter) mListView.getAdapter();
-		String[] adapterSections = (String[]) adapter.getSections();
+		HeaderViewListAdapter adapter = (HeaderViewListAdapter) mListView.getAdapter();
+		if(sectionIndexter == null){
+		    sectionIndexter = (SectionIndexer) adapter.getWrappedAdapter();
+		}
+		String[] adapterSections = (String[]) sectionIndexter.getSections();
 		try {
 			for (int i = adapterSections.length - 1; i > -1; i--) {
 				if(adapterSections[i].equals(headerString)){
-					mListView.setSelection(adapter.getPositionForSection(i));
+					mListView.setSelection(sectionIndexter.getPositionForSection(i));
 					break;
 				}
 			}

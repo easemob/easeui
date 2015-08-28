@@ -33,8 +33,7 @@ import com.easemob.easeui.widget.EaseConversationList;
  * 会话列表fragment
  *
  */
-public class EaseConversationListFragment extends Fragment{
-    protected InputMethodManager inputMethodManager;
+public class EaseConversationListFragment extends EaseBaseFragment{
     protected EditText query;
     protected ImageButton clearSearch;
     protected boolean hidden;
@@ -54,10 +53,10 @@ public class EaseConversationListFragment extends Fragment{
         super.onActivityCreated(savedInstanceState);
         if(savedInstanceState != null && savedInstanceState.getBoolean("isConflict", false))
             return;
-        initView();
-        setUpView();
+        super.onActivityCreated(savedInstanceState);
     }
 
+    @Override
     protected void initView() {
         inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         //会话列表控件
@@ -69,6 +68,7 @@ public class EaseConversationListFragment extends Fragment{
         errorItemContainer = (FrameLayout) getView().findViewById(R.id.fl_error_item);
     }
     
+    @Override
     protected void setUpView() {
         conversationList.addAll(loadConversationList());
         conversationListView.init(conversationList);

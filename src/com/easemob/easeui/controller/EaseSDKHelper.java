@@ -16,6 +16,7 @@ package com.easemob.easeui.controller;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -685,6 +686,11 @@ public abstract class EaseSDKHelper {
         EMChat.getInstance().setAppInited();
         alreadyNotified = true;
     }
+    
+    public Map<String, EaseUser> getContactList() {
+        return null;
+    }
+    
     
     synchronized void reset(){
         isSyncingGroupsWithServer = false;

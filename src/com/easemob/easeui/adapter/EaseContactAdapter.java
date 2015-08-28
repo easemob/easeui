@@ -19,7 +19,6 @@ import android.widget.SectionIndexer;
 import android.widget.TextView;
 
 import com.easemob.easeui.R;
-import com.easemob.easeui.domain.EaseSystemUser;
 import com.easemob.easeui.domain.EaseUser;
 import com.easemob.easeui.utils.EaseUserUtils;
 import com.easemob.util.EMLog;
@@ -47,7 +46,6 @@ public class EaseContactAdapter extends ArrayAdapter<EaseUser>  implements Secti
     
     private static class ViewHolder {
         ImageView avatar;
-        TextView unreadMsgView;
         TextView nameView;
         TextView headerView;
     }
@@ -61,7 +59,6 @@ public class EaseContactAdapter extends ArrayAdapter<EaseUser>  implements Secti
             else
                 convertView = layoutInflater.inflate(res, null);
             holder.avatar = (ImageView) convertView.findViewById(R.id.avatar);
-            holder.unreadMsgView = (TextView) convertView.findViewById(R.id.unread_msg_number);
             holder.nameView = (TextView) convertView.findViewById(R.id.name);
             holder.headerView = (TextView) convertView.findViewById(R.id.header);
             convertView.setTag(holder);
@@ -91,14 +88,6 @@ public class EaseContactAdapter extends ArrayAdapter<EaseUser>  implements Secti
         EaseUserUtils.setUserAvatar(getContext(), username, holder.avatar);
         
        
-        if(holder.unreadMsgView != null){
-        	 if(user instanceof EaseSystemUser && ((EaseSystemUser) user).getUnreadMsgCount() > 0){
-        		 holder.unreadMsgView.setVisibility(View.VISIBLE);
-             }else{
-            	 holder.unreadMsgView.setVisibility(View.INVISIBLE);
-             }
-        }
-        
         if(primaryColor != 0)
             holder.nameView.setTextColor(primaryColor);
         if(primarySize != 0)
@@ -121,10 +110,12 @@ public class EaseContactAdapter extends ArrayAdapter<EaseUser>  implements Secti
         return super.getCount();
     }
 
+    @Override
     public int getPositionForSection(int section) {
         return positionOfSection.get(section);
     }
 
+    @Override
     public int getSectionForPosition(int position) {
         return sectionOfPosition.get(position);
     }

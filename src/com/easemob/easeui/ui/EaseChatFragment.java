@@ -241,7 +241,7 @@ public class EaseChatFragment extends Fragment implements EMEventListener {
     }
     
     /**
-     * 注册底部菜单扩展栏item,覆盖此方法时如果不覆盖已有item，item的id需大于3
+     * 注册底部菜单扩展栏item; 覆盖此方法时如果不覆盖已有item，item的id需大于3
      */
     protected void registerExtendMenuItem(){
         for(int i = 0; i < itemStrings.length; i++){

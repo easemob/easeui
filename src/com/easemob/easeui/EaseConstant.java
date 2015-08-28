@@ -20,4 +20,7 @@ public class EaseConstant {
 	public static final int CHATTYPE_SINGLE = 1;
     public static final int CHATTYPE_GROUP = 2;
     public static final int CHATTYPE_CHATROOM = 3;
+    
+    public static final String CHAT_TYPE = "chatType";
+    public static final String USER_ID = "userId";
 }
