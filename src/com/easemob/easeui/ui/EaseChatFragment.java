@@ -13,7 +13,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
-import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.text.ClipboardManager;
@@ -44,7 +43,7 @@ import com.easemob.chat.ImageMessageBody;
 import com.easemob.chat.TextMessageBody;
 import com.easemob.easeui.EaseConstant;
 import com.easemob.easeui.R;
-import com.easemob.easeui.controller.EaseSDKHelper;
+import com.easemob.easeui.controller.EaseUI;
 import com.easemob.easeui.utils.EaseCommonUtils;
 import com.easemob.easeui.utils.EaseImageUtils;
 import com.easemob.easeui.utils.EaseUserUtils;
@@ -54,7 +53,6 @@ import com.easemob.easeui.widget.EaseChatExtendMenu;
 import com.easemob.easeui.widget.EaseChatInputMenu;
 import com.easemob.easeui.widget.EaseChatInputMenu.ChatInputMenuListener;
 import com.easemob.easeui.widget.EaseChatMessageList;
-import com.easemob.easeui.widget.EaseTitleBar;
 import com.easemob.easeui.widget.EaseVoiceRecorderView;
 import com.easemob.easeui.widget.chatrow.EaseCustomChatRowProvider;
 import com.easemob.util.EMLog;
@@ -69,7 +67,7 @@ import com.easemob.util.PathUtil;
  * 参数传入示例可查看demo里的ChatActivity
  *
  */
-public class EaseChatFragment extends Fragment implements EMEventListener {
+public class EaseChatFragment extends EaseBaseFragment implements EMEventListener {
     protected static final String TAG = "EaseChatFragment";
     protected static final int REQUEST_CODE_MAP = 1;
     protected static final int REQUEST_CODE_CAMERA = 2;
@@ -85,7 +83,6 @@ public class EaseChatFragment extends Fragment implements EMEventListener {
     protected EaseChatInputMenu inputMenu;
 
     protected EMConversation conversation;
-    protected EaseTitleBar titleBar;
     
     protected InputMethodManager inputManager;
     protected ClipboardManager clipboard;
@@ -121,7 +118,6 @@ public class EaseChatFragment extends Fragment implements EMEventListener {
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
 
         fragmentArgs = getArguments();
         // 判断单聊还是群聊
@@ -129,17 +125,13 @@ public class EaseChatFragment extends Fragment implements EMEventListener {
         // 会话人或群组id
         toChatUsername = fragmentArgs.getString("userId");
 
-        initView();
-        setUpView();
+        super.onActivityCreated(savedInstanceState);
     }
 
     /**
      * init view
      */
     protected void initView() {
-        // 标题栏
-        titleBar = (EaseTitleBar) getView().findViewById(R.id.title_bar);
-
         // 按住说话录音控件
         voiceRecorder = (EaseVoiceRecorderView) getView().findViewById(R.id.voice_recorder);
 
@@ -326,7 +318,7 @@ public class EaseChatFragment extends Fragment implements EMEventListener {
             @Override
             public boolean onBubbleClick(EMMessage message) {
                 if(chatFragmentListener != null){
-                    chatFragmentListener.onMessageBubbleClick(message);
+                    return chatFragmentListener.onMessageBubbleClick(message);
                 }
                 return false; 
             }
@@ -411,8 +403,7 @@ public class EaseChatFragment extends Fragment implements EMEventListener {
         super.onResume();
 //        if(isMessageListInited)
 //            messageList.refresh();
-        EaseSDKHelper sdkHelper = EaseSDKHelper.getInstance();
-        sdkHelper.pushActivity(getActivity());
+        EaseUI.getInstance().pushActivity(getActivity());
         // register the event listener when enter the foreground
         EMChatManager.getInstance().registerEventListener(
                 this,
@@ -430,10 +421,8 @@ public class EaseChatFragment extends Fragment implements EMEventListener {
         if(chatRoomChangeListener != null)
             EMChatManager.getInstance().removeChatRoomChangeListener(chatRoomChangeListener);
 
-        EaseSDKHelper sdkHelper = EaseSDKHelper.getInstance();
-
         // 把此activity 从foreground activity 列表里移除
-        sdkHelper.popActivity(getActivity());
+        EaseUI.getInstance().popActivity(getActivity());
     }
 
     @Override
@@ -469,10 +458,10 @@ public class EaseChatFragment extends Fragment implements EMEventListener {
             if (username.equals(toChatUsername)) {
                 messageList.refreshSelectLast();
                 // 声音和震动提示有新消息
-                EaseSDKHelper.getInstance().getNotifier().viberateAndPlayTone(message);
+                EaseUI.getInstance().getNotifier().viberateAndPlayTone(message);
             } else {
                 // 如果消息不是和当前聊天ID的消息
-                EaseSDKHelper.getInstance().getNotifier().onNewMsg(message);
+                EaseUI.getInstance().getNotifier().onNewMsg(message);
             }
 
             break;

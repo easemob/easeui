@@ -1,7 +1,5 @@
 package com.easemob.easeui.widget;
 
-import java.lang.reflect.Field;
-
 import android.app.Activity;
 import android.content.Context;
 import android.text.Editable;
@@ -125,7 +123,7 @@ public class EaseChatPrimaryMenu extends RelativeLayout implements OnClickListen
         
         buttonPressToSpeak.setOnTouchListener(new OnTouchListener() {
             
-            @Override
+            @Override 
             public boolean onTouch(View v, MotionEvent event) {
                 switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
@@ -190,17 +188,10 @@ public class EaseChatPrimaryMenu extends RelativeLayout implements OnClickListen
 
     /**
      * 表情输入
-     * @param name
+     * @param emojiContent
      */
-    public void onEmojiconInputEvent(String name){
-        try {
-            // 这里用的反射，所以混淆的时候不要混淆SmileUtils这个类
-            Class clz = Class.forName("com.easemob.easeui.utils.EaseSmileUtils");
-            Field field = clz.getField(name);
-            editText.append(EaseSmileUtils.getSmiledText(context,(String) field.get(null)));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public void onEmojiconInputEvent(CharSequence emojiContent){
+        editText.append(emojiContent);
     }
     
     /**
@@ -387,5 +378,7 @@ public class EaseChatPrimaryMenu extends RelativeLayout implements OnClickListen
         void onEditTextClicked();
     }
 
-
+    public interface iChatPrimaryMenu{
+        
+    }
 }

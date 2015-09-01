@@ -31,9 +31,13 @@ import com.easemob.chat.EMMessage;
 import com.easemob.chat.EMMessage.ChatType;
 import com.easemob.chat.VoiceMessageBody;
 import com.easemob.easeui.R;
-import com.easemob.easeui.controller.EaseSDKHelper;
+import com.easemob.easeui.controller.EaseUI;
 import com.easemob.util.EMLog;
 
+/**
+ * 语音row播放点击事件监听
+ *
+ */
 public class EaseChatRowVoicePlayClickListener implements View.OnClickListener {
 	private static final String TAG = "VoicePlayClickListener";
 	EMMessage message;
@@ -86,7 +90,7 @@ public class EaseChatRowVoicePlayClickListener implements View.OnClickListener {
 		AudioManager audioManager = (AudioManager) activity.getSystemService(Context.AUDIO_SERVICE);
 
 		mediaPlayer = new MediaPlayer();
-		if (EaseSDKHelper.getInstance().getModel().getSettingMsgSpeaker()) {
+		if (EaseUI.getInstance().getSettingsProvider().isSpeakerOpened()) {
 			audioManager.setMode(AudioManager.MODE_NORMAL);
 			audioManager.setSpeakerphoneOn(true);
 			mediaPlayer.setAudioStreamType(AudioManager.STREAM_RING);

@@ -8,13 +8,14 @@ import java.util.List;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Pair;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
@@ -96,6 +97,15 @@ public class EaseConversationListFragment extends EaseBaseFragment{
             public void onClick(View v) {
                 query.getText().clear();
                 hideSoftKeyboard();
+            }
+        });
+        
+        conversationListView.setOnTouchListener(new OnTouchListener() {
+            
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                hideSoftKeyboard();
+                return false;
             }
         });
     }

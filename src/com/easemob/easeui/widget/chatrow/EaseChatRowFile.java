@@ -114,7 +114,7 @@ public class EaseChatRowFile extends EaseChatRow{
     }
 
     @Override
-    protected void onBuubleClick() {
+    protected void onBubbleClick() {
         String filePath = fileMessageBody.getLocalUrl();
         File file = new File(filePath);
         if (file != null && file.exists()) {

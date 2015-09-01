@@ -80,7 +80,7 @@ public class EaseChatRowImage extends EaseChatRowFile{
     }
     
     @Override
-    protected void onBuubleClick() {
+    protected void onBubbleClick() {
         Intent intent = new Intent(context, EaseShowBigImageActivity.class);
         File file = new File(imgBody.getLocalUrl());
         if (file.exists()) {

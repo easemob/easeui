@@ -224,7 +224,7 @@ public abstract class EaseChatRow extends LinearLayout {
                     if (itemClickListener != null){
                         if(!itemClickListener.onBubbleClick(message)){
                             //如果listener返回false不处理这个事件，执行lib默认的处理
-                            onBuubleClick();
+                            onBubbleClick();
                         }
                     }
                 }
@@ -313,6 +313,6 @@ public abstract class EaseChatRow extends LinearLayout {
     /**
      * 聊天气泡被点击事件
      */
-    protected abstract void onBuubleClick();
+    protected abstract void onBubbleClick();
 
 }

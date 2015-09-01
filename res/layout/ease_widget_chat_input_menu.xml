@@ -27,7 +27,7 @@
             android:layout_marginTop="9dp"
             easemob:numColumns="4" />
 
-        <com.easemob.easeui.widget.EaseEmojicon
+        <com.easemob.easeui.widget.EaseEmojiconMenu
             android:id="@+id/emojicon"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />

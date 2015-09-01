@@ -11,13 +11,19 @@ import android.widget.LinearLayout;
 import com.easemob.easeui.R;
 import com.easemob.easeui.widget.EaseChatExtendMenu.ChatExtendMenuItemClickListener;
 import com.easemob.easeui.widget.EaseChatPrimaryMenu.ChatPrimaryMenuListener;
-import com.easemob.easeui.widget.EaseEmojicon.EmojiconListener;
+import com.easemob.easeui.widget.EaseEmojiconMenu.EmojiconListener;
 
+/**
+ * 聊天页面底部的聊天输入输出菜单栏
+ * <br/>主要包含3个控件:EaseChatPrimaryMenu(主菜单栏，即为包含文字输入、发送等控件),
+ * <br/>EaseChatExtendMenu(扩展栏，点击加号按钮出来的小宫格的菜单栏),
+ * <br/>以及EaseEmojiconMenu(表情栏)
+ */
 public class EaseChatInputMenu extends LinearLayout{
     protected EaseChatPrimaryMenu chatPrimaryMenu;
     protected EaseChatExtendMenu chatExtendMenu;
     protected FrameLayout chatExtendMenuContainer;
-    protected EaseEmojicon emojicon;
+    protected EaseEmojiconMenu emojicon;
     private Context context;
     
     private Handler handler = new Handler();
@@ -50,7 +56,7 @@ public class EaseChatInputMenu extends LinearLayout{
         chatExtendMenuContainer = (FrameLayout)findViewById(R.id.extend_menu_container);
         
         // 表情
-        emojicon = (EaseEmojicon) findViewById(R.id.emojicon);
+        emojicon = (EaseEmojiconMenu) findViewById(R.id.emojicon);
         
         processChatMenu();
         
@@ -148,8 +154,8 @@ public class EaseChatInputMenu extends LinearLayout{
         emojicon.setEmojiconListener(new EmojiconListener() {
 
             @Override
-            public void onExpressionClicked(String name) {
-                chatPrimaryMenu.onEmojiconInputEvent(name);
+            public void onExpressionClicked(CharSequence emojiContent) {
+                chatPrimaryMenu.onEmojiconInputEvent(emojiContent);
             }
 
             @Override

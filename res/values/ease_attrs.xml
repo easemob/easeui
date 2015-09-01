@@ -25,7 +25,7 @@
         <attr name="ctsListInitialLetterColor" format="color"/>
     </declare-styleable>
     
-    <declare-styleable name="EMEmojicon">
+    <declare-styleable name="EMEmojiconMenu">
        	<attr name="emojiconSize" format="dimension"/>
        	<attr name="emojiconRows" format="integer"/>
        	<attr name="emojiconColumns" format="integer"/>

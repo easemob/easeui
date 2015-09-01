@@ -42,13 +42,10 @@ import com.easemob.EMError;
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMContactManager;
 import com.easemob.easeui.R;
-import com.easemob.easeui.controller.EaseSDKHelper;
-import com.easemob.easeui.controller.EaseSDKHelper.HXSyncListener;
 import com.easemob.easeui.domain.EaseUser;
 import com.easemob.easeui.utils.EaseCommonUtils;
 import com.easemob.easeui.widget.EaseContactList;
 import com.easemob.exceptions.EaseMobException;
-import com.easemob.util.EMLog;
 
 /**
  * 联系人列表页
@@ -62,57 +59,55 @@ public class EaseContactListFragment extends EaseBaseFragment {
     protected List<String> blackList;
     protected ImageButton clearSearch;
     protected EditText query;
-    protected HXContactSyncListener contactSyncListener;
-    protected HXBlackListSyncListener blackListSyncListener;
+//    protected HXContactSyncListener contactSyncListener;
+//    protected HXBlackListSyncListener blackListSyncListener;
     protected View progressBar;
     protected Handler handler = new Handler();
     protected EaseUser toBeProcessUser;
     protected String toBeProcessUsername;
     protected EaseContactList contactListLayout;
     protected boolean isConflict;
-
-    class HXContactSyncListener implements EaseSDKHelper.HXSyncListener {
-        @Override
-        public void onSyncSucess(final boolean success) {
-            EMLog.d(TAG, "on contact list sync success:" + success);
-            getActivity().runOnUiThread(new Runnable() {
-                public void run() {
-                    getActivity().runOnUiThread(new Runnable(){
-
-                        @Override
-                        public void run() {
-                            if(success){
-                                progressBar.setVisibility(View.GONE);
-                                refresh();
-                            }else{
-                                String s1 = getResources().getString(R.string.get_failed_please_check);
-                                Toast.makeText(getActivity(), s1, 1).show();
-                                progressBar.setVisibility(View.GONE);
-                            }
-                        }
-                        
-                    });
-                }
-            });
-        }
-    }
     
-    class HXBlackListSyncListener implements HXSyncListener{
+    protected EaseContactsProvider contactsProvider;
 
-        @Override
-        public void onSyncSucess(boolean success) {
-            getActivity().runOnUiThread(new Runnable(){
-
-                @Override
-                public void run() {
-                    blackList = EMContactManager.getInstance().getBlackListUsernames();
-                    refresh();
-                }
-                
-            });
-        }
-        
-    };
+//    class HXContactSyncListener implements EaseSDKHelper.HXSyncListener {
+//        @Override
+//        public void onSyncSucess(final boolean success) {
+//            EMLog.d(TAG, "on contact list sync success:" + success);
+//            getActivity().runOnUiThread(new Runnable() {
+//
+//                    @Override
+//                    public void run() {
+//                        if(success){
+//                            progressBar.setVisibility(View.GONE);
+//                            refresh();
+//                        }else{
+//                            String s1 = getResources().getString(R.string.get_failed_please_check);
+//                            Toast.makeText(getActivity(), s1, 1).show();
+//                            progressBar.setVisibility(View.GONE);
+//                        }
+//                    }
+//                        
+//            });
+//        }
+//    }
+//    
+//    class HXBlackListSyncListener implements HXSyncListener{
+//
+//        @Override
+//        public void onSyncSucess(boolean success) {
+//            getActivity().runOnUiThread(new Runnable(){
+//
+//                @Override
+//                public void run() {
+//                    blackList = EMContactManager.getInstance().getBlackListUsernames();
+//                    refresh();
+//                }
+//                
+//            });
+//        }
+//        
+//    };
     
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -187,17 +182,17 @@ public class EaseContactListFragment extends EaseBaseFragment {
         });
 
 
-        contactSyncListener = new HXContactSyncListener();
-        EaseSDKHelper.getInstance().addSyncContactListener(contactSyncListener);
-        
-        blackListSyncListener = new HXBlackListSyncListener();
-        EaseSDKHelper.getInstance().addSyncBlackListListener(blackListSyncListener);
-        
-        if (!EaseSDKHelper.getInstance().isContactsSyncedWithServer()) {
-            progressBar.setVisibility(View.VISIBLE);
-        } else {
-            progressBar.setVisibility(View.GONE);
-        }
+//        contactSyncListener = new HXContactSyncListener();
+//        EaseSDKHelper.getInstance().addSyncContactListener(contactSyncListener);
+//        
+//        blackListSyncListener = new HXBlackListSyncListener();
+//        EaseSDKHelper.getInstance().addSyncBlackListListener(blackListSyncListener);
+//        
+//        if (!EaseSDKHelper.getInstance().isContactsSyncedWithServer()) {
+//            progressBar.setVisibility(View.VISIBLE);
+//        } else {
+//            progressBar.setVisibility(View.GONE);
+//        }
         
     }
 
@@ -265,14 +260,14 @@ public class EaseContactListFragment extends EaseBaseFragment {
 
     @Override
     public void onDestroy() {
-        if (contactSyncListener != null) {
-            EaseSDKHelper.getInstance().removeSyncContactListener(contactSyncListener);
-            contactSyncListener = null;
-        }
-        
-        if(blackListSyncListener != null){
-            EaseSDKHelper.getInstance().removeSyncBlackListListener(blackListSyncListener);
-        }
+//        if (contactSyncListener != null) {
+//            EaseSDKHelper.getInstance().removeSyncContactListener(contactSyncListener);
+//            contactSyncListener = null;
+//        }
+//        
+//        if(blackListSyncListener != null){
+//            EaseSDKHelper.getInstance().removeSyncBlackListListener(blackListSyncListener);
+//        }
         
         EMChatManager.getInstance().removeConnectionListener(connectionListener);
         
@@ -292,20 +287,32 @@ public class EaseContactListFragment extends EaseBaseFragment {
     /**
      * 获取联系人列表，并过滤掉黑名单和排序
      */
-    private void getContactList() {
+    protected void getContactList() {
         contactList.clear();
         synchronized (contactList) {
-            //获取本地好友列表
-            Map<String, EaseUser> users = EaseSDKHelper.getInstance().getContactList();
+            //获取联系人列表
+            if(contactsProvider == null){
+                return;
+            }
+            Map<String, EaseUser> users = contactsProvider.getContactsMap();
             if(users == null){
                 return;
             }
             Iterator<Entry<String, EaseUser>> iterator = users.entrySet().iterator();
             while (iterator.hasNext()) {
                 Entry<String, EaseUser> entry = iterator.next();
-                EaseUser user = entry.getValue();
-                EaseCommonUtils.setUserInitialLetter(user);
-                contactList.add(user);
+                //兼容以前的通讯录里的已有的数据显示，加上此判断，如果是2.2.2后新集成的可以去掉此判断
+                if (!entry.getKey().equals("item_new_friends")
+                        && !entry.getKey().equals("item_groups")
+                        && !entry.getKey().equals("item_chatroom")
+                        && !entry.getKey().equals("item_robots")){
+                    if(!blackList.contains(entry.getKey())){
+                        //不显示黑名单中的用户
+                        EaseUser user = entry.getValue();
+                        EaseCommonUtils.setUserInitialLetter(user);
+                        contactList.add(user);
+                    }
+                }
             }
             // 排序
             Collections.sort(contactList, new Comparator<EaseUser>() {
@@ -323,6 +330,7 @@ public class EaseContactListFragment extends EaseBaseFragment {
         }
 
     }
+    
     
     
     protected EMConnectionListener connectionListener = new EMConnectionListener() {
@@ -352,6 +360,7 @@ public class EaseContactListFragment extends EaseBaseFragment {
         }
     };
     
+    
     protected void onConnectionDisconnected() {
         
     }
@@ -359,4 +368,13 @@ public class EaseContactListFragment extends EaseBaseFragment {
     protected void onConnectionConnected() {
         
     }
+        
+    interface EaseContactsProvider {
+        Map<String, EaseUser> getContactsMap();
+    }
+    
+    public void setContactsProvider(EaseContactsProvider contactsProvider){
+        this.contactsProvider = contactsProvider;
+    }
+    
 }

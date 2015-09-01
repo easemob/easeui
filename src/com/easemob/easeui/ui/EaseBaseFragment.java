@@ -24,12 +24,18 @@ public abstract class EaseBaseFragment extends Fragment{
         setUpView();
     }
     
+    /**
+     * 显示标题栏
+     */
     public void ShowTitleBar(){
         if(titleBar != null){
             titleBar.setVisibility(View.VISIBLE);
         }
     }
     
+    /**
+     * 隐藏标题栏
+     */
     public void hideTitleBar(){
         if(titleBar != null){
             titleBar.setVisibility(View.GONE);

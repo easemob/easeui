@@ -31,7 +31,8 @@ import android.os.Vibrator;
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMMessage;
 import com.easemob.chat.NotificationCompat;
-import com.easemob.easeui.controller.EaseSDKHelper;
+import com.easemob.easeui.controller.EaseUI;
+import com.easemob.easeui.controller.EaseUI.EaseSettingsProvider;
 import com.easemob.util.EMLog;
 import com.easemob.util.EasyUtils;
 
@@ -67,7 +68,7 @@ public class EaseNotifier {
     protected long lastNotifiyTime;
     protected AudioManager audioManager;
     protected Vibrator vibrator;
-    protected HXNotificationInfoProvider notificationInfoProvider;
+    protected EaseNotificationInfoProvider notificationInfoProvider;
 
     public EaseNotifier() {
     }
@@ -291,8 +292,9 @@ public class EaseNotifier {
             } 
         }
         
-        EaseSDKModel model = EaseSDKHelper.getInstance().getModel();
-        if(!model.getSettingMsgNotification()){
+        EaseSettingsProvider settingsProvider = EaseUI.getInstance().getSettingsProvider();
+        
+        if(!settingsProvider.isMsgNotifyAllowed()){
             return;
         }
         
@@ -310,12 +312,12 @@ public class EaseNotifier {
                 return;
             }
             
-            if(model.getSettingMsgVibrate()){
+            if(settingsProvider.isMsgVibrateAllowed()){
                 long[] pattern = new long[] { 0, 180, 80, 120 };
                 vibrator.vibrate(pattern, -1);
             }
 
-            if(model.getSettingMsgSound()){
+            if(settingsProvider.isMsgSoundAllowed()){
                 if (ringtone == null) {
                     Uri notificationUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
@@ -357,15 +359,15 @@ public class EaseNotifier {
 
 
     /**
-     * 设置NotificationInfoProvider
+     * 设置通知栏消息Provider
      * 
      * @param provider
      */
-    public void setNotificationInfoProvider(HXNotificationInfoProvider provider) {
+    public void setNotificationInfoProvider(EaseNotificationInfoProvider provider) {
         notificationInfoProvider = provider;
     }
 
-    public interface HXNotificationInfoProvider {
+    public interface EaseNotificationInfoProvider {
         /**
          * 设置发送notification时状态栏提示新消息的内容(比如Xxx发来了一条图片消息)
          * 

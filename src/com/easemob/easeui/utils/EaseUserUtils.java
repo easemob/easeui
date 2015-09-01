@@ -5,17 +5,17 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.easemob.easeui.R;
-import com.easemob.easeui.controller.EaseSDKHelper;
-import com.easemob.easeui.controller.EaseSDKHelper.UserProvider;
+import com.easemob.easeui.controller.EaseUI;
+import com.easemob.easeui.controller.EaseUI.EaseUserProfileProvider;
 import com.easemob.easeui.domain.EaseUser;
 import com.squareup.picasso.Picasso;
 
 public class EaseUserUtils {
     
-    static UserProvider userProvider;
+    static EaseUserProfileProvider userProvider;
     
     static {
-        userProvider = EaseSDKHelper.getInstance().getUserProvider();
+        userProvider = EaseUI.getInstance().getUserProfileProvider();
     }
     
     /**

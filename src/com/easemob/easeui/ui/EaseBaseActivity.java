@@ -18,7 +18,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
 
-import com.easemob.easeui.controller.EaseSDKHelper;
+import com.easemob.easeui.controller.EaseUI;
 
 public class EaseBaseActivity extends FragmentActivity {
 
@@ -31,7 +31,7 @@ public class EaseBaseActivity extends FragmentActivity {
     protected void onResume() {
         super.onResume();
         // onresume时，取消notification显示
-        EaseSDKHelper.getInstance().getNotifier().reset();
+        EaseUI.getInstance().getNotifier().reset();
         
     }
 

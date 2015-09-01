@@ -100,7 +100,7 @@ public class EaseChatRowVideo extends EaseChatRowFile{
 	}
 	
 	@Override
-	protected void onBuubleClick() {
+	protected void onBubbleClick() {
 	    VideoMessageBody videoBody = (VideoMessageBody) message.getBody();
         EMLog.d(TAG, "video view is on click");
         Intent intent = new Intent(context, EaseShowVideoActivity.class);

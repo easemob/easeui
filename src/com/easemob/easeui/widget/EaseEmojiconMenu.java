@@ -1,5 +1,6 @@
 package com.easemob.easeui.widget;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +24,7 @@ import com.easemob.easeui.utils.EaseSmileUtils;
 /**
  * 表情图片控件
  */
-public class EaseEmojicon extends LinearLayout{
+public class EaseEmojiconMenu extends LinearLayout{
 	
 	private float emojiconSize;
 	private List<String> reslist;
@@ -32,17 +33,17 @@ public class EaseEmojicon extends LinearLayout{
 	private EmojiconListener listener;
 	
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
-	public EaseEmojicon(Context context, AttributeSet attrs, int defStyle) {
+	public EaseEmojiconMenu(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 		init(context, attrs);
 	}
 
-	public EaseEmojicon(Context context, AttributeSet attrs) {
+	public EaseEmojiconMenu(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		init(context, attrs);
 	}
 
-	public EaseEmojicon(Context context) {
+	public EaseEmojiconMenu(Context context) {
 		super(context);
 		init(context, null);
 	}
@@ -50,7 +51,7 @@ public class EaseEmojicon extends LinearLayout{
 	private void init(Context context, AttributeSet attrs){
 		this.context = context;
 		LayoutInflater.from(context).inflate(R.layout.ease_widget_emojicon, this);
-		TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.EMEmojicon);
+		TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.EMEmojiconMenu);
 		ta.recycle();
 		// 表情list
 		reslist = getExpressionRes(EaseSmileUtils.simleSize);
@@ -94,7 +95,15 @@ public class EaseEmojicon extends LinearLayout{
 				String filename = expressionAdapter.getItem(position);
 				if(listener != null){
 					if (filename != "delete_expression"){
-						listener.onExpressionClicked(filename);
+                        try {
+                            // 这里用的反射，所以混淆的时候不要混淆SmileUtils这个类
+                            Class clz = Class.forName("com.easemob.easeui.utils.EaseSmileUtils");
+                            Field field = clz.getField(filename);
+                            CharSequence cs = EaseSmileUtils.getSmiledText(context,(String) field.get(null));
+                            listener.onExpressionClicked(cs);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
 					}else{
 						listener.onDeleteImageClicked();
 					}
@@ -120,9 +129,9 @@ public class EaseEmojicon extends LinearLayout{
 	public interface EmojiconListener{
 		/**
 		 * 表情被点击
-		 * @param name
+		 * @param emojiContent
 		 */
-		void onExpressionClicked(String name);
+		void onExpressionClicked(CharSequence emojiContent);
 		/**
 		 * 删除按钮被点击
 		 */
