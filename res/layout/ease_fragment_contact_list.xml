@@ -18,6 +18,7 @@
         layout="@layout/ease_search_bar_with_padding" />
 
     <FrameLayout
+        android:id="@+id/content_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
 
@@ -27,25 +28,6 @@
             android:layout_height="match_parent" />
             <!-- easemob:ctsListInitialLetterBg="#abc" -->
 
-        <LinearLayout
-            android:id="@+id/progress_bar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:orientation="vertical"
-            android:visibility="gone" >
-
-            <ProgressBar
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:text="@string/now_refresh_list" />
-        </LinearLayout>
     </FrameLayout>
 
 </LinearLayout>
