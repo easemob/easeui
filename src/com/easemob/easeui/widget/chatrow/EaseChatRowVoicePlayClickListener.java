@@ -55,13 +55,13 @@ public class EaseChatRowVoicePlayClickListener implements View.OnClickListener {
 	public static EaseChatRowVoicePlayClickListener currentPlayListener = null;
 	public static String playMsgId;
 
-	public EaseChatRowVoicePlayClickListener(EMMessage message, ImageView v, ImageView iv_read_status, BaseAdapter adapter, Activity activity) {
+	public EaseChatRowVoicePlayClickListener(EMMessage message, ImageView v, ImageView iv_read_status, BaseAdapter adapter, Activity context) {
 		this.message = message;
 		voiceBody = (VoiceMessageBody) message.getBody();
 		this.iv_read_status = iv_read_status;
 		this.adapter = adapter;
 		voiceIconView = v;
-		this.activity = activity;
+		this.activity = context;
 		this.chatType = message.getChatType();
 	}
 
@@ -179,8 +179,6 @@ public class EaseChatRowVoicePlayClickListener implements View.OnClickListener {
 					EMLog.e(TAG, "file not exist");
 
 			} else if (message.status == EMMessage.Status.INPROGRESS) {
-				String s=new String();
-				
 				Toast.makeText(activity, st, Toast.LENGTH_SHORT).show();
 			} else if (message.status == EMMessage.Status.FAIL) {
 				Toast.makeText(activity, st, Toast.LENGTH_SHORT).show();

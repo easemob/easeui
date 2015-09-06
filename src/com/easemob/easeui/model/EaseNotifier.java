@@ -127,6 +127,10 @@ public class EaseNotifier {
         if(EMChatManager.getInstance().isSlientMessage(message)){
             return;
         }
+        EaseSettingsProvider settingsProvider = EaseUI.getInstance().getSettingsProvider();
+        if(!settingsProvider.isMsgNotifyAllowed(message)){
+            return;
+        }
         
         // 判断app是否在后台
         if (!EasyUtils.isAppRunningForeground(appContext)) {
@@ -142,6 +146,10 @@ public class EaseNotifier {
     
     public synchronized void onNewMesg(List<EMMessage> messages) {
         if(EMChatManager.getInstance().isSlientMessage(messages.get(messages.size()-1))){
+            return;
+        }
+        EaseSettingsProvider settingsProvider = EaseUI.getInstance().getSettingsProvider();
+        if(!settingsProvider.isMsgNotifyAllowed(null)){
             return;
         }
         // 判断app是否在后台
@@ -292,11 +300,6 @@ public class EaseNotifier {
             } 
         }
         
-        EaseSettingsProvider settingsProvider = EaseUI.getInstance().getSettingsProvider();
-        
-        if(!settingsProvider.isMsgNotifyAllowed()){
-            return;
-        }
         
         if (System.currentTimeMillis() - lastNotifiyTime < 1000) {
             // received new messages within 2 seconds, skip play ringtone
@@ -311,13 +314,13 @@ public class EaseNotifier {
                 EMLog.e(TAG, "in slient mode now");
                 return;
             }
-            
-            if(settingsProvider.isMsgVibrateAllowed()){
+            EaseSettingsProvider settingsProvider = EaseUI.getInstance().getSettingsProvider();
+            if(settingsProvider.isMsgVibrateAllowed(message)){
                 long[] pattern = new long[] { 0, 180, 80, 120 };
                 vibrator.vibrate(pattern, -1);
             }
 
-            if(settingsProvider.isMsgSoundAllowed()){
+            if(settingsProvider.isMsgSoundAllowed(message)){
                 if (ringtone == null) {
                     Uri notificationUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 

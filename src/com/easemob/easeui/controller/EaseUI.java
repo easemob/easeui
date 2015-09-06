@@ -4,19 +4,19 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import com.easemob.EMConnectionListener;
-import com.easemob.EMError;
-import com.easemob.chat.EMChat;
-import com.easemob.chat.EMChatManager;
-import com.easemob.chat.EMChatOptions;
-import com.easemob.easeui.domain.EaseUser;
-import com.easemob.easeui.model.EaseNotifier;
-
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.util.Log;
+
+import com.easemob.EMEventListener;
+import com.easemob.chat.EMChat;
+import com.easemob.chat.EMChatManager;
+import com.easemob.chat.EMChatOptions;
+import com.easemob.chat.EMMessage;
+import com.easemob.easeui.domain.EaseUser;
+import com.easemob.easeui.model.EaseNotifier;
 
 public class EaseUI {
     private static final String TAG = EaseUI.class.getSimpleName();
@@ -25,6 +25,11 @@ public class EaseUI {
      * the global EaseUI instance
      */
     private static EaseUI instance = null;
+    
+    /**
+     * EMEventListener
+     */
+    protected EMEventListener eventListener = null;
     
     /**
      * 用户属性提供者
@@ -150,11 +155,15 @@ public class EaseUI {
         return notifier;
     }
     
+    public boolean hasForegroundActivies(){
+        return activityList.size() != 0;
+    }
+    
     /**
      * 设置用户属性提供者
      * @param provider
      */
-    public void setUserProvider(EaseUserProfileProvider userProvider){
+    public void setUserProfileProvider(EaseUserProfileProvider userProvider){
         this.userProvider = userProvider;
     }
     
@@ -219,13 +228,13 @@ public class EaseUI {
     }
     
     /**
-     * settings提供者
+     * 新消息提示设置的提供者
      *
      */
     public interface EaseSettingsProvider {
-        boolean isMsgNotifyAllowed();
-        boolean isMsgSoundAllowed();
-        boolean isMsgVibrateAllowed();
+        boolean isMsgNotifyAllowed(EMMessage message);
+        boolean isMsgSoundAllowed(EMMessage message);
+        boolean isMsgVibrateAllowed(EMMessage message);
         boolean isSpeakerOpened();
     }
     
@@ -236,17 +245,18 @@ public class EaseUI {
     protected class DefaultSettingsProvider implements EaseSettingsProvider{
 
         @Override
-        public boolean isMsgNotifyAllowed() {
+        public boolean isMsgNotifyAllowed(EMMessage message) {
+            // TODO Auto-generated method stub
             return true;
         }
 
         @Override
-        public boolean isMsgSoundAllowed() {
+        public boolean isMsgSoundAllowed(EMMessage message) {
             return true;
         }
 
         @Override
-        public boolean isMsgVibrateAllowed() {
+        public boolean isMsgVibrateAllowed(EMMessage message) {
             return true;
         }
 
@@ -254,6 +264,7 @@ public class EaseUI {
         public boolean isSpeakerOpened() {
             return true;
         }
+
         
     }
 }
