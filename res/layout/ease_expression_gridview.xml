@@ -7,8 +7,7 @@
     <com.easemob.easeui.widget.EaseExpandGridView
         android:id="@+id/gridview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:numColumns="7"
+        android:layout_height="wrap_content"
         android:scrollbars="none"
         android:verticalSpacing="5dp"
         android:gravity="center"
