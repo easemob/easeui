@@ -44,8 +44,8 @@ public class EaseChatExtendMenu extends GridView{
     
     private void init(Context context, AttributeSet attrs){
         this.context = context;
-        TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.EMChatExtendMenu);
-        int numColumns = ta.getInt(R.styleable.EMChatExtendMenu_numColumns, 4);
+        TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.EaseChatExtendMenu);
+        int numColumns = ta.getInt(R.styleable.EaseChatExtendMenu_numColumns, 4);
         ta.recycle();
         
         setNumColumns(numColumns);

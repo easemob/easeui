@@ -70,12 +70,12 @@ public class EaseContactList extends RelativeLayout {
     
     private void init(Context context, AttributeSet attrs) {
         this.context = context;
-        TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.EMContactList);
-        primaryColor = ta.getColor(R.styleable.EMContactList_ctsListPrimaryTextColor, 0);
-        primarySize = ta.getDimensionPixelSize(R.styleable.EMContactList_ctsListPrimaryTextSize, 0);
-        showSiderBar = ta.getBoolean(R.styleable.EMContactList_ctsListShowSiderBar, true);
-        initialLetterBg = ta.getDrawable(R.styleable.EMContactList_ctsListInitialLetterBg);
-        initialLetterColor = ta.getColor(R.styleable.EMContactList_ctsListInitialLetterColor, 0);
+        TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.EaseContactList);
+        primaryColor = ta.getColor(R.styleable.EaseContactList_ctsListPrimaryTextColor, 0);
+        primarySize = ta.getDimensionPixelSize(R.styleable.EaseContactList_ctsListPrimaryTextSize, 0);
+        showSiderBar = ta.getBoolean(R.styleable.EaseContactList_ctsListShowSiderBar, true);
+        initialLetterBg = ta.getDrawable(R.styleable.EaseContactList_ctsListInitialLetterBg);
+        initialLetterColor = ta.getColor(R.styleable.EaseContactList_ctsListInitialLetterColor, 0);
         ta.recycle();
         
         

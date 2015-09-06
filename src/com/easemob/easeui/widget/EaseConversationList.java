@@ -72,13 +72,13 @@ public class EaseConversationList extends ListView {
     
     private void init(Context context, AttributeSet attrs) {
         this.context = context;
-        TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.EMConversationList);
-        primaryColor = ta.getColor(R.styleable.EMConversationList_cvsListPrimaryTextColor, R.color.list_itease_primary_color);
-        secondaryColor = ta.getColor(R.styleable.EMConversationList_cvsListSecondaryTextColor, R.color.list_itease_secondary_color);
-        timeColor = ta.getColor(R.styleable.EMConversationList_cvsListTimeTextColor, R.color.list_itease_secondary_color);
-        primarySize = ta.getDimensionPixelSize(R.styleable.EMConversationList_cvsListPrimaryTextSize, 0);
-        secondarySize = ta.getDimensionPixelSize(R.styleable.EMConversationList_cvsListSecondaryTextSize, 0);
-        timeSize = ta.getDimension(R.styleable.EMConversationList_cvsListTimeTextSize, 0);
+        TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.EaseConversationList);
+        primaryColor = ta.getColor(R.styleable.EaseConversationList_cvsListPrimaryTextColor, R.color.list_itease_primary_color);
+        secondaryColor = ta.getColor(R.styleable.EaseConversationList_cvsListSecondaryTextColor, R.color.list_itease_secondary_color);
+        timeColor = ta.getColor(R.styleable.EaseConversationList_cvsListTimeTextColor, R.color.list_itease_secondary_color);
+        primarySize = ta.getDimensionPixelSize(R.styleable.EaseConversationList_cvsListPrimaryTextSize, 0);
+        secondarySize = ta.getDimensionPixelSize(R.styleable.EaseConversationList_cvsListSecondaryTextSize, 0);
+        timeSize = ta.getDimension(R.styleable.EaseConversationList_cvsListTimeTextSize, 0);
         
         ta.recycle();
         

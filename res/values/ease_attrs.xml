@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     
-    <declare-styleable name="EMChatMessageList">
+    <declare-styleable name="EaseChatMessageList">
         <attr name="msgListMyBubbleBackground" format="reference"/>
         <attr name="msgListOtherBubbleBackground" format="reference"/>
         <attr name="msgListShowUserAvatar" format="boolean"/>
         <attr name="msgListShowUserNick" format="boolean"/>
     </declare-styleable>
     
-    <declare-styleable name="EMConversationList">
+    <declare-styleable name="EaseConversationList">
         <attr name="cvsListPrimaryTextColor" format="color"/>
         <attr name="cvsListSecondaryTextColor" format="color"/>
         <attr name="cvsListTimeTextColor" format="color"/>
@@ -17,7 +17,7 @@
         <attr name="cvsListTimeTextSize" format="dimension"/>
     </declare-styleable>
     
-    <declare-styleable name="EMContactList">
+    <declare-styleable name="EaseContactList">
         <attr name="ctsListPrimaryTextColor" format="color"/>
         <attr name="ctsListPrimaryTextSize" format="dimension"/>
         <attr name="ctsListShowSiderBar" format="boolean"/>
@@ -25,24 +25,23 @@
         <attr name="ctsListInitialLetterColor" format="color"/>
     </declare-styleable>
     
-    <declare-styleable name="EMEmojiconMenu">
-       	<attr name="emojiconSize" format="dimension"/>
+    <declare-styleable name="EaseEmojiconMenu">
        	<attr name="emojiconRows" format="integer"/>
        	<attr name="emojiconColumns" format="integer"/>
     </declare-styleable>
     
-    <declare-styleable name="EMChatExtendMenu">
+    <declare-styleable name="EaseChatExtendMenu">
         <attr name="numColumns" format="integer"/>
     </declare-styleable>
     
-    <declare-styleable name="EMTitleBar">
+    <declare-styleable name="EaseTitleBar">
         <attr name="titleBarTitle" format="string"/>
         <attr name="titleBarLeftImage" format="reference"/>
         <attr name="titleBarRightImage" format="reference"/>
         <attr name="titleBarBackground" format="reference|color"/>
     </declare-styleable>
     
-    <declare-styleable name="EMSwitchButton">
+    <declare-styleable name="EaseSwitchButton">
         <attr name="switchOpenImage" format="reference"/>
         <attr name="switchCloseImage" format="reference"/>
     </declare-styleable>

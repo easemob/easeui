@@ -14,7 +14,7 @@ import com.easemob.easeui.widget.EaseChatPrimaryMenu.ChatPrimaryMenuListener;
 import com.easemob.easeui.widget.EaseEmojiconMenu.EmojiconListener;
 
 /**
- * 聊天页面底部的聊天输入输出菜单栏
+ * 聊天页面底部的聊天输入菜单栏
  * <br/>主要包含3个控件:EaseChatPrimaryMenu(主菜单栏，即为包含文字输入、发送等控件),
  * <br/>EaseChatExtendMenu(扩展栏，点击加号按钮出来的小宫格的菜单栏),
  * <br/>以及EaseEmojiconMenu(表情栏)

@@ -32,6 +32,12 @@ public class EaseEmojiconMenu extends LinearLayout{
 	private ViewPager expressionViewpager;
 	private EmojiconListener listener;
 	
+	private int emojiconRows;
+	private int emojiconColumns;
+	private final int defaultRows = 3;
+	private final int defaultColumns = 7;
+	
+	
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	public EaseEmojiconMenu(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
@@ -51,10 +57,12 @@ public class EaseEmojiconMenu extends LinearLayout{
 	private void init(Context context, AttributeSet attrs){
 		this.context = context;
 		LayoutInflater.from(context).inflate(R.layout.ease_widget_emojicon, this);
-		TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.EMEmojiconMenu);
+		TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.EaseEmojiconMenu);
+		emojiconColumns = ta.getInt(R.styleable.EaseEmojiconMenu_emojiconColumns, defaultColumns);
+		emojiconRows = ta.getInt(R.styleable.EaseEmojiconMenu_emojiconRows, defaultRows);
 		ta.recycle();
 		// 表情list
-		reslist = getExpressionRes(EaseSmileUtils.simleSize);
+		reslist = getExpressionRes(EaseSmileUtils.getSmilesSize());
 		// 初始化表情viewpager
 		List<View> views = new ArrayList<View>();
 		View gv1 = getGridChildView(1);
@@ -67,6 +75,56 @@ public class EaseEmojiconMenu extends LinearLayout{
 	
 	public void setEmojiconListener(EmojiconListener listener){
 		this.listener = listener;
+	}
+	
+	
+	/**
+	 * 获取表情的gridview的子views
+	 * @return
+	 */
+	private List<View> getGridChildViews(){
+	    int itemSize = emojiconColumns * emojiconRows -1;
+	    int totalSize = EaseSmileUtils.getSmilesSize();
+	    int pageSize = totalSize % itemSize == 0 ? totalSize/itemSize : totalSize/itemSize + 1;
+	    List<View> views = new ArrayList<View>();
+	    for(int i = 0; i < pageSize; i++){
+	        View view = View.inflate(context, R.layout.ease_expression_gridview, null);
+	        EaseExpandGridView gv = (EaseExpandGridView) view.findViewById(R.id.gridview);
+	        List<String> list = new ArrayList<String>();
+	        if(i != pageSize -1){
+	            list.addAll(reslist.subList(i * itemSize, (i+1) * itemSize));
+	        }else{
+	            list.addAll(reslist.subList(i * itemSize, pageSize));
+	        }
+	        list.add("delete_expression");
+	        final EaseExpressionAdapter expressionAdapter = new EaseExpressionAdapter(context, 1, list);
+	        gv.setAdapter(expressionAdapter);
+	        gv.setOnItemClickListener(new OnItemClickListener() {
+
+	            @Override
+	            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+	                String filename = expressionAdapter.getItem(position);
+	                if(listener != null){
+	                    if (filename != "delete_expression"){
+	                        try {
+	                            // 这里用的反射，所以混淆的时候不要混淆SmileUtils这个类
+	                            Class clz = Class.forName("com.easemob.easeui.utils.EaseSmileUtils");
+	                            Field field = clz.getField(filename);
+	                            CharSequence cs = EaseSmileUtils.getSmiledText(context,(String) field.get(null));
+	                            listener.onExpressionClicked(cs);
+	                        } catch (Exception e) {
+	                            e.printStackTrace();
+	                        }
+	                    }else{
+	                        listener.onDeleteImageClicked();
+	                    }
+	                }
+
+	            }
+	        });
+	        views.add(view);
+	    }
+	    return views;
 	}
 	
 	/**

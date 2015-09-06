@@ -27,9 +27,9 @@ public class EaseSwitchButton extends FrameLayout{
     public EaseSwitchButton(Context context, AttributeSet attrs) {
         super(context, attrs);
         
-        TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.EMSwitchButton);
-        Drawable openDrawable = ta.getDrawable(R.styleable.EMSwitchButton_switchOpenImage);
-        Drawable closeDrawable = ta.getDrawable(R.styleable.EMSwitchButton_switchCloseImage);
+        TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.EaseSwitchButton);
+        Drawable openDrawable = ta.getDrawable(R.styleable.EaseSwitchButton_switchOpenImage);
+        Drawable closeDrawable = ta.getDrawable(R.styleable.EaseSwitchButton_switchCloseImage);
         ta.recycle();
         
         LayoutInflater.from(context).inflate(R.layout.ease_widget_switch_button, this);

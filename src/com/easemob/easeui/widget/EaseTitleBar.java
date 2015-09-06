@@ -52,20 +52,20 @@ public class EaseTitleBar extends RelativeLayout{
     
     private void parseStyle(Context context, AttributeSet attrs){
         if(attrs != null){
-            TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.EMTitleBar);
-            String title = ta.getString(R.styleable.EMTitleBar_titleBarTitle);
+            TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.EaseTitleBar);
+            String title = ta.getString(R.styleable.EaseTitleBar_titleBarTitle);
             titleView.setText(title);
             
-            Drawable leftDrawable = ta.getDrawable(R.styleable.EMTitleBar_titleBarLeftImage);
+            Drawable leftDrawable = ta.getDrawable(R.styleable.EaseTitleBar_titleBarLeftImage);
             if (null != leftDrawable) {
                 leftImage.setImageDrawable(leftDrawable);
             }
-            Drawable rightDrawable = ta.getDrawable(R.styleable.EMTitleBar_titleBarRightImage);
+            Drawable rightDrawable = ta.getDrawable(R.styleable.EaseTitleBar_titleBarRightImage);
             if (null != rightDrawable) {
                 rightImage.setImageDrawable(rightDrawable);
             }
         
-            Drawable background = ta.getDrawable(R.styleable.EMTitleBar_titleBarBackground);
+            Drawable background = ta.getDrawable(R.styleable.EaseTitleBar_titleBarBackground);
             if(null != background) {
                 titleLayout.setBackgroundDrawable(background);
             }
