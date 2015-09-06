@@ -19,6 +19,8 @@ import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -74,6 +76,17 @@ public class EaseConversationListFragment extends EaseBaseFragment{
         conversationList.addAll(loadConversationList());
         conversationListView.init(conversationList);
         
+        if(listItemClickListener != null){
+            conversationListView.setOnItemClickListener(new OnItemClickListener() {
+
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    EMConversation conversation = conversationListView.getItem(position);
+                    listItemClickListener.onListItemClicked(conversation);
+                }
+            });
+        }
+        
         EMChatManager.getInstance().addConnectionListener(connectionListener);
         
         query.addTextChangedListener(new TextWatcher() {
@@ -110,6 +123,7 @@ public class EaseConversationListFragment extends EaseBaseFragment{
         });
     }
     
+    
     protected EMConnectionListener connectionListener = new EMConnectionListener() {
         
         @Override
@@ -134,6 +148,7 @@ public class EaseConversationListFragment extends EaseBaseFragment{
             });
         }
     };
+    private EaseConversationListItemClickListener listItemClickListener;
     
 
     /**
@@ -258,6 +273,22 @@ public class EaseConversationListFragment extends EaseBaseFragment{
         if(isConflict){
             outState.putBoolean("isConflict", true);
         }
+    }
+    
+    public interface EaseConversationListItemClickListener {
+        /**
+         * 会话listview item点击事件
+         * @param conversation 被点击item所对应的会话
+         */
+        void onListItemClicked(EMConversation conversation);
+    }
+    
+    /**
+     * 设置listview item点击事件
+     * @param listItemClickListener
+     */
+    public void setConversationListItemClickListener(EaseConversationListItemClickListener listItemClickListener){
+        this.listItemClickListener = listItemClickListener;
     }
 
 }

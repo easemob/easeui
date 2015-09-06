@@ -45,6 +45,7 @@ import com.easemob.EMConnectionListener;
 import com.easemob.EMError;
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMContactManager;
+import com.easemob.chat.EMConversation;
 import com.easemob.easeui.EaseConstant;
 import com.easemob.easeui.R;
 import com.easemob.easeui.domain.EaseUser;
@@ -72,7 +73,6 @@ public class EaseContactListFragment extends EaseBaseFragment {
     protected FrameLayout contentContainer;
     
     private Map<String, EaseUser> contactsMap;
-    private Intent itemClickLaunchIntent;
 
     
     @Override
@@ -112,17 +112,17 @@ public class EaseContactListFragment extends EaseBaseFragment {
         //init list
         contactListLayout.init(contactList);
         
-        listView.setOnItemClickListener(new OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String username = ((EaseUser)listView.getItemAtPosition(position)).getUsername();
-                if(itemClickLaunchIntent != null){
-                    itemClickLaunchIntent.putExtra(EaseConstant.USER_ID, username);
-                    startActivity(itemClickLaunchIntent);
+        if(listItemClickListener != null){
+            listView.setOnItemClickListener(new OnItemClickListener() {
+    
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    EaseUser user = (EaseUser)listView.getItemAtPosition(position);
+                    listItemClickListener.onListItemClicked(user);
+//                    itemClickLaunchIntent.putExtra(EaseConstant.USER_ID, username);
                 }
-            }
-        });
+            });
+        }
         
         query.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -223,12 +223,6 @@ public class EaseContactListFragment extends EaseBaseFragment {
         contactListLayout.refresh();
     }
     
-    /**
-     * 设置listview item点击跳转intent
-     */
-    public void setListItemClickLaunchIntent(Intent launchIntent){
-        itemClickLaunchIntent = launchIntent; 
-    }
 
     @Override
     public void onDestroy() {
@@ -310,6 +304,7 @@ public class EaseContactListFragment extends EaseBaseFragment {
             });
         }
     };
+    private EaseContactListItemClickListener listItemClickListener;
     
     
     protected void onConnectionDisconnected() {
@@ -319,9 +314,29 @@ public class EaseContactListFragment extends EaseBaseFragment {
     protected void onConnectionConnected() {
         
     }
-        
+    
+    /**
+     * 设置需要显示的数据map，key为环信用户id
+     * @param contactsMap
+     */
     public void setContactsMap(Map<String, EaseUser> contactsMap){
         this.contactsMap = contactsMap;
+    }
+    
+    public interface EaseContactListItemClickListener {
+        /**
+         * 联系人listview item点击事件
+         * @param user 被点击item所对应的user对象
+         */
+        void onListItemClicked(EaseUser user);
+    }
+    
+    /**
+     * 设置listview item点击事件
+     * @param listItemClickListener
+     */
+    public void setContactListItemClickListener(EaseContactListItemClickListener listItemClickListener){
+        this.listItemClickListener = listItemClickListener;
     }
     
 }
