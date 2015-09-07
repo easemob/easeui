@@ -12,25 +12,25 @@ import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.LinearLayout;
+import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 
 import com.easemob.easeui.R;
-import com.easemob.easeui.adapter.EaseExpressionAdapter;
 import com.easemob.easeui.adapter.EaseExpressionPagerAdapter;
 import com.easemob.easeui.utils.EaseSmileUtils;
 
 /**
  * 表情图片控件
  */
-public class EaseEmojiconMenu extends LinearLayout{
+public class EaseEmojiconMenu extends EaseEmojiconMenuBase{
 	
 	private float emojiconSize;
 	private List<String> reslist;
 	private Context context;
 	private ViewPager expressionViewpager;
-	private EmojiconListener listener;
 	
 	private int emojiconRows;
 	private int emojiconColumns;
@@ -69,10 +69,6 @@ public class EaseEmojiconMenu extends LinearLayout{
 		expressionViewpager.setAdapter(new EaseExpressionPagerAdapter(views));
 	}
 	
-	public void setEmojiconListener(EmojiconListener listener){
-		this.listener = listener;
-	}
-	
 	
 	/**
 	 * 获取表情的gridview的子views
@@ -94,13 +90,13 @@ public class EaseEmojiconMenu extends LinearLayout{
 	            list.addAll(reslist.subList(i * itemSize, totalSize));
 	        }
 	        list.add("delete_expression");
-	        final EaseExpressionAdapter expressionAdapter = new EaseExpressionAdapter(context, 1, list);
-	        gv.setAdapter(expressionAdapter);
+	        final EmojiconGridAdapter gridAdapter = new EmojiconGridAdapter(context, 1, list);
+	        gv.setAdapter(gridAdapter);
 	        gv.setOnItemClickListener(new OnItemClickListener() {
 
 	            @Override
 	            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-	                String filename = expressionAdapter.getItem(position);
+	                String filename = gridAdapter.getItem(position);
 	                if(listener != null){
 	                    if (filename != "delete_expression"){
 	                        try {
@@ -119,6 +115,7 @@ public class EaseEmojiconMenu extends LinearLayout{
 
 	            }
 	        });
+	        
 	        views.add(view);
 	    }
 	    return views;
@@ -137,15 +134,28 @@ public class EaseEmojiconMenu extends LinearLayout{
 
 	}
 	
-	public interface EmojiconListener{
-		/**
-		 * 表情被点击
-		 * @param emojiContent
-		 */
-		void onExpressionClicked(CharSequence emojiContent);
-		/**
-		 * 删除按钮被点击
-		 */
-		void onDeleteImageClicked();
+	private class EmojiconGridAdapter extends ArrayAdapter<String>{
+
+	    public EmojiconGridAdapter(Context context, int textViewResourceId, List<String> objects) {
+	        super(context, textViewResourceId, objects);
+	    }
+	    
+	    
+	    @Override
+	    public View getView(int position, View convertView, ViewGroup parent) {
+	        if(convertView == null){
+	            convertView = View.inflate(getContext(), R.layout.ease_row_expression, null);
+	        }
+	        
+	        ImageView imageView = (ImageView) convertView.findViewById(R.id.iv_expression);
+	        
+	        String filename = getItem(position);
+	        int resId = getContext().getResources().getIdentifier(filename, "drawable", getContext().getPackageName());
+	        imageView.setImageResource(resId);
+	        
+	        return convertView;
+	    }
+	    
 	}
+	
 }

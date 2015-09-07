@@ -95,7 +95,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
 
     protected boolean isloading;
     protected boolean haveMoreData = true;
-    protected final int pagesize = 20;
+    protected int pagesize = 20;
     protected GroupListener groupListener;
     protected EMMessage contextMenuMessage;
     
@@ -145,8 +145,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
         inputMenu = (EaseChatInputMenu) getView().findViewById(R.id.input_menu);
         registerExtendMenuItem();
         // 设置按住说话控件
-        inputMenu.setPressToSpeakRecorderView(voiceRecorder);
         inputMenu.init();
+        inputMenu.setPressToSpeakRecorderView(voiceRecorder);
         inputMenu.setChatInputMenuListener(new ChatInputMenuListener() {
 
             @Override

@@ -7,10 +7,17 @@
     android:layout_alignParentBottom="true"
     android:orientation="vertical" >
 
-    <com.easemob.easeui.widget.EaseChatPrimaryMenu
+    <!-- <com.easemob.easeui.widget.EaseChatPrimaryMenu
         android:id="@+id/primary_menu"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content" /> -->
+    
+    <FrameLayout 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/primary_menu_container"
+        >
+    </FrameLayout>
 
     <FrameLayout
         android:id="@+id/extend_menu_container"
@@ -27,10 +34,15 @@
             android:layout_marginTop="9dp"
             easemob:numColumns="4" />
 
-        <com.easemob.easeui.widget.EaseEmojiconMenu
+        <FrameLayout 
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/emojicon_menu_container"
+            ></FrameLayout>
+        <!-- <com.easemob.easeui.widget.EaseEmojiconMenu
             android:id="@+id/emojicon"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content" /> -->
     </FrameLayout>
 
 </LinearLayout>
