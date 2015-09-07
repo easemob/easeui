@@ -192,40 +192,46 @@ public class EaseChatInputMenu extends LinearLayout {
                         if (EaseChatRowVoicePlayClickListener.isPlaying)
                             EaseChatRowVoicePlayClickListener.currentPlayListener.stopPlayVoice();
                         v.setPressed(true);
-                        voiceRecorderView.startRecording();
+                        if(voiceRecorderView != null){
+                            voiceRecorderView.startRecording();
+                        }
                     } catch (Exception e) {
                         v.setPressed(false);
                     }
                     return true;
                 case MotionEvent.ACTION_MOVE: {
-                    if (event.getY() < 0) {
-                        voiceRecorderView.showReleaseToCancelHint();
-                    } else {
-                        voiceRecorderView.showMoveUpToCancelHint();
+                    if(voiceRecorderView != null){
+                        if (event.getY() < 0) {
+                            voiceRecorderView.showReleaseToCancelHint();
+                        } else {
+                            voiceRecorderView.showMoveUpToCancelHint();
+                        }
                     }
                     return true;
                 }
                 case MotionEvent.ACTION_UP:
                     v.setPressed(false);
-                    if (event.getY() < 0) {
-                        // discard the recorded audio.
-                        voiceRecorderView.discardRecording();
-                    } else {
-                        // stop recording and send voice file
-                        try {
-                            int length = voiceRecorderView.stopRecoding();
-                            if (length > 0) {
-                                if(listener != null){
-                                    listener.onSendVoiceMessage(voiceRecorderView.getVoiceFilePath(), voiceRecorderView.getVoiceFileName(),length);
+                    if(voiceRecorderView != null){
+                        if (event.getY() < 0) {
+                            // discard the recorded audio.
+                            voiceRecorderView.discardRecording();
+                        } else {
+                            // stop recording and send voice file
+                            try {
+                                int length = voiceRecorderView.stopRecoding();
+                                if (length > 0) {
+                                    if(listener != null){
+                                        listener.onSendVoiceMessage(voiceRecorderView.getVoiceFilePath(), voiceRecorderView.getVoiceFileName(),length);
+                                    }
+                                } else if (length == EMError.INVALID_FILE) {
+                                    Toast.makeText(context, R.string.Recording_without_permission, Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(context, R.string.The_recording_time_is_too_short, Toast.LENGTH_SHORT).show();
                                 }
-                            } else if (length == EMError.INVALID_FILE) {
-                                Toast.makeText(context, R.string.Recording_without_permission, Toast.LENGTH_SHORT).show();
-                            } else {
-                                Toast.makeText(context, R.string.The_recording_time_is_too_short, Toast.LENGTH_SHORT).show();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                Toast.makeText(context, R.string.send_failure_please, Toast.LENGTH_SHORT).show();
                             }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            Toast.makeText(context, R.string.send_failure_please, Toast.LENGTH_SHORT).show();
                         }
                     }
                     return true;
