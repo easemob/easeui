@@ -572,7 +572,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
      * 扩展菜单栏item点击事件
      *
      */
-    class MyItemClickListener implements EaseChatExtendMenu.ChatExtendMenuItemClickListener {
+    class MyItemClickListener implements EaseChatExtendMenu.EaseChatExtendMenuItemClickListener{
 
         @Override
         public void onClick(int itemId, View view) {

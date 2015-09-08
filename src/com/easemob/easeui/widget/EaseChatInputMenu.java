@@ -12,7 +12,7 @@ import android.widget.Toast;
 
 import com.easemob.EMError;
 import com.easemob.easeui.R;
-import com.easemob.easeui.widget.EaseChatExtendMenu.ChatExtendMenuItemClickListener;
+import com.easemob.easeui.widget.EaseChatExtendMenu.EaseChatExtendMenuItemClickListener;
 import com.easemob.easeui.widget.EaseChatPrimaryMenuBase.EaseChatPrimaryMenuListener;
 import com.easemob.easeui.widget.EaseEmojiconMenuBase.EaseEmojiconMenuListener;
 import com.easemob.easeui.widget.chatrow.EaseChatRowVoicePlayClickListener;
@@ -123,7 +123,7 @@ public class EaseChatInputMenu extends LinearLayout {
      *            item点击事件
      */
     public void registerExtendMenuItem(String name, int drawableRes, int itemId,
-            ChatExtendMenuItemClickListener listener) {
+            EaseChatExtendMenuItemClickListener listener) {
         chatExtendMenu.registerMenuItem(name, drawableRes, itemId, listener);
     }
 
@@ -140,7 +140,7 @@ public class EaseChatInputMenu extends LinearLayout {
      *            item点击事件
      */
     public void registerExtendMenuItem(int nameRes, int drawableRes, int itemId,
-            ChatExtendMenuItemClickListener listener) {
+            EaseChatExtendMenuItemClickListener listener) {
         chatExtendMenu.registerMenuItem(nameRes, drawableRes, itemId, listener);
     }
 

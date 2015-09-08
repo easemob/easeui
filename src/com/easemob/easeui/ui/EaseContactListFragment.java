@@ -246,7 +246,7 @@ public class EaseContactListFragment extends EaseBaseFragment {
             Iterator<Entry<String, EaseUser>> iterator = contactsMap.entrySet().iterator();
             while (iterator.hasNext()) {
                 Entry<String, EaseUser> entry = iterator.next();
-                //兼容以前的通讯录里的已有的数据显示，加上此判断，如果是2.2.2后新集成的可以去掉此判断
+                //兼容以前的通讯录里的已有的数据显示，加上此判断，如果是新集成的可以去掉此判断
                 if (!entry.getKey().equals("item_new_friends")
                         && !entry.getKey().equals("item_groups")
                         && !entry.getKey().equals("item_chatroom")
@@ -267,6 +267,11 @@ public class EaseContactListFragment extends EaseBaseFragment {
                     if(lhs.getInitialLetter().equals(rhs.getInitialLetter())){
                         return lhs.getNick().compareTo(rhs.getNick());
                     }else{
+                        if("#".equals(lhs.getInitialLetter())){
+                            return 1;
+                        }else if("#".equals(rhs.getInitialLetter())){
+                            return -1;
+                        }
                         return lhs.getInitialLetter().compareTo(rhs.getInitialLetter());
                     }
                     

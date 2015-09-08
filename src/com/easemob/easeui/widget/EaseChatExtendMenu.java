@@ -73,7 +73,7 @@ public class EaseChatExtendMenu extends GridView{
      * @param listener
      *            item点击事件
      */
-    public void registerMenuItem(String name, int drawableRes, int itemId, ChatExtendMenuItemClickListener listener) {
+    public void registerMenuItem(String name, int drawableRes, int itemId, EaseChatExtendMenuItemClickListener listener) {
         ChatMenuItemModel item = new ChatMenuItemModel();
         item.name = name;
         item.image = drawableRes;
@@ -94,7 +94,7 @@ public class EaseChatExtendMenu extends GridView{
      * @param listener
      *            item点击事件
      */
-    public void registerMenuItem(int nameRes, int drawableRes, int itemId, ChatExtendMenuItemClickListener listener) {
+    public void registerMenuItem(int nameRes, int drawableRes, int itemId, EaseChatExtendMenuItemClickListener listener) {
         registerMenuItem(context.getString(nameRes), drawableRes, itemId, listener);
     }
     
@@ -133,7 +133,7 @@ public class EaseChatExtendMenu extends GridView{
     }
     
     
-    public interface ChatExtendMenuItemClickListener{
+    public interface EaseChatExtendMenuItemClickListener{
         void onClick(int itemId, View view);
     }
     
@@ -142,7 +142,7 @@ public class EaseChatExtendMenu extends GridView{
         String name;
         int image;
         int id;
-        ChatExtendMenuItemClickListener clickListener;
+        EaseChatExtendMenuItemClickListener clickListener;
     }
     
     class ChatMenuItem extends LinearLayout {
