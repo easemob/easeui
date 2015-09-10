@@ -18,7 +18,7 @@ import com.easemob.chat.EMMessage;
 import com.easemob.easeui.domain.EaseUser;
 import com.easemob.easeui.model.EaseNotifier;
 
-public class EaseUI {
+public final class EaseUI {
     private static final String TAG = EaseUI.class.getSimpleName();
 
     /**
@@ -29,19 +29,19 @@ public class EaseUI {
     /**
      * EMEventListener
      */
-    protected EMEventListener eventListener = null;
+    private EMEventListener eventListener = null;
     
     /**
      * 用户属性提供者
      */
-    protected EaseUserProfileProvider userProvider;
+    private EaseUserProfileProvider userProvider;
     
-    protected EaseSettingsProvider settingsProvider;
+    private EaseSettingsProvider settingsProvider;
     
     /**
      * application context
      */
-    protected Context appContext = null;
+    private Context appContext = null;
     
     /**
      * init flag: test if the sdk has been inited before, we don't need to init again
@@ -51,7 +51,7 @@ public class EaseUI {
     /**
      * the notifier
      */
-    protected EaseNotifier notifier = null;
+    private EaseNotifier notifier = null;
     
     /**
      * 用来记录注册了eventlistener的foreground Activity

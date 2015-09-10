@@ -33,7 +33,6 @@ public class EaseChatInputMenu extends LinearLayout {
 
     private Handler handler = new Handler();
     private ChatInputMenuListener listener;
-    private EaseVoiceRecorderView voiceRecorderView;
     private Context context;
 
     public EaseChatInputMenu(Context context, AttributeSet attrs, int defStyle) {
@@ -58,26 +57,21 @@ public class EaseChatInputMenu extends LinearLayout {
         emojiconMenuContainer = (FrameLayout) findViewById(R.id.emojicon_menu_container);
         chatExtendMenuContainer = (FrameLayout) findViewById(R.id.extend_menu_container);
 
-        // //主按钮菜单栏
-        // chatPrimaryMenu = (EaseChatPrimaryMenu)
-        // findViewById(R.id.primary_menu);
-        //
          // 扩展按钮栏
          chatExtendMenu = (EaseChatExtendMenu) findViewById(R.id.extend_menu);
         
-        // // 表情
-        // emojicon = (EaseEmojiconMenu) findViewById(R.id.emojicon);
-
-        // processChatMenu();
 
     }
 
     /**
-     * init view 此方法需放在registerExtendMenuItem后面
+     * init view 此方法需放在registerExtendMenuItem后面及setCustomEmojiconMenu，
+     * setCustomPrimaryMenu(如果需要自定义这两个menu)后面
      */
     public void init() {
         // 主按钮菜单栏
-        chatPrimaryMenu = (EaseChatPrimaryMenu) layoutInflater.inflate(R.layout.ease_layout_chat_primary_menu, null);
+        if(chatPrimaryMenu == null){
+            chatPrimaryMenu = (EaseChatPrimaryMenu) layoutInflater.inflate(R.layout.ease_layout_chat_primary_menu, null);
+        }
         primaryMenuContainer.addView(chatPrimaryMenu);
 
         // 表情栏
@@ -144,14 +138,6 @@ public class EaseChatInputMenu extends LinearLayout {
         chatExtendMenu.registerMenuItem(nameRes, drawableRes, itemId, listener);
     }
 
-    /**
-     * 设置长按说话录制控件
-     * 
-     * @param voiceRecorderView
-     */
-    public void setPressToSpeakRecorderView(EaseVoiceRecorderView voiceRecorderView) {
-        this.voiceRecorderView = voiceRecorderView;
-    }
 
     protected void processChatMenu() {
         // 发送消息栏
@@ -186,61 +172,10 @@ public class EaseChatInputMenu extends LinearLayout {
 
             @Override
             public boolean onPressToSpeakBtnTouch(View v, MotionEvent event) {
-                switch (event.getAction()) {
-                case MotionEvent.ACTION_DOWN:
-                    try {
-                        if (EaseChatRowVoicePlayClickListener.isPlaying)
-                            EaseChatRowVoicePlayClickListener.currentPlayListener.stopPlayVoice();
-                        v.setPressed(true);
-                        if(voiceRecorderView != null){
-                            voiceRecorderView.startRecording();
-                        }
-                    } catch (Exception e) {
-                        v.setPressed(false);
-                    }
-                    return true;
-                case MotionEvent.ACTION_MOVE: {
-                    if(voiceRecorderView != null){
-                        if (event.getY() < 0) {
-                            voiceRecorderView.showReleaseToCancelHint();
-                        } else {
-                            voiceRecorderView.showMoveUpToCancelHint();
-                        }
-                    }
-                    return true;
+                if(listener != null){
+                    return listener.onPressToSpeakBtnTouch(v, event);
                 }
-                case MotionEvent.ACTION_UP:
-                    v.setPressed(false);
-                    if(voiceRecorderView != null){
-                        if (event.getY() < 0) {
-                            // discard the recorded audio.
-                            voiceRecorderView.discardRecording();
-                        } else {
-                            // stop recording and send voice file
-                            try {
-                                int length = voiceRecorderView.stopRecoding();
-                                if (length > 0) {
-                                    if(listener != null){
-                                        listener.onSendVoiceMessage(voiceRecorderView.getVoiceFilePath(), voiceRecorderView.getVoiceFileName(),length);
-                                    }
-                                } else if (length == EMError.INVALID_FILE) {
-                                    Toast.makeText(context, R.string.Recording_without_permission, Toast.LENGTH_SHORT).show();
-                                } else {
-                                    Toast.makeText(context, R.string.The_recording_time_is_too_short, Toast.LENGTH_SHORT).show();
-                                }
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                                Toast.makeText(context, R.string.send_failure_please, Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    }
-                    return true;
-                default:
-                    if (voiceRecorderView != null) {
-                        voiceRecorderView.discardRecording();
-                    }
-                    return false;
-                }
+                return false;
             }
         });
 
@@ -358,13 +293,12 @@ public class EaseChatInputMenu extends LinearLayout {
         void onSendMessage(String content);
 
         /**
-         * 发送语音消息事件
-         * 
-         * @param length
-         * @param fileName
-         * @param filePath
+         * 长按说话按钮touch事件
+         * @param v
+         * @param event
+         * @return
          */
-        void onSendVoiceMessage(String filePath, String fileName, int length);
+        boolean onPressToSpeakBtnTouch(View v, MotionEvent event);
     }
     
 }

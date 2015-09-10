@@ -54,6 +54,7 @@ import com.easemob.easeui.widget.EaseChatInputMenu;
 import com.easemob.easeui.widget.EaseChatInputMenu.ChatInputMenuListener;
 import com.easemob.easeui.widget.EaseChatMessageList;
 import com.easemob.easeui.widget.EaseVoiceRecorderView;
+import com.easemob.easeui.widget.EaseVoiceRecorderView.EaseVoiceRecorderCallback;
 import com.easemob.easeui.widget.chatrow.EaseCustomChatRowProvider;
 import com.easemob.util.EMLog;
 import com.easemob.util.PathUtil;
@@ -89,7 +90,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
 
     protected Handler handler = new Handler();
     protected File cameraFile;
-    protected EaseVoiceRecorderView voiceRecorder;
+    protected EaseVoiceRecorderView voiceRecorderView;
     protected SwipeRefreshLayout swipeRefreshLayout;
     protected ListView listView;
 
@@ -133,7 +134,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
      */
     protected void initView() {
         // 按住说话录音控件
-        voiceRecorder = (EaseVoiceRecorderView) getView().findViewById(R.id.voice_recorder);
+        voiceRecorderView = (EaseVoiceRecorderView) getView().findViewById(R.id.voice_recorder);
 
         // 消息列表layout
         messageList = (EaseChatMessageList) getView().findViewById(R.id.message_list);
@@ -146,7 +147,6 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
         registerExtendMenuItem();
         // 设置按住说话控件
         inputMenu.init();
-        inputMenu.setPressToSpeakRecorderView(voiceRecorder);
         inputMenu.setChatInputMenuListener(new ChatInputMenuListener() {
 
             @Override
@@ -156,9 +156,15 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
             }
 
             @Override
-            public void onSendVoiceMessage(String filePath, String fileName, int length) {
-                // 发送语音消息
-                sendVoiceMessage(filePath, length);
+            public boolean onPressToSpeakBtnTouch(View v, MotionEvent event) {
+                return voiceRecorderView.onPressToSpeakBtnTouch(v, event, new EaseVoiceRecorderCallback() {
+                    
+                    @Override
+                    public void onVoiceRecordComplete(String voiceFilePath, int voiceTimeLength) {
+                        // 发送语音消息
+                        sendVoiceMessage(voiceFilePath, voiceTimeLength);
+                    }
+                });
             }
         });
 

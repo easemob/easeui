@@ -114,6 +114,14 @@ public class EaseContactList extends RelativeLayout {
     public ListView getListView(){
         return listView;
     }
+    
+    public void setShowSiderBar(boolean showSiderBar){
+        if(showSiderBar){
+            sidebar.setVisibility(View.VISIBLE);
+        }else{
+            sidebar.setVisibility(View.GONE);
+        }
+    }
 
 
 }
