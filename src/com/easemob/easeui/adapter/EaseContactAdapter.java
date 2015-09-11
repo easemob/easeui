@@ -23,7 +23,7 @@ import com.easemob.easeui.domain.EaseUser;
 import com.easemob.easeui.utils.EaseUserUtils;
 import com.easemob.util.EMLog;
 
-public class EaseContactAdapter extends ArrayAdapter<EaseUser>  implements SectionIndexer{
+public class EaseContactAdapter extends ArrayAdapter<EaseUser> implements SectionIndexer{
     private static final String TAG = "ContactAdapter";
     List<String> list;
     List<EaseUser> userList;
@@ -152,7 +152,7 @@ public class EaseContactAdapter extends ArrayAdapter<EaseUser>  implements Secti
         return myFilter;
     }
     
-    private class  MyFilter extends Filter{
+    protected class  MyFilter extends Filter{
         List<EaseUser> mOriginalList = null;
         
         public MyFilter(List<EaseUser> myList) {

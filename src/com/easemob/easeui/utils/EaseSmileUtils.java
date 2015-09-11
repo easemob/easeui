@@ -38,7 +38,7 @@ public class EaseSmileUtils {
 	public static final String ee_9 = "[:$]";
 	public static final String ee_10 = "[:(]";
 	public static final String ee_11 = "[:'(]";
-	public static final String ee_12 = "[:|]";
+	public static final String ee_12 = "[:|]"; 
 	public static final String ee_13 = "[(a)]";
 	public static final String ee_14 = "[8o|]";
 	public static final String ee_15 = "[8-|]";

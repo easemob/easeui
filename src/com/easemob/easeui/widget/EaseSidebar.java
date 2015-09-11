@@ -23,6 +23,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.HeaderViewListAdapter;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SectionIndexer;
 import android.widget.TextView;
@@ -30,6 +31,7 @@ import android.widget.TextView;
 import com.easemob.easeui.R;
 import com.easemob.easeui.adapter.EaseContactAdapter;
 import com.easemob.util.DensityUtil;
+import com.google.android.gms.internal.ad;
 
 public class EaseSidebar extends View{
 	private Paint paint;
@@ -91,9 +93,15 @@ public class EaseSidebar extends View{
 		    }
 		String headerString = sections[sectionForPoint(event.getY())];
 		header.setText(headerString);
-		HeaderViewListAdapter adapter = (HeaderViewListAdapter) mListView.getAdapter();
+		ListAdapter adapter = mListView.getAdapter();
 		if(sectionIndexter == null){
-		    sectionIndexter = (SectionIndexer) adapter.getWrappedAdapter();
+    		if(adapter instanceof HeaderViewListAdapter){
+    		    sectionIndexter = (SectionIndexer) ((HeaderViewListAdapter) adapter).getWrappedAdapter();
+    		}else if(adapter instanceof SectionIndexer){
+    		    sectionIndexter = (SectionIndexer)adapter;
+    		}else{
+    		    throw new RuntimeException("listview sets adpater does not implement SectionIndexer interface");
+    		}
 		}
 		String[] adapterSections = (String[]) sectionIndexter.getSections();
 		try {
