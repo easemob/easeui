@@ -61,7 +61,7 @@ import com.easemob.util.PathUtil;
 
 /**
  * 可以直接new出来使用的聊天对话页面fragment，
- * 使用时需传入chatType(会话类型)和userId(用户或群id)，
+ * 使用时需调用setArguments方法传入chatType(会话类型)和userId(用户或群id)
  * app也可继承此fragment续写
  * <br/>
  * <br/>
@@ -122,9 +122,9 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
 
         fragmentArgs = getArguments();
         // 判断单聊还是群聊
-        chatType = fragmentArgs.getInt("chatType", EaseConstant.CHATTYPE_SINGLE);
+        chatType = fragmentArgs.getInt(EaseConstant.EXTRA_CHAT_TYPE, EaseConstant.CHATTYPE_SINGLE);
         // 会话人或群组id
-        toChatUsername = fragmentArgs.getString("userId");
+        toChatUsername = fragmentArgs.getString(EaseConstant.EXTRA_USER_ID);
 
         super.onActivityCreated(savedInstanceState);
     }
@@ -642,6 +642,12 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
         if(chatFragmentListener != null){
             //设置扩展属性
             chatFragmentListener.onSetMessageAttributes(message);
+        }
+        // 如果是群聊，设置chattype,默认是单聊
+        if (chatType == EaseConstant.CHATTYPE_GROUP){
+            message.setChatType(ChatType.GroupChat);
+        }else if(chatType == EaseConstant.CHATTYPE_CHATROOM){
+            message.setChatType(ChatType.ChatRoom);
         }
         //发送消息
         EMChatManager.getInstance().sendMessage(message, null);
