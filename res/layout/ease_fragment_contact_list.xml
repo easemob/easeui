@@ -10,7 +10,6 @@
         android:id="@+id/title_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        easemob:titleBarRightImage="@drawable/ease_add"
         easemob:titleBarTitle="@string/address_book" />
 
     <include
