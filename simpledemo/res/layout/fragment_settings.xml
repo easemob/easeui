@@ -10,5 +10,15 @@
         android:layout_height="wrap_content"
         app:titleBarTitle="设置"
         />
+    
+    <Button 
+        android:id="@+id/btn_logout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="退出登录"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="6dp"
+        android:layout_marginRight="6dp"
+        />
 
 </LinearLayout>
