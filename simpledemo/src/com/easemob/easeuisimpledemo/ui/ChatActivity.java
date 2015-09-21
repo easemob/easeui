@@ -3,6 +3,7 @@ package com.easemob.easeuisimpledemo.ui;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.easemob.easeui.EaseConstant;
 import com.easemob.easeui.ui.EaseBaseActivity;
 import com.easemob.easeui.ui.EaseChatFragment;
 import com.easemob.easeuisimpledemo.R;
@@ -17,9 +18,8 @@ public class ChatActivity extends EaseBaseActivity{
         super.onCreate(arg0);
         setContentView(R.layout.activity_chat);
         activityInstance = this;
-        
-        toChatUsername = getIntent().getExtras().getString("userId");
-        //可以直接new EaseChatFratFragment使用
+        //聊天人或群id
+        toChatUsername = getIntent().getExtras().getString(EaseConstant.EXTRA_USER_ID);
         chatFragment = new EaseChatFragment();
         //传入参数
         chatFragment.setArguments(getIntent().getExtras());
