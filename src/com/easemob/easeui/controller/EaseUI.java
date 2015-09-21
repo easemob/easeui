@@ -218,7 +218,7 @@ public final class EaseUI {
      * @author wei
      *
      */
-    public interface EaseUserProfileProvider {
+    public static interface EaseUserProfileProvider {
         /**
          * 返回此username对应的user
          * @param username 环信id
@@ -231,7 +231,7 @@ public final class EaseUI {
      * 新消息提示设置的提供者
      *
      */
-    public interface EaseSettingsProvider {
+    public static interface EaseSettingsProvider {
         boolean isMsgNotifyAllowed(EMMessage message);
         boolean isMsgSoundAllowed(EMMessage message);
         boolean isMsgVibrateAllowed(EMMessage message);
