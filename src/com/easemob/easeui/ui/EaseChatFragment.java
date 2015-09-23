@@ -407,8 +407,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
     @Override
     public void onResume() {
         super.onResume();
-//        if(isMessageListInited)
-//            messageList.refresh();
+        if(isMessageListInited)
+            messageList.refresh();
         EaseUI.getInstance().pushActivity(getActivity());
         // register the event listener when enter the foreground
         EMChatManager.getInstance().registerEventListener(
@@ -436,6 +436,9 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
         super.onDestroy();
         if (groupListener != null) {
             EMGroupManager.getInstance().removeGroupChangeListener(groupListener);
+        }
+        if(chatType == EaseConstant.CHATTYPE_CHATROOM){
+            EMChatManager.getInstance().leaveChatRoom(toChatUsername);
         }
     }
 
@@ -545,17 +548,19 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
             @Override
             public void onChatRoomDestroyed(String roomId, String roomName) {
                 if (roomId.equals(toChatUsername)) {
+                    showChatroomToast(" room : " + roomId + " with room name : " + roomName + " was destroyed");
                     getActivity().finish();
                 }
             }
 
             @Override
             public void onMemberJoined(String roomId, String participant) {
+                showChatroomToast("member : " + participant + " join the room : " + roomId);
             }
 
             @Override
             public void onMemberExited(String roomId, String roomName, String participant) {
-
+                showChatroomToast("member : " + participant + " leave the room : " + roomId + " room name : " + roomName);
             }
 
             @Override
@@ -565,6 +570,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
                     if (curUser.equals(participant)) {
                         EMChatManager.getInstance().leaveChatRoom(toChatUsername);
                         getActivity().finish();
+                    }else{
+                        showChatroomToast("member : " + participant + " was kicked from the room : " + roomId + " room name : " + roomName);
                     }
                 }
             }
@@ -572,6 +579,14 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
         };
         
         EMChatManager.getInstance().addChatRoomChangeListener(chatRoomChangeListener);
+    }
+    
+    protected void showChatroomToast(final String toastContent){
+        getActivity().runOnUiThread(new Runnable() {
+            public void run() {
+                Toast.makeText(getActivity(), toastContent, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     /**

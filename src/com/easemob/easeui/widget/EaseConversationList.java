@@ -35,7 +35,7 @@ import com.easemob.chat.EMGroup;
 import com.easemob.chat.EMGroupManager;
 import com.easemob.chat.EMMessage;
 import com.easemob.easeui.R;
-import com.easemob.easeui.adapter.EaseConverastionAdapater;
+import com.easemob.easeui.adapter.EaseConversationAdapater;
 import com.easemob.easeui.domain.EaseUser;
 import com.easemob.easeui.utils.EaseCommonUtils;
 import com.easemob.easeui.utils.EaseSmileUtils;
@@ -55,7 +55,7 @@ public class EaseConversationList extends ListView {
     protected final int MSG_REFRESH_ADAPTER_DATA = 0;
     
     protected Context context;
-    protected EaseConverastionAdapater adapter;
+    protected EaseConversationAdapater adapter;
     protected List<EMConversation> conversationList = new ArrayList<EMConversation>();
     
     
@@ -86,7 +86,7 @@ public class EaseConversationList extends ListView {
     
     public void init(List<EMConversation> conversationList){
         this.conversationList = conversationList;
-        adapter = new EaseConverastionAdapater(context, 0, conversationList);
+        adapter = new EaseConversationAdapater(context, 0, conversationList);
         adapter.setPrimaryColor(primaryColor);
         adapter.setPrimarySize(primarySize);
         adapter.setSecondaryColor(secondaryColor);

@@ -35,7 +35,7 @@ import com.easemob.util.DateUtils;
  * 会话列表adapter
  *
  */
-public class EaseConverastionAdapater extends ArrayAdapter<EMConversation> {
+public class EaseConversationAdapater extends ArrayAdapter<EMConversation> {
     private static final String TAG = "ChatAllHistoryAdapter";
     private List<EMConversation> conversationList;
     private List<EMConversation> copyConversationList;
@@ -49,7 +49,7 @@ public class EaseConverastionAdapater extends ArrayAdapter<EMConversation> {
     protected int secondarySize;
     protected float timeSize;
 
-    public EaseConverastionAdapater(Context context, int resource,
+    public EaseConversationAdapater(Context context, int resource,
             List<EMConversation> objects) {
         super(context, resource, objects);
         conversationList = objects;

@@ -8,6 +8,7 @@ import java.util.List;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Pair;
@@ -131,26 +132,33 @@ public class EaseConversationListFragment extends EaseBaseFragment{
             if (error == EMError.USER_REMOVED || error == EMError.CONNECTION_CONFLICT) {
                 isConflict = true;
             } else {
-                getActivity().runOnUiThread(new Runnable() {
-                    public void run() {
-                        onConnectionDisconnected();
-                    }
-                });
+               handler.sendEmptyMessage(0);
             }
         }
         
         @Override
         public void onConnected() {
-            getActivity().runOnUiThread(new Runnable() {
-                public void run() {
-                    onConnectionConnected();
-                }
-            });
+            handler.sendEmptyMessage(1);
         }
     };
     private EaseConversationListItemClickListener listItemClickListener;
     
-
+    protected Handler handler = new Handler(){
+        public void handleMessage(android.os.Message msg) {
+            switch (msg.what) {
+            case 0:
+                onConnectionDisconnected();
+                break;
+            case 1:
+                onConnectionConnected();
+                break;
+                
+            default:
+                break;
+            }
+        }
+    };
+    
     /**
      * 连接到服务器
      */
