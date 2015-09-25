@@ -29,9 +29,7 @@ import android.widget.SectionIndexer;
 import android.widget.TextView;
 
 import com.easemob.easeui.R;
-import com.easemob.easeui.adapter.EaseContactAdapter;
 import com.easemob.util.DensityUtil;
-import com.google.android.gms.internal.ad;
 
 public class EaseSidebar extends View{
 	private Paint paint;
