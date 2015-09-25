@@ -50,7 +50,6 @@
                 android:id="@+id/tv_chatcontent"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="苏定方"
                android:padding="6dp"
                 android:minHeight="40dp"
                 android:textSize="15sp"

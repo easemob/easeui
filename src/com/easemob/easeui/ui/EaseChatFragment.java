@@ -643,8 +643,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
         sendMessage(message);
     }
 
-    protected void sendVideoMessage(String filePath, String thumbPath, int length) {
-        EMMessage message = EMMessage.createVideoSendMessage(filePath, thumbPath, length, toChatUsername);
+    protected void sendVideoMessage(String videoPath, String thumbPath, int videoLength) {
+        EMMessage message = EMMessage.createVideoSendMessage(videoPath, thumbPath, videoLength, toChatUsername);
         sendMessage(message);
     }
 
@@ -716,6 +716,10 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
 
     }
     
+    /**
+     * 根据uri发送文件
+     * @param uri
+     */
     protected void sendFileByUri(Uri uri){
         String filePath = null;
         if ("content".equalsIgnoreCase(uri.getScheme())) {

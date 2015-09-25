@@ -45,18 +45,18 @@ public class EaseMessageAdapter extends BaseAdapter{
 	private static final int HANDLER_MESSAGE_SELECT_LAST = 1;
     private static final int HANDLER_MESSAGE_SEEK_TO = 2;
 
-	private static final int MESSAGE_TYPE_RECV_TXT = 1;
-	private static final int MESSAGE_TYPE_SENT_TXT = 2;
-	private static final int MESSAGE_TYPE_SENT_IMAGE = 3;
-	private static final int MESSAGE_TYPE_SENT_LOCATION = 4;
-	private static final int MESSAGE_TYPE_RECV_LOCATION = 5;
-	private static final int MESSAGE_TYPE_RECV_IMAGE = 6;
-	private static final int MESSAGE_TYPE_SENT_VOICE = 7;
-	private static final int MESSAGE_TYPE_RECV_VOICE = 8;
-	private static final int MESSAGE_TYPE_SENT_VIDEO = 9;
-	private static final int MESSAGE_TYPE_RECV_VIDEO = 10;
-	private static final int MESSAGE_TYPE_SENT_FILE = 11;
-	private static final int MESSAGE_TYPE_RECV_FILE = 12;
+	private static final int MESSAGE_TYPE_RECV_TXT = 0;
+	private static final int MESSAGE_TYPE_SENT_TXT = 1;
+	private static final int MESSAGE_TYPE_SENT_IMAGE = 2;
+	private static final int MESSAGE_TYPE_SENT_LOCATION = 3;
+	private static final int MESSAGE_TYPE_RECV_LOCATION = 4;
+	private static final int MESSAGE_TYPE_RECV_IMAGE = 5;
+	private static final int MESSAGE_TYPE_SENT_VOICE = 6;
+	private static final int MESSAGE_TYPE_RECV_VOICE = 7;
+	private static final int MESSAGE_TYPE_SENT_VIDEO = 8;
+	private static final int MESSAGE_TYPE_RECV_VIDEO = 9;
+	private static final int MESSAGE_TYPE_SENT_FILE = 10;
+	private static final int MESSAGE_TYPE_RECV_FILE = 11;
 	
 	
 	public int itemTypeCount; 
@@ -187,7 +187,7 @@ public class EaseMessageAdapter extends BaseAdapter{
 		}
 		
 		if(customRowProvider != null && customRowProvider.getCustomChatRowType(message) > 0){
-		    return customRowProvider.getCustomChatRowType(message) + 12;
+		    return customRowProvider.getCustomChatRowType(message) + 11;
 		}
 		
 		if (message.getType() == EMMessage.Type.TXT) {

@@ -17,7 +17,7 @@ public interface EaseCustomChatRowProvider {
     int getCustomChatRowTypeCount(); 
     
     /**
-     * 获取chatrow type，必须大于0
+     * 获取chatrow type，必须大于0, 从1开始有序排列
      * @return
      */
     int getCustomChatRowType(EMMessage message);
