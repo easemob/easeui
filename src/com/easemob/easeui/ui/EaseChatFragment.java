@@ -145,7 +145,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
         extendMenuItemClickListener = new MyItemClickListener();
         inputMenu = (EaseChatInputMenu) getView().findViewById(R.id.input_menu);
         registerExtendMenuItem();
-        // 设置按住说话控件
+        // init input menu
         inputMenu.init();
         inputMenu.setChatInputMenuListener(new ChatInputMenuListener() {
 
