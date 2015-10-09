@@ -27,10 +27,10 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Vibrator;
+import android.support.v4.app.NotificationCompat;
 
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMMessage;
-import com.easemob.chat.NotificationCompat;
 import com.easemob.easeui.controller.EaseUI;
 import com.easemob.easeui.controller.EaseUI.EaseSettingsProvider;
 import com.easemob.util.EMLog;
