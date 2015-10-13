@@ -11,6 +11,12 @@
         app:titleBarTitle="设置"
         />
     
+    <ImageView 
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/image"
+        />
+    
     <Button 
         android:id="@+id/btn_logout"
         android:layout_width="match_parent"

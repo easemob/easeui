@@ -47,6 +47,7 @@
     <string name="picture">[Picture]</string>
     <string name="video">[Video]</string>
     <string name="file">[file]</string>
+    <string name="dynamic_expression">[Dynamic expression]</string>
      <string name="voice_prefix">[Voice]</string>
     <string name="voice_call">[Voice call]</string>
     <string name="button_cancel">Cancel</string>

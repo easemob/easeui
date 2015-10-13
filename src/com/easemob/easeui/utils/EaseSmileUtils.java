@@ -27,6 +27,8 @@ import android.text.style.ImageSpan;
 import com.easemob.easeui.R;
 
 public class EaseSmileUtils {
+    public static final String DELETE_KEY = "em_delete_delete_expression";
+    
 	public static final String ee_1 = "[):]";
 	public static final String ee_2 = "[:D]";
 	public static final String ee_3 = "[;)]";
@@ -68,7 +70,6 @@ public class EaseSmileUtils {
 	
 	private static final Map<Pattern, Integer> emoticons = new HashMap<Pattern, Integer>();
 	
-	private static int simlesSize = 0;
 
 	static {
 		
@@ -108,12 +109,15 @@ public class EaseSmileUtils {
 	    addPattern(emoticons, ee_34, R.drawable.ee_34);
 	    addPattern(emoticons, ee_35, R.drawable.ee_35);
 	    
-	    simlesSize = emoticons.size();
 	}
 
 	private static void addPattern(Map<Pattern, Integer> map, String smile,
 	        int resource) {
 	    map.put(Pattern.compile(Pattern.quote(smile)), resource);
+	}
+	
+	public static void addPattern(String smile, int resource){
+	    emoticons.put(Pattern.compile(Pattern.quote(smile)), resource);
 	}
 
 	/**
@@ -168,7 +172,7 @@ public class EaseSmileUtils {
 	}
 	
 	public static int getSmilesSize(){
-        return simlesSize;
+        return emoticons.size();
     }
     
 	

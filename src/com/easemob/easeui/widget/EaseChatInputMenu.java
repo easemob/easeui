@@ -12,6 +12,8 @@ import android.widget.Toast;
 
 import com.easemob.EMError;
 import com.easemob.easeui.R;
+import com.easemob.easeui.domain.EaseEmojicon;
+import com.easemob.easeui.utils.EaseSmileUtils;
 import com.easemob.easeui.widget.EaseChatExtendMenu.EaseChatExtendMenuItemClickListener;
 import com.easemob.easeui.widget.EaseChatPrimaryMenuBase.EaseChatPrimaryMenuListener;
 import com.easemob.easeui.widget.EaseEmojiconMenuBase.EaseEmojiconMenuListener;
@@ -179,12 +181,20 @@ public class EaseChatInputMenu extends LinearLayout {
             }
         });
 
-        // emojicon
+        // emojicon menu
         emojiconMenu.setEmojiconMenuListener(new EaseEmojiconMenuListener() {
 
             @Override
-            public void onExpressionClicked(CharSequence emojiContent) {
-                chatPrimaryMenu.onEmojiconInputEvent(emojiContent);
+            public void onExpressionClicked(EaseEmojicon emojicon) {
+                if(emojicon.getType() != EaseEmojicon.Type.DYNAMIC_EXPRESSION){
+                    if(emojicon.getEmojiText() != null){
+                        chatPrimaryMenu.onEmojiconInputEvent(EaseSmileUtils.getSmiledText(context,emojicon.getEmojiText()));
+                    }
+                }else{
+                    if(listener != null){
+                        listener.onBigExpressionClicked(emojicon);
+                    }
+                }
             }
 
             @Override
@@ -291,6 +301,12 @@ public class EaseChatInputMenu extends LinearLayout {
          *            文本内容
          */
         void onSendMessage(String content);
+        
+        /**
+         * 大表情被点击
+         * @param emojicon
+         */
+        void onBigExpressionClicked(EaseEmojicon emojicon);
 
         /**
          * 长按说话按钮touch事件
