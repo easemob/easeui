@@ -6,10 +6,13 @@ import android.view.View;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMMessage;
 import com.easemob.chat.LocationMessageBody;
+import com.easemob.chat.EMMessage.ChatType;
 import com.easemob.easeui.R;
 import com.easemob.easeui.ui.EaseBaiduMapActivity;
+import com.easemob.exceptions.EaseMobException;
 import com.easemob.util.LatLng;
 
 public class EaseChatRowLocation extends EaseChatRow{
@@ -62,6 +65,15 @@ public class EaseChatRowLocation extends EaseChatRow{
                 break;
             default:
                break;
+            }
+        }else{
+            if(!message.isAcked() && message.getChatType() == ChatType.Chat){
+                try {
+                    EMChatManager.getInstance().ackMessageRead(message.getFrom(), message.getMsgId());
+                    message.isAcked = true;
+                } catch (EaseMobException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
