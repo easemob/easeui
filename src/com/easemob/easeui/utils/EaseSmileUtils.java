@@ -25,10 +25,13 @@ import android.text.Spannable.Factory;
 import android.text.style.ImageSpan;
 
 import com.easemob.easeui.R;
+import com.easemob.easeui.domain.EaseEmojicon;
+import com.easemob.easeui.model.EaseDefaultEmojiconDatas;
 
 public class EaseSmileUtils {
     public static final String DELETE_KEY = "em_delete_delete_expression";
     
+    //兼容以前的代码，先保留这些常量
 	public static final String ee_1 = "[):]";
 	public static final String ee_2 = "[:D]";
 	public static final String ee_3 = "[;)]";
@@ -72,50 +75,13 @@ public class EaseSmileUtils {
 	
 
 	static {
-		
-	    addPattern(emoticons, ee_1, R.drawable.ee_1);
-	    addPattern(emoticons, ee_2, R.drawable.ee_2);
-	    addPattern(emoticons, ee_3, R.drawable.ee_3);
-	    addPattern(emoticons, ee_4, R.drawable.ee_4);
-	    addPattern(emoticons, ee_5, R.drawable.ee_5);
-	    addPattern(emoticons, ee_6, R.drawable.ee_6);
-	    addPattern(emoticons, ee_7, R.drawable.ee_7);
-	    addPattern(emoticons, ee_8, R.drawable.ee_8);
-	    addPattern(emoticons, ee_9, R.drawable.ee_9);
-	    addPattern(emoticons, ee_10, R.drawable.ee_10);
-	    addPattern(emoticons, ee_11, R.drawable.ee_11);
-	    addPattern(emoticons, ee_12, R.drawable.ee_12);
-	    addPattern(emoticons, ee_13, R.drawable.ee_13);
-	    addPattern(emoticons, ee_14, R.drawable.ee_14);
-	    addPattern(emoticons, ee_15, R.drawable.ee_15);
-	    addPattern(emoticons, ee_16, R.drawable.ee_16);
-	    addPattern(emoticons, ee_17, R.drawable.ee_17);
-	    addPattern(emoticons, ee_18, R.drawable.ee_18);
-	    addPattern(emoticons, ee_19, R.drawable.ee_19);
-	    addPattern(emoticons, ee_20, R.drawable.ee_20);
-	    addPattern(emoticons, ee_21, R.drawable.ee_21);
-	    addPattern(emoticons, ee_22, R.drawable.ee_22);
-	    addPattern(emoticons, ee_23, R.drawable.ee_23);
-	    addPattern(emoticons, ee_24, R.drawable.ee_24);
-	    addPattern(emoticons, ee_25, R.drawable.ee_25);
-	    addPattern(emoticons, ee_26, R.drawable.ee_26);
-	    addPattern(emoticons, ee_27, R.drawable.ee_27);
-	    addPattern(emoticons, ee_28, R.drawable.ee_28);
-	    addPattern(emoticons, ee_29, R.drawable.ee_29);
-	    addPattern(emoticons, ee_30, R.drawable.ee_30);
-	    addPattern(emoticons, ee_31, R.drawable.ee_31);
-	    addPattern(emoticons, ee_32, R.drawable.ee_32);
-	    addPattern(emoticons, ee_33, R.drawable.ee_33);
-	    addPattern(emoticons, ee_34, R.drawable.ee_34);
-	    addPattern(emoticons, ee_35, R.drawable.ee_35);
+	    EaseEmojicon[] emojicons = EaseDefaultEmojiconDatas.getData();
+	    for(int i = 0; i < emojicons.length; i++){
+	        addPattern(emojicons[i].getEmojiText(), emojicons[i].getIcon());
+	    }
 	    
 	}
 
-	private static void addPattern(Map<Pattern, Integer> map, String smile,
-	        int resource) {
-	    map.put(Pattern.compile(Pattern.quote(smile)), resource);
-	}
-	
 	public static void addPattern(String smile, int resource){
 	    emoticons.put(Pattern.compile(Pattern.quote(smile)), resource);
 	}
