@@ -189,12 +189,12 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
             }
             titleBar.setRightImageResource(R.drawable.ease_mm_title_remove);
         } else {
+        	titleBar.setRightImageResource(R.drawable.ease_to_group_details_normal);
             if (chatType == EaseConstant.CHATTYPE_GROUP) {
                 // 群聊
                 EMGroup group = EMGroupManager.getInstance().getGroup(toChatUsername);
                 if (group != null)
                     titleBar.setTitle(group.getGroupName());
-                titleBar.setRightImageResource(R.drawable.ease_to_group_details_normal);
                 // 监听当前会话的群聊解散被T事件
                 groupListener = new GroupListener();
                 EMGroupManager.getInstance().addGroupChangeListener(groupListener);
@@ -818,6 +818,10 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
             if(chatFragmentListener != null){
                 chatFragmentListener.onEnterToChatDetails();
             }
+        }else if(chatType == EaseConstant.CHATTYPE_CHATROOM){
+        	if(chatFragmentListener != null){
+        		chatFragmentListener.onEnterToChatDetails();
+        	}
         }
     }
 
