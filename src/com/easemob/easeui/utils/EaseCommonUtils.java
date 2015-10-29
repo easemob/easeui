@@ -43,7 +43,7 @@ public class EaseCommonUtils {
 			ConnectivityManager mConnectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 			NetworkInfo mNetworkInfo = mConnectivityManager.getActiveNetworkInfo();
 			if (mNetworkInfo != null) {
-				return mNetworkInfo.isAvailable();
+				return mNetworkInfo.isAvailable() && mNetworkInfo.isConnected();
 			}
 		}
 
