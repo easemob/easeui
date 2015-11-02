@@ -637,9 +637,9 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
     
     protected void sendDynamicExpressionMessage(String name, int icon, String url){
         EMMessage message = EMMessage.createTxtSendMessage(name, toChatUsername);
-        message.setAttribute(EaseConstant.MESSAGE_ATTR_DYNAMIC_EXPRESSION_ICON, icon);
-        message.setAttribute(EaseConstant.MESSAGE_ATTR_DYNAMIC_EXPRESSION_URL, url);
-        message.setAttribute(EaseConstant.MESSAGE_ATTR_IS_DYNAMIC_EXPRESSION, true);
+        message.setAttribute(EaseConstant.MESSAGE_ATTR_BIG_EXPRESSION_ICON, icon);
+        message.setAttribute(EaseConstant.MESSAGE_ATTR_BIG_EXPRESSION_URL, url);
+        message.setAttribute(EaseConstant.MESSAGE_ATTR_IS_BIG_EXPRESSION, true);
         sendMessage(message);
     }
 
@@ -857,10 +857,10 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
         EMMessage.Type type = forward_msg.getType();
         switch (type) {
         case TXT:
-            if(forward_msg.getBooleanAttribute(EaseConstant.MESSAGE_ATTR_IS_DYNAMIC_EXPRESSION, false)){
+            if(forward_msg.getBooleanAttribute(EaseConstant.MESSAGE_ATTR_IS_BIG_EXPRESSION, false)){
                 sendDynamicExpressionMessage(((TextMessageBody) forward_msg.getBody()).getMessage(),
-                        forward_msg.getIntAttribute(EaseConstant.MESSAGE_ATTR_DYNAMIC_EXPRESSION_ICON, 0),
-                        forward_msg.getStringAttribute(EaseConstant.MESSAGE_ATTR_DYNAMIC_EXPRESSION_URL, null));
+                        forward_msg.getIntAttribute(EaseConstant.MESSAGE_ATTR_BIG_EXPRESSION_ICON, 0),
+                        forward_msg.getStringAttribute(EaseConstant.MESSAGE_ATTR_BIG_EXPRESSION_URL, null));
             }else{
                 // 获取消息内容，发送消息
                 String content = ((TextMessageBody) forward_msg.getBody()).getMessage();

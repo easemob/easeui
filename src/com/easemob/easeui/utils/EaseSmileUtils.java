@@ -20,6 +20,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import android.content.Context;
+import android.text.SpanWatcher;
 import android.text.Spannable;
 import android.text.Spannable.Factory;
 import android.text.style.ImageSpan;
@@ -115,6 +116,10 @@ public class EaseSmileUtils {
 	            }
 	        }
 	    }
+	    
+//	    Drawable drawable=null;
+//	    drawable=Drawable.createFromPath(source);
+//	　　　　    drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
 	    return hasChanges;
 	}
 

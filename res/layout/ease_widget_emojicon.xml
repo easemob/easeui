@@ -1,14 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/ll_face_container"
     android:layout_width="match_parent"
-    android:layout_height="150dp"
-    android:orientation="vertical"
-    android:visibility="visible" >
+    android:layout_height="match_parent">
 
-    <android.support.v4.view.ViewPager
+    <!-- <android.support.v4.view.ViewPager
         android:id="@+id/vPager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
-</LinearLayout>
+        android:layout_height="match_parent" /> -->
+    <com.easemob.easeui.widget.emojicon.EaseEmojiconPagerView 
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/pager_view"
+        />
+    
+    <com.easemob.easeui.widget.emojicon.EaseEmojiconIndicatorView 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/indicator_view"
+        android:layout_above="@+id/tab_bar"
+        />
+    
+    <View 
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="#CFCFCF"
+        android:layout_above="@+id/tab_bar"
+        />
+    
+    <com.easemob.easeui.widget.emojicon.EaseEmojiconScrollTabBar
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/tab_bar"
+         />
+    
+</RelativeLayout>

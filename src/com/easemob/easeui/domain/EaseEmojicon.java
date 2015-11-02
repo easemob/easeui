@@ -5,7 +5,7 @@ public class EaseEmojicon {
     }
     
     /**
-     * @param icon static icon resource id
+     * @param icon 静态图片resource id
      * @param emojiText 表情emoji文本内容
      */
     public EaseEmojicon(int icon, String emojiText){
@@ -26,7 +26,7 @@ public class EaseEmojicon {
     /**
      * dynamic icon resource id
      */
-    private int dynamicIcon;
+    private int bigIcon;
     
     /**
      * 表情emoji文本内容,大表情此项内容可以为null
@@ -49,9 +49,9 @@ public class EaseEmojicon {
     private String iconPath;
     
     /**
-     * 动态表情图片地址
+     * 大表情图片地址
      */
-    private String dynamicIconPath;
+    private String bigIconPath;
     
     
     
@@ -67,14 +67,14 @@ public class EaseEmojicon {
 
 
 
-    public int getDynamicIcon() {
-        return dynamicIcon;
+    public int getBigIcon() {
+        return bigIcon;
     }
 
 
 
-    public void setDynamicIcon(int dynamicIcon) {
-        this.dynamicIcon = dynamicIcon;
+    public void setBigIcon(int dynamicIcon) {
+        this.bigIcon = dynamicIcon;
     }
 
 
@@ -122,14 +122,14 @@ public class EaseEmojicon {
 
 
 
-    public String getDynamicIconPath() {
-        return dynamicIconPath;
+    public String getBigIconPath() {
+        return bigIconPath;
     }
 
 
 
-    public void setDynamicIconPath(String dynamicIconPath) {
-        this.dynamicIconPath = dynamicIconPath;
+    public void setBigIconPath(String bigIconPath) {
+        this.bigIconPath = bigIconPath;
     }
 
 
@@ -142,6 +142,6 @@ public class EaseEmojicon {
         /**
          * 大表情，点击之后直接发送
          */
-        DYNAMIC_EXPRESSION
+        BIG_EXPRESSION
     }
 }

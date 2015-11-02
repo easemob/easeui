@@ -39,8 +39,8 @@ public class EaseChatRowBigExpression extends EaseChatRowText{
 
     @Override
     public void onSetUpView() {
-        int icon = message.getIntAttribute(EaseConstant.MESSAGE_ATTR_DYNAMIC_EXPRESSION_ICON, 0);
-        String url = message.getStringAttribute(EaseConstant.MESSAGE_ATTR_DYNAMIC_EXPRESSION_URL, null);
+        int icon = message.getIntAttribute(EaseConstant.MESSAGE_ATTR_BIG_EXPRESSION_ICON, 0);
+        String url = message.getStringAttribute(EaseConstant.MESSAGE_ATTR_BIG_EXPRESSION_URL, null);
         if(icon != 0){
             Glide.with(activity).load(icon).placeholder(R.drawable.ease_default_expression).into(imageView);
         }else{

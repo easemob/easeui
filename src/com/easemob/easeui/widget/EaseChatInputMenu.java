@@ -186,7 +186,7 @@ public class EaseChatInputMenu extends LinearLayout {
 
             @Override
             public void onExpressionClicked(EaseEmojicon emojicon) {
-                if(emojicon.getType() != EaseEmojicon.Type.DYNAMIC_EXPRESSION){
+                if(emojicon.getType() != EaseEmojicon.Type.BIG_EXPRESSION){
                     if(emojicon.getEmojiText() != null){
                         chatPrimaryMenu.onEmojiconInputEvent(EaseSmileUtils.getSmiledText(context,emojicon.getEmojiText()));
                     }
