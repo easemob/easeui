@@ -44,6 +44,7 @@ import com.easemob.chat.TextMessageBody;
 import com.easemob.easeui.EaseConstant;
 import com.easemob.easeui.R;
 import com.easemob.easeui.controller.EaseUI;
+import com.easemob.easeui.domain.EaseEmojicon;
 import com.easemob.easeui.utils.EaseCommonUtils;
 import com.easemob.easeui.utils.EaseImageUtils;
 import com.easemob.easeui.utils.EaseUserUtils;
@@ -165,6 +166,12 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
                         sendVoiceMessage(voiceFilePath, voiceTimeLength);
                     }
                 });
+            }
+
+            @Override
+            public void onBigExpressionClicked(EaseEmojicon emojicon) {
+                //发送大表情(动态表情)
+//                sendDynamicExpressionMessage("TEST", 0, "http://www.easemob.com/downloads/icon_030.gif");
             }
         });
 
@@ -627,6 +634,14 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
         EMMessage message = EMMessage.createTxtSendMessage(content, toChatUsername);
         sendMessage(message);
     }
+    
+    protected void sendDynamicExpressionMessage(String name, int icon, String url){
+        EMMessage message = EMMessage.createTxtSendMessage(name, toChatUsername);
+        message.setAttribute(EaseConstant.MESSAGE_ATTR_BIG_EXPRESSION_ICON, icon);
+        message.setAttribute(EaseConstant.MESSAGE_ATTR_BIG_EXPRESSION_URL, url);
+        message.setAttribute(EaseConstant.MESSAGE_ATTR_IS_BIG_EXPRESSION, true);
+        sendMessage(message);
+    }
 
     protected void sendVoiceMessage(String filePath, int length) {
         EMMessage message = EMMessage.createVoiceSendMessage(filePath, length, toChatUsername);
@@ -846,9 +861,15 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
         EMMessage.Type type = forward_msg.getType();
         switch (type) {
         case TXT:
-            // 获取消息内容，发送消息
-            String content = ((TextMessageBody) forward_msg.getBody()).getMessage();
-            sendTextMessage(content);
+            if(forward_msg.getBooleanAttribute(EaseConstant.MESSAGE_ATTR_IS_BIG_EXPRESSION, false)){
+                sendDynamicExpressionMessage(((TextMessageBody) forward_msg.getBody()).getMessage(),
+                        forward_msg.getIntAttribute(EaseConstant.MESSAGE_ATTR_BIG_EXPRESSION_ICON, 0),
+                        forward_msg.getStringAttribute(EaseConstant.MESSAGE_ATTR_BIG_EXPRESSION_URL, null));
+            }else{
+                // 获取消息内容，发送消息
+                String content = ((TextMessageBody) forward_msg.getBody()).getMessage();
+                sendTextMessage(content);
+            }
             break;
         case IMAGE:
             // 发送图片

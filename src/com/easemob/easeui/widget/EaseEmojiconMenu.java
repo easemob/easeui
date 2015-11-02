@@ -2,6 +2,7 @@ package com.easemob.easeui.widget;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import android.annotation.TargetApi;
@@ -20,6 +21,8 @@ import android.widget.ImageView;
 
 import com.easemob.easeui.R;
 import com.easemob.easeui.adapter.EaseExpressionPagerAdapter;
+import com.easemob.easeui.domain.EaseEmojicon;
+import com.easemob.easeui.model.EaseDefaultEmojiconDatas;
 import com.easemob.easeui.utils.EaseSmileUtils;
 
 /**
@@ -28,7 +31,8 @@ import com.easemob.easeui.utils.EaseSmileUtils;
 public class EaseEmojiconMenu extends EaseEmojiconMenuBase{
 	
 	private float emojiconSize;
-	private List<String> reslist;
+//	private List<String> reslist;
+	private List<EaseEmojicon> emojiconList;
 	private Context context;
 	private ViewPager expressionViewpager;
 	
@@ -62,7 +66,9 @@ public class EaseEmojiconMenu extends EaseEmojiconMenuBase{
 		emojiconRows = ta.getInt(R.styleable.EaseEmojiconMenu_emojiconRows, defaultRows);
 		ta.recycle();
 		// 表情list
-		reslist = getExpressionRes(EaseSmileUtils.getSmilesSize());
+//		reslist = getExpressionRes(EaseSmileUtils.getSmilesSize());
+		emojiconList = Arrays.asList(EaseDefaultEmojiconDatas.getData());
+		
 		// 初始化表情viewpager
 		List<View> views = getGridChildViews();
 		expressionViewpager = (ViewPager) findViewById(R.id.vPager);
@@ -83,36 +89,32 @@ public class EaseEmojiconMenu extends EaseEmojiconMenuBase{
 	        View view = View.inflate(context, R.layout.ease_expression_gridview, null);
 	        EaseExpandGridView gv = (EaseExpandGridView) view.findViewById(R.id.gridview);
 	        gv.setNumColumns(emojiconColumns);
-	        List<String> list = new ArrayList<String>();
+	        List<EaseEmojicon> list = new ArrayList<EaseEmojicon>();
 	        if(i != pageSize -1){
-	            list.addAll(reslist.subList(i * itemSize, (i+1) * itemSize));
+	            list.addAll(emojiconList.subList(i * itemSize, (i+1) * itemSize));
 	        }else{
-	            list.addAll(reslist.subList(i * itemSize, totalSize));
+	            list.addAll(emojiconList.subList(i * itemSize, totalSize));
 	        }
-	        list.add("delete_expression");
+	        EaseEmojicon deleteIcon = new EaseEmojicon();
+	        deleteIcon.setEmojiText(EaseSmileUtils.DELETE_KEY);
+	        list.add(deleteIcon);
 	        final EmojiconGridAdapter gridAdapter = new EmojiconGridAdapter(context, 1, list);
 	        gv.setAdapter(gridAdapter);
 	        gv.setOnItemClickListener(new OnItemClickListener() {
 
 	            @Override
 	            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-	                String filename = gridAdapter.getItem(position);
+	                EaseEmojicon emojicon = gridAdapter.getItem(position);
 	                if(listener != null){
-	                    if (filename != "delete_expression"){
-	                        try {
-	                            // 这里用的反射，所以混淆的时候不要混淆SmileUtils这个类
-	                            Class clz = Class.forName("com.easemob.easeui.utils.EaseSmileUtils");
-	                            Field field = clz.getField(filename);
-	                            CharSequence cs = EaseSmileUtils.getSmiledText(context,(String) field.get(null));
-	                            listener.onExpressionClicked(cs);
-	                        } catch (Exception e) {
-	                            e.printStackTrace();
-	                        }
-	                    }else{
+	                    String emojiText = emojicon.getEmojiText();
+	                    if(emojiText != null && emojiText.equals(EaseSmileUtils.DELETE_KEY)){
 	                        listener.onDeleteImageClicked();
+	                    }else{
+	                        listener.onExpressionClicked(emojicon);
 	                    }
+	                    
 	                }
-
+	                
 	            }
 	        });
 	        
@@ -134,9 +136,9 @@ public class EaseEmojiconMenu extends EaseEmojiconMenuBase{
 
 	}
 	
-	private class EmojiconGridAdapter extends ArrayAdapter<String>{
+	private class EmojiconGridAdapter extends ArrayAdapter<EaseEmojicon>{
 
-	    public EmojiconGridAdapter(Context context, int textViewResourceId, List<String> objects) {
+	    public EmojiconGridAdapter(Context context, int textViewResourceId, List<EaseEmojicon> objects) {
 	        super(context, textViewResourceId, objects);
 	    }
 	    
@@ -148,10 +150,18 @@ public class EaseEmojiconMenu extends EaseEmojiconMenuBase{
 	        }
 	        
 	        ImageView imageView = (ImageView) convertView.findViewById(R.id.iv_expression);
+	        EaseEmojicon emojicon = getItem(position);
+	        if(EaseSmileUtils.DELETE_KEY.equals(emojicon.getEmojiText())){
+	            imageView.setImageResource(R.drawable.ease_delete_expression);
+	        }else{
+	            if(emojicon.getIcon() != 0){
+	                imageView.setImageResource(emojicon.getIcon());
+	            }
+	        }
 	        
-	        String filename = getItem(position);
-	        int resId = getContext().getResources().getIdentifier(filename, "drawable", getContext().getPackageName());
-	        imageView.setImageResource(resId);
+//	        String filename = getItem(position);
+//	        int resId = getContext().getResources().getIdentifier(filename, "drawable", getContext().getPackageName());
+//	        imageView.setImageResource(resId);
 	        
 	        return convertView;
 	    }

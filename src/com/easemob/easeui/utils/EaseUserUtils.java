@@ -4,11 +4,12 @@ import android.content.Context;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.easemob.easeui.R;
 import com.easemob.easeui.controller.EaseUI;
 import com.easemob.easeui.controller.EaseUI.EaseUserProfileProvider;
 import com.easemob.easeui.domain.EaseUser;
-import com.squareup.picasso.Picasso;
 
 public class EaseUserUtils {
     
@@ -39,13 +40,13 @@ public class EaseUserUtils {
         if(user != null && user.getAvatar() != null){
             try {
                 int avatarResId = Integer.parseInt(user.getAvatar());
-                Picasso.with(context).load(avatarResId).into(imageView);
+                Glide.with(context).load(avatarResId).into(imageView);
             } catch (Exception e) {
                 //正常的string路径
-                Picasso.with(context).load(user.getAvatar()).placeholder(R.drawable.ease_default_avatar).into(imageView);
+                Glide.with(context).load(user.getAvatar()).diskCacheStrategy(DiskCacheStrategy.ALL).placeholder(R.drawable.ease_default_avatar).into(imageView);
             }
         }else{
-            Picasso.with(context).load(R.drawable.ease_default_avatar).into(imageView);
+            Glide.with(context).load(R.drawable.ease_default_avatar).into(imageView);
         }
     }
     

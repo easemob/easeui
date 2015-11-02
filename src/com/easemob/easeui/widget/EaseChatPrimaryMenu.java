@@ -1,6 +1,5 @@
 package com.easemob.easeui.widget;
 
-import android.app.Activity;
 import android.content.Context;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -11,17 +10,12 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
-import com.easemob.EMError;
 import com.easemob.easeui.R;
-import com.easemob.easeui.widget.chatrow.EaseChatRowVoicePlayClickListener;
 
 /**
  * 聊天输入栏主菜单栏
