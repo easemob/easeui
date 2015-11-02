@@ -1,5 +1,6 @@
 package com.easemob.easeui.widget.emojicon;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,7 +36,8 @@ public class EaseEmojiconPagerView extends ViewPager{
     private int emojiconColumns;
     
     private int maxPagerCount;
-    private int previousPagerPosition; 
+    private int previousPagerPosition;
+	private EaseEmojiconPagerViewListener pagerViewListener; 
 
     public EaseEmojiconPagerView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -67,6 +69,24 @@ public class EaseEmojiconPagerView extends ViewPager{
         
     }
     
+    public void setPagerViewListener(EaseEmojiconPagerViewListener pagerViewListener){
+    	this.pagerViewListener = pagerViewListener;
+    }
+    
+    /**
+     * 设置当前位置
+     * @param position
+     */
+    public void setPagerPostion(int position){
+    	if (getAdapter() != null && position >= 0 && position < groupEntities.size()) {
+            int count = 0;
+            for (int i = 0; i < position; i++) {
+                count += getPagerSize(groupEntities.get(0).getEmojiconList());
+            }
+            setCurrentItem(count);
+        }
+    }
+    
     /**
      * 获取表情的gridviews的的集合
      * @return
@@ -74,7 +94,7 @@ public class EaseEmojiconPagerView extends ViewPager{
     private List<View> getGridChildViews(List<EaseEmojicon> emojiconList){
         int itemSize = emojiconColumns * emojiconRows -1;
         int totalSize = emojiconList.size();
-        int pageSize = getPagerSize(itemSize, totalSize);
+        int pageSize = totalSize % itemSize == 0 ? totalSize/itemSize : totalSize/itemSize + 1;   
         List<View> views = new ArrayList<View>();
         for(int i = 0; i < pageSize; i++){
             View view = View.inflate(context, R.layout.ease_expression_gridview, null);
@@ -114,15 +134,56 @@ public class EaseEmojiconPagerView extends ViewPager{
         return views;
     }
 
-    protected int getPagerSize(int itemSize, int totalSize) {
+    /**
+     * 获取pager数量
+     * @param emojiconList
+     * @return
+     */
+    private int getPagerSize(List<EaseEmojicon> emojiconList) {
+    	int itemSize = emojiconColumns * emojiconRows -1;
+        int totalSize = emojiconList.size();
         int pageSize = totalSize % itemSize == 0 ? totalSize/itemSize : totalSize/itemSize + 1;
         return pageSize;
     }
     
     private class EmojiPagerChangeListener implements OnPageChangeListener{
         @Override
-        public void onPageSelected(int arg0) {
+        public void onPageSelected(int position) {
+        	int endSize = 0;
+        	int groupPosition = 0;
+            for(EaseEmojiconGroupEntity groupEntity : groupEntities){
+            	int groupPagerSize = getPagerSize(groupEntity.getEmojiconList());
+            	//选中的position在当前遍历的group里
+            	if(endSize + groupPagerSize > position){
+            		//前面的group切换过来的
+            		if(previousPagerPosition - endSize < 0){
+            			if(pagerViewListener != null){
+            				pagerViewListener.onGroupPositionChanged(groupPosition, groupPagerSize);
+            				pagerViewListener.onGroupIndicatorChangedTo(0);
+            			}
+            			break;
+            		}
+            		//后面的group切换过来的
+            		if(previousPagerPosition - endSize >= groupPagerSize){
+            			if(pagerViewListener != null){
+            				pagerViewListener.onGroupPositionChanged(groupPosition, groupPagerSize);
+            				pagerViewListener.onGroupIndicatorChangedTo(position - endSize);
+            			}
+            			break;
+            		}
+            		
+            		//当前group的pager切换
+            		if(pagerViewListener != null){
+            			pagerViewListener.onGroupIndicatorChanged(previousPagerPosition-endSize, position-endSize);
+            		}
+            		break;
+            		
+            	}
+            	groupPosition++;
+            	endSize += groupPagerSize;
+            }
             
+            previousPagerPosition = position;
         }
         
         @Override
@@ -195,5 +256,26 @@ public class EaseEmojiconPagerView extends ViewPager{
 
         }
         
+    }
+    
+    public interface EaseEmojiconPagerViewListener{
+    	/**
+    	 * 表情组位置变动
+    	 * @param groupPosition 表情组位置
+    	 * @param pagerSizeOfGroup 表情组里的pager的size
+    	 * @return
+    	 */
+    	int onGroupPositionChanged(int groupPosition, int pagerSizeOfGroup);
+    	/**
+    	 * 表情组内的指示器位置变动
+    	 * @param oldPosition
+    	 * @param newPosition
+    	 * @return
+    	 */
+    	int onGroupIndicatorChanged(int oldPosition, int newPosition);
+    	
+    	int onGroupIndicatorChangedTo(int position);
+    	
+    	
     }
 }
