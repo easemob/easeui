@@ -7,9 +7,17 @@
 
     <ImageView
         android:id="@+id/iv_expression"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:scaleType="centerInside" />
+    
+    <TextView 
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:scaleType="centerInside" />
+        android:id="@+id/tv_name"
+        android:textSize="11sp"
+        android:textColor="@color/gray_normal"
+        android:text="流泪"
+        />
 
 </LinearLayout>

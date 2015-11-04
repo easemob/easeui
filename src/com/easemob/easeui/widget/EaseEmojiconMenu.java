@@ -1,45 +1,38 @@
 package com.easemob.easeui.widget;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.os.Build;
-import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 
 import com.easemob.easeui.R;
-import com.easemob.easeui.adapter.EaseExpressionPagerAdapter;
 import com.easemob.easeui.domain.EaseEmojicon;
-import com.easemob.easeui.model.EaseDefaultEmojiconDatas;
-import com.easemob.easeui.utils.EaseSmileUtils;
+import com.easemob.easeui.domain.EaseEmojiconGroupEntity;
+import com.easemob.easeui.widget.emojicon.EaseEmojiconIndicatorView;
+import com.easemob.easeui.widget.emojicon.EaseEmojiconPagerView;
+import com.easemob.easeui.widget.emojicon.EaseEmojiconPagerView.EaseEmojiconPagerViewListener;
+import com.easemob.easeui.widget.emojicon.EaseEmojiconScrollTabBar;
+import com.easemob.easeui.widget.emojicon.EaseEmojiconScrollTabBar.EaseScrollTabBarItemClickListener;
 
 /**
  * 表情图片控件
  */
 public class EaseEmojiconMenu extends EaseEmojiconMenuBase{
 	
-	private float emojiconSize;
-//	private List<String> reslist;
-	private List<EaseEmojicon> emojiconList;
-	private Context context;
-	private ViewPager expressionViewpager;
-	
-	private int emojiconRows;
 	private int emojiconColumns;
-	private final int defaultRows = 3;
+	private int bigEmojiconColumns;
+	private final int defaultBigColumns = 4;
 	private final int defaultColumns = 7;
+    private EaseEmojiconScrollTabBar tabBar;
+    private EaseEmojiconIndicatorView indicatorView;
+    private EaseEmojiconPagerView pagerView;
+    
+    private List<EaseEmojiconGroupEntity> emojiconGroupList = new ArrayList<EaseEmojiconGroupEntity>();
 	
 	
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
@@ -59,112 +52,119 @@ public class EaseEmojiconMenu extends EaseEmojiconMenuBase{
 	}
 	
 	private void init(Context context, AttributeSet attrs){
-		this.context = context;
 		LayoutInflater.from(context).inflate(R.layout.ease_widget_emojicon, this);
 		TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.EaseEmojiconMenu);
 		emojiconColumns = ta.getInt(R.styleable.EaseEmojiconMenu_emojiconColumns, defaultColumns);
-		emojiconRows = ta.getInt(R.styleable.EaseEmojiconMenu_emojiconRows, defaultRows);
+		bigEmojiconColumns = ta.getInt(R.styleable.EaseEmojiconMenu_bigEmojiconRows, defaultBigColumns);
 		ta.recycle();
-		// 表情list
-//		reslist = getExpressionRes(EaseSmileUtils.getSmilesSize());
-		emojiconList = Arrays.asList(EaseDefaultEmojiconDatas.getData());
 		
-		// 初始化表情viewpager
-		List<View> views = getGridChildViews();
-		expressionViewpager = (ViewPager) findViewById(R.id.vPager);
-		expressionViewpager.setAdapter(new EaseExpressionPagerAdapter(views));
+		pagerView = (EaseEmojiconPagerView) findViewById(R.id.pager_view);
+		indicatorView = (EaseEmojiconIndicatorView) findViewById(R.id.indicator_view);
+		tabBar = (EaseEmojiconScrollTabBar) findViewById(R.id.tab_bar);
+		
+	}
+	
+	public void init(List<EaseEmojiconGroupEntity> groupEntities){
+	    if(groupEntities == null || groupEntities.size() == 0){
+	        return;
+	    }
+	    for(EaseEmojiconGroupEntity groupEntity : groupEntities){
+	        emojiconGroupList.add(groupEntity);
+	        tabBar.addTab(groupEntity.getIcon());
+	    }
+	    
+	    pagerView.setPagerViewListener(new EmojiconPagerViewListener());
+        pagerView.init(emojiconGroupList, emojiconColumns,bigEmojiconColumns);
+        
+        tabBar.setTabBarItemClickListener(new EaseScrollTabBarItemClickListener() {
+            
+            @Override
+            public void onItemClick(int position) {
+                pagerView.setGroupPostion(position);
+            }
+        });
+	    
 	}
 	
 	
 	/**
-	 * 获取表情的gridview的子views
-	 * @return
-	 */
-	private List<View> getGridChildViews(){
-	    int itemSize = emojiconColumns * emojiconRows -1;
-	    int totalSize = EaseSmileUtils.getSmilesSize();
-	    int pageSize = totalSize % itemSize == 0 ? totalSize/itemSize : totalSize/itemSize + 1;
-	    List<View> views = new ArrayList<View>();
-	    for(int i = 0; i < pageSize; i++){
-	        View view = View.inflate(context, R.layout.ease_expression_gridview, null);
-	        EaseExpandGridView gv = (EaseExpandGridView) view.findViewById(R.id.gridview);
-	        gv.setNumColumns(emojiconColumns);
-	        List<EaseEmojicon> list = new ArrayList<EaseEmojicon>();
-	        if(i != pageSize -1){
-	            list.addAll(emojiconList.subList(i * itemSize, (i+1) * itemSize));
-	        }else{
-	            list.addAll(emojiconList.subList(i * itemSize, totalSize));
-	        }
-	        EaseEmojicon deleteIcon = new EaseEmojicon();
-	        deleteIcon.setEmojiText(EaseSmileUtils.DELETE_KEY);
-	        list.add(deleteIcon);
-	        final EmojiconGridAdapter gridAdapter = new EmojiconGridAdapter(context, 1, list);
-	        gv.setAdapter(gridAdapter);
-	        gv.setOnItemClickListener(new OnItemClickListener() {
-
-	            @Override
-	            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-	                EaseEmojicon emojicon = gridAdapter.getItem(position);
-	                if(listener != null){
-	                    String emojiText = emojicon.getEmojiText();
-	                    if(emojiText != null && emojiText.equals(EaseSmileUtils.DELETE_KEY)){
-	                        listener.onDeleteImageClicked();
-	                    }else{
-	                        listener.onExpressionClicked(emojicon);
-	                    }
-	                    
-	                }
-	                
-	            }
-	        });
-	        
-	        views.add(view);
-	    }
-	    return views;
-	}
+     * 添加表情组
+     * @param groupEntity
+     */
+    public void addEmojiconGroup(EaseEmojiconGroupEntity groupEntity){
+        emojiconGroupList.add(groupEntity);
+        pagerView.addEmojiconGroup(groupEntity, true);
+        tabBar.addTab(groupEntity.getIcon());
+    }
+    
+    /**
+     * 添加一系列表情组
+     * @param groupEntitieList
+     */
+    public void addEmojiconGroup(List<EaseEmojiconGroupEntity> groupEntitieList){
+        for(int i= 0; i < groupEntitieList.size(); i++){
+            EaseEmojiconGroupEntity groupEntity = groupEntitieList.get(i);
+            emojiconGroupList.add(groupEntity);
+            pagerView.addEmojiconGroup(groupEntity, i == groupEntitieList.size()-1 ? true : false);
+            tabBar.addTab(groupEntity.getIcon());
+        }
+        
+    }
+    
+    /**
+     * 移除表情组
+     * @param position
+     */
+    public void removeEmojiconGroup(int position){
+        emojiconGroupList.remove(position);
+        pagerView.removeEmojiconGroup(position);
+        tabBar.removeTab(position);
+    }
 	
 	
-	private List<String> getExpressionRes(int getSum) {
-		List<String> reslist = new ArrayList<String>();
-		for (int x = 1; x <= getSum; x++) {
-			String filename = "ee_" + x;
+	private class EmojiconPagerViewListener implements EaseEmojiconPagerViewListener{
 
-			reslist.add(filename);
+        @Override
+        public void onPagerViewInited(int groupMaxPageSize, int firstGroupPageSize) {
+            indicatorView.init(groupMaxPageSize);
+            indicatorView.updateIndicator(firstGroupPageSize);
+            tabBar.selectedTo(0);
+        }
 
-		}
-		return reslist;
+        @Override
+        public void onGroupPositionChanged(int groupPosition, int pagerSizeOfGroup) {
+            indicatorView.updateIndicator(pagerSizeOfGroup);
+            tabBar.selectedTo(groupPosition);
+        }
 
-	}
-	
-	private class EmojiconGridAdapter extends ArrayAdapter<EaseEmojicon>{
+        @Override
+        public void onGroupInnerPagePostionChanged(int oldPosition, int newPosition) {
+            indicatorView.selectTo(oldPosition, newPosition);
+        }
 
-	    public EmojiconGridAdapter(Context context, int textViewResourceId, List<EaseEmojicon> objects) {
-	        super(context, textViewResourceId, objects);
-	    }
-	    
-	    
-	    @Override
-	    public View getView(int position, View convertView, ViewGroup parent) {
-	        if(convertView == null){
-	            convertView = View.inflate(getContext(), R.layout.ease_row_expression, null);
-	        }
-	        
-	        ImageView imageView = (ImageView) convertView.findViewById(R.id.iv_expression);
-	        EaseEmojicon emojicon = getItem(position);
-	        if(EaseSmileUtils.DELETE_KEY.equals(emojicon.getEmojiText())){
-	            imageView.setImageResource(R.drawable.ease_delete_expression);
-	        }else{
-	            if(emojicon.getIcon() != 0){
-	                imageView.setImageResource(emojicon.getIcon());
-	            }
-	        }
-	        
-//	        String filename = getItem(position);
-//	        int resId = getContext().getResources().getIdentifier(filename, "drawable", getContext().getPackageName());
-//	        imageView.setImageResource(resId);
-	        
-	        return convertView;
-	    }
+        @Override
+        public void onGroupPagePostionChangedTo(int position) {
+            indicatorView.selectTo(position);
+        }
+
+        @Override
+        public void onGroupMaxPageSizeChanged(int maxCount) {
+            indicatorView.updateIndicator(maxCount);
+        }
+
+        @Override
+        public void onDeleteImageClicked() {
+            if(listener != null){
+                listener.onDeleteImageClicked();
+            }
+        }
+
+        @Override
+        public void onExpressionClicked(EaseEmojicon emojicon) {
+            if(listener != null){
+                listener.onExpressionClicked(emojicon);
+            }
+        }
 	    
 	}
 	

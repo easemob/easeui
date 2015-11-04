@@ -1,5 +1,9 @@
 package com.easemob.easeui.widget;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import android.content.Context;
 import android.os.Handler;
 import android.util.AttributeSet;
@@ -13,6 +17,10 @@ import android.widget.Toast;
 import com.easemob.EMError;
 import com.easemob.easeui.R;
 import com.easemob.easeui.domain.EaseEmojicon;
+import com.easemob.easeui.domain.EaseEmojicon.Type;
+import com.easemob.easeui.domain.EaseEmojiconGroupEntity;
+import com.easemob.easeui.model.EaseDefaultEmojiconDatas;
+import com.easemob.easeui.model.EaseDefaultEmojiconDatas2;
 import com.easemob.easeui.utils.EaseSmileUtils;
 import com.easemob.easeui.widget.EaseChatExtendMenu.EaseChatExtendMenuItemClickListener;
 import com.easemob.easeui.widget.EaseChatPrimaryMenuBase.EaseChatPrimaryMenuListener;
@@ -36,6 +44,7 @@ public class EaseChatInputMenu extends LinearLayout {
     private Handler handler = new Handler();
     private ChatInputMenuListener listener;
     private Context context;
+    private boolean inited;
 
     public EaseChatInputMenu(Context context, AttributeSet attrs, int defStyle) {
         this(context, attrs);
@@ -68,24 +77,39 @@ public class EaseChatInputMenu extends LinearLayout {
     /**
      * init view 此方法需放在registerExtendMenuItem后面及setCustomEmojiconMenu，
      * setCustomPrimaryMenu(如果需要自定义这两个menu)后面
+     * @param emojiconGroupList 表情组类别，传null使用easeui默认的表情
      */
-    public void init() {
-        // 主按钮菜单栏
+    public void init(List<EaseEmojiconGroupEntity> emojiconGroupList) {
+        if(inited){
+            return;
+        }
+        // 主按钮菜单栏,没有自定义的用默认的
         if(chatPrimaryMenu == null){
             chatPrimaryMenu = (EaseChatPrimaryMenu) layoutInflater.inflate(R.layout.ease_layout_chat_primary_menu, null);
         }
         primaryMenuContainer.addView(chatPrimaryMenu);
 
-        // 表情栏
+        // 表情栏，没有自定义的用默认的
         if(emojiconMenu == null){
             emojiconMenu = (EaseEmojiconMenu) layoutInflater.inflate(R.layout.ease_layout_emojicon_menu, null);
+            if(emojiconGroupList == null){
+                emojiconGroupList = new ArrayList<EaseEmojiconGroupEntity>();
+                emojiconGroupList.add(new EaseEmojiconGroupEntity(R.drawable.ee_1,  Arrays.asList(EaseDefaultEmojiconDatas.getData())));
+                emojiconGroupList.add(new EaseEmojiconGroupEntity(R.drawable.ee_2,  Arrays.asList(EaseDefaultEmojiconDatas2.getData()), Type.BIG_EXPRESSION));
+            }
+            ((EaseEmojiconMenu)emojiconMenu).init(emojiconGroupList);
         }
         emojiconMenuContainer.addView(emojiconMenu);
 
         processChatMenu();
-
         // 初始化extendmenu
         chatExtendMenu.init();
+        
+        inited = true;
+    }
+    
+    public void init(){
+        init(null);
     }
     
     /**
@@ -105,6 +129,19 @@ public class EaseChatInputMenu extends LinearLayout {
     public void setCustomPrimaryMenu(EaseChatPrimaryMenuBase customPrimaryMenu){
         this.chatPrimaryMenu = customPrimaryMenu;
     }
+    
+    public EaseChatPrimaryMenuBase getPrimaryMenu(){
+        return chatPrimaryMenu;
+    }
+    
+    public EaseChatExtendMenu getExtendMenu(){
+        return chatExtendMenu;
+    }
+    
+    public EaseEmojiconMenuBase getEmojiconMenu(){
+        return emojiconMenu;
+    }
+    
 
     /**
      * 注册扩展菜单的item
@@ -288,6 +325,7 @@ public class EaseChatInputMenu extends LinearLayout {
         }
 
     }
+    
 
     public void setChatInputMenuListener(ChatInputMenuListener listener) {
         this.listener = listener;
