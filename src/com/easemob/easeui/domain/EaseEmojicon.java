@@ -8,9 +8,10 @@ public class EaseEmojicon {
      * @param icon 静态图片resource id
      * @param emojiText 表情emoji文本内容
      */
-    public EaseEmojicon(int icon, String emojiText){
+    public EaseEmojicon(int icon, String emojiText, Type type){
         this.icon = icon;
         this.emojiText = emojiText;
+        this.type = type;
     }
     
     public EaseEmojicon(String name, String iconPath){
