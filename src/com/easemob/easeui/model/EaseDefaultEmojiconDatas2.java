@@ -31,6 +31,30 @@ public class EaseDefaultEmojiconDatas2 {
         R.drawable.icon_002_cover,  
     };
     
+    private static int[] bigIcons = new int[]{
+        R.drawable.icon_002,  
+        R.drawable.icon_007,  
+        R.drawable.icon_010,  
+        R.drawable.icon_012,  
+        R.drawable.icon_013,  
+        R.drawable.icon_018,  
+        R.drawable.icon_019,  
+        R.drawable.icon_020,  
+        R.drawable.icon_021,  
+        R.drawable.icon_022,  
+        R.drawable.icon_024,  
+        R.drawable.icon_027,  
+        R.drawable.icon_029,  
+        R.drawable.icon_030,  
+        R.drawable.icon_035,  
+        R.drawable.icon_040,  
+        R.drawable.icon_002,  
+        R.drawable.icon_002,  
+        R.drawable.icon_002,  
+        R.drawable.icon_002,  
+        R.drawable.icon_002,  
+    };
+    
     
     private static final EaseEmojicon[] DATA = createData();
     
@@ -38,6 +62,9 @@ public class EaseDefaultEmojiconDatas2 {
         EaseEmojicon[] datas = new EaseEmojicon[icons.length];
         for(int i = 0; i < icons.length; i++){
             datas[i] = new EaseEmojicon(icons[i], null, Type.BIG_EXPRESSION);
+            datas[i].setBigIcon(bigIcons[i]);
+            datas[i].setName("大哭");
+            datas[i].setIdentityCode("em"+ (1000+i));
         }
         return datas;
     }

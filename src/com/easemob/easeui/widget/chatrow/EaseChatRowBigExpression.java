@@ -9,10 +9,11 @@ import com.bumptech.glide.Glide;
 import com.easemob.chat.EMMessage;
 import com.easemob.easeui.EaseConstant;
 import com.easemob.easeui.R;
+import com.easemob.easeui.controller.EaseUI;
+import com.easemob.easeui.domain.EaseEmojicon;
 
 /**
  * 大表情(动态表情)
- * @author wei
  *
  */
 public class EaseChatRowBigExpression extends EaseChatRowText{
@@ -39,12 +40,19 @@ public class EaseChatRowBigExpression extends EaseChatRowText{
 
     @Override
     public void onSetUpView() {
-        int icon = message.getIntAttribute(EaseConstant.MESSAGE_ATTR_BIG_EXPRESSION_ICON, 0);
-        String url = message.getStringAttribute(EaseConstant.MESSAGE_ATTR_BIG_EXPRESSION_URL, null);
-        if(icon != 0){
-            Glide.with(activity).load(icon).placeholder(R.drawable.ease_default_expression).into(imageView);
-        }else{
-            Glide.with(activity).load(url).placeholder(R.drawable.ease_default_expression).into(imageView);
+        String emojiconId = message.getStringAttribute(EaseConstant.MESSAGE_ATTR_EXPRESSION_ID, null);
+        EaseEmojicon emojicon = null;
+        if(EaseUI.getInstance().getEmojiconInfoProvider() != null){
+            emojicon =  EaseUI.getInstance().getEmojiconInfoProvider().getEmojiconInfo(emojiconId);
+        }
+        if(emojicon != null){
+            if(emojicon.getBigIcon() != 0){
+                Glide.with(activity).load(emojicon.getBigIcon()).placeholder(R.drawable.ease_default_expression).into(imageView);
+            }else if(emojicon.getBigIconPath() != null){
+                Glide.with(activity).load(emojicon.getBigIconPath()).placeholder(R.drawable.ease_default_expression).into(imageView);
+            }else{
+                imageView.setImageResource(R.drawable.ease_default_expression);
+            }
         }
         
         handleTextMessage();

@@ -6,6 +6,7 @@ import com.easemob.easeui.domain.EaseEmojicon.Type;
 import com.easemob.easeui.utils.EaseSmileUtils;
 
 public class EaseDefaultEmojiconDatas {
+    
     private static String[] emojis = new String[]{
         EaseSmileUtils.ee_1,
         EaseSmileUtils.ee_2,

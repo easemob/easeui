@@ -171,7 +171,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
             @Override
             public void onBigExpressionClicked(EaseEmojicon emojicon) {
                 //发送大表情(动态表情)
-//                sendDynamicExpressionMessage("TEST", 0, "http://www.easemob.com/downloads/icon_030.gif");
+                sendBigExpressionMessage(emojicon.getName(), emojicon.getIdentityCode());
             }
         });
 
@@ -635,11 +635,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
         sendMessage(message);
     }
     
-    protected void sendDynamicExpressionMessage(String name, int icon, String url){
-        EMMessage message = EMMessage.createTxtSendMessage(name, toChatUsername);
-        message.setAttribute(EaseConstant.MESSAGE_ATTR_BIG_EXPRESSION_ICON, icon);
-        message.setAttribute(EaseConstant.MESSAGE_ATTR_BIG_EXPRESSION_URL, url);
-        message.setAttribute(EaseConstant.MESSAGE_ATTR_IS_BIG_EXPRESSION, true);
+    protected void sendBigExpressionMessage(String name, String identityCode){
+        EMMessage message = EaseCommonUtils.createExpressionMessage(toChatUsername, name, identityCode);
         sendMessage(message);
     }
 
@@ -862,9 +859,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
         switch (type) {
         case TXT:
             if(forward_msg.getBooleanAttribute(EaseConstant.MESSAGE_ATTR_IS_BIG_EXPRESSION, false)){
-                sendDynamicExpressionMessage(((TextMessageBody) forward_msg.getBody()).getMessage(),
-                        forward_msg.getIntAttribute(EaseConstant.MESSAGE_ATTR_BIG_EXPRESSION_ICON, 0),
-                        forward_msg.getStringAttribute(EaseConstant.MESSAGE_ATTR_BIG_EXPRESSION_URL, null));
+                sendBigExpressionMessage(((TextMessageBody) forward_msg.getBody()).getMessage(),
+                        forward_msg.getStringAttribute(EaseConstant.MESSAGE_ATTR_EXPRESSION_ID, null));
             }else{
                 // 获取消息内容，发送消息
                 String content = ((TextMessageBody) forward_msg.getBody()).getMessage();

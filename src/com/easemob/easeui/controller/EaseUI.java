@@ -15,6 +15,7 @@ import com.easemob.chat.EMChat;
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMChatOptions;
 import com.easemob.chat.EMMessage;
+import com.easemob.easeui.domain.EaseEmojicon;
 import com.easemob.easeui.domain.EaseUser;
 import com.easemob.easeui.model.EaseNotifier;
 
@@ -218,7 +219,7 @@ public final class EaseUI {
      * @author wei
      *
      */
-    public static interface EaseUserProfileProvider {
+    public interface EaseUserProfileProvider {
         /**
          * 返回此username对应的user
          * @param username 环信id
@@ -228,10 +229,41 @@ public final class EaseUI {
     }
     
     /**
+     * 表情信息提供者
+     *
+     */
+    public interface EaseEmojiconInfoProvider {
+        /**
+         * 根据唯一识别号返回此表情内容
+         * @param emojiconIdentityCode
+         * @return
+         */
+        EaseEmojicon getEmojiconInfo(String emojiconIdentityCode);
+    }
+    
+    private EaseEmojiconInfoProvider emojiconInfoProvider;
+    
+    /**
+     * 获取表情提供者
+     * @return
+     */
+    public EaseEmojiconInfoProvider getEmojiconInfoProvider(){
+        return emojiconInfoProvider;
+    }
+    
+    /**
+     * 设置表情信息提供者
+     * @param emojiconInfoProvider
+     */
+    public void setEmojiconInfoProvider(EaseEmojiconInfoProvider emojiconInfoProvider){
+        this.emojiconInfoProvider = emojiconInfoProvider;
+    }
+    
+    /**
      * 新消息提示设置的提供者
      *
      */
-    public static interface EaseSettingsProvider {
+    public interface EaseSettingsProvider {
         boolean isMsgNotifyAllowed(EMMessage message);
         boolean isMsgSoundAllowed(EMMessage message);
         boolean isMsgVibrateAllowed(EMMessage message);
