@@ -62,6 +62,14 @@ public class EaseCommonUtils {
 			return false;
 	}
 	
+	public static EMMessage createExpressionMessage(String toChatUsername, String expressioName, String identityCode){
+	    EMMessage message = EMMessage.createTxtSendMessage(expressioName, toChatUsername);
+        if(identityCode != null){
+            message.setAttribute(EaseConstant.MESSAGE_ATTR_EXPRESSION_ID, identityCode);
+        }
+        message.setAttribute(EaseConstant.MESSAGE_ATTR_IS_BIG_EXPRESSION, true);
+        return message;
+	}
 
 	/**
      * 根据消息内容和消息类型获取消息内容提示

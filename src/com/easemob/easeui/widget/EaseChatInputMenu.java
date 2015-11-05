@@ -12,9 +12,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
-import com.easemob.EMError;
 import com.easemob.easeui.R;
 import com.easemob.easeui.domain.EaseEmojicon;
 import com.easemob.easeui.domain.EaseEmojicon.Type;
@@ -24,8 +22,9 @@ import com.easemob.easeui.model.EaseDefaultEmojiconDatas2;
 import com.easemob.easeui.utils.EaseSmileUtils;
 import com.easemob.easeui.widget.EaseChatExtendMenu.EaseChatExtendMenuItemClickListener;
 import com.easemob.easeui.widget.EaseChatPrimaryMenuBase.EaseChatPrimaryMenuListener;
-import com.easemob.easeui.widget.EaseEmojiconMenuBase.EaseEmojiconMenuListener;
-import com.easemob.easeui.widget.chatrow.EaseChatRowVoicePlayClickListener;
+import com.easemob.easeui.widget.emojicon.EaseEmojiconMenu;
+import com.easemob.easeui.widget.emojicon.EaseEmojiconMenuBase;
+import com.easemob.easeui.widget.emojicon.EaseEmojiconMenuBase.EaseEmojiconMenuListener;
 
 /**
  * 聊天页面底部的聊天输入菜单栏 <br/>

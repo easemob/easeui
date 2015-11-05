@@ -1,4 +1,4 @@
-package com.easemob.easeui.widget;
+package com.easemob.easeui.widget.emojicon;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,10 +13,7 @@ import android.view.LayoutInflater;
 import com.easemob.easeui.R;
 import com.easemob.easeui.domain.EaseEmojicon;
 import com.easemob.easeui.domain.EaseEmojiconGroupEntity;
-import com.easemob.easeui.widget.emojicon.EaseEmojiconIndicatorView;
-import com.easemob.easeui.widget.emojicon.EaseEmojiconPagerView;
 import com.easemob.easeui.widget.emojicon.EaseEmojiconPagerView.EaseEmojiconPagerViewListener;
-import com.easemob.easeui.widget.emojicon.EaseEmojiconScrollTabBar;
 import com.easemob.easeui.widget.emojicon.EaseEmojiconScrollTabBar.EaseScrollTabBarItemClickListener;
 
 /**

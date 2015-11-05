@@ -1,4 +1,4 @@
-package com.easemob.easeui.widget;
+package com.easemob.easeui.widget.emojicon;
 
 import com.easemob.easeui.domain.EaseEmojicon;
 
