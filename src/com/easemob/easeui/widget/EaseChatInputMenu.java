@@ -15,10 +15,8 @@ import android.widget.LinearLayout;
 
 import com.easemob.easeui.R;
 import com.easemob.easeui.domain.EaseEmojicon;
-import com.easemob.easeui.domain.EaseEmojicon.Type;
 import com.easemob.easeui.domain.EaseEmojiconGroupEntity;
 import com.easemob.easeui.model.EaseDefaultEmojiconDatas;
-import com.easemob.easeui.model.EaseDefaultEmojiconDatas2;
 import com.easemob.easeui.utils.EaseSmileUtils;
 import com.easemob.easeui.widget.EaseChatExtendMenu.EaseChatExtendMenuItemClickListener;
 import com.easemob.easeui.widget.EaseChatPrimaryMenuBase.EaseChatPrimaryMenuListener;
@@ -94,7 +92,6 @@ public class EaseChatInputMenu extends LinearLayout {
             if(emojiconGroupList == null){
                 emojiconGroupList = new ArrayList<EaseEmojiconGroupEntity>();
                 emojiconGroupList.add(new EaseEmojiconGroupEntity(R.drawable.ee_1,  Arrays.asList(EaseDefaultEmojiconDatas.getData())));
-                emojiconGroupList.add(new EaseEmojiconGroupEntity(R.drawable.ee_2,  Arrays.asList(EaseDefaultEmojiconDatas2.getData()), Type.BIG_EXPRESSION));
             }
             ((EaseEmojiconMenu)emojiconMenu).init(emojiconGroupList);
         }

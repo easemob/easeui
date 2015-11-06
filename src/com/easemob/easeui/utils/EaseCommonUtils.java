@@ -63,7 +63,7 @@ public class EaseCommonUtils {
 	}
 	
 	public static EMMessage createExpressionMessage(String toChatUsername, String expressioName, String identityCode){
-	    EMMessage message = EMMessage.createTxtSendMessage(expressioName, toChatUsername);
+	    EMMessage message = EMMessage.createTxtSendMessage("["+expressioName+"]", toChatUsername);
         if(identityCode != null){
             message.setAttribute(EaseConstant.MESSAGE_ATTR_EXPRESSION_ID, identityCode);
         }
@@ -110,7 +110,7 @@ public class EaseCommonUtils {
                 digest = getString(context, R.string.voice_call) + txtBody.getMessage();
             }else if(message.getBooleanAttribute(EaseConstant.MESSAGE_ATTR_IS_BIG_EXPRESSION, false)){
                 if(!TextUtils.isEmpty(txtBody.getMessage())){
-                    digest = "[" + txtBody.getMessage() + "]";
+                    digest = txtBody.getMessage();
                 }else{
                     digest = getString(context, R.string.dynamic_expression);
                 }
