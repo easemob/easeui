@@ -9,6 +9,7 @@ import android.content.res.TypedArray;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.View;
 
 import com.easemob.easeui.R;
 import com.easemob.easeui.domain.EaseEmojicon;
@@ -116,6 +117,14 @@ public class EaseEmojiconMenu extends EaseEmojiconMenuBase{
         emojiconGroupList.remove(position);
         pagerView.removeEmojiconGroup(position);
         tabBar.removeTab(position);
+    }
+    
+    public void setTabBarVisibility(boolean isVisible){
+        if(!isVisible){
+            tabBar.setVisibility(View.GONE);
+        }else{
+            tabBar.setVisibility(View.VISIBLE);
+        }
     }
 	
 	

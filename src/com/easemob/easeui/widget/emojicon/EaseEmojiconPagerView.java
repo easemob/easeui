@@ -38,7 +38,8 @@ public class EaseEmojiconPagerView extends ViewPager{
     
     private int maxPageCount;
     private int previousPagerPosition;
-	private EaseEmojiconPagerViewListener pagerViewListener; 
+	private EaseEmojiconPagerViewListener pagerViewListener;
+    private List<View> viewpages; 
 
     public EaseEmojiconPagerView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -59,7 +60,7 @@ public class EaseEmojiconPagerView extends ViewPager{
         this.emojiconColumns = emijiconColumns;
         this.bigEmojiconColumns = bigEmojiconColumns;
         
-        List<View> pages = new ArrayList<View>();
+        viewpages = new ArrayList<View>();
         for(int i = 0; i < groupEntities.size(); i++){
             EaseEmojiconGroupEntity group = groupEntities.get(i);
             List<EaseEmojicon> groupEmojicons = group.getEmojiconList();
@@ -69,10 +70,10 @@ public class EaseEmojiconPagerView extends ViewPager{
                 firstGroupPageSize = gridViews.size();
             }
             maxPageCount = Math.max(gridViews.size(), maxPageCount);
-            pages.addAll(gridViews);
+            viewpages.addAll(gridViews);
         }
         
-        pagerAdapter = new EmojiconPagerAdapter(pages);
+        pagerAdapter = new EmojiconPagerAdapter(viewpages);
         setAdapter(pagerAdapter);
         setOnPageChangeListener(new EmojiPagerChangeListener());
         
@@ -172,6 +173,7 @@ public class EaseEmojiconPagerView extends ViewPager{
                 pagerViewListener.onGroupMaxPageSizeChanged(maxPageCount);
             }
         }
+        viewpages.addAll(getGroupGridViews(groupEntity));
         if(pagerAdapter != null && notifyDataChange){
             pagerAdapter.notifyDataSetChanged();
         }
