@@ -41,6 +41,10 @@ public class EaseChatRowText extends EaseChatRow{
         // 设置内容
         contentView.setText(span, BufferType.SPANNABLE);
 
+        handleTextMessage();
+    }
+
+    protected void handleTextMessage() {
         if (message.direct == EMMessage.Direct.SEND) {
             setMessageSendCallback();
             switch (message.status) {

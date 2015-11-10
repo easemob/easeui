@@ -1,4 +1,6 @@
-package com.easemob.easeui.widget;
+package com.easemob.easeui.widget.emojicon;
+
+import com.easemob.easeui.domain.EaseEmojicon;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -32,9 +34,9 @@ public class EaseEmojiconMenuBase extends LinearLayout{
     public interface EaseEmojiconMenuListener{
         /**
          * 表情被点击
-         * @param emojiContent
+         * @param emojicon
          */
-        void onExpressionClicked(CharSequence emojiContent);
+        void onExpressionClicked(EaseEmojicon emojicon);
         /**
          * 删除按钮被点击
          */

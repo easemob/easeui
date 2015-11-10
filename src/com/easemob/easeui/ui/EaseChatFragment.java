@@ -44,6 +44,7 @@ import com.easemob.chat.TextMessageBody;
 import com.easemob.easeui.EaseConstant;
 import com.easemob.easeui.R;
 import com.easemob.easeui.controller.EaseUI;
+import com.easemob.easeui.domain.EaseEmojicon;
 import com.easemob.easeui.utils.EaseCommonUtils;
 import com.easemob.easeui.utils.EaseImageUtils;
 import com.easemob.easeui.utils.EaseUserUtils;
@@ -146,7 +147,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
         inputMenu = (EaseChatInputMenu) getView().findViewById(R.id.input_menu);
         registerExtendMenuItem();
         // init input menu
-        inputMenu.init();
+        inputMenu.init(null);
         inputMenu.setChatInputMenuListener(new ChatInputMenuListener() {
 
             @Override
@@ -165,6 +166,12 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
                         sendVoiceMessage(voiceFilePath, voiceTimeLength);
                     }
                 });
+            }
+
+            @Override
+            public void onBigExpressionClicked(EaseEmojicon emojicon) {
+                //发送大表情(动态表情)
+                sendBigExpressionMessage(emojicon.getName(), emojicon.getIdentityCode());
             }
         });
 
@@ -627,6 +634,11 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
         EMMessage message = EMMessage.createTxtSendMessage(content, toChatUsername);
         sendMessage(message);
     }
+    
+    protected void sendBigExpressionMessage(String name, String identityCode){
+        EMMessage message = EaseCommonUtils.createExpressionMessage(toChatUsername, name, identityCode);
+        sendMessage(message);
+    }
 
     protected void sendVoiceMessage(String filePath, int length) {
         EMMessage message = EMMessage.createVoiceSendMessage(filePath, length, toChatUsername);
@@ -846,9 +858,14 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
         EMMessage.Type type = forward_msg.getType();
         switch (type) {
         case TXT:
-            // 获取消息内容，发送消息
-            String content = ((TextMessageBody) forward_msg.getBody()).getMessage();
-            sendTextMessage(content);
+            if(forward_msg.getBooleanAttribute(EaseConstant.MESSAGE_ATTR_IS_BIG_EXPRESSION, false)){
+                sendBigExpressionMessage(((TextMessageBody) forward_msg.getBody()).getMessage(),
+                        forward_msg.getStringAttribute(EaseConstant.MESSAGE_ATTR_EXPRESSION_ID, null));
+            }else{
+                // 获取消息内容，发送消息
+                String content = ((TextMessageBody) forward_msg.getBody()).getMessage();
+                sendTextMessage(content);
+            }
             break;
         case IMAGE:
             // 发送图片

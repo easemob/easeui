@@ -25,8 +25,10 @@ import android.widget.ListView;
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMConversation;
 import com.easemob.chat.EMMessage;
+import com.easemob.easeui.EaseConstant;
 import com.easemob.easeui.widget.EaseChatMessageList.MessageListItemClickListener;
 import com.easemob.easeui.widget.chatrow.EaseChatRow;
+import com.easemob.easeui.widget.chatrow.EaseChatRowBigExpression;
 import com.easemob.easeui.widget.chatrow.EaseChatRowFile;
 import com.easemob.easeui.widget.chatrow.EaseChatRowImage;
 import com.easemob.easeui.widget.chatrow.EaseChatRowLocation;
@@ -57,6 +59,8 @@ public class EaseMessageAdapter extends BaseAdapter{
 	private static final int MESSAGE_TYPE_RECV_VIDEO = 9;
 	private static final int MESSAGE_TYPE_SENT_FILE = 10;
 	private static final int MESSAGE_TYPE_RECV_FILE = 11;
+	private static final int MESSAGE_TYPE_SENT_EXPRESSION = 12;
+	private static final int MESSAGE_TYPE_RECV_EXPRESSION = 13;
 	
 	
 	public int itemTypeCount; 
@@ -171,9 +175,9 @@ public class EaseMessageAdapter extends BaseAdapter{
 	 */
 	public int getViewTypeCount() {
 	    if(customRowProvider != null && customRowProvider.getCustomChatRowTypeCount() > 0){
-	        return customRowProvider.getCustomChatRowTypeCount() + 12;
+	        return customRowProvider.getCustomChatRowTypeCount() + 14;
 	    }
-        return 12;
+        return 14;
     }
 	
 
@@ -187,10 +191,13 @@ public class EaseMessageAdapter extends BaseAdapter{
 		}
 		
 		if(customRowProvider != null && customRowProvider.getCustomChatRowType(message) > 0){
-		    return customRowProvider.getCustomChatRowType(message) + 11;
+		    return customRowProvider.getCustomChatRowType(message) + 13;
 		}
 		
 		if (message.getType() == EMMessage.Type.TXT) {
+		    if(message.getBooleanAttribute(EaseConstant.MESSAGE_ATTR_IS_BIG_EXPRESSION, false)){
+		        return message.direct == EMMessage.Direct.RECEIVE ? MESSAGE_TYPE_RECV_EXPRESSION : MESSAGE_TYPE_SENT_EXPRESSION;
+		    }
 			return message.direct == EMMessage.Direct.RECEIVE ? MESSAGE_TYPE_RECV_TXT : MESSAGE_TYPE_SENT_TXT;
 		}
 		if (message.getType() == EMMessage.Type.IMAGE) {
@@ -220,7 +227,11 @@ public class EaseMessageAdapter extends BaseAdapter{
         }
         switch (message.getType()) {
         case TXT:
-            chatRow = new EaseChatRowText(context, message, position, this);
+            if(message.getBooleanAttribute(EaseConstant.MESSAGE_ATTR_IS_BIG_EXPRESSION, false)){
+                chatRow = new EaseChatRowBigExpression(context, message, position, this);
+            }else{
+                chatRow = new EaseChatRowText(context, message, position, this);
+            }
             break;
         case LOCATION:
             chatRow = new EaseChatRowLocation(context, message, position, this);

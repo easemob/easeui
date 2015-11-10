@@ -1,5 +1,9 @@
 package com.easemob.easeui.widget;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import android.content.Context;
 import android.os.Handler;
 import android.util.AttributeSet;
@@ -8,14 +12,17 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
-import com.easemob.EMError;
 import com.easemob.easeui.R;
+import com.easemob.easeui.domain.EaseEmojicon;
+import com.easemob.easeui.domain.EaseEmojiconGroupEntity;
+import com.easemob.easeui.model.EaseDefaultEmojiconDatas;
+import com.easemob.easeui.utils.EaseSmileUtils;
 import com.easemob.easeui.widget.EaseChatExtendMenu.EaseChatExtendMenuItemClickListener;
 import com.easemob.easeui.widget.EaseChatPrimaryMenuBase.EaseChatPrimaryMenuListener;
-import com.easemob.easeui.widget.EaseEmojiconMenuBase.EaseEmojiconMenuListener;
-import com.easemob.easeui.widget.chatrow.EaseChatRowVoicePlayClickListener;
+import com.easemob.easeui.widget.emojicon.EaseEmojiconMenu;
+import com.easemob.easeui.widget.emojicon.EaseEmojiconMenuBase;
+import com.easemob.easeui.widget.emojicon.EaseEmojiconMenuBase.EaseEmojiconMenuListener;
 
 /**
  * 聊天页面底部的聊天输入菜单栏 <br/>
@@ -34,6 +41,7 @@ public class EaseChatInputMenu extends LinearLayout {
     private Handler handler = new Handler();
     private ChatInputMenuListener listener;
     private Context context;
+    private boolean inited;
 
     public EaseChatInputMenu(Context context, AttributeSet attrs, int defStyle) {
         this(context, attrs);
@@ -66,24 +74,38 @@ public class EaseChatInputMenu extends LinearLayout {
     /**
      * init view 此方法需放在registerExtendMenuItem后面及setCustomEmojiconMenu，
      * setCustomPrimaryMenu(如果需要自定义这两个menu)后面
+     * @param emojiconGroupList 表情组类别，传null使用easeui默认的表情
      */
-    public void init() {
-        // 主按钮菜单栏
+    public void init(List<EaseEmojiconGroupEntity> emojiconGroupList) {
+        if(inited){
+            return;
+        }
+        // 主按钮菜单栏,没有自定义的用默认的
         if(chatPrimaryMenu == null){
             chatPrimaryMenu = (EaseChatPrimaryMenu) layoutInflater.inflate(R.layout.ease_layout_chat_primary_menu, null);
         }
         primaryMenuContainer.addView(chatPrimaryMenu);
 
-        // 表情栏
+        // 表情栏，没有自定义的用默认的
         if(emojiconMenu == null){
             emojiconMenu = (EaseEmojiconMenu) layoutInflater.inflate(R.layout.ease_layout_emojicon_menu, null);
+            if(emojiconGroupList == null){
+                emojiconGroupList = new ArrayList<EaseEmojiconGroupEntity>();
+                emojiconGroupList.add(new EaseEmojiconGroupEntity(R.drawable.ee_1,  Arrays.asList(EaseDefaultEmojiconDatas.getData())));
+            }
+            ((EaseEmojiconMenu)emojiconMenu).init(emojiconGroupList);
         }
         emojiconMenuContainer.addView(emojiconMenu);
 
         processChatMenu();
-
         // 初始化extendmenu
         chatExtendMenu.init();
+        
+        inited = true;
+    }
+    
+    public void init(){
+        init(null);
     }
     
     /**
@@ -103,6 +125,19 @@ public class EaseChatInputMenu extends LinearLayout {
     public void setCustomPrimaryMenu(EaseChatPrimaryMenuBase customPrimaryMenu){
         this.chatPrimaryMenu = customPrimaryMenu;
     }
+    
+    public EaseChatPrimaryMenuBase getPrimaryMenu(){
+        return chatPrimaryMenu;
+    }
+    
+    public EaseChatExtendMenu getExtendMenu(){
+        return chatExtendMenu;
+    }
+    
+    public EaseEmojiconMenuBase getEmojiconMenu(){
+        return emojiconMenu;
+    }
+    
 
     /**
      * 注册扩展菜单的item
@@ -179,12 +214,20 @@ public class EaseChatInputMenu extends LinearLayout {
             }
         });
 
-        // emojicon
+        // emojicon menu
         emojiconMenu.setEmojiconMenuListener(new EaseEmojiconMenuListener() {
 
             @Override
-            public void onExpressionClicked(CharSequence emojiContent) {
-                chatPrimaryMenu.onEmojiconInputEvent(emojiContent);
+            public void onExpressionClicked(EaseEmojicon emojicon) {
+                if(emojicon.getType() != EaseEmojicon.Type.BIG_EXPRESSION){
+                    if(emojicon.getEmojiText() != null){
+                        chatPrimaryMenu.onEmojiconInputEvent(EaseSmileUtils.getSmiledText(context,emojicon.getEmojiText()));
+                    }
+                }else{
+                    if(listener != null){
+                        listener.onBigExpressionClicked(emojicon);
+                    }
+                }
             }
 
             @Override
@@ -278,6 +321,7 @@ public class EaseChatInputMenu extends LinearLayout {
         }
 
     }
+    
 
     public void setChatInputMenuListener(ChatInputMenuListener listener) {
         this.listener = listener;
@@ -291,6 +335,12 @@ public class EaseChatInputMenu extends LinearLayout {
          *            文本内容
          */
         void onSendMessage(String content);
+        
+        /**
+         * 大表情被点击
+         * @param emojicon
+         */
+        void onBigExpressionClicked(EaseEmojicon emojicon);
 
         /**
          * 长按说话按钮touch事件

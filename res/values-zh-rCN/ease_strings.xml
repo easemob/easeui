@@ -48,6 +48,7 @@
     <string name="file">[文件]</string>
     <string name="voice_prefix">[语音]</string>
     <string name="voice_call">[语音通话]</string>
+    <string name="dynamic_expression">[动态表情]</string>
     <string name="button_cancel">取消</string>
     <string name="button_save">保存</string>
     <string name="button_search">查找</string>

@@ -43,7 +43,7 @@ public class EaseCommonUtils {
 			ConnectivityManager mConnectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 			NetworkInfo mNetworkInfo = mConnectivityManager.getActiveNetworkInfo();
 			if (mNetworkInfo != null) {
-				return mNetworkInfo.isAvailable();
+				return mNetworkInfo.isAvailable() && mNetworkInfo.isConnected();
 			}
 		}
 
@@ -62,6 +62,14 @@ public class EaseCommonUtils {
 			return false;
 	}
 	
+	public static EMMessage createExpressionMessage(String toChatUsername, String expressioName, String identityCode){
+	    EMMessage message = EMMessage.createTxtSendMessage("["+expressioName+"]", toChatUsername);
+        if(identityCode != null){
+            message.setAttribute(EaseConstant.MESSAGE_ATTR_EXPRESSION_ID, identityCode);
+        }
+        message.setAttribute(EaseConstant.MESSAGE_ATTR_IS_BIG_EXPRESSION, true);
+        return message;
+	}
 
 	/**
      * 根据消息内容和消息类型获取消息内容提示
@@ -95,14 +103,19 @@ public class EaseCommonUtils {
             digest = getString(context, R.string.video);
             break;
         case TXT: // 文本消息
+            TextMessageBody txtBody = (TextMessageBody) message.getBody();
             /*if(((DemoHXSDKHelper)HXSDKHelper.getInstance()).isRobotMenuMessage(message)){
                 digest = ((DemoHXSDKHelper)HXSDKHelper.getInstance()).getRobotMenuMessageDigest(message);
-            }else */if(!message.getBooleanAttribute(EaseConstant.MESSAGE_ATTR_IS_VOICE_CALL,false)){
-                TextMessageBody txtBody = (TextMessageBody) message.getBody();
-                digest = txtBody.getMessage();
-            }else{
-                TextMessageBody txtBody = (TextMessageBody) message.getBody();
+            }else */if(message.getBooleanAttribute(EaseConstant.MESSAGE_ATTR_IS_VOICE_CALL, false)){
                 digest = getString(context, R.string.voice_call) + txtBody.getMessage();
+            }else if(message.getBooleanAttribute(EaseConstant.MESSAGE_ATTR_IS_BIG_EXPRESSION, false)){
+                if(!TextUtils.isEmpty(txtBody.getMessage())){
+                    digest = txtBody.getMessage();
+                }else{
+                    digest = getString(context, R.string.dynamic_expression);
+                }
+            }else{
+                digest = txtBody.getMessage();
             }
             break;
         case FILE: //普通文件消息
