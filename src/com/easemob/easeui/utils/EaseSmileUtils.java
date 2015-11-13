@@ -133,7 +133,7 @@ public class EaseSmileUtils {
 	                            matcher.start(), matcher.end(),
 	                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 	                }else{
-	                    spannable.setSpan(new ImageSpan(context, (int)value),
+	                    spannable.setSpan(new ImageSpan(context, (Integer)value),
 	                            matcher.start(), matcher.end(),
 	                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 	                }
