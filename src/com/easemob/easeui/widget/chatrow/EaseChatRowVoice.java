@@ -95,4 +95,13 @@ public class EaseChatRowVoice extends EaseChatRowFile{
         new EaseChatRowVoicePlayClickListener(message, voiceImageView, readStutausView, adapter, activity).onClick(bubbleLayout);
     }
     
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        if (EaseChatRowVoicePlayClickListener.currentPlayListener != null && EaseChatRowVoicePlayClickListener.isPlaying) {
+            // 停止语音播放
+            EaseChatRowVoicePlayClickListener.currentPlayListener.stopPlayVoice();
+        }
+    }
+    
 }
