@@ -38,8 +38,6 @@ import com.easemob.util.EasyUtils;
 
 /**
  * 新消息提醒class
- * 2.1.8把新消息提示相关的api移除出sdk，方便开发者自由修改
- * 开发者也可以继承此类实现相关的接口
  * 
  * this class is subject to be inherited and implement the relative APIs
  */
