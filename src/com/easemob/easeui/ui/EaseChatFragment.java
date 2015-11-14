@@ -431,8 +431,6 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
         // unregister this event listener when this activity enters the
         // background
         EMChatManager.getInstance().unregisterEventListener(this);
-        if(chatRoomChangeListener != null)
-            EMChatManager.getInstance().removeChatRoomChangeListener(chatRoomChangeListener);
 
         // 把此activity 从foreground activity 列表里移除
         EaseUI.getInstance().popActivity(getActivity());
@@ -446,6 +444,10 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
         }
         if(chatType == EaseConstant.CHATTYPE_CHATROOM){
             EMChatManager.getInstance().leaveChatRoom(toChatUsername);
+        }
+        
+        if(chatRoomChangeListener != null){
+            EMChatManager.getInstance().removeChatRoomChangeListener(chatRoomChangeListener);
         }
     }
 

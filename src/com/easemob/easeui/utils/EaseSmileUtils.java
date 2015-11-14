@@ -13,6 +13,7 @@
  */
 package com.easemob.easeui.utils;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -20,10 +21,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import android.content.Context;
+import android.net.Uri;
 import android.text.Spannable;
 import android.text.Spannable.Factory;
 import android.text.style.ImageSpan;
 
+import com.easemob.easeui.controller.EaseUI;
+import com.easemob.easeui.controller.EaseUI.EaseEmojiconInfoProvider;
 import com.easemob.easeui.domain.EaseEmojicon;
 import com.easemob.easeui.model.EaseDefaultEmojiconDatas;
 
@@ -69,7 +73,7 @@ public class EaseSmileUtils {
 	private static final Factory spannableFactory = Spannable.Factory
 	        .getInstance();
 	
-	private static final Map<Pattern, Integer> emoticons = new HashMap<Pattern, Integer>();
+	private static final Map<Pattern, Object> emoticons = new HashMap<Pattern, Object>();
 	
 
 	static {
@@ -77,12 +81,24 @@ public class EaseSmileUtils {
 	    for(int i = 0; i < emojicons.length; i++){
 	        addPattern(emojicons[i].getEmojiText(), emojicons[i].getIcon());
 	    }
+	    EaseEmojiconInfoProvider emojiconInfoProvider = EaseUI.getInstance().getEmojiconInfoProvider();
+	    if(emojiconInfoProvider != null && emojiconInfoProvider.getTextEmojiconMapping() != null){
+	        for(Entry<String, Object> entry : emojiconInfoProvider.getTextEmojiconMapping().entrySet()){
+	            addPattern(entry.getKey(), entry.getValue());
+	        }
+	    }
 	    
 	}
 
-	public static void addPattern(String smile, int resource){
-	    emoticons.put(Pattern.compile(Pattern.quote(smile)), resource);
+	/**
+	 * 添加文字表情mapping
+	 * @param emojiText emoji文本内容
+	 * @param icon 图片资源id或者本地路径
+	 */
+	public static void addPattern(String emojiText, Object icon){
+	    emoticons.put(Pattern.compile(Pattern.quote(emojiText)), icon);
 	}
+	
 
 	/**
 	 * replace existing spannable with smiles
@@ -92,7 +108,7 @@ public class EaseSmileUtils {
 	 */
 	public static boolean addSmiles(Context context, Spannable spannable) {
 	    boolean hasChanges = false;
-	    for (Entry<Pattern, Integer> entry : emoticons.entrySet()) {
+	    for (Entry<Pattern, Object> entry : emoticons.entrySet()) {
 	        Matcher matcher = entry.getKey().matcher(spannable);
 	        while (matcher.find()) {
 	            boolean set = true;
@@ -107,9 +123,20 @@ public class EaseSmileUtils {
 	                }
 	            if (set) {
 	                hasChanges = true;
-	                spannable.setSpan(new ImageSpan(context, entry.getValue()),
-	                        matcher.start(), matcher.end(),
-	                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+	                Object value = entry.getValue();
+	                if(value instanceof String && !((String) value).startsWith("http")){
+	                    File file = new File((String) value);
+	                    if(!file.exists() || file.isDirectory()){
+	                        return false;
+	                    }
+	                    spannable.setSpan(new ImageSpan(context, Uri.fromFile(file)),
+	                            matcher.start(), matcher.end(),
+	                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+	                }else{
+	                    spannable.setSpan(new ImageSpan(context, (Integer)value),
+	                            matcher.start(), matcher.end(),
+	                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+	                }
 	            }
 	        }
 	    }
@@ -125,7 +152,7 @@ public class EaseSmileUtils {
 	
 	public static boolean containsKey(String key){
 		boolean b = false;
-		for (Entry<Pattern, Integer> entry : emoticons.entrySet()) {
+		for (Entry<Pattern, Object> entry : emoticons.entrySet()) {
 	        Matcher matcher = entry.getKey().matcher(key);
 	        if (matcher.find()) {
 	        	b = true;
