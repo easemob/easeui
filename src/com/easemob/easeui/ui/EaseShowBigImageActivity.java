@@ -31,6 +31,7 @@ import android.widget.ProgressBar;
 
 import com.easemob.EMCallBack;
 import com.easemob.chat.EMChatManager;
+import com.easemob.chat.EMClient;
 import com.easemob.easeui.R;
 import com.easemob.easeui.model.EaseImageCache;
 import com.easemob.easeui.utils.EaseLoadLocalBigImgTask;
@@ -188,7 +189,7 @@ public class EaseShowBigImageActivity extends EaseBaseActivity {
 			}
 		};
 
-	    EMChatManager.getInstance().downloadFile(remoteFilePath, localFilePath, headers, callback);
+	    EMClient.getInstance().chatManager().downloadFile(remoteFilePath, localFilePath, headers, callback);
 
 	}
 

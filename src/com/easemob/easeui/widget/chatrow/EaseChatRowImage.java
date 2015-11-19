@@ -2,6 +2,17 @@ package com.easemob.easeui.widget.chatrow;
 
 import java.io.File;
 
+import com.easemob.chat.EMChatManager;
+import com.easemob.chat.EMClient;
+import com.easemob.chat.EMImageMessageBody;
+import com.easemob.chat.EMMessage;
+import com.easemob.chat.EMMessage.ChatType;
+import com.easemob.easeui.R;
+import com.easemob.easeui.model.EaseImageCache;
+import com.easemob.easeui.ui.EaseShowBigImageActivity;
+import com.easemob.easeui.utils.EaseCommonUtils;
+import com.easemob.easeui.utils.EaseImageUtils;
+
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -12,20 +23,10 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.easemob.chat.EMChatManager;
-import com.easemob.chat.EMMessage;
-import com.easemob.chat.EMMessage.ChatType;
-import com.easemob.chat.ImageMessageBody;
-import com.easemob.easeui.R;
-import com.easemob.easeui.model.EaseImageCache;
-import com.easemob.easeui.ui.EaseShowBigImageActivity;
-import com.easemob.easeui.utils.EaseCommonUtils;
-import com.easemob.easeui.utils.EaseImageUtils;
-
 public class EaseChatRowImage extends EaseChatRowFile{
 
     protected ImageView imageView;
-    private ImageMessageBody imgBody;
+    private EMImageMessageBody imgBody;
 
     public EaseChatRowImage(Context context, EMMessage message, int position, BaseAdapter adapter) {
         super(context, message, position, adapter);
@@ -45,10 +46,10 @@ public class EaseChatRowImage extends EaseChatRowFile{
     
     @Override
     protected void onSetUpView() {
-        imgBody = (ImageMessageBody) message.getBody();
+        imgBody = (EMImageMessageBody) message.getBody();
         // 接收方向的消息
         if (message.direct == EMMessage.Direct.RECEIVE) {
-            if (message.status == EMMessage.Status.INPROGRESS) {
+            if (message.status() == EMMessage.Status.INPROGRESS) {
                 imageView.setImageResource(R.drawable.ease_default_image);
                 setMessageReceiveCallback();
             } else {
@@ -93,11 +94,11 @@ public class EaseChatRowImage extends EaseChatRowFile{
             intent.putExtra("secret", imgBody.getSecret());
             intent.putExtra("remotepath", imgBody.getRemoteUrl());
         }
-        if (message != null && message.direct == EMMessage.Direct.RECEIVE && !message.isAcked
+        if (message != null && message.direct == EMMessage.Direct.RECEIVE && !message.isAcked()
                 && message.getChatType() != ChatType.GroupChat) {
             try {
-                EMChatManager.getInstance().ackMessageRead(message.getFrom(), message.getMsgId());
-                message.isAcked = true;
+                EMClient.getInstance().chatManager().ackMessageRead(message.getFrom(), message.getMsgId());
+                message.setIsAcked(true);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -142,13 +143,13 @@ public class EaseChatRowImage extends EaseChatRowFile{
                         iv.setImageBitmap(image);
                         EaseImageCache.getInstance().put(thumbernailPath, image);
                     } else {
-                        if (message.status == EMMessage.Status.FAIL) {
+                        if (message.status() == EMMessage.Status.FAIL) {
                             if (EaseCommonUtils.isNetWorkConnected(activity)) {
                                 new Thread(new Runnable() {
 
                                     @Override
                                     public void run() {
-                                        EMChatManager.getInstance().asyncFetchMessage(message);
+                                        EMClient.getInstance().chatManager().downloadThumbnail(message);
                                     }
                                 }).start();
                             }

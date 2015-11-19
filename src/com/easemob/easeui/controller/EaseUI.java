@@ -5,20 +5,19 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.easemob.chat.EMChatManager;
+import com.easemob.chat.EMClient;
+import com.easemob.chat.EMMessage;
+import com.easemob.chat.EMOptions;
+import com.easemob.easeui.domain.EaseEmojicon;
+import com.easemob.easeui.domain.EaseUser;
+import com.easemob.easeui.model.EaseNotifier;
+
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.util.Log;
-
-import com.easemob.EMEventListener;
-import com.easemob.chat.EMChat;
-import com.easemob.chat.EMChatManager;
-import com.easemob.chat.EMChatOptions;
-import com.easemob.chat.EMMessage;
-import com.easemob.easeui.domain.EaseEmojicon;
-import com.easemob.easeui.domain.EaseUser;
-import com.easemob.easeui.model.EaseNotifier;
 
 public final class EaseUI {
     private static final String TAG = EaseUI.class.getSimpleName();
@@ -27,11 +26,6 @@ public final class EaseUI {
      * the global EaseUI instance
      */
     private static EaseUI instance = null;
-    
-    /**
-     * EMEventListener
-     */
-    private EMEventListener eventListener = null;
     
     /**
      * 用户属性提供者
@@ -114,8 +108,6 @@ public final class EaseUI {
             // 则此application::onCreate 是被service 调用的，直接返回
             return false;
         }
-        // 初始化环信SDK,一定要先调用init()
-        EMChat.getInstance().init(context);
         
         initChatOptions();
         if(settingsProvider == null){
@@ -130,17 +122,18 @@ public final class EaseUI {
         Log.d(TAG, "init HuanXin Options");
         
         // 获取到EMChatOptions对象
-        EMChatOptions options = EMChatManager.getInstance().getChatOptions();
+        EMOptions options = new EMOptions();
         // 默认添加好友时，是不需要验证的，改成需要验证
         options.setAcceptInvitationAlways(false);
-        // 默认环信是不维护好友关系列表的，如果app依赖环信的好友关系，把这个属性设置为true
-        options.setUseRoster(false);
         // 设置是否需要已读回执
         options.setRequireAck(true);
         // 设置是否需要已送达回执
         options.setRequireDeliveryAck(false);
         // 设置从db初始化加载时, 每个conversation需要加载msg的个数
         options.setNumberOfMessagesLoaded(1);
+        
+        EMClient client = EMClient.create(appContext, options);
+        client.init();
         
         notifier = createNotifier();
         notifier.init(appContext);

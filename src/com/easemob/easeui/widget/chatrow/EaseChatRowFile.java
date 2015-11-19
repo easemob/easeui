@@ -2,23 +2,22 @@ package com.easemob.easeui.widget.chatrow;
 
 import java.io.File;
 
+import com.easemob.EMCallBack;
+import com.easemob.chat.EMClient;
+import com.easemob.chat.EMMessage;
+import com.easemob.chat.EMNormalFileMessageBody;
+import com.easemob.easeui.R;
+import com.easemob.easeui.ui.EaseShowNormalFileActivity;
+import com.easemob.exceptions.EaseMobException;
+import com.easemob.util.FileUtils;
+import com.easemob.util.TextFormater;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.view.View;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
-
-import com.easemob.EMCallBack;
-import com.easemob.chat.EMChatManager;
-import com.easemob.chat.EMMessage;
-import com.easemob.chat.FileMessageBody;
-import com.easemob.chat.NormalFileMessageBody;
-import com.easemob.easeui.R;
-import com.easemob.easeui.ui.EaseShowNormalFileActivity;
-import com.easemob.exceptions.EaseMobException;
-import com.easemob.util.FileUtils;
-import com.easemob.util.TextFormater;
 
 public class EaseChatRowFile extends EaseChatRow{
 
@@ -29,7 +28,7 @@ public class EaseChatRowFile extends EaseChatRow{
     protected EMCallBack sendfileCallBack;
     
     protected boolean isNotifyProcessed;
-    private NormalFileMessageBody fileMessageBody;
+    private EMNormalFileMessageBody fileMessageBody;
 
     public EaseChatRowFile(Context context, EMMessage message, int position, BaseAdapter adapter) {
 		super(context, message, position, adapter);
@@ -52,7 +51,7 @@ public class EaseChatRowFile extends EaseChatRow{
 
 	@Override
 	protected void onSetUpView() {
-	    fileMessageBody = (NormalFileMessageBody) message.getBody();
+	    fileMessageBody = (EMNormalFileMessageBody) message.getBody();
         String filePath = fileMessageBody.getLocalUrl();
         fileNameView.setText(fileMessageBody.getFileName());
         fileSizeView.setText(TextFormater.getDataSize(fileMessageBody.getFileSize()));
@@ -75,7 +74,7 @@ public class EaseChatRowFile extends EaseChatRow{
 	 */
     protected void handleSendMessage() {
         setMessageSendCallback();
-        switch (message.status) {
+        switch (message.status()) {
         case SUCCESS:
             progressBar.setVisibility(View.INVISIBLE);
             if(percentageView != null)
@@ -92,7 +91,7 @@ public class EaseChatRowFile extends EaseChatRow{
             progressBar.setVisibility(View.VISIBLE);
             if(percentageView != null){
                 percentageView.setVisibility(View.VISIBLE);
-                percentageView.setText(message.progress + "%");
+                percentageView.setText(message.progress() + "%");
             }
             statusView.setVisibility(View.INVISIBLE);
             break;
@@ -100,7 +99,7 @@ public class EaseChatRowFile extends EaseChatRow{
             progressBar.setVisibility(View.VISIBLE);
             if(percentageView != null){
                 percentageView.setVisibility(View.VISIBLE);
-                percentageView.setText(message.progress + "%");
+                percentageView.setText(message.progress() + "%");
             }
             statusView.setVisibility(View.INVISIBLE);
             break;
@@ -124,10 +123,10 @@ public class EaseChatRowFile extends EaseChatRow{
             // 下载
             context.startActivity(new Intent(context, EaseShowNormalFileActivity.class).putExtra("msgbody", message.getBody()));
         }
-        if (message.direct == EMMessage.Direct.RECEIVE && !message.isAcked) {
+        if (message.direct == EMMessage.Direct.RECEIVE && !message.isAcked()) {
             try {
-                EMChatManager.getInstance().ackMessageRead(message.getFrom(), message.getMsgId());
-                message.isAcked = true;
+                EMClient.getInstance().chatManager().ackMessageRead(message.getFrom(), message.getMsgId());
+                message.setIsAcked(true);
             } catch (EaseMobException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();

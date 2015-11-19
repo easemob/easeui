@@ -4,16 +4,16 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 
+import com.easemob.EMError;
+import com.easemob.chat.EMClient;
+import com.easemob.util.EMLog;
+import com.easemob.util.PathUtil;
+
 import android.content.Context;
 import android.media.MediaRecorder;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.text.format.Time;
-
-import com.easemob.EMError;
-import com.easemob.chat.EMChatManager;
-import com.easemob.util.EMLog;
-import com.easemob.util.PathUtil;
 
 public class EaseVoiceRecorder {
     MediaRecorder recorder;
@@ -56,7 +56,7 @@ public class EaseVoiceRecorder {
             // one easy way is to use temp file
             // file = File.createTempFile(PREFIX + userId, EXTENSION,
             // User.getVoicePath());
-            voiceFileName = getVoiceFileName(EMChatManager.getInstance().getCurrentUser());
+            voiceFileName = getVoiceFileName(EMClient.getInstance().getCurrentUser());
             voiceFilePath = PathUtil.getInstance().getVoicePath() + "/" + voiceFileName;
             file = new File(voiceFilePath);
             recorder.setOutputFile(file.getAbsolutePath());

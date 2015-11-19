@@ -2,6 +2,18 @@ package com.easemob.easeui.widget.chatrow;
 
 import java.util.Date;
 
+import com.easemob.EMCallBack;
+import com.easemob.EMError;
+import com.easemob.chat.EMClient;
+import com.easemob.chat.EMMessage;
+import com.easemob.chat.EMMessage.Direct;
+import com.easemob.easeui.R;
+import com.easemob.easeui.adapter.EaseMessageAdapter;
+import com.easemob.easeui.utils.EaseUserUtils;
+import com.easemob.easeui.widget.EaseChatMessageList;
+import com.easemob.easeui.widget.EaseChatMessageList.MessageListItemClickListener;
+import com.easemob.util.DateUtils;
+
 import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -12,18 +24,6 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.easemob.EMCallBack;
-import com.easemob.EMError;
-import com.easemob.chat.EMChatManager;
-import com.easemob.chat.EMMessage;
-import com.easemob.chat.EMMessage.Direct;
-import com.easemob.easeui.R;
-import com.easemob.easeui.adapter.EaseMessageAdapter;
-import com.easemob.easeui.utils.EaseUserUtils;
-import com.easemob.easeui.widget.EaseChatMessageList;
-import com.easemob.easeui.widget.EaseChatMessageList.MessageListItemClickListener;
-import com.easemob.util.DateUtils;
 
 public abstract class EaseChatRow extends LinearLayout {
     protected static final String TAG = EaseChatRow.class.getSimpleName();
@@ -116,7 +116,7 @@ public abstract class EaseChatRow extends LinearLayout {
         }
         //设置头像和nick
         if(message.direct == Direct.SEND){
-            EaseUserUtils.setUserAvatar(context, EMChatManager.getInstance().getCurrentUser(), userAvatarView);
+            EaseUserUtils.setUserAvatar(context, EMClient.getInstance().getCurrentUser(), userAvatarView);
             //发送方不显示nick
 //            UserUtils.setUserNick(EMChatManager.getInstance().getCurrentUser(), usernickView);
         }else{
@@ -125,7 +125,7 @@ public abstract class EaseChatRow extends LinearLayout {
         }
         
         if(deliveredView != null){
-            if (message.isDelivered) {
+            if (message.isDelivered()) {
                 deliveredView.setVisibility(View.VISIBLE);
             } else {
                 deliveredView.setVisibility(View.INVISIBLE);
@@ -133,7 +133,7 @@ public abstract class EaseChatRow extends LinearLayout {
         }
         
         if(ackedView != null){
-            if (message.isAcked) {
+            if (message.isAcked()) {
                 if (deliveredView != null) {
                     deliveredView.setVisibility(View.INVISIBLE);
                 }
@@ -280,7 +280,7 @@ public abstract class EaseChatRow extends LinearLayout {
             public void onClick(View v) {
                 if (itemClickListener != null) {
                     if (message.direct == Direct.SEND) {
-                        itemClickListener.onUserAvatarClick(EMChatManager.getInstance().getCurrentUser());
+                        itemClickListener.onUserAvatarClick(EMClient.getInstance().getCurrentUser());
                     } else {
                         itemClickListener.onUserAvatarClick(message.getFrom());
                     }
@@ -293,7 +293,7 @@ public abstract class EaseChatRow extends LinearLayout {
     protected void updateView() {
         activity.runOnUiThread(new Runnable() {
             public void run() {
-                if (message.status == EMMessage.Status.FAIL) {
+                if (message.status() == EMMessage.Status.FAIL) {
 
                     if (message.getError() == EMError.MESSAGE_SEND_INVALID_CONTENT) {
                         Toast.makeText(activity,activity.getString(R.string.send_fail) + activity.getString(R.string.error_send_invalid_content), 0).show();

@@ -5,6 +5,15 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
+
+import com.easemob.EMConnectionListener;
+import com.easemob.EMError;
+import com.easemob.chat.EMChatManager;
+import com.easemob.chat.EMClient;
+import com.easemob.chat.EMConversation;
+import com.easemob.easeui.R;
+import com.easemob.easeui.widget.EaseConversationList;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -25,13 +34,6 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
-
-import com.easemob.EMConnectionListener;
-import com.easemob.EMError;
-import com.easemob.chat.EMChatManager;
-import com.easemob.chat.EMConversation;
-import com.easemob.easeui.R;
-import com.easemob.easeui.widget.EaseConversationList;
 
 /**
  * 会话列表fragment
@@ -88,7 +90,7 @@ public class EaseConversationListFragment extends EaseBaseFragment{
             });
         }
         
-        EMChatManager.getInstance().addConnectionListener(connectionListener);
+        EMClient.getInstance().addConnectionListener(connectionListener);
         
         query.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -191,7 +193,7 @@ public class EaseConversationListFragment extends EaseBaseFragment{
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         +    */
     protected List<EMConversation> loadConversationList(){
         // 获取所有会话，包括陌生人
-        Hashtable<String, EMConversation> conversations = EMChatManager.getInstance().getAllConversations();
+        Map<String, EMConversation> conversations = EMClient.getInstance().chatManager().getAllConversations();
         // 过滤掉messages size为0的conversation
         /**
          * 如果在排序过程中有新消息收到，lastMsgTime会发生变化
@@ -272,7 +274,7 @@ public class EaseConversationListFragment extends EaseBaseFragment{
     @Override
     public void onDestroy() {
         super.onDestroy();
-        EMChatManager.getInstance().removeConnectionListener(connectionListener);
+        EMClient.getInstance().removeConnectionListener(connectionListener);
     }
     
     @Override

@@ -1,16 +1,16 @@
 package com.easemob.easeui.widget.chatrow;
 
+import com.easemob.chat.EMMessage;
+import com.easemob.chat.EMVoiceMessageBody;
+import com.easemob.easeui.R;
+import com.easemob.util.EMLog;
+
 import android.content.Context;
 import android.graphics.drawable.AnimationDrawable;
 import android.view.View;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.easemob.chat.EMMessage;
-import com.easemob.chat.VoiceMessageBody;
-import com.easemob.easeui.R;
-import com.easemob.util.EMLog;
 
 public class EaseChatRowVoice extends EaseChatRowFile{
 
@@ -37,7 +37,7 @@ public class EaseChatRowVoice extends EaseChatRowFile{
 
     @Override
     protected void onSetUpView() {
-        VoiceMessageBody voiceBody = (VoiceMessageBody) message.getBody();
+        EMVoiceMessageBody voiceBody = (EMVoiceMessageBody) message.getBody();
         int len = voiceBody.getLength();
         if(len>0){
             voiceLengthView.setText(voiceBody.getLength() + "\"");
@@ -71,7 +71,7 @@ public class EaseChatRowVoice extends EaseChatRowFile{
                 readStutausView.setVisibility(View.VISIBLE);
             }
             EMLog.d(TAG, "it is receive msg");
-            if (message.status == EMMessage.Status.INPROGRESS) {
+            if (message.status() == EMMessage.Status.INPROGRESS) {
                 progressBar.setVisibility(View.VISIBLE);
                 setMessageReceiveCallback();
             } else {

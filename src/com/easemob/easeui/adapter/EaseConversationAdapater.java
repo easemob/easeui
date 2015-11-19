@@ -19,6 +19,7 @@ import android.widget.TextView.BufferType;
 
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMChatRoom;
+import com.easemob.chat.EMClient;
 import com.easemob.chat.EMConversation;
 import com.easemob.chat.EMConversation.EMConversationType;
 import com.easemob.chat.EMGroup;
@@ -102,11 +103,11 @@ public class EaseConversationAdapater extends ArrayAdapter<EMConversation> {
         if (conversation.getType() == EMConversationType.GroupChat) {
             // 群聊消息，显示群聊头像
             holder.avatar.setImageResource(R.drawable.ease_group_icon);
-            EMGroup group = EMGroupManager.getInstance().getGroup(username);
+            EMGroup group = EMClient.getInstance().groupManager().getGroup(username);
             holder.name.setText(group != null ? group.getGroupName() : username);
         } else if(conversation.getType() == EMConversationType.ChatRoom){
             holder.avatar.setImageResource(R.drawable.ease_group_icon);
-            EMChatRoom room = EMChatManager.getInstance().getChatRoom(username);
+            EMChatRoom room = EMClient.getInstance().chatroomManager().getChatRoom(username);
             holder.name.setText(room != null && !TextUtils.isEmpty(room.getName()) ? room.getName() : username);
         }else {
             EaseUserUtils.setUserAvatar(getContext(), username, holder.avatar);
@@ -121,14 +122,14 @@ public class EaseConversationAdapater extends ArrayAdapter<EMConversation> {
             holder.unreadLabel.setVisibility(View.INVISIBLE);
         }
 
-        if (conversation.getMsgCount() != 0) {
+        if (conversation.getAllMsgCount() != 0) {
             // 把最后一条消息的内容作为item的message内容
             EMMessage lastMessage = conversation.getLastMessage();
             holder.message.setText(EaseSmileUtils.getSmiledText(getContext(), EaseCommonUtils.getMessageDigest(lastMessage, (this.getContext()))),
                     BufferType.SPANNABLE);
 
             holder.time.setText(DateUtils.getTimestampString(new Date(lastMessage.getMsgTime())));
-            if (lastMessage.direct == EMMessage.Direct.SEND && lastMessage.status == EMMessage.Status.FAIL) {
+            if (lastMessage.direct == EMMessage.Direct.SEND && lastMessage.status() == EMMessage.Status.FAIL) {
                 holder.msgState.setVisibility(View.VISIBLE);
             } else {
                 holder.msgState.setVisibility(View.GONE);
@@ -222,13 +223,14 @@ public class EaseConversationAdapater extends ArrayAdapter<EMConversation> {
                     final EMConversation value = mOriginalValues.get(i);
                     String username = value.getUserName();
                     
-                    EMGroup group = EMGroupManager.getInstance().getGroup(username);
+                    EMGroup group = EMClient.getInstance().groupManager().getGroup(username);
                     if(group != null){
                         username = group.getGroupName();
                     }else{
                         EaseUser user = EaseUserUtils.getUserInfo(username);
-                        if(user != null && user.getNick() != null)
-                            username = user.getNick();
+                        // TODO: not support Nick anymore
+//                        if(user != null && user.getNick() != null)
+//                            username = user.getNick();
                     }
 
                     // First match against the whole ,non-splitted value

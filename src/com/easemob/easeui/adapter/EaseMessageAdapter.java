@@ -23,6 +23,7 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 
 import com.easemob.chat.EMChatManager;
+import com.easemob.chat.EMClient;
 import com.easemob.chat.EMConversation;
 import com.easemob.chat.EMMessage;
 import com.easemob.easeui.EaseConstant;
@@ -85,18 +86,15 @@ public class EaseMessageAdapter extends BaseAdapter{
 		this.context = context;
 		this.listView = listView;
 		toChatUsername = username;
-		this.conversation = EMChatManager.getInstance().getConversation(username);
+		this.conversation = EMClient.getInstance().chatManager().getConversation(username);
 	}
 	
 	Handler handler = new Handler() {
 		private void refreshList() {
 			// UI线程不能直接使用conversation.getAllMessages()
 			// 否则在UI刷新过程中，如果收到新的消息，会导致并发问题
-			messages = (EMMessage[]) conversation.getAllMessages().toArray(new EMMessage[conversation.getAllMessages().size()]);
-			for (int i = 0; i < messages.length; i++) {
-				// getMessage will set message as read status
-				conversation.getMessage(i);
-			}
+			messages = (EMMessage[]) conversation.getAllMessages().toArray(new EMMessage[0]);
+			conversation.markAllMessagesAsRead();
 			notifyDataSetChanged();
 		}
 		

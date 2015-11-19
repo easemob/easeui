@@ -1,24 +1,25 @@
 package com.easemob.easeui.widget.chatrow;
 
-import android.content.Context;
-import android.content.Intent;
-import android.view.View;
-import android.widget.BaseAdapter;
-import android.widget.TextView;
-
 import com.easemob.chat.EMChatManager;
+import com.easemob.chat.EMClient;
+import com.easemob.chat.EMLocationMessageBody;
 import com.easemob.chat.EMMessage;
-import com.easemob.chat.LocationMessageBody;
 import com.easemob.chat.EMMessage.ChatType;
 import com.easemob.easeui.R;
 import com.easemob.easeui.ui.EaseBaiduMapActivity;
 import com.easemob.exceptions.EaseMobException;
 import com.easemob.util.LatLng;
 
+import android.content.Context;
+import android.content.Intent;
+import android.view.View;
+import android.widget.BaseAdapter;
+import android.widget.TextView;
+
 public class EaseChatRowLocation extends EaseChatRow{
 
     private TextView locationView;
-    private LocationMessageBody locBody;
+    private EMLocationMessageBody locBody;
 
 	public EaseChatRowLocation(Context context, EMMessage message, int position, BaseAdapter adapter) {
         super(context, message, position, adapter);
@@ -38,13 +39,13 @@ public class EaseChatRowLocation extends EaseChatRow{
 
     @Override
     protected void onSetUpView() {
-		locBody = (LocationMessageBody) message.getBody();
+		locBody = (EMLocationMessageBody) message.getBody();
 		locationView.setText(locBody.getAddress());
 
 		// deal with send message
 		if (message.direct == EMMessage.Direct.SEND) {
 		    setMessageSendCallback();
-            switch (message.status) {
+            switch (message.status()) {
             case CREATE: 
                 progressBar.setVisibility(View.VISIBLE);
                 statusView.setVisibility(View.GONE);
@@ -69,8 +70,8 @@ public class EaseChatRowLocation extends EaseChatRow{
         }else{
             if(!message.isAcked() && message.getChatType() == ChatType.Chat){
                 try {
-                    EMChatManager.getInstance().ackMessageRead(message.getFrom(), message.getMsgId());
-                    message.isAcked = true;
+                    EMClient.getInstance().chatManager().ackMessageRead(message.getFrom(), message.getMsgId());
+                    message.setIsAcked(true);
                 } catch (EaseMobException e) {
                     e.printStackTrace();
                 }

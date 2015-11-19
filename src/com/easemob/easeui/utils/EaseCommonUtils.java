@@ -15,20 +15,20 @@ package com.easemob.easeui.utils;
 
 import java.util.List;
 
+import com.easemob.chat.EMMessage;
+import com.easemob.chat.EMTextMessageBody;
+import com.easemob.easeui.EaseConstant;
+import com.easemob.easeui.R;
+import com.easemob.easeui.domain.EaseUser;
+import com.easemob.util.EMLog;
+import com.easemob.util.HanziToPinyin;
+
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningTaskInfo;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.text.TextUtils;
-
-import com.easemob.chat.EMMessage;
-import com.easemob.chat.TextMessageBody;
-import com.easemob.easeui.EaseConstant;
-import com.easemob.easeui.R;
-import com.easemob.easeui.domain.EaseUser;
-import com.easemob.util.EMLog;
-import com.easemob.util.HanziToPinyin;
 
 public class EaseCommonUtils {
 	private static final String TAG = "CommonUtils";
@@ -103,7 +103,7 @@ public class EaseCommonUtils {
             digest = getString(context, R.string.video);
             break;
         case TXT: // 文本消息
-            TextMessageBody txtBody = (TextMessageBody) message.getBody();
+            EMTextMessageBody txtBody = (EMTextMessageBody) message.getBody();
             /*if(((DemoHXSDKHelper)HXSDKHelper.getInstance()).isRobotMenuMessage(message)){
                 digest = ((DemoHXSDKHelper)HXSDKHelper.getInstance()).getRobotMenuMessageDigest(message);
             }else */if(message.getBooleanAttribute(EaseConstant.MESSAGE_ATTR_IS_VOICE_CALL, false)){

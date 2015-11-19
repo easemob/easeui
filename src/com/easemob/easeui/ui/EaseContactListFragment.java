@@ -21,6 +21,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.easemob.EMConnectionListener;
+import com.easemob.EMError;
+import com.easemob.chat.EMChatManager;
+import com.easemob.chat.EMClient;
+import com.easemob.chat.EMContactManager;
+import com.easemob.easeui.R;
+import com.easemob.easeui.domain.EaseUser;
+import com.easemob.easeui.utils.EaseCommonUtils;
+import com.easemob.easeui.widget.EaseContactList;
+import com.easemob.exceptions.EaseMobException;
+
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.os.Handler;
@@ -39,16 +50,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
-
-import com.easemob.EMConnectionListener;
-import com.easemob.EMError;
-import com.easemob.chat.EMChatManager;
-import com.easemob.chat.EMContactManager;
-import com.easemob.easeui.R;
-import com.easemob.easeui.domain.EaseUser;
-import com.easemob.easeui.utils.EaseCommonUtils;
-import com.easemob.easeui.widget.EaseContactList;
-import com.easemob.exceptions.EaseMobException;
 
 /**
  * 联系人列表页
@@ -99,10 +100,10 @@ public class EaseContactListFragment extends EaseBaseFragment {
 
     @Override
     protected void setUpView() {
-        EMChatManager.getInstance().addConnectionListener(connectionListener);
+        EMClient.getInstance().addConnectionListener(connectionListener);
         
         //黑名单列表
-        blackList = EMContactManager.getInstance().getBlackListUsernames();
+        blackList = EMClient.getInstance().contactManager().getBlackListUsernames();
         contactList = new ArrayList<EaseUser>();
         // 获取设置contactlist
         getContactList();
@@ -192,7 +193,7 @@ public class EaseContactListFragment extends EaseBaseFragment {
             public void run() {
                 try {
                     //加入到黑名单
-                    EMContactManager.getInstance().addUserToBlackList(username,false);
+                    EMClient.getInstance().contactManager().addUserToBlackList(username,false);
                     getActivity().runOnUiThread(new Runnable() {
                         public void run() {
                             pd.dismiss();
@@ -224,7 +225,7 @@ public class EaseContactListFragment extends EaseBaseFragment {
     @Override
     public void onDestroy() {
         
-        EMChatManager.getInstance().removeConnectionListener(connectionListener);
+        EMClient.getInstance().removeConnectionListener(connectionListener);
         
         super.onDestroy();
     }

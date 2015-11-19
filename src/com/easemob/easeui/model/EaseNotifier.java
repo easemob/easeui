@@ -15,6 +15,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 
+import com.easemob.chat.EMChatManager;
+import com.easemob.chat.EMClient;
+import com.easemob.chat.EMMessage;
+import com.easemob.easeui.controller.EaseUI;
+import com.easemob.easeui.controller.EaseUI.EaseSettingsProvider;
+import com.easemob.util.EMLog;
+import com.easemob.util.EasyUtils;
+
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -28,13 +36,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Vibrator;
 import android.support.v4.app.NotificationCompat;
-
-import com.easemob.chat.EMChatManager;
-import com.easemob.chat.EMMessage;
-import com.easemob.easeui.controller.EaseUI;
-import com.easemob.easeui.controller.EaseUI.EaseSettingsProvider;
-import com.easemob.util.EMLog;
-import com.easemob.util.EasyUtils;
 
 /**
  * 新消息提醒class
@@ -122,7 +123,7 @@ public class EaseNotifier {
      * @param message
      */
     public synchronized void onNewMsg(EMMessage message) {
-        if(EMChatManager.getInstance().isSlientMessage(message)){
+        if(EMChatManager.isSlientMessage(message)){
             return;
         }
         EaseSettingsProvider settingsProvider = EaseUI.getInstance().getSettingsProvider();
@@ -143,7 +144,7 @@ public class EaseNotifier {
     }
     
     public synchronized void onNewMesg(List<EMMessage> messages) {
-        if(EMChatManager.getInstance().isSlientMessage(messages.get(messages.size()-1))){
+        if(EMChatManager.isSlientMessage(messages.get(messages.size()-1))){
             return;
         }
         EaseSettingsProvider settingsProvider = EaseUI.getInstance().getSettingsProvider();
@@ -293,7 +294,7 @@ public class EaseNotifier {
      */
     public void viberateAndPlayTone(EMMessage message) {
         if(message != null){
-            if(EMChatManager.getInstance().isSlientMessage(message)){
+            if(EMChatManager.isSlientMessage(message)){
                 return;
             } 
         }

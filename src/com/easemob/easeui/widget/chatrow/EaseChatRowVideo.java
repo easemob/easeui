@@ -2,18 +2,11 @@ package com.easemob.easeui.widget.chatrow;
 
 import java.io.File;
 
-import android.content.Context;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.os.AsyncTask;
-import android.widget.BaseAdapter;
-import android.widget.ImageView;
-import android.widget.TextView;
-
 import com.easemob.chat.EMChatManager;
+import com.easemob.chat.EMClient;
 import com.easemob.chat.EMMessage;
 import com.easemob.chat.EMMessage.ChatType;
-import com.easemob.chat.VideoMessageBody;
+import com.easemob.chat.EMVideoMessageBody;
 import com.easemob.easeui.R;
 import com.easemob.easeui.model.EaseImageCache;
 import com.easemob.easeui.ui.EaseShowVideoActivity;
@@ -22,6 +15,14 @@ import com.easemob.util.DateUtils;
 import com.easemob.util.EMLog;
 import com.easemob.util.ImageUtils;
 import com.easemob.util.TextFormater;
+
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.os.AsyncTask;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 public class EaseChatRowVideo extends EaseChatRowFile{
 
@@ -51,7 +52,7 @@ public class EaseChatRowVideo extends EaseChatRowFile{
 
 	@Override
 	protected void onSetUpView() {
-	    VideoMessageBody videoBody = (VideoMessageBody) message.getBody();
+	    EMVideoMessageBody videoBody = (EMVideoMessageBody) message.getBody();
         // final File image=new File(PathUtil.getInstance().getVideoPath(),
         // videoBody.getFileName());
         String localThumb = videoBody.getLocalThumb();
@@ -80,7 +81,7 @@ public class EaseChatRowVideo extends EaseChatRowFile{
 
         if (message.direct == EMMessage.Direct.RECEIVE) {
 
-            if (message.status == EMMessage.Status.INPROGRESS) {
+            if (message.status() == EMMessage.Status.INPROGRESS) {
                 imageView.setImageResource(R.drawable.ease_default_image);
                 setMessageReceiveCallback();
 
@@ -101,17 +102,17 @@ public class EaseChatRowVideo extends EaseChatRowFile{
 	
 	@Override
 	protected void onBubbleClick() {
-	    VideoMessageBody videoBody = (VideoMessageBody) message.getBody();
+	    EMVideoMessageBody videoBody = (EMVideoMessageBody) message.getBody();
         EMLog.d(TAG, "video view is on click");
         Intent intent = new Intent(context, EaseShowVideoActivity.class);
         intent.putExtra("localpath", videoBody.getLocalUrl());
         intent.putExtra("secret", videoBody.getSecret());
         intent.putExtra("remotepath", videoBody.getRemoteUrl());
-        if (message != null && message.direct == EMMessage.Direct.RECEIVE && !message.isAcked
+        if (message != null && message.direct == EMMessage.Direct.RECEIVE && !message.isAcked()
                 && message.getChatType() != ChatType.GroupChat) {
-            message.isAcked = true;
+            message.setIsAcked(true);
             try {
-                EMChatManager.getInstance().ackMessageRead(message.getFrom(), message.getMsgId());
+                EMClient.getInstance().chatManager().ackMessageRead(message.getFrom(), message.getMsgId());
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -156,9 +157,9 @@ public class EaseChatRowVideo extends EaseChatRowFile{
                         iv.setImageBitmap(result);
 
                     } else {
-                        if (message.status == EMMessage.Status.FAIL) {
+                        if (message.status() == EMMessage.Status.FAIL) {
                             if (EaseCommonUtils.isNetWorkConnected(activity)) {
-                                EMChatManager.getInstance().asyncFetchMessage(message);
+                                EMClient.getInstance().chatManager().downloadThumbnail(message);
                             }
                         }
 

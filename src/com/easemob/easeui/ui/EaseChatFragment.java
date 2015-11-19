@@ -3,6 +3,36 @@ package com.easemob.easeui.ui;
 import java.io.File;
 import java.util.List;
 
+import com.easemob.EMChatRoomChangeListener;
+import com.easemob.EMMessageListener;
+import com.easemob.EMValueCallBack;
+import com.easemob.chat.EMChatRoom;
+import com.easemob.chat.EMClient;
+import com.easemob.chat.EMConversation;
+import com.easemob.chat.EMGroup;
+import com.easemob.chat.EMImageMessageBody;
+import com.easemob.chat.EMMessage;
+import com.easemob.chat.EMMessage.ChatType;
+import com.easemob.chat.EMTextMessageBody;
+import com.easemob.easeui.EaseConstant;
+import com.easemob.easeui.R;
+import com.easemob.easeui.controller.EaseUI;
+import com.easemob.easeui.domain.EaseEmojicon;
+import com.easemob.easeui.utils.EaseCommonUtils;
+import com.easemob.easeui.utils.EaseImageUtils;
+import com.easemob.easeui.utils.EaseUserUtils;
+import com.easemob.easeui.widget.EaseAlertDialog;
+import com.easemob.easeui.widget.EaseAlertDialog.AlertDialogUser;
+import com.easemob.easeui.widget.EaseChatExtendMenu;
+import com.easemob.easeui.widget.EaseChatInputMenu;
+import com.easemob.easeui.widget.EaseChatInputMenu.ChatInputMenuListener;
+import com.easemob.easeui.widget.EaseChatMessageList;
+import com.easemob.easeui.widget.EaseVoiceRecorderView;
+import com.easemob.easeui.widget.EaseVoiceRecorderView.EaseVoiceRecorderCallback;
+import com.easemob.easeui.widget.chatrow.EaseCustomChatRowProvider;
+import com.easemob.util.EMLog;
+import com.easemob.util.PathUtil;
+
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -28,38 +58,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.easemob.EMChatRoomChangeListener;
-import com.easemob.EMEventListener;
-import com.easemob.EMNotifierEvent;
-import com.easemob.EMValueCallBack;
-import com.easemob.chat.EMChatManager;
-import com.easemob.chat.EMChatRoom;
-import com.easemob.chat.EMConversation;
-import com.easemob.chat.EMGroup;
-import com.easemob.chat.EMGroupManager;
-import com.easemob.chat.EMMessage;
-import com.easemob.chat.EMMessage.ChatType;
-import com.easemob.chat.ImageMessageBody;
-import com.easemob.chat.TextMessageBody;
-import com.easemob.easeui.EaseConstant;
-import com.easemob.easeui.R;
-import com.easemob.easeui.controller.EaseUI;
-import com.easemob.easeui.domain.EaseEmojicon;
-import com.easemob.easeui.utils.EaseCommonUtils;
-import com.easemob.easeui.utils.EaseImageUtils;
-import com.easemob.easeui.utils.EaseUserUtils;
-import com.easemob.easeui.widget.EaseAlertDialog;
-import com.easemob.easeui.widget.EaseAlertDialog.AlertDialogUser;
-import com.easemob.easeui.widget.EaseChatExtendMenu;
-import com.easemob.easeui.widget.EaseChatInputMenu;
-import com.easemob.easeui.widget.EaseChatInputMenu.ChatInputMenuListener;
-import com.easemob.easeui.widget.EaseChatMessageList;
-import com.easemob.easeui.widget.EaseVoiceRecorderView;
-import com.easemob.easeui.widget.EaseVoiceRecorderView.EaseVoiceRecorderCallback;
-import com.easemob.easeui.widget.chatrow.EaseCustomChatRowProvider;
-import com.easemob.util.EMLog;
-import com.easemob.util.PathUtil;
-
 /**
  * 可以直接new出来使用的聊天对话页面fragment，
  * 使用时需调用setArguments方法传入chatType(会话类型)和userId(用户或群id)
@@ -69,7 +67,7 @@ import com.easemob.util.PathUtil;
  * 参数传入示例可查看demo里的ChatActivity
  *
  */
-public class EaseChatFragment extends EaseBaseFragment implements EMEventListener {
+public class EaseChatFragment extends EaseBaseFragment {
     protected static final String TAG = "EaseChatFragment";
     protected static final int REQUEST_CODE_MAP = 1;
     protected static final int REQUEST_CODE_CAMERA = 2;
@@ -199,12 +197,12 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
         	titleBar.setRightImageResource(R.drawable.ease_to_group_details_normal);
             if (chatType == EaseConstant.CHATTYPE_GROUP) {
                 // 群聊
-                EMGroup group = EMGroupManager.getInstance().getGroup(toChatUsername);
+                EMGroup group = EMClient.getInstance().groupManager().getGroup(toChatUsername);
                 if (group != null)
                     titleBar.setTitle(group.getGroupName());
                 // 监听当前会话的群聊解散被T事件
                 groupListener = new GroupListener();
-                EMGroupManager.getInstance().addGroupChangeListener(groupListener);
+                EMClient.getInstance().groupManager().addGroupChangeListener(groupListener);
             } else {
                 onChatRoomViewCreation();
             }
@@ -257,7 +255,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
     
     protected void onConversationInit(){
         // 获取当前conversation对象
-        conversation = EMChatManager.getInstance().getConversation(toChatUsername);
+        conversation = EMClient.getInstance().chatManager().getConversation(toChatUsername);
         // 把此会话的未读数置为0
         conversation.markAllMessagesAsRead();
         // 初始化db时，每个conversation加载数目是getChatOptions().getNumberOfMessagesLoaded
@@ -269,11 +267,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
             if (msgs != null && msgs.size() > 0) {
                 msgId = msgs.get(0).getMsgId();
             }
-            if (chatType == EaseConstant.CHATTYPE_SINGLE) {
-                conversation.loadMoreMsgFromDB(msgId, pagesize - msgCount);
-            } else {
-                conversation.loadMoreGroupMsgFromDB(msgId, pagesize - msgCount);
-            }
+            conversation.loadMoreMsgFromDB(msgId, pagesize - msgCount);
         }
         
     }
@@ -354,7 +348,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
                                     messages = conversation.loadMoreMsgFromDB(messageList.getItem(0).getMsgId(),
                                             pagesize);
                                 } else {
-                                    messages = conversation.loadMoreGroupMsgFromDB(messageList.getItem(0).getMsgId(),
+                                    messages = conversation.loadMoreMsgFromDB(messageList.getItem(0).getMsgId(),
                                             pagesize);
                                 }
                             } catch (Exception e1) {
@@ -411,57 +405,11 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
         }
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        if(isMessageListInited)
-            messageList.refresh();
-        EaseUI.getInstance().pushActivity(getActivity());
-        // register the event listener when enter the foreground
-        EMChatManager.getInstance().registerEventListener(
-                this,
-                new EMNotifierEvent.Event[] { EMNotifierEvent.Event.EventNewMessage,
-                        EMNotifierEvent.Event.EventOfflineMessage, EMNotifierEvent.Event.EventDeliveryAck,
-                        EMNotifierEvent.Event.EventReadAck });
-    }
 
-    @Override
-    public void onStop() {
-        super.onStop();
-        // unregister this event listener when this activity enters the
-        // background
-        EMChatManager.getInstance().unregisterEventListener(this);
-
-        // 把此activity 从foreground activity 列表里移除
-        EaseUI.getInstance().popActivity(getActivity());
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (groupListener != null) {
-            EMGroupManager.getInstance().removeGroupChangeListener(groupListener);
-        }
-        if(chatType == EaseConstant.CHATTYPE_CHATROOM){
-            EMChatManager.getInstance().leaveChatRoom(toChatUsername);
-        }
-        
-        if(chatRoomChangeListener != null){
-            EMChatManager.getInstance().removeChatRoomChangeListener(chatRoomChangeListener);
-        }
-    }
-
-    /**
-     * 事件监听,registerEventListener后的回调事件
-     * 
-     * see {@link EMNotifierEvent}
-     */
-    @Override
-    public void onEvent(EMNotifierEvent event) {
-        switch (event.getEvent()) {
-        case EventNewMessage:
-            // 获取到message
-            EMMessage message = (EMMessage) event.getData();
+    EMMessageListener msgListener = new EMMessageListener() {
+		
+		@Override
+		public void onMessageReceived(EMMessage message) {
 
             String username = null;
             // 群组消息
@@ -481,47 +429,82 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
                 // 如果消息不是和当前聊天ID的消息
                 EaseUI.getInstance().getNotifier().onNewMsg(message);
             }
+		}
+		
+		@Override
+		public void onMessageReadAckReceived(EMMessage message) {
+            messageList.refresh();
+		}
+		
+		@Override
+		public void onMessageDeliveryAckReceived(EMMessage message) {
+            messageList.refresh();
+		}
+		
+		@Override
+		public void onMessageChanged(EMMessage message, Object change) {
+			
+		}
+	};
+	
+    @Override
+    public void onResume() {
+        super.onResume();
+        if(isMessageListInited)
+            messageList.refresh();
+        EaseUI.getInstance().pushActivity(getActivity());
+        // register the event listener when enter the foreground
+        EMClient.getInstance().chatManager().addMessageListener(msgListener);
+    }
+    
+    @Override
+    public void onStop() {
+        super.onStop();
+        // unregister this event listener when this activity enters the
+        // background
+        EMClient.getInstance().chatManager().removeMessageListener(msgListener);
 
-            break;
-        case EventDeliveryAck:
-        case EventReadAck:
-            // 获取到message
-            messageList.refresh();
-            break;
-        case EventOfflineMessage:
-            // a list of offline messages
-            // List<EMMessage> offlineMessages = (List<EMMessage>)
-            // event.getData();
-            messageList.refresh();
-            break;
-        default:
-            break;
+        // 把此activity 从foreground activity 列表里移除
+        EaseUI.getInstance().popActivity(getActivity());
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (groupListener != null) {
+            EMClient.getInstance().groupManager().removeGroupChangeListener(groupListener);
         }
-
+        if(chatType == EaseConstant.CHATTYPE_CHATROOM){
+        	EMClient.getInstance().chatroomManager().leaveChatRoom(toChatUsername);
+        }
+        
+        if(chatRoomChangeListener != null){
+        	EMClient.getInstance().chatroomManager().removeChatRoomChangeListener(chatRoomChangeListener);
+        }
     }
 
     public void onBackPressed() {
         if (inputMenu.onBackPressed()) {
             getActivity().finish();
             if (chatType == EaseConstant.CHATTYPE_CHATROOM) {
-                EMChatManager.getInstance().leaveChatRoom(toChatUsername);
+            	EMClient.getInstance().chatroomManager().leaveChatRoom(toChatUsername);
             }
         }
     }
 
     protected void onChatRoomViewCreation() {
         final ProgressDialog pd = ProgressDialog.show(getActivity(), "", "Joining......");
-        EMChatManager.getInstance().joinChatRoom(toChatUsername, new EMValueCallBack<EMChatRoom>() {
+        EMClient.getInstance().chatroomManager().joinChatRoom(toChatUsername, new EMValueCallBack<EMChatRoom>() {
 
             @Override
             public void onSuccess(final EMChatRoom value) {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if(getActivity().isFinishing() || !toChatUsername.equals(value.getUsername()))
+                        if(getActivity().isFinishing() || !toChatUsername.equals(value.getId()))
                             return;
                         pd.dismiss();
-                        EMChatRoom room = EMChatManager.getInstance().getChatRoom(toChatUsername);
+                        EMChatRoom room = EMClient.getInstance().chatroomManager().getChatRoom(toChatUsername);
                         if (room != null) {
                             titleBar.setTitle(room.getName());
                         } else {
@@ -575,9 +558,9 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
             @Override
             public void onMemberKicked(String roomId, String roomName, String participant) {
                 if (roomId.equals(toChatUsername)) {
-                    String curUser = EMChatManager.getInstance().getCurrentUser();
+                    String curUser = EMClient.getInstance().getCurrentUser();
                     if (curUser.equals(participant)) {
-                        EMChatManager.getInstance().leaveChatRoom(toChatUsername);
+                    	EMClient.getInstance().chatroomManager().leaveChatRoom(toChatUsername);
                         getActivity().finish();
                     }else{
                         showChatroomToast("member : " + participant + " was kicked from the room : " + roomId + " room name : " + roomName);
@@ -587,7 +570,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
 
         };
         
-        EMChatManager.getInstance().addChatRoomChangeListener(chatRoomChangeListener);
+        EMClient.getInstance().chatroomManager().addChatRoomChangeListener(chatRoomChangeListener);
     }
     
     protected void showChatroomToast(final String toastContent){
@@ -679,15 +662,15 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
             message.setChatType(ChatType.ChatRoom);
         }
         //发送消息
-        EMChatManager.getInstance().sendMessage(message, null);
+        EMClient.getInstance().chatManager().sendMessage(message);
         //刷新ui
         messageList.refreshSelectLast();
     }
     
     
     public void resendMessage(EMMessage message){
-        message.status = EMMessage.Status.CREATE;
-        EMChatManager.getInstance().sendMessage(message, null);
+        message.setStatus(EMMessage.Status.CREATE);
+        EMClient.getInstance().chatManager().sendMessage(message);
         messageList.refresh();
     }
     
@@ -774,7 +757,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
             return;
         }
 
-        cameraFile = new File(PathUtil.getInstance().getImagePath(), EMChatManager.getInstance().getCurrentUser()
+        cameraFile = new File(PathUtil.getInstance().getImagePath(), EMClient.getInstance().getCurrentUser()
                 + System.currentTimeMillis() + ".jpg");
         cameraFile.getParentFile().mkdirs();
         startActivityForResult(
@@ -811,7 +794,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
             public void onResult(boolean confirmed, Bundle bundle) {
                 if(confirmed){
                     // 清空会话
-                    EMChatManager.getInstance().clearConversation(toChatUsername);
+                	
+                    EMClient.getInstance().chatManager().deleteConversation(toChatUsername, true);
                     messageList.refresh();
                 }
             }
@@ -824,7 +808,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
      */
     protected void toGroupDetails() {
         if (chatType == EaseConstant.CHATTYPE_GROUP) {
-            EMGroup group = EMGroupManager.getInstance().getGroup(toChatUsername);
+            EMGroup group = EMClient.getInstance().groupManager().getGroup(toChatUsername);
             if (group == null) {
                 Toast.makeText(getActivity(), R.string.gorup_not_found, 0).show();
                 return;
@@ -856,22 +840,22 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
      * @param forward_msg_id
      */
     protected void forwardMessage(String forward_msg_id) {
-        final EMMessage forward_msg = EMChatManager.getInstance().getMessage(forward_msg_id);
+        final EMMessage forward_msg = EMClient.getInstance().chatManager().getMessage(forward_msg_id);
         EMMessage.Type type = forward_msg.getType();
         switch (type) {
         case TXT:
             if(forward_msg.getBooleanAttribute(EaseConstant.MESSAGE_ATTR_IS_BIG_EXPRESSION, false)){
-                sendBigExpressionMessage(((TextMessageBody) forward_msg.getBody()).getMessage(),
+                sendBigExpressionMessage(((EMTextMessageBody) forward_msg.getBody()).getMessage(),
                         forward_msg.getStringAttribute(EaseConstant.MESSAGE_ATTR_EXPRESSION_ID, null));
             }else{
                 // 获取消息内容，发送消息
-                String content = ((TextMessageBody) forward_msg.getBody()).getMessage();
+                String content = ((EMTextMessageBody) forward_msg.getBody()).getMessage();
                 sendTextMessage(content);
             }
             break;
         case IMAGE:
             // 发送图片
-            String filePath = ((ImageMessageBody) forward_msg.getBody()).getLocalUrl();
+            String filePath = ((EMImageMessageBody) forward_msg.getBody()).getLocalUrl();
             if (filePath != null) {
                 File file = new File(filePath);
                 if (!file.exists()) {
@@ -886,7 +870,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
         }
         
         if(forward_msg.getChatType() == EMMessage.ChatType.ChatRoom){
-            EMChatManager.getInstance().leaveChatRoom(forward_msg.getTo());
+            EMClient.getInstance().chatroomManager().leaveChatRoom(forward_msg.getTo());
         }
     }
 

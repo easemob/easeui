@@ -177,9 +177,10 @@ public class EaseContactAdapter extends ArrayAdapter<EaseUser> implements Sectio
                 final ArrayList<EaseUser> newValues = new ArrayList<EaseUser>();
                 for(int i=0;i<count;i++){
                     final EaseUser user = mOriginalList.get(i);
-                    String username = user.getNick();
-                    if(username == null)
-                        username = user.getNick();
+//                    String username = user.getNick();
+//                    if(username == null)
+//                        username = user.getNick();
+                    String username = user.getUsername();
                     
                     if(username.startsWith(prefixString)){
                         newValues.add(user);
