@@ -409,41 +409,43 @@ public class EaseChatFragment extends EaseBaseFragment {
     EMMessageListener msgListener = new EMMessageListener() {
 		
 		@Override
-		public void onMessageReceived(EMMessage message) {
+		public void onMessageReceived(List<EMMessage> messages) {
 
-            String username = null;
-            // 群组消息
-            if (message.getChatType() == ChatType.GroupChat || message.getChatType() == ChatType.ChatRoom) {
-                username = message.getTo();
-            } else {
-                // 单聊消息
-                username = message.getFrom();
-            }
-
-            // 如果是当前会话的消息，刷新聊天页面
-            if (username.equals(toChatUsername)) {
-                messageList.refreshSelectLast();
-                // 声音和震动提示有新消息
-                EaseUI.getInstance().getNotifier().viberateAndPlayTone(message);
-            } else {
-                // 如果消息不是和当前聊天ID的消息
-                EaseUI.getInstance().getNotifier().onNewMsg(message);
-            }
+		    for (EMMessage message : messages) {
+                String username = null;
+                // 群组消息
+                if (message.getChatType() == ChatType.GroupChat || message.getChatType() == ChatType.ChatRoom) {
+                    username = message.getTo();
+                } else {
+                    // 单聊消息
+                    username = message.getFrom();
+                }
+    
+                // 如果是当前会话的消息，刷新聊天页面
+                if (username.equals(toChatUsername)) {
+                    messageList.refreshSelectLast();
+                    // 声音和震动提示有新消息
+                    EaseUI.getInstance().getNotifier().viberateAndPlayTone(message);
+                } else {
+                    // 如果消息不是和当前聊天ID的消息
+                    EaseUI.getInstance().getNotifier().onNewMsg(message);
+                }
+		    }
 		}
 		
 		@Override
-		public void onMessageReadAckReceived(EMMessage message) {
+		public void onMessageReadAckReceived(List<EMMessage> messages) {
             messageList.refresh();
 		}
 		
 		@Override
-		public void onMessageDeliveryAckReceived(EMMessage message) {
+		public void onMessageDeliveryAckReceived(List<EMMessage> message) {
             messageList.refresh();
 		}
 		
 		@Override
 		public void onMessageChanged(EMMessage message, Object change) {
-			
+            messageList.refresh();
 		}
 	};
 	

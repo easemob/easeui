@@ -24,7 +24,7 @@ public class EaseChatRowVoice extends EaseChatRowFile{
 
     @Override
     protected void onInflatView() {
-        inflater.inflate(message.direct == EMMessage.Direct.RECEIVE ?
+        inflater.inflate(message.direct() == EMMessage.Direct.RECEIVE ?
                 R.layout.ease_row_received_voice : R.layout.ease_row_sent_voice, this);
     }
 
@@ -48,7 +48,7 @@ public class EaseChatRowVoice extends EaseChatRowFile{
         if (EaseChatRowVoicePlayClickListener.playMsgId != null
                 && EaseChatRowVoicePlayClickListener.playMsgId.equals(message.getMsgId()) && EaseChatRowVoicePlayClickListener.isPlaying) {
             AnimationDrawable voiceAnimation;
-            if (message.direct == EMMessage.Direct.RECEIVE) {
+            if (message.direct() == EMMessage.Direct.RECEIVE) {
                 voiceImageView.setImageResource(R.anim.voice_from_icon);
             } else {
                 voiceImageView.setImageResource(R.anim.voice_to_icon);
@@ -56,14 +56,14 @@ public class EaseChatRowVoice extends EaseChatRowFile{
             voiceAnimation = (AnimationDrawable) voiceImageView.getDrawable();
             voiceAnimation.start();
         } else {
-            if (message.direct == EMMessage.Direct.RECEIVE) {
+            if (message.direct() == EMMessage.Direct.RECEIVE) {
                 voiceImageView.setImageResource(R.drawable.ease_chatfrom_voice_playing);
             } else {
                 voiceImageView.setImageResource(R.drawable.ease_chatto_voice_playing);
             }
         }
         
-        if (message.direct == EMMessage.Direct.RECEIVE) {
+        if (message.direct() == EMMessage.Direct.RECEIVE) {
             if (message.isListened()) {
                 // 隐藏语音未听标志
                 readStutausView.setVisibility(View.INVISIBLE);

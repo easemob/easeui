@@ -37,7 +37,7 @@ public class EaseChatRowVideo extends EaseChatRowFile{
 
 	@Override
 	protected void onInflatView() {
-		inflater.inflate(message.direct == EMMessage.Direct.RECEIVE ?
+		inflater.inflate(message.direct() == EMMessage.Direct.RECEIVE ?
 				R.layout.ease_row_received_video : R.layout.ease_row_sent_video, this);
 	}
 
@@ -67,7 +67,7 @@ public class EaseChatRowVideo extends EaseChatRowFile{
         }
 //        playView.setImageResource(R.drawable.video_play_btn_small_nor);
 
-        if (message.direct == EMMessage.Direct.RECEIVE) {
+        if (message.direct() == EMMessage.Direct.RECEIVE) {
             if (videoBody.getVideoFileLength() > 0) {
                 String size = TextFormater.getDataSize(videoBody.getVideoFileLength());
                 sizeView.setText(size);
@@ -79,7 +79,7 @@ public class EaseChatRowVideo extends EaseChatRowFile{
             }
         }
 
-        if (message.direct == EMMessage.Direct.RECEIVE) {
+        if (message.direct() == EMMessage.Direct.RECEIVE) {
 
             if (message.status() == EMMessage.Status.INPROGRESS) {
                 imageView.setImageResource(R.drawable.ease_default_image);
@@ -108,9 +108,9 @@ public class EaseChatRowVideo extends EaseChatRowFile{
         intent.putExtra("localpath", videoBody.getLocalUrl());
         intent.putExtra("secret", videoBody.getSecret());
         intent.putExtra("remotepath", videoBody.getRemoteUrl());
-        if (message != null && message.direct == EMMessage.Direct.RECEIVE && !message.isAcked()
+        if (message != null && message.direct() == EMMessage.Direct.RECEIVE && !message.isAcked()
                 && message.getChatType() != ChatType.GroupChat) {
-            message.setIsAcked(true);
+            message.setAcked(true);
             try {
                 EMClient.getInstance().chatManager().ackMessageRead(message.getFrom(), message.getMsgId());
             } catch (Exception e) {

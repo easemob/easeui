@@ -129,7 +129,7 @@ public class EaseConversationAdapater extends ArrayAdapter<EMConversation> {
                     BufferType.SPANNABLE);
 
             holder.time.setText(DateUtils.getTimestampString(new Date(lastMessage.getMsgTime())));
-            if (lastMessage.direct == EMMessage.Direct.SEND && lastMessage.status() == EMMessage.Status.FAIL) {
+            if (lastMessage.direct() == EMMessage.Direct.SEND && lastMessage.status() == EMMessage.Status.FAIL) {
                 holder.msgState.setVisibility(View.VISIBLE);
             } else {
                 holder.msgState.setVisibility(View.GONE);
