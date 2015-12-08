@@ -26,7 +26,7 @@ public class EaseChatRowText extends EaseChatRow{
 
 	@Override
 	protected void onInflatView() {
-		inflater.inflate(message.direct == EMMessage.Direct.RECEIVE ?
+		inflater.inflate(message.direct() == EMMessage.Direct.RECEIVE ?
 				R.layout.ease_row_received_message : R.layout.ease_row_sent_message, this);
 	}
 
@@ -46,7 +46,7 @@ public class EaseChatRowText extends EaseChatRow{
     }
 
     protected void handleTextMessage() {
-        if (message.direct == EMMessage.Direct.SEND) {
+        if (message.direct() == EMMessage.Direct.SEND) {
             setMessageSendCallback();
             switch (message.status()) {
             case CREATE: 
@@ -74,7 +74,7 @@ public class EaseChatRowText extends EaseChatRow{
             if(!message.isAcked() && message.getChatType() == ChatType.Chat){
                 try {
                     EMClient.getInstance().chatManager().ackMessageRead(message.getFrom(), message.getMsgId());
-                    message.setIsAcked(true);
+                    message.setAcked(true);
                 } catch (EaseMobException e) {
                     e.printStackTrace();
                 }
