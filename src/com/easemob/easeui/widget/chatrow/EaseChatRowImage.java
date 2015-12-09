@@ -34,7 +34,7 @@ public class EaseChatRowImage extends EaseChatRowFile{
 
     @Override
     protected void onInflatView() {
-        inflater.inflate(message.direct == EMMessage.Direct.RECEIVE ? R.layout.ease_row_received_picture : R.layout.ease_row_sent_picture, this);
+        inflater.inflate(message.direct() == EMMessage.Direct.RECEIVE ? R.layout.ease_row_received_picture : R.layout.ease_row_sent_picture, this);
     }
 
     @Override
@@ -48,7 +48,7 @@ public class EaseChatRowImage extends EaseChatRowFile{
     protected void onSetUpView() {
         imgBody = (EMImageMessageBody) message.getBody();
         // 接收方向的消息
-        if (message.direct == EMMessage.Direct.RECEIVE) {
+        if (message.direct() == EMMessage.Direct.RECEIVE) {
             if (message.status() == EMMessage.Status.INPROGRESS) {
                 imageView.setImageResource(R.drawable.ease_default_image);
                 setMessageReceiveCallback();
@@ -94,11 +94,11 @@ public class EaseChatRowImage extends EaseChatRowFile{
             intent.putExtra("secret", imgBody.getSecret());
             intent.putExtra("remotepath", imgBody.getRemoteUrl());
         }
-        if (message != null && message.direct == EMMessage.Direct.RECEIVE && !message.isAcked()
+        if (message != null && message.direct() == EMMessage.Direct.RECEIVE && !message.isAcked()
                 && message.getChatType() != ChatType.GroupChat) {
             try {
                 EMClient.getInstance().chatManager().ackMessageRead(message.getFrom(), message.getMsgId());
-                message.setIsAcked(true);
+                message.setAcked(true);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -130,7 +130,7 @@ public class EaseChatRowImage extends EaseChatRowFile{
                     if (file.exists()) {
                         return EaseImageUtils.decodeScaleImage(thumbernailPath, 160, 160);
                     } else {
-                        if (message.direct == EMMessage.Direct.SEND) {
+                        if (message.direct() == EMMessage.Direct.SEND) {
                             return EaseImageUtils.decodeScaleImage(localFullSizePath, 160, 160);
                         } else {
                             return null;

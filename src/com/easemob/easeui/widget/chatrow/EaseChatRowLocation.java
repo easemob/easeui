@@ -27,7 +27,7 @@ public class EaseChatRowLocation extends EaseChatRow{
 
     @Override
     protected void onInflatView() {
-        inflater.inflate(message.direct == EMMessage.Direct.RECEIVE ?
+        inflater.inflate(message.direct() == EMMessage.Direct.RECEIVE ?
                 R.layout.ease_row_received_location : R.layout.ease_row_sent_location, this);
     }
 
@@ -43,7 +43,7 @@ public class EaseChatRowLocation extends EaseChatRow{
 		locationView.setText(locBody.getAddress());
 
 		// deal with send message
-		if (message.direct == EMMessage.Direct.SEND) {
+		if (message.direct() == EMMessage.Direct.SEND) {
 		    setMessageSendCallback();
             switch (message.status()) {
             case CREATE: 
@@ -71,7 +71,7 @@ public class EaseChatRowLocation extends EaseChatRow{
             if(!message.isAcked() && message.getChatType() == ChatType.Chat){
                 try {
                     EMClient.getInstance().chatManager().ackMessageRead(message.getFrom(), message.getMsgId());
-                    message.setIsAcked(true);
+                    message.setAcked(true);
                 } catch (EaseMobException e) {
                     e.printStackTrace();
                 }

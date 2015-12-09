@@ -36,7 +36,7 @@ public class EaseChatRowFile extends EaseChatRow{
 
 	@Override
 	protected void onInflatView() {
-	    inflater.inflate(message.direct == EMMessage.Direct.RECEIVE ? 
+	    inflater.inflate(message.direct() == EMMessage.Direct.RECEIVE ? 
 	            R.layout.ease_row_received_file : R.layout.ease_row_sent_file, this);
 	}
 
@@ -55,7 +55,7 @@ public class EaseChatRowFile extends EaseChatRow{
         String filePath = fileMessageBody.getLocalUrl();
         fileNameView.setText(fileMessageBody.getFileName());
         fileSizeView.setText(TextFormater.getDataSize(fileMessageBody.getFileSize()));
-        if (message.direct == EMMessage.Direct.RECEIVE) { // 接收的消息
+        if (message.direct() == EMMessage.Direct.RECEIVE) { // 接收的消息
             File file = new File(filePath);
             if (file != null && file.exists()) {
                 fileStateView.setText(R.string.Have_downloaded);
@@ -123,10 +123,10 @@ public class EaseChatRowFile extends EaseChatRow{
             // 下载
             context.startActivity(new Intent(context, EaseShowNormalFileActivity.class).putExtra("msgbody", message.getBody()));
         }
-        if (message.direct == EMMessage.Direct.RECEIVE && !message.isAcked()) {
+        if (message.direct() == EMMessage.Direct.RECEIVE && !message.isAcked()) {
             try {
                 EMClient.getInstance().chatManager().ackMessageRead(message.getFrom(), message.getMsgId());
-                message.setIsAcked(true);
+                message.setAcked(true);
             } catch (EaseMobException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();

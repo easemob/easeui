@@ -115,7 +115,7 @@ public abstract class EaseChatRow extends LinearLayout {
             }
         }
         //设置头像和nick
-        if(message.direct == Direct.SEND){
+        if(message.direct() == Direct.SEND){
             EaseUserUtils.setUserAvatar(context, EMClient.getInstance().getCurrentUser(), userAvatarView);
             //发送方不显示nick
 //            UserUtils.setUserNick(EMChatManager.getInstance().getCurrentUser(), usernickView);
@@ -155,12 +155,12 @@ public abstract class EaseChatRow extends LinearLayout {
                 else
                     usernickView.setVisibility(View.GONE);
             }
-            if (message.direct == Direct.SEND) {
+            if (message.direct() == Direct.SEND) {
                 if (((EaseMessageAdapter) adapter).getMyBubbleBg() != null)
                     bubbleLayout.setBackgroundDrawable(((EaseMessageAdapter) adapter).getMyBubbleBg());
                 // else
                 // bubbleLayout.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.chatto_bg));
-            } else if (message.direct == Direct.RECEIVE) {
+            } else if (message.direct() == Direct.RECEIVE) {
                 if (((EaseMessageAdapter) adapter).getOtherBuddleBg() != null)
                     bubbleLayout.setBackgroundDrawable(((EaseMessageAdapter) adapter).getOtherBuddleBg());
 //                else
@@ -279,7 +279,7 @@ public abstract class EaseChatRow extends LinearLayout {
             @Override
             public void onClick(View v) {
                 if (itemClickListener != null) {
-                    if (message.direct == Direct.SEND) {
+                    if (message.direct() == Direct.SEND) {
                         itemClickListener.onUserAvatarClick(EMClient.getInstance().getCurrentUser());
                     } else {
                         itemClickListener.onUserAvatarClick(message.getFrom());

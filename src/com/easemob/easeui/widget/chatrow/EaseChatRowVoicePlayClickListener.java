@@ -68,7 +68,7 @@ public class EaseChatRowVoicePlayClickListener implements View.OnClickListener {
 
 	public void stopPlayVoice() {
 		voiceAnimation.stop();
-		if (message.direct == EMMessage.Direct.RECEIVE) {
+		if (message.direct() == EMMessage.Direct.RECEIVE) {
 			voiceIconView.setImageResource(R.drawable.ease_chatfrom_voice_playing);
 		} else {
 			voiceIconView.setImageResource(R.drawable.ease_chatto_voice_playing);
@@ -121,21 +121,22 @@ public class EaseChatRowVoicePlayClickListener implements View.OnClickListener {
 			showAnimation();
 
 			// 如果是接收的消息
-			if (message.direct == EMMessage.Direct.RECEIVE) {
+			if (message.direct() == EMMessage.Direct.RECEIVE) {
 				try {
 					if (!message.isAcked()) {
-						message.setIsAcked(true);
+						message.setAcked(true);
 						// 告知对方已读这条消息
 						if (chatType != ChatType.GroupChat && chatType != ChatType.ChatRoom)
 							EMClient.getInstance().chatManager().ackMessageRead(message.getFrom(), message.getMsgId());
 					}
 				} catch (Exception e) {
-					message.setIsAcked(false);
+					message.setAcked(false);
 				}
 				if (!message.isListened() && iv_read_status != null && iv_read_status.getVisibility() == View.VISIBLE) {
 					// 隐藏自己未播放这条语音消息的标志
 					iv_read_status.setVisibility(View.INVISIBLE);
 					message.setListened(true);
+					EMClient.getInstance().chatManager().setMessageListened(message);
 				}
 
 			}
@@ -148,7 +149,7 @@ public class EaseChatRowVoicePlayClickListener implements View.OnClickListener {
 	// show the voice playing animation
 	private void showAnimation() {
 		// play voice, and start animation
-		if (message.direct == EMMessage.Direct.RECEIVE) {
+		if (message.direct() == EMMessage.Direct.RECEIVE) {
 			voiceIconView.setImageResource(R.anim.voice_from_icon);
 		} else {
 			voiceIconView.setImageResource(R.anim.voice_to_icon);
@@ -168,7 +169,7 @@ public class EaseChatRowVoicePlayClickListener implements View.OnClickListener {
 			currentPlayListener.stopPlayVoice();
 		}
 
-		if (message.direct == EMMessage.Direct.SEND) {
+		if (message.direct() == EMMessage.Direct.SEND) {
 			// for sent msg, we will try to play the voice file directly
 			playVoice(voiceBody.getLocalUrl());
 		} else {
