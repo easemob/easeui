@@ -132,8 +132,7 @@ public final class EaseUI {
         // 设置从db初始化加载时, 每个conversation需要加载msg的个数
         options.setNumberOfMessagesLoaded(1);
         
-        EMClient client = EMClient.create(appContext, options);
-        client.init();
+        EMClient.getInstance().init(appContext, options);
         
         notifier = createNotifier();
         notifier.init(appContext);
