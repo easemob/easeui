@@ -15,6 +15,7 @@ import com.easemob.chat.EMConversation;
 import com.easemob.chat.EMMessage;
 import com.easemob.easeui.R;
 import com.easemob.easeui.adapter.EaseMessageAdapter;
+import com.easemob.easeui.utils.EaseCommonUtils;
 import com.easemob.easeui.widget.chatrow.EaseCustomChatRowProvider;
 
 public class EaseChatMessageList extends RelativeLayout{
@@ -64,7 +65,7 @@ public class EaseChatMessageList extends RelativeLayout{
         this.chatType = chatType;
         this.toChatUsername = toChatUsername;
         
-        conversation = EMClient.getInstance().chatManager().getConversation(toChatUsername);
+        conversation = EMClient.getInstance().chatManager().getConversation(toChatUsername, EaseCommonUtils.getConversationType(chatType));
         messageAdapter = new EaseMessageAdapter(context, toChatUsername, chatType, listView);
         messageAdapter.setShowAvatar(showAvatar);
         messageAdapter.setShowUserNick(showUserNick);
