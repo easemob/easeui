@@ -57,12 +57,7 @@ public class EaseChatRowImage extends EaseChatRowFile{
                 percentageView.setVisibility(View.GONE);
                 imageView.setImageResource(R.drawable.ease_default_image);
                 if (imgBody.getLocalUrl() != null) {
-                    // String filePath = imgBody.getLocalUrl();
-                    String remotePath = imgBody.getRemoteUrl();
-                    String filePath = EaseImageUtils.getImagePath(remotePath);
-                    String thumbRemoteUrl = imgBody.getThumbnailUrl();
-                    String thumbnailPath = EaseImageUtils.getThumbnailImagePath(thumbRemoteUrl);
-                    showImageView(thumbnailPath, imageView, filePath, message);
+                    showImageView(imgBody.thumbnailLocalPath(), imageView, imgBody.getLocalUrl(), message);
                 }
             }
             return;
