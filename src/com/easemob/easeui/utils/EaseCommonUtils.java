@@ -15,6 +15,9 @@ package com.easemob.easeui.utils;
 
 import java.util.List;
 
+import com.easemob.chat.EMConversation;
+import com.easemob.chat.EMConversation.EMConversationType;
+import com.easemob.chat.adapter.EMAConversation.EMAConversationType;
 import com.easemob.chat.EMMessage;
 import com.easemob.chat.EMTextMessageBody;
 import com.easemob.easeui.EaseConstant;
@@ -170,6 +173,21 @@ public class EaseCommonUtils {
             if (header < 'a' || header > 'z') {
                 user.setInitialLetter("#");
             }
+        }
+    }
+    
+    /**
+     * 将应用的会话类型转化为SDK的会话类型
+     * @param chatType
+     * @return
+     */
+    public static EMConversationType getConversationType(int chatType) {
+        if (chatType == EaseConstant.CHATTYPE_SINGLE) {
+            return EMConversationType.Chat;
+        } else if (chatType == EaseConstant.CHATTYPE_GROUP) {
+            return EMConversationType.GroupChat;
+        } else {
+            return EMConversationType.ChatRoom;
         }
     }
 

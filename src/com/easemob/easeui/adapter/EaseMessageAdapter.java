@@ -27,6 +27,7 @@ import com.easemob.chat.EMClient;
 import com.easemob.chat.EMConversation;
 import com.easemob.chat.EMMessage;
 import com.easemob.easeui.EaseConstant;
+import com.easemob.easeui.utils.EaseCommonUtils;
 import com.easemob.easeui.widget.EaseChatMessageList.MessageListItemClickListener;
 import com.easemob.easeui.widget.chatrow.EaseChatRow;
 import com.easemob.easeui.widget.chatrow.EaseChatRowBigExpression;
@@ -86,7 +87,7 @@ public class EaseMessageAdapter extends BaseAdapter{
 		this.context = context;
 		this.listView = listView;
 		toChatUsername = username;
-		this.conversation = EMClient.getInstance().chatManager().getConversation(username);
+		this.conversation = EMClient.getInstance().chatManager().getConversation(username, EaseCommonUtils.getConversationType(chatType));
 	}
 	
 	Handler handler = new Handler() {
