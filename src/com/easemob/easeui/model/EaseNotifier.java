@@ -123,7 +123,7 @@ public class EaseNotifier {
      * @param message
      */
     public synchronized void onNewMsg(EMMessage message) {
-        if(EMChatManager.isSlientMessage(message)){
+        if(EMClient.getInstance().chatManager().isSlientMessage(message)){
             return;
         }
         EaseSettingsProvider settingsProvider = EaseUI.getInstance().getSettingsProvider();
@@ -144,7 +144,7 @@ public class EaseNotifier {
     }
     
     public synchronized void onNewMesg(List<EMMessage> messages) {
-        if(EMChatManager.isSlientMessage(messages.get(messages.size()-1))){
+        if(EMClient.getInstance().chatManager().isSlientMessage(messages.get(messages.size()-1))){
             return;
         }
         EaseSettingsProvider settingsProvider = EaseUI.getInstance().getSettingsProvider();
@@ -294,7 +294,7 @@ public class EaseNotifier {
      */
     public void viberateAndPlayTone(EMMessage message) {
         if(message != null){
-            if(EMChatManager.isSlientMessage(message)){
+            if(EMClient.getInstance().chatManager().isSlientMessage(message)){
                 return;
             } 
         }
