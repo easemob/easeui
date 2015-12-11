@@ -863,7 +863,7 @@ public class EaseChatFragment extends EaseBaseFragment {
                 File file = new File(filePath);
                 if (!file.exists()) {
                     // 不存在大图发送缩略图
-                    filePath = EaseImageUtils.getThumbnailImagePath(filePath);
+                    filePath = ((EMImageMessageBody) forward_msg.getBody()).thumbnailLocalPath();
                 }
                 sendImageMessage(filePath);
             }
