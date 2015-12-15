@@ -88,6 +88,7 @@ public class EaseChatRowImage extends EaseChatRowFile{
             // first
             intent.putExtra("secret", imgBody.getSecret());
             intent.putExtra("remotepath", imgBody.getRemoteUrl());
+            intent.putExtra("localUrl", imgBody.getLocalUrl());
         }
         if (message != null && message.direct() == EMMessage.Direct.RECEIVE && !message.isAcked()
                 && message.getChatType() != ChatType.GroupChat) {
