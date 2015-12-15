@@ -47,8 +47,8 @@ public class EaseChatRowLocation extends EaseChatRow{
 		    setMessageSendCallback();
             switch (message.status()) {
             case CREATE: 
-                progressBar.setVisibility(View.VISIBLE);
-                statusView.setVisibility(View.GONE);
+                progressBar.setVisibility(View.GONE);
+                statusView.setVisibility(View.VISIBLE);
                 // 发送消息
 //                sendMsgInBackground(message);
                 break;
