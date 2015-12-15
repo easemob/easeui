@@ -65,6 +65,7 @@ public class EaseShowBigImageActivity extends EaseBaseActivity {
 		default_res = getIntent().getIntExtra("default_image", R.drawable.ease_default_avatar);
 		Uri uri = getIntent().getParcelableExtra("uri");
 		String remotepath = getIntent().getExtras().getString("remotepath");
+		localFilePath = getIntent().getExtras().getString("localUrl");
 		String secret = getIntent().getExtras().getString("secret");
 		EMLog.d(TAG, "show big image uri:" + uri + " remotepath:" + remotepath);
 
@@ -107,22 +108,6 @@ public class EaseShowBigImageActivity extends EaseBaseActivity {
 	}
 	
 	/**
-	 * 通过远程URL，确定下本地下载后的localurl
-	 * @param remoteUrl
-	 * @return
-	 */
-	public String getLocalFilePath(String remoteUrl){
-		String localPath;
-		if (remoteUrl.contains("/")){
-			localPath = PathUtil.getInstance().getImagePath().getAbsolutePath() + "/"
-					+ remoteUrl.substring(remoteUrl.lastIndexOf("/") + 1);
-		}else{
-			localPath = PathUtil.getInstance().getImagePath().getAbsolutePath() + "/" + remoteUrl;
-		}
-		return localPath;
-	}
-	
-	/**
 	 * 下载图片
 	 * 
 	 * @param remoteFilePath
@@ -133,8 +118,7 @@ public class EaseShowBigImageActivity extends EaseBaseActivity {
 		pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 		pd.setCanceledOnTouchOutside(false);
 		pd.setMessage(str1);
-		pd.show();
-		localFilePath = getLocalFilePath(remoteFilePath);
+		pd.show();		
 		final EMCallBack callback = new EMCallBack() {
 			public void onSuccess() {
 
