@@ -60,7 +60,6 @@ public class EaseContactListFragment extends EaseBaseFragment {
     protected List<EaseUser> contactList;
     protected ListView listView;
     protected boolean hidden;
-    protected List<String> blackList;
     protected ImageButton clearSearch;
     protected EditText query;
     protected Handler handler = new Handler();
@@ -103,7 +102,6 @@ public class EaseContactListFragment extends EaseBaseFragment {
         EMClient.getInstance().addConnectionListener(connectionListener);
         
         //黑名单列表
-        blackList = EMClient.getInstance().contactManager().getBlackListUsernames();
         contactList = new ArrayList<EaseUser>();
         // 获取设置contactlist
         getContactList();
@@ -249,7 +247,7 @@ public class EaseContactListFragment extends EaseBaseFragment {
                         && !entry.getKey().equals("item_groups")
                         && !entry.getKey().equals("item_chatroom")
                         && !entry.getKey().equals("item_robots")){
-                    if(!blackList.contains(entry.getKey())){
+                    if(!EMClient.getInstance().contactManager().getBlackListUsernames().contains(entry.getKey())){
                         //不显示黑名单中的用户
                         EaseUser user = entry.getValue();
                         EaseCommonUtils.setUserInitialLetter(user);
