@@ -1,5 +1,6 @@
 package com.easemob.easeui.widget.chatrow;
 
+import com.easemob.chat.EMFileMessageBody;
 import com.easemob.chat.EMMessage;
 import com.easemob.chat.EMVoiceMessageBody;
 import com.easemob.easeui.R;
@@ -71,7 +72,8 @@ public class EaseChatRowVoice extends EaseChatRowFile{
                 readStutausView.setVisibility(View.VISIBLE);
             }
             EMLog.d(TAG, "it is receive msg");
-            if (message.status() == EMMessage.Status.INPROGRESS) {
+            if (voiceBody.downloadStatus() == EMFileMessageBody.EMDownloadStatus.DOWNLOADING ||
+                    voiceBody.downloadStatus() == EMFileMessageBody.EMDownloadStatus.PENDING) {
                 progressBar.setVisibility(View.VISIBLE);
                 setMessageReceiveCallback();
             } else {

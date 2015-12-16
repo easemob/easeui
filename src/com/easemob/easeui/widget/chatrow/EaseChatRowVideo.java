@@ -4,6 +4,7 @@ import java.io.File;
 
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMClient;
+import com.easemob.chat.EMFileMessageBody;
 import com.easemob.chat.EMMessage;
 import com.easemob.chat.EMMessage.ChatType;
 import com.easemob.chat.EMVideoMessageBody;
@@ -79,12 +80,12 @@ public class EaseChatRowVideo extends EaseChatRowFile{
             }
         }
 
+        EMLog.d(TAG,  "video thumbnailStatus:" + videoBody.thumbnailDownloadStatus());
         if (message.direct() == EMMessage.Direct.RECEIVE) {
-
-            if (message.status() == EMMessage.Status.INPROGRESS) {
+            if (videoBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.DOWNLOADING ||
+                    videoBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.PENDING) {
                 imageView.setImageResource(R.drawable.ease_default_image);
                 setMessageReceiveCallback();
-
             } else {
                 // System.err.println("!!!! not back receive, show image directly");
                 imageView.setImageResource(R.drawable.ease_default_image);
