@@ -238,6 +238,7 @@ public class EaseContactListFragment extends EaseBaseFragment {
                 return;
             }
             Iterator<Entry<String, EaseUser>> iterator = contactsMap.entrySet().iterator();
+            List<String> blackList = EMClient.getInstance().contactManager().getBlackListUsernames();
             while (iterator.hasNext()) {
                 Entry<String, EaseUser> entry = iterator.next();
                 //兼容以前的通讯录里的已有的数据显示，加上此判断，如果是新集成的可以去掉此判断
@@ -245,7 +246,7 @@ public class EaseContactListFragment extends EaseBaseFragment {
                         && !entry.getKey().equals("item_groups")
                         && !entry.getKey().equals("item_chatroom")
                         && !entry.getKey().equals("item_robots")){
-                    if(!EMClient.getInstance().contactManager().getBlackListUsernames().contains(entry.getKey())){
+                    if(!blackList.contains(entry.getKey())){
                         //不显示黑名单中的用户
                         EaseUser user = entry.getValue();
                         EaseCommonUtils.setUserInitialLetter(user);
