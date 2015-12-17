@@ -1,5 +1,6 @@
 package com.easemob.easeui.widget;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
@@ -39,8 +40,11 @@ public class EaseContactList extends RelativeLayout {
         public void handleMessage(Message msg) {
             switch (msg.what) {
             case MSG_UPDATE_LIST:
-                if(adapter != null)
-                    adapter.notifyDataSetChanged();
+                if(adapter != null){
+                	adapter.clear();
+                	adapter.addAll(new ArrayList<EaseUser>(contactList));
+                	adapter.notifyDataSetChanged();	
+                }
                 break;
             default:
                 break;
@@ -89,8 +93,8 @@ public class EaseContactList extends RelativeLayout {
      * init view
      */
     public void init(List<EaseUser> contactList){
-        this.contactList = contactList;
-        adapter = new EaseContactAdapter(context, 0, contactList);
+    	this.contactList = contactList;
+        adapter = new EaseContactAdapter(context, 0, new ArrayList<EaseUser>(contactList));
         adapter.setPrimaryColor(primaryColor).setPrimarySize(primarySize).setInitialLetterBg(initialLetterBg)
             .setInitialLetterColor(initialLetterColor);
         listView.setAdapter(adapter);
@@ -105,7 +109,7 @@ public class EaseContactList extends RelativeLayout {
         Message msg = handler.obtainMessage(MSG_UPDATE_LIST);
         handler.sendMessage(msg);
     }
-    
+
     public void filter(CharSequence str) {
         adapter.getFilter().filter(str);
     }
