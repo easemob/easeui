@@ -122,16 +122,10 @@ public class EaseChatRowVoicePlayClickListener implements View.OnClickListener {
 
 			// 如果是接收的消息
 			if (message.direct() == EMMessage.Direct.RECEIVE) {
-				try {
-					if (!message.isAcked()) {
-						message.setAcked(true);
-						// 告知对方已读这条消息
-						if (chatType != ChatType.GroupChat && chatType != ChatType.ChatRoom)
-							EMClient.getInstance().chatManager().ackMessageRead(message.getFrom(), message.getMsgId());
-					}
-				} catch (Exception e) {
-					message.setAcked(false);
-				}
+			    if (!message.isAcked() && chatType == ChatType.Chat) {
+	                    // 告知对方已读这条消息
+			            EMClient.getInstance().chatManager().ackMessageRead(message.getFrom(), message.getMsgId());
+			    }
 				if (!message.isListened() && iv_read_status != null && iv_read_status.getVisibility() == View.VISIBLE) {
 					// 隐藏自己未播放这条语音消息的标志
 					iv_read_status.setVisibility(View.INVISIBLE);
