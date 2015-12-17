@@ -95,6 +95,7 @@ public class EaseMessageAdapter extends BaseAdapter{
 			// UI线程不能直接使用conversation.getAllMessages()
 			// 否则在UI刷新过程中，如果收到新的消息，会导致并发问题
 			messages = (EMMessage[]) conversation.getAllMessages().toArray(new EMMessage[0]);
+			conversation.markAllMessagesAsRead();
 			notifyDataSetChanged();
 		}
 		
