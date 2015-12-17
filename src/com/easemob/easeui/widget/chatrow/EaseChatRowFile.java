@@ -6,6 +6,7 @@ import com.easemob.EMCallBack;
 import com.easemob.chat.EMClient;
 import com.easemob.chat.EMMessage;
 import com.easemob.chat.EMNormalFileMessageBody;
+import com.easemob.chat.EMMessage.ChatType;
 import com.easemob.easeui.R;
 import com.easemob.easeui.ui.EaseShowNormalFileActivity;
 import com.easemob.exceptions.EaseMobException;
@@ -121,10 +122,9 @@ public class EaseChatRowFile extends EaseChatRow{
             // 下载
             context.startActivity(new Intent(context, EaseShowNormalFileActivity.class).putExtra("msgbody", message.getBody()));
         }
-        if (message.direct() == EMMessage.Direct.RECEIVE && !message.isAcked()) {
+        if (message.direct() == EMMessage.Direct.RECEIVE && !message.isAcked() && message.getChatType() == ChatType.Chat) {
             try {
                 EMClient.getInstance().chatManager().ackMessageRead(message.getFrom(), message.getMsgId());
-                message.setAcked(true);
             } catch (EaseMobException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();

@@ -93,10 +93,9 @@ public class EaseChatRowImage extends EaseChatRowFile{
             intent.putExtra("localUrl", imgBody.getLocalUrl());
         }
         if (message != null && message.direct() == EMMessage.Direct.RECEIVE && !message.isAcked()
-                && message.getChatType() != ChatType.GroupChat) {
+                && message.getChatType() == ChatType.Chat) {
             try {
                 EMClient.getInstance().chatManager().ackMessageRead(message.getFrom(), message.getMsgId());
-                message.setAcked(true);
             } catch (Exception e) {
                 e.printStackTrace();
             }
