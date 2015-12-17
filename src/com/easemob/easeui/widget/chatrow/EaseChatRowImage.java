@@ -2,8 +2,8 @@ package com.easemob.easeui.widget.chatrow;
 
 import java.io.File;
 
-import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMClient;
+import com.easemob.chat.EMFileMessageBody;
 import com.easemob.chat.EMImageMessageBody;
 import com.easemob.chat.EMMessage;
 import com.easemob.chat.EMMessage.ChatType;
@@ -12,6 +12,7 @@ import com.easemob.easeui.model.EaseImageCache;
 import com.easemob.easeui.ui.EaseShowBigImageActivity;
 import com.easemob.easeui.utils.EaseCommonUtils;
 import com.easemob.easeui.utils.EaseImageUtils;
+import com.easemob.util.EMLog;
 
 import android.content.Context;
 import android.content.Intent;
@@ -49,7 +50,8 @@ public class EaseChatRowImage extends EaseChatRowFile{
         imgBody = (EMImageMessageBody) message.getBody();
         // 接收方向的消息
         if (message.direct() == EMMessage.Direct.RECEIVE) {
-            if (message.status() == EMMessage.Status.INPROGRESS) {
+            if (imgBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.DOWNLOADING ||
+                    imgBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.PENDING) {
                 imageView.setImageResource(R.drawable.ease_default_image);
                 setMessageReceiveCallback();
             } else {
@@ -91,10 +93,9 @@ public class EaseChatRowImage extends EaseChatRowFile{
             intent.putExtra("localUrl", imgBody.getLocalUrl());
         }
         if (message != null && message.direct() == EMMessage.Direct.RECEIVE && !message.isAcked()
-                && message.getChatType() != ChatType.GroupChat) {
+                && message.getChatType() == ChatType.Chat) {
             try {
                 EMClient.getInstance().chatManager().ackMessageRead(message.getFrom(), message.getMsgId());
-                message.setAcked(true);
             } catch (Exception e) {
                 e.printStackTrace();
             }

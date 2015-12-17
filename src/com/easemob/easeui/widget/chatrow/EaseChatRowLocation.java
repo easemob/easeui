@@ -71,7 +71,6 @@ public class EaseChatRowLocation extends EaseChatRow{
             if(!message.isAcked() && message.getChatType() == ChatType.Chat){
                 try {
                     EMClient.getInstance().chatManager().ackMessageRead(message.getFrom(), message.getMsgId());
-                    message.setAcked(true);
                 } catch (EaseMobException e) {
                     e.printStackTrace();
                 }
