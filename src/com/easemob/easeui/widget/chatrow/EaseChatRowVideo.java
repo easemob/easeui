@@ -62,8 +62,8 @@ public class EaseChatRowVideo extends EaseChatRowFile{
 
             showVideoThumbView(localThumb, imageView, videoBody.getThumbnailUrl(), message);
         }
-        if (videoBody.getLength() > 0) {
-            String time = DateUtils.toTimeBySecond(videoBody.getLength());
+        if (videoBody.getDuration() > 0) {
+            String time = DateUtils.toTime(videoBody.getDuration());
             timeLengthView.setText(time);
         }
 //        playView.setImageResource(R.drawable.video_play_btn_small_nor);
