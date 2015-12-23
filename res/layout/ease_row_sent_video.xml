@@ -17,15 +17,14 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin_chat_activity" >
 
-        <ImageView
+        <com.easemob.easeui.widget.EaseImageView
             android:id="@+id/iv_userhead"
             android:layout_width="@dimen/size_avatar"
             android:layout_height="@dimen/size_avatar"
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
             android:layout_marginRight="@dimen/margin_chat_activity"
-            android:background="@drawable/ease_default_avatar"
-            android:scaleType="fitXY" />
+            android:src="@drawable/ease_default_avatar"/>
 
         <RelativeLayout
             android:id="@+id/bubble"
