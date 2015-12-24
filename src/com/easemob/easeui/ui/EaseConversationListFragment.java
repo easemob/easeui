@@ -3,13 +3,12 @@ package com.easemob.easeui.ui;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
 import com.easemob.EMConnectionListener;
+import com.easemob.EMConversationListener;
 import com.easemob.EMError;
-import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMClient;
 import com.easemob.chat.EMConversation;
 import com.easemob.easeui.R;
@@ -40,6 +39,7 @@ import android.widget.ImageButton;
  *
  */
 public class EaseConversationListFragment extends EaseBaseFragment{
+	private final static int MSG_REFRESH = 2;
     protected EditText query;
     protected ImageButton clearSearch;
     protected boolean hidden;
@@ -48,6 +48,15 @@ public class EaseConversationListFragment extends EaseBaseFragment{
     protected FrameLayout errorItemContainer;
 
     protected boolean isConflict;
+    
+    protected EMConversationListener convListener = new EMConversationListener(){
+
+		@Override
+		public void onCoversationUpdate() {
+			refresh();
+		}
+    	
+    };
     
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -154,7 +163,14 @@ public class EaseConversationListFragment extends EaseBaseFragment{
             case 1:
                 onConnectionConnected();
                 break;
-                
+            
+            case MSG_REFRESH:
+	            {
+	            	conversationList.clear();
+	                conversationList.addAll(loadConversationList());
+	                conversationListView.refresh();
+	                break;
+	            }
             default:
                 break;
             }
@@ -180,9 +196,9 @@ public class EaseConversationListFragment extends EaseBaseFragment{
      * 刷新页面
      */
     public void refresh() {
-        conversationList.clear();
-        conversationList.addAll(loadConversationList());
-        conversationListView.refresh();
+    	if(!handler.hasMessages(MSG_REFRESH)){
+    		handler.sendEmptyMessage(MSG_REFRESH);
+    	}
     }
     
     /**

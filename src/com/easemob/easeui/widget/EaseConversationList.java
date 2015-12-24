@@ -33,7 +33,8 @@ public class EaseConversationList extends ListView {
     
     protected Context context;
     protected EaseConversationAdapater adapter;
-    protected List<EMConversation> conversationList = new ArrayList<EMConversation>();
+    protected List<EMConversation> conversations = new ArrayList<EMConversation>();
+    protected List<EMConversation> passedListRef = null;
     
     
     public EaseConversationList(Context context, AttributeSet attrs) {
@@ -62,8 +63,10 @@ public class EaseConversationList extends ListView {
     }
     
     public void init(List<EMConversation> conversationList){
-        this.conversationList = conversationList;
-        adapter = new EaseConversationAdapater(context, 0, conversationList);
+    	passedListRef = conversationList;
+        conversations.addAll(conversationList);
+        
+        adapter = new EaseConversationAdapater(context, 0, conversations);
         adapter.setPrimaryColor(primaryColor);
         adapter.setPrimarySize(primarySize);
         adapter.setSecondaryColor(secondaryColor);
@@ -79,8 +82,9 @@ public class EaseConversationList extends ListView {
             switch (message.what) {
             case MSG_REFRESH_ADAPTER_DATA:
                 if (adapter != null) {
-                    conversationList.clear();
-                    conversationList.addAll(loadConversationsWithRecentChat());
+                	adapter.clear();
+                    conversations.clear();
+                    conversations.addAll(passedListRef);
                     adapter.notifyDataSetChanged();
                 }
                 break;
@@ -155,9 +159,9 @@ public class EaseConversationList extends ListView {
     }
     
     public void refresh() {
-        conversationList = loadConversationsWithRecentChat();
-
-        handler.sendEmptyMessage(MSG_REFRESH_ADAPTER_DATA);
+    	if(!handler.hasMessages(MSG_REFRESH_ADAPTER_DATA)){
+    		handler.sendEmptyMessage(MSG_REFRESH_ADAPTER_DATA);
+    	}
     }
     
     public void filter(CharSequence str) {
