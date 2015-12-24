@@ -188,5 +188,39 @@ public class EaseConversationList extends ListView {
     }
     
     
-    
+    /**
+	 * 设置控件形状
+	 * 
+	 * @param shape
+	 */
+	public void setAvatarShape(int shape) {
+		adapter.setAvatarShape(shape);
+	}
+
+	/**
+	 * 设置控件边框宽度
+	 * 
+	 * @param width
+	 */
+	public void setBorderWidth(int width) {
+		adapter.setBorderWidth(width);
+	}
+
+	/**
+	 * 设置控件边框颜色
+	 * 
+	 * @param color
+	 */
+	public void setBorderColor(int color) {
+		adapter.setBorderColor(color);
+	}
+
+	/**
+	 * 设置控件圆角半径
+	 * 
+	 * @param radius
+	 */
+	public void setAvatarRadius(int radius) {
+		adapter.setAvatarRadius(radius);
+	}
 }
