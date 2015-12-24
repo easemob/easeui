@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.easemob.easeuisimpledemo"
+    package="com.hyphenate.easeuisimpledemo"
     android:versionCode="1"
     android:versionName="1.0" >
 
@@ -56,25 +56,25 @@
             android:windowSoftInputMode="adjustResize"
             />
         <activity 
-            android:name="com.easemob.easeui.ui.EaseBaiduMapActivity"
+            android:name="com.hyphenate.easeui.ui.EaseBaiduMapActivity"
             android:screenOrientation="portrait"
             />
         
         <activity 
-            android:name="com.easemob.easeui.ui.EaseShowBigImageActivity"
+            android:name="com.hyphenate.easeui.ui.EaseShowBigImageActivity"
             android:screenOrientation="portrait"
             />
 
         <!-- 设置环信应用的appkey -->
         <meta-data
             android:name="EASEMOB_APPKEY"
-            android:value="easemob-demo#chatdemoui" />
+            android:value="hyphenate-demo#chatdemoui" />
         <!-- 声明sdk所需的service -->
         <service
-            android:name="com.easemob.chat.EMChatService"
+            android:name="com.hyphenate.chat.EMChatService"
             android:exported="true" />
         <!-- 声明sdk所需的receiver -->
-        <receiver android:name="com.easemob.chat.EMMonitorReceiver" >
+        <receiver android:name="com.hyphenate.chat.EMMonitorReceiver" >
             <intent-filter>
                 <action android:name="android.intent.action.PACKAGE_REMOVED" />
 

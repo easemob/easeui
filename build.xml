@@ -96,10 +96,10 @@
         </java>
     </target>
 
-    <property name="easemob.chat.version" value="2.2.3"/>
+    <property name="hyphenate.chat.version" value="2.2.3"/>
     <target name="-post-build" depends="proguard-jar">
         <echo>build the sdk jar</echo>
-        <copy file="${out.dir}/classes-proguard.jar" tofile="${out.dir}/easemobchat_${easemob.chat.version}.jar"/>
+        <copy file="${out.dir}/classes-proguard.jar" tofile="${out.dir}/hyphenatechat_${hyphenate.chat.version}.jar"/>
     </target>
     -->
 
