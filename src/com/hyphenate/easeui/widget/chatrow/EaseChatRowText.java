@@ -1,13 +1,12 @@
 package com.hyphenate.easeui.widget.chatrow;
 
-import com.hyphenate.chat.EMChatManager;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMMessage.ChatType;
 import com.hyphenate.chat.EMTextMessageBody;
 import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.utils.EaseSmileUtils;
-import com.hyphenate.exceptions.EaseMobException;
+import com.hyphenate.exceptions.HyphenateException;
 
 import android.content.Context;
 import android.text.Spannable;
@@ -74,7 +73,7 @@ public class EaseChatRowText extends EaseChatRow{
             if(!message.isAcked() && message.getChatType() == ChatType.Chat){
                 try {
                     EMClient.getInstance().chatManager().ackMessageRead(message.getFrom(), message.getMsgId());
-                } catch (EaseMobException e) {
+                } catch (HyphenateException e) {
                     e.printStackTrace();
                 }
             }

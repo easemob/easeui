@@ -5,11 +5,11 @@ import java.io.File;
 import com.hyphenate.EMCallBack;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMMessage;
-import com.hyphenate.chat.EMNormalFileMessageBody;
 import com.hyphenate.chat.EMMessage.ChatType;
+import com.hyphenate.chat.EMNormalFileMessageBody;
 import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.ui.EaseShowNormalFileActivity;
-import com.hyphenate.exceptions.EaseMobException;
+import com.hyphenate.exceptions.HyphenateException;
 import com.hyphenate.util.FileUtils;
 import com.hyphenate.util.TextFormater;
 
@@ -125,7 +125,7 @@ public class EaseChatRowFile extends EaseChatRow{
         if (message.direct() == EMMessage.Direct.RECEIVE && !message.isAcked() && message.getChatType() == ChatType.Chat) {
             try {
                 EMClient.getInstance().chatManager().ackMessageRead(message.getFrom(), message.getMsgId());
-            } catch (EaseMobException e) {
+            } catch (HyphenateException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }

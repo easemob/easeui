@@ -1,13 +1,12 @@
 package com.hyphenate.easeui.widget.chatrow;
 
-import com.hyphenate.chat.EMChatManager;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMLocationMessageBody;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMMessage.ChatType;
 import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.ui.EaseBaiduMapActivity;
-import com.hyphenate.exceptions.EaseMobException;
+import com.hyphenate.exceptions.HyphenateException;
 import com.hyphenate.util.LatLng;
 
 import android.content.Context;
@@ -71,7 +70,7 @@ public class EaseChatRowLocation extends EaseChatRow{
             if(!message.isAcked() && message.getChatType() == ChatType.Chat){
                 try {
                     EMClient.getInstance().chatManager().ackMessageRead(message.getFrom(), message.getMsgId());
-                } catch (EaseMobException e) {
+                } catch (HyphenateException e) {
                     e.printStackTrace();
                 }
             }

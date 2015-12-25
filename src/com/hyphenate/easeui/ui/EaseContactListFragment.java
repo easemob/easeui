@@ -28,7 +28,7 @@ import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.domain.EaseUser;
 import com.hyphenate.easeui.utils.EaseCommonUtils;
 import com.hyphenate.easeui.widget.EaseContactList;
-import com.hyphenate.exceptions.EaseMobException;
+import com.hyphenate.exceptions.HyphenateException;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
@@ -197,7 +197,7 @@ public class EaseContactListFragment extends EaseBaseFragment {
                             refresh();
                         }
                     });
-                } catch (EaseMobException e) {
+                } catch (HyphenateException e) {
                     e.printStackTrace();
                     getActivity().runOnUiThread(new Runnable() {
                         public void run() {
