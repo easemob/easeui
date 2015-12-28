@@ -138,6 +138,9 @@ public class EaseShowBigImageActivity extends EaseBaseActivity {
 							EaseImageCache.getInstance().put(localFilePath, bitmap);
 							isDownloaded = true;
 						}
+						if (EaseShowBigImageActivity.this.isFinishing() || EaseShowBigImageActivity.this.isDestroyed()) {
+						    return;
+						}
 						if (pd != null) {
 							pd.dismiss();
 						}
@@ -154,8 +157,11 @@ public class EaseShowBigImageActivity extends EaseBaseActivity {
 				runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
-						pd.dismiss();
-						image.setImageResource(default_res);
+						if (EaseShowBigImageActivity.this.isFinishing() || EaseShowBigImageActivity.this.isDestroyed()) {
+						    return;
+						}
+                        image.setImageResource(default_res);
+                        pd.dismiss();
 					}
 				});
 			}
@@ -166,7 +172,9 @@ public class EaseShowBigImageActivity extends EaseBaseActivity {
 				runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
-						
+                        if (EaseShowBigImageActivity.this.isFinishing() || EaseShowBigImageActivity.this.isDestroyed()) {
+                            return;
+                        }
 						pd.setMessage(str2 + progress + "%");
 					}
 				});
