@@ -58,9 +58,12 @@ public class EaseChatRowImage extends EaseChatRowFile{
                 progressBar.setVisibility(View.GONE);
                 percentageView.setVisibility(View.GONE);
                 imageView.setImageResource(R.drawable.ease_default_image);
-                if (imgBody.getLocalUrl() != null) {
-                    showImageView(imgBody.thumbnailLocalPath(), imageView, imgBody.getLocalUrl(), message);
+                String thumbPath = imgBody.thumbnailLocalPath();
+                if (!new File(thumbPath).exists()) {
+                    // 兼容旧版SDK收到的thumbnail
+                    thumbPath = EaseImageUtils.getThumbnailImagePath(imgBody.getLocalUrl());
                 }
+                showImageView(thumbPath, imageView, imgBody.getLocalUrl(), message);
             }
             return;
         }
@@ -128,7 +131,11 @@ public class EaseChatRowImage extends EaseChatRowFile{
                         return EaseImageUtils.decodeScaleImage(thumbernailPath, 160, 160);
                     } else {
                         if (message.direct() == EMMessage.Direct.SEND) {
-                            return EaseImageUtils.decodeScaleImage(localFullSizePath, 160, 160);
+                            if (localFullSizePath != null && new File(localFullSizePath).exists()) {
+                                return EaseImageUtils.decodeScaleImage(localFullSizePath, 160, 160);
+                            } else {
+                                return null;
+                            }
                         } else {
                             return null;
                         }
