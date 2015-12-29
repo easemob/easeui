@@ -118,14 +118,18 @@ public class EaseShowBigImageActivity extends EaseBaseActivity {
 		pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 		pd.setCanceledOnTouchOutside(false);
 		pd.setMessage(str1);
-		pd.show();		
+		pd.show();
+		File temp = new File(localFilePath);
+		final String tempPath = temp.getParent() + "/temp_" + temp.getName();
 		final EMCallBack callback = new EMCallBack() {
 			public void onSuccess() {
 
 				runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
-						DisplayMetrics metrics = new DisplayMetrics();
+                        new File(tempPath).renameTo(new File(localFilePath));
+
+                        DisplayMetrics metrics = new DisplayMetrics();
 						getWindowManager().getDefaultDisplay().getMetrics(metrics);
 						int screenWidth = metrics.widthPixels;
 						int screenHeight = metrics.heightPixels;
@@ -150,7 +154,7 @@ public class EaseShowBigImageActivity extends EaseBaseActivity {
 
 			public void onError(int error, String msg) {
 				EMLog.e(TAG, "offline file transfer error:" + msg);
-				File file = new File(localFilePath);
+				File file = new File(tempPath);
 				if (file.exists()&&file.isFile()) {
 					file.delete();
 				}
@@ -181,7 +185,7 @@ public class EaseShowBigImageActivity extends EaseBaseActivity {
 			}
 		};
 
-	    EMClient.getInstance().chatManager().downloadFile(remoteFilePath, localFilePath, headers, callback);
+	    EMClient.getInstance().chatManager().downloadFile(remoteFilePath, tempPath, headers, callback);
 
 	}
 
