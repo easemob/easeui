@@ -44,4 +44,8 @@ public abstract class EaseGroupRemoveListener implements EMGroupChangeListener{
         
     }
     
+    @Override
+    public void onAutoAcceptInvitationFromGroup(String groupId, String inviter, String inviteMessage) {
+        // TODO Auto-generated method stub
+    }
 }
