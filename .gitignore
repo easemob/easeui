@@ -25,6 +25,6 @@ local.properties
 
 #gradle file
 *build/
-
+.gradle
 
 #*.properties
