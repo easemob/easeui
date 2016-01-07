@@ -85,9 +85,10 @@ public final class EaseUI {
      * 初始化环信sdk及easeui库
      * 返回true如果正确初始化，否则false，如果返回为false，请在后续的调用中不要调用任何和环信相关的代码
      * @param context
+     * @param options 聊天相关的设置，传null则使用默认的
      * @return
      */
-    public synchronized boolean init(Context context){
+    public synchronized boolean init(Context context, EMOptions options){
         if(sdkInited){
             return true;
         }
@@ -107,8 +108,14 @@ public final class EaseUI {
             // 则此application::onCreate 是被service 调用的，直接返回
             return false;
         }
+        if(options == null){
+            EMClient.getInstance().init(context, initChatOptions());
+        }else{
+            EMClient.getInstance().init(context, options);
+        }
         
-        initChatOptions();
+        initNotifier();
+        
         if(settingsProvider == null){
             settingsProvider = new DefaultSettingsProvider();
         }
@@ -117,7 +124,7 @@ public final class EaseUI {
         return true;
     }
     
-    protected void initChatOptions(){
+    protected EMOptions initChatOptions(){
         Log.d(TAG, "init HuanXin Options");
         
         // 获取到EMChatOptions对象
@@ -131,14 +138,14 @@ public final class EaseUI {
         // 设置从db初始化加载时, 每个conversation需要加载msg的个数
         options.setNumberOfMessagesLoaded(1);
         
-        EMClient.getInstance().init(appContext, options);
-        
-        notifier = createNotifier();
-        notifier.init(appContext);
-        
+        return options;
 //        notifier.setNotificationInfoProvider(getNotificationListener());
     }
     
+    void initNotifier(){
+        notifier = createNotifier();
+        notifier.init(appContext);
+    }
     
     protected EaseNotifier createNotifier(){
         return new EaseNotifier();
