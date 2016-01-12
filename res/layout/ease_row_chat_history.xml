@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:easeui="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="59dp"
      android:id="@+id/list_itease_layout"
@@ -12,14 +13,13 @@
         android:layout_height="match_parent"
         android:layout_alignParentLeft="true" >
 
-      <ImageView
+      <com.easemob.easeui.widget.EaseImageView
             android:id="@+id/avatar"
             android:layout_width="45dp"
             android:layout_height="45dp"
             android:layout_centerVertical="true"
             android:layout_marginLeft="10dp"
-            android:scaleType="fitXY"
-            android:src="@drawable/ease_default_avatar" />
+            android:src="@drawable/ease_default_avatar"/>
 
         <TextView
             android:id="@+id/unread_msg_number"

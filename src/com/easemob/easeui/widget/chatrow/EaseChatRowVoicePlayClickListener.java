@@ -148,9 +148,9 @@ public class EaseChatRowVoicePlayClickListener implements View.OnClickListener {
 	private void showAnimation() {
 		// play voice, and start animation
 		if (message.direct == EMMessage.Direct.RECEIVE) {
-			voiceIconView.setImageResource(R.anim.voice_from_icon);
+			voiceIconView.setImageResource(R.drawable.voice_from_icon);
 		} else {
-			voiceIconView.setImageResource(R.anim.voice_to_icon);
+			voiceIconView.setImageResource(R.drawable.voice_to_icon);
 		}
 		voiceAnimation = (AnimationDrawable) voiceIconView.getDrawable();
 		voiceAnimation.start();
