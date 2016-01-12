@@ -341,39 +341,4 @@ public class EaseContactListFragment extends EaseBaseFragment {
         this.listItemClickListener = listItemClickListener;
     }
     
-    /**
-	 * 设置控件形状
-	 * 
-	 * @param shape 有三种值 0正常、1圆形、2圆角矩形
-	 */
-	public void setAvatarShape(int shape) {
-		contactListLayout.setAvatarShape(shape);
-	}
-
-	/**
-	 * 设置控件边框宽度
-	 * 
-	 * @param width
-	 */
-	public void setBorderWidth(int width) {
-		contactListLayout.setBorderWidth(width);
-	}
-
-	/**
-	 * 设置控件边框颜色
-	 * 
-	 * @param color
-	 */
-	public void setBorderColor(int color) {
-		contactListLayout.setBorderColor(color);
-	}
-
-	/**
-	 * 设置控件圆角半径
-	 * 
-	 * @param radius
-	 */
-	public void setAvatarRadius(int radius) {
-		contactListLayout.setAvatarRadius(radius);
-	}
 }

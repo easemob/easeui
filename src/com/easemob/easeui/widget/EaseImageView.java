@@ -1,6 +1,7 @@
 package com.easemob.easeui.widget;
 
 import com.easemob.easeui.R;
+import com.easemob.util.EMLog;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -65,12 +66,12 @@ public class EaseImageView extends ImageView {
 
     private void init(Context context, AttributeSet attrs) {
         //初始化默认值
-        borderWidth = 6;
+        borderWidth = 0;
         borderColor = 0xddffffff;
         pressAlpha = 0x42;
         pressColor = 0x42000000;
         radius = 16;
-        shapeType = 2;
+        shapeType = 0;
 
         // 获取控件的属性值
         if (attrs != null) {
