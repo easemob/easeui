@@ -18,15 +18,14 @@
         android:layout_marginTop="@dimen/margin_chat_activity"
         android:paddingRight="20dp" >
 
-        <ImageView
+        <com.easemob.easeui.widget.EaseImageView
             android:id="@+id/iv_userhead"
             android:layout_width="@dimen/size_avatar"
             android:layout_height="@dimen/size_avatar"
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
             android:layout_marginLeft="@dimen/margin_chat_activity"
-            android:background="@drawable/ease_default_avatar"
-            android:scaleType="fitXY" />
+            android:src="@drawable/ease_default_avatar" />
 
         <TextView
             android:id="@+id/tv_userid"
