@@ -2,6 +2,7 @@ package com.easemob.easeui.model;
 
 import com.easemob.easeui.R;
 import com.easemob.easeui.domain.EaseEmojicon;
+import com.easemob.easeui.domain.EaseEmojicon.Type;
 import com.easemob.easeui.utils.EaseSmileUtils;
 
 public class EaseDefaultEmojiconDatas {
@@ -89,7 +90,7 @@ public class EaseDefaultEmojiconDatas {
     private static EaseEmojicon[] createData(){
         EaseEmojicon[] datas = new EaseEmojicon[icons.length];
         for(int i = 0; i < icons.length; i++){
-            datas[i] = new EaseEmojicon(icons[i], emojis[i]);
+            datas[i] = new EaseEmojicon(icons[i], emojis[i], Type.NORMAL);
         }
         return datas;
     }
