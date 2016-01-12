@@ -12,6 +12,7 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
+import android.graphics.Bitmap.Config;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -114,10 +115,6 @@ public class EaseImageView extends ImageView {
         if (getWidth() == 0 || getHeight() == 0) {
             return;
         }
-        // 获取 bitmap，即传入 imageview 的 bitmap
-        // Bitmap bitmap = ((BitmapDrawable) ((SquaringDrawable)
-        // drawable).getCurrent()).getBitmap();
-        // 这里参考赵鹏的获取 bitmap 方式，因为上边的获取会导致 Glide 加载的drawable 强转为 BitmapDrawable 出错
         Bitmap bitmap = getBitmapFromDrawable(drawable);
         drawDrawable(canvas, bitmap);
 
@@ -259,31 +256,32 @@ public class EaseImageView extends ImageView {
     }
 
     /**
-     * 这里是复制的赵鹏写的获取Bitmap内容的方法， 之前是因为没有考虑到 Glide 加载的图片 导致drawable 类型是属于
-     * SquaringDrawable 类型，导致强转失败 这里是通过drawable不同的类型来进行获取Bitmap
      *
      * @param drawable
      * @return
      */
     private Bitmap getBitmapFromDrawable(Drawable drawable) {
+        if (drawable == null) {
+            return null;
+        }
+
+        if (drawable instanceof BitmapDrawable) {
+            return ((BitmapDrawable) drawable).getBitmap();
+        }
+
+        Bitmap bitmap;
+        int width = Math.max(drawable.getIntrinsicWidth(), 2);
+        int height = Math.max(drawable.getIntrinsicHeight(), 2);
         try {
-            Bitmap bitmap;
-            if (drawable instanceof BitmapDrawable) {
-                return ((BitmapDrawable) drawable).getBitmap();
-            } else if (drawable instanceof ColorDrawable) {
-                bitmap = Bitmap.createBitmap(COLORDRAWABLE_DIMENSION, COLORDRAWABLE_DIMENSION, BITMAP_CONFIG);
-            } else {
-                bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(),
-                        BITMAP_CONFIG);
-            }
+            bitmap = Bitmap.createBitmap(width, height, BITMAP_CONFIG);
             Canvas canvas = new Canvas(bitmap);
             drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
             drawable.draw(canvas);
-            return bitmap;
-        } catch (OutOfMemoryError e) {
+        } catch (IllegalArgumentException e) {
             e.printStackTrace();
-            return null;
+            bitmap = null;
         }
+        return bitmap;
     }
 
     /**
