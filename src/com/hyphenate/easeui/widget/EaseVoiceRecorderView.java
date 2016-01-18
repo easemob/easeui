@@ -124,7 +124,7 @@ public class EaseVoiceRecorderView extends RelativeLayout {
                         if (recorderCallback != null) {
                             recorderCallback.onVoiceRecordComplete(getVoiceFilePath(), length);
                         }
-                    } else if (length == EMError.INVALID_FILE) {
+                    } else if (length == EMError.FILE_INVALID) {
                         Toast.makeText(context, R.string.Recording_without_permission, Toast.LENGTH_SHORT).show();
                     } else {
                         Toast.makeText(context, R.string.The_recording_time_is_too_short, Toast.LENGTH_SHORT).show();

@@ -118,11 +118,11 @@ public class EaseVoiceRecorder {
             recorder = null;
             
             if(file == null || !file.exists() || !file.isFile()){
-                return EMError.INVALID_FILE;
+                return EMError.FILE_INVALID;
             }
             if (file.length() == 0) {
                 file.delete();
-                return EMError.INVALID_FILE;
+                return EMError.FILE_INVALID;
             }
             int seconds = (int) (new Date().getTime() - startTime) / 1000;
             EMLog.d("voice", "voice recording finished. seconds:" + seconds + " file length:" + file.length());
