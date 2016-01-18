@@ -282,7 +282,7 @@ public class EaseContactListFragment extends EaseBaseFragment {
         
         @Override
         public void onDisconnected(int error) {
-            if (error == EMError.USER_REMOVED || error == EMError.CONNECTION_CONFLICT) {
+            if (error == EMError.USER_REMOVED || error == EMError.USER_LOGIN_ANOTHER_DEVICE) {
                 isConflict = true;
             } else {
                 getActivity().runOnUiThread(new Runnable() {
