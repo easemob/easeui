@@ -136,8 +136,12 @@ public class EaseMessageAdapter extends BaseAdapter{
      * 刷新页面, 选择最后一个
      */
     public void refreshSelectLast() {
-        handler.sendMessage(handler.obtainMessage(HANDLER_MESSAGE_REFRESH_LIST));
-        handler.sendMessage(handler.obtainMessage(HANDLER_MESSAGE_SELECT_LAST));
+        // avoid refresh too frequently when receiving large amount offline messages
+        final int TIME_DELAY_REFRESH_SELECT_LAST = 100;
+        handler.removeMessages(HANDLER_MESSAGE_REFRESH_LIST);
+        handler.removeMessages(HANDLER_MESSAGE_SELECT_LAST);
+        handler.sendEmptyMessageDelayed(HANDLER_MESSAGE_REFRESH_LIST, TIME_DELAY_REFRESH_SELECT_LAST);
+        handler.sendEmptyMessageDelayed(HANDLER_MESSAGE_SELECT_LAST, TIME_DELAY_REFRESH_SELECT_LAST);
     }
     
     /**
