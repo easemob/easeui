@@ -256,7 +256,7 @@ public class EaseChatFragment extends EaseBaseFragment {
     protected void onConversationInit(){
         // 获取当前conversation对象
         
-        conversation = EMClient.getInstance().chatManager().getConversation(toChatUsername, EaseCommonUtils.getConversationType(chatType));
+        conversation = EMClient.getInstance().chatManager().getConversation(toChatUsername, EaseCommonUtils.getConversationType(chatType), true);
         // 把此会话的未读数置为0
         conversation.markAllMessagesAsRead();
         // 初始化db时，每个conversation加载数目是getChatOptions().getNumberOfMessagesLoaded

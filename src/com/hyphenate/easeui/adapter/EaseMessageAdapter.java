@@ -87,7 +87,7 @@ public class EaseMessageAdapter extends BaseAdapter{
 		this.context = context;
 		this.listView = listView;
 		toChatUsername = username;
-		this.conversation = EMClient.getInstance().chatManager().getConversation(username, EaseCommonUtils.getConversationType(chatType));
+		this.conversation = EMClient.getInstance().chatManager().getConversation(username, EaseCommonUtils.getConversationType(chatType), true);
 	}
 	
 	Handler handler = new Handler() {
