@@ -232,11 +232,11 @@ public class EaseContactListFragment extends EaseBaseFragment {
      */
     protected void getContactList() {
         contactList.clear();
-        synchronized (contactList) {
             //获取联系人列表
-            if(contactsMap == null){
-                return;
-            }
+        if(contactsMap == null){
+            return;
+        }
+        synchronized (this.contactsMap) {
             Iterator<Entry<String, EaseUser>> iterator = contactsMap.entrySet().iterator();
             List<String> blackList = EMClient.getInstance().contactManager().getBlackListUsernames();
             while (iterator.hasNext()) {
@@ -254,25 +254,26 @@ public class EaseContactListFragment extends EaseBaseFragment {
                     }
                 }
             }
-            // 排序
-            Collections.sort(contactList, new Comparator<EaseUser>() {
-
-                @Override
-                public int compare(EaseUser lhs, EaseUser rhs) {
-                    if(lhs.getInitialLetter().equals(rhs.getInitialLetter())){
-                        return lhs.getNick().compareTo(rhs.getNick());
-                    }else{
-                        if("#".equals(lhs.getInitialLetter())){
-                            return 1;
-                        }else if("#".equals(rhs.getInitialLetter())){
-                            return -1;
-                        }
-                        return lhs.getInitialLetter().compareTo(rhs.getInitialLetter());
-                    }
-                    
-                }
-            });
         }
+
+        // 排序
+        Collections.sort(contactList, new Comparator<EaseUser>() {
+
+            @Override
+            public int compare(EaseUser lhs, EaseUser rhs) {
+                if(lhs.getInitialLetter().equals(rhs.getInitialLetter())){
+                    return lhs.getNick().compareTo(rhs.getNick());
+                }else{
+                    if("#".equals(lhs.getInitialLetter())){
+                        return 1;
+                    }else if("#".equals(rhs.getInitialLetter())){
+                        return -1;
+                    }
+                    return lhs.getInitialLetter().compareTo(rhs.getInitialLetter());
+                }
+
+            }
+        });
 
     }
     
