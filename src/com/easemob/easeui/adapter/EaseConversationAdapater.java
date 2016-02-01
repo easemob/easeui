@@ -24,6 +24,8 @@ import com.easemob.chat.EMConversation.EMConversationType;
 import com.easemob.chat.EMGroup;
 import com.easemob.chat.EMGroupManager;
 import com.easemob.chat.EMMessage;
+import com.easemob.chat.EMMessage.Direct;
+import com.easemob.easeui.EaseConstant;
 import com.easemob.easeui.R;
 import com.easemob.easeui.domain.EaseUser;
 import com.easemob.easeui.utils.EaseCommonUtils;
@@ -146,9 +148,13 @@ public class EaseConversationAdapater extends ArrayAdapter<EMConversation> {
 		if (conversation.getMsgCount() != 0) {
 			// 把最后一条消息的内容作为item的message内容
 			EMMessage lastMessage = conversation.getLastMessage();
-			holder.message.setText(EaseSmileUtils.getSmiledText(getContext(),
-					EaseCommonUtils.getMessageDigest(lastMessage, (this.getContext()))), BufferType.SPANNABLE);
-
+			if(lastMessage.getStringAttribute(EaseConstant.EASE_ATTR_TYPE, "null").equals(EaseConstant.EASE_ATTR_TYPE_DESTROY)
+					&& lastMessage.direct == Direct.RECEIVE){
+				holder.message.setText("【阅后即焚】消息，点击查看");
+			}else{
+				holder.message.setText(EaseSmileUtils.getSmiledText(getContext(),
+						EaseCommonUtils.getMessageDigest(lastMessage, (this.getContext()))), BufferType.SPANNABLE);
+			}
 			holder.time.setText(DateUtils.getTimestampString(new Date(lastMessage.getMsgTime())));
 			if (lastMessage.direct == EMMessage.Direct.SEND && lastMessage.status == EMMessage.Status.FAIL) {
 				holder.msgState.setVisibility(View.VISIBLE);

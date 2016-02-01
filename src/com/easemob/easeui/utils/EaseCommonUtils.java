@@ -22,6 +22,9 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.text.TextUtils;
 
+import com.easemob.EMCallBack;
+import com.easemob.chat.CmdMessageBody;
+import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMMessage;
 import com.easemob.chat.TextMessageBody;
 import com.easemob.easeui.EaseConstant;
@@ -171,6 +174,90 @@ public class EaseCommonUtils {
                 user.setInitialLetter("#");
             }
         }
+    }
+    
+    /**
+     * 发送一条撤回消息的透传，这里需要和接收方协商定义，通过一个透传，并加上扩展去实现消息的撤回
+     *
+     * @param message  需要撤回的消息
+     * @param callBack 发送消息的回调，通知调用方发送撤回消息的结果
+     */
+    public static void sendRecallMessage(final EMMessage message, final EMCallBack callBack) {
+        boolean result = false;
+        // 获取当前时间，用来判断后边撤回消息的时间点是否合法，这个判断不需要在接收方做，
+        // 因为如果接收方之前不在线，很久之后才收到消息，将导致撤回失败
+        long currTime = System.currentTimeMillis();
+        long msgTime = message.getMsgTime();
+        if (currTime - msgTime > 120000) {
+            callBack.onError(0, "maxtime");
+            return;
+        }
+        String msgId = message.getMsgId();
+        EMMessage cmdMessage = EMMessage.createSendMessage(EMMessage.Type.CMD);
+        if (message.getChatType() == EMMessage.ChatType.GroupChat) {
+            cmdMessage.setChatType(EMMessage.ChatType.GroupChat);
+        }
+        cmdMessage.setReceipt(message.getTo());
+        // 创建CMD 消息的消息体 并设置 action 为 recall
+        CmdMessageBody body = new CmdMessageBody(EaseConstant.EASE_ATTR_TYPE_RECALL);
+        cmdMessage.addBody(body);
+        cmdMessage.setAttribute(EaseConstant.EASE_ATTR_MSG_ID, msgId);
+        // 确认无误，开始发送撤回消息的透传
+        EMChatManager.getInstance().sendMessage(cmdMessage, new EMCallBack() {
+            @Override
+            public void onSuccess() {
+                // 更改要撤销的消息的内容，替换为消息已经撤销的提示内容
+                TextMessageBody body = new TextMessageBody("此条消息已撤回");
+                message.addBody(body);
+                // 这里需要把消息类型改为 TXT 类型
+                message.setType(EMMessage.Type.TXT);
+                // 设置扩展为撤回消息类型，是为了区分消息的显示
+                message.setAttribute(EaseConstant.EASE_ATTR_TYPE, EaseConstant.EASE_ATTR_TYPE_RECALL);
+                // 返回修改消息结果
+                EMChatManager.getInstance().updateMessageBody(message);
+                callBack.onSuccess();
+            }
+
+            @Override
+            public void onError(int i, String s) {
+                callBack.onError(i, s);
+            }
+
+            @Override
+            public void onProgress(int i, String s) {
+
+            }
+        });
+    }
+
+    /**
+     * 收到撤回消息，这里需要和发送方协商定义，通过一个透传，并加上扩展去实现消息的撤回
+     *
+     * @param recallMsg 收到的透传消息，包含需要撤回的消息的 msgId
+     * @return 返回撤回结果是否成功
+     */
+    public static boolean receiveRecallMessage(EMMessage recallMsg) {
+        boolean result = false;
+        // 从cmd扩展中获取要撤回消息的id
+        String msgId = recallMsg.getStringAttribute(EaseConstant.EASE_ATTR_MSG_ID, null);
+        if (msgId == null) {
+            return result;
+        }
+        // 根据得到的msgId 去本地查找这条消息，如果本地已经没有这条消息了，就不用撤回
+        EMMessage message = EMChatManager.getInstance().getMessage(msgId);
+        if (message == null) {
+            return result;
+        }
+        // 更改要撤销的消息的内容，替换为消息已经撤销的提示内容
+        TextMessageBody body = new TextMessageBody("此条消息已被 " + message.getUserName() + " 撤回");
+        message.addBody(body);
+        // 这里需要把消息类型改为 TXT 类型
+        message.setType(EMMessage.Type.TXT);
+        // 设置扩展为撤回消息类型，是为了区分消息的显示
+        message.setAttribute(EaseConstant.EASE_ATTR_TYPE, EaseConstant.EASE_ATTR_TYPE_RECALL);
+        // 返回修改消息结果
+        result = EMChatManager.getInstance().updateMessageBody(message);
+        return result;
     }
 
 }

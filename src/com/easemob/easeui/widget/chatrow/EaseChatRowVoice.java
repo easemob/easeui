@@ -9,12 +9,14 @@ import android.widget.TextView;
 
 import com.easemob.chat.EMMessage;
 import com.easemob.chat.VoiceMessageBody;
+import com.easemob.easeui.EaseConstant;
 import com.easemob.easeui.R;
 import com.easemob.util.EMLog;
 
 public class EaseChatRowVoice extends EaseChatRowFile{
 
     private ImageView voiceImageView;
+    private TextView voiceHintTextView;
     private TextView voiceLengthView;
     private ImageView readStutausView;
 
@@ -31,6 +33,7 @@ public class EaseChatRowVoice extends EaseChatRowFile{
     @Override
     protected void onFindViewById() {
         voiceImageView = ((ImageView) findViewById(R.id.iv_voice));
+        voiceHintTextView = (TextView) findViewById(R.id.text_hint);
         voiceLengthView = (TextView) findViewById(R.id.tv_length);
         readStutausView = (ImageView) findViewById(R.id.iv_unread_voice);
     }
@@ -64,20 +67,25 @@ public class EaseChatRowVoice extends EaseChatRowFile{
         }
         
         if (message.direct == EMMessage.Direct.RECEIVE) {
-            if (message.isListened()) {
-                // 隐藏语音未听标志
-                readStutausView.setVisibility(View.INVISIBLE);
-            } else {
-                readStutausView.setVisibility(View.VISIBLE);
-            }
-            EMLog.d(TAG, "it is receive msg");
-            if (message.status == EMMessage.Status.INPROGRESS) {
-                progressBar.setVisibility(View.VISIBLE);
-                setMessageReceiveCallback();
-            } else {
-                progressBar.setVisibility(View.INVISIBLE);
-
-            }
+	        if (message.isListened()) {
+	            // 隐藏语音未听标志
+	            readStutausView.setVisibility(View.INVISIBLE);
+	        } else {
+	            readStutausView.setVisibility(View.VISIBLE); 
+	        }
+	        EMLog.d(TAG, "it is receive msg");
+	        if (message.status == EMMessage.Status.INPROGRESS) {
+	            progressBar.setVisibility(View.VISIBLE);
+	            setMessageReceiveCallback();
+	        } else {
+	            progressBar.setVisibility(View.INVISIBLE);
+	
+	        }
+        	if(message.getStringAttribute(EaseConstant.EASE_ATTR_TYPE, "null").equals(EaseConstant.EASE_ATTR_TYPE_DESTROY)){
+        		voiceHintTextView.setVisibility(View.VISIBLE);
+        		voiceImageView.setVisibility(View.GONE);
+        		voiceHintTextView.setText("【阅后即焚】听后销毁");
+        	}
             return;
         }
 
@@ -92,6 +100,10 @@ public class EaseChatRowVoice extends EaseChatRowFile{
 
     @Override
     protected void onBubbleClick() {
+    	if(message.getStringAttribute(EaseConstant.EASE_ATTR_TYPE, "null").equals(EaseConstant.EASE_ATTR_TYPE_DESTROY)){
+    		voiceHintTextView.setVisibility(View.GONE);
+    		voiceImageView.setVisibility(View.VISIBLE);
+    	}
         new EaseChatRowVoicePlayClickListener(message, voiceImageView, readStutausView, adapter, activity).onClick(bubbleLayout);
     }
     
