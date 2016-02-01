@@ -1,6 +1,9 @@
 package com.easemob.easeui.widget.chatrow;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnDismissListener;
 import android.text.Spannable;
 import android.view.View;
 import android.widget.BaseAdapter;
@@ -11,7 +14,10 @@ import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMMessage;
 import com.easemob.chat.TextMessageBody;
 import com.easemob.chat.EMMessage.ChatType;
+import com.easemob.chat.EMMessage.Direct;
+import com.easemob.easeui.EaseConstant;
 import com.easemob.easeui.R;
+import com.easemob.easeui.adapter.EaseMessageAdapter;
 import com.easemob.easeui.utils.EaseSmileUtils;
 import com.easemob.exceptions.EaseMobException;
 
@@ -38,9 +44,14 @@ public class EaseChatRowText extends EaseChatRow{
     public void onSetUpView() {
         TextMessageBody txtBody = (TextMessageBody) message.getBody();
         Spannable span = EaseSmileUtils.getSmiledText(context, txtBody.getMessage());
-        // 设置内容
-        contentView.setText(span, BufferType.SPANNABLE);
-
+        // 判断是不是阅后即焚的消息
+        if(message.getStringAttribute(EaseConstant.EASE_ATTR_TYPE, "null").equals(EaseConstant.EASE_ATTR_TYPE_DESTROY)
+        		&&message.direct == Direct.RECEIVE){
+        	contentView.setText(String.format("【内容长度 %d】阅读后销毁",txtBody.getMessage().length()));
+    	}else{
+    		// 设置内容
+    		contentView.setText(span, BufferType.SPANNABLE);
+    	}
         handleTextMessage();
     }
 
@@ -70,7 +81,9 @@ public class EaseChatRowText extends EaseChatRow{
                break;
             }
         }else{
-            if(!message.isAcked() && message.getChatType() == ChatType.Chat){
+            if(!message.isAcked() 
+            		&& message.getChatType() == ChatType.Chat
+            		&& !message.getStringAttribute(EaseConstant.EASE_ATTR_TYPE, "null").equals(EaseConstant.EASE_ATTR_TYPE_DESTROY)){
                 try {
                     EMChatManager.getInstance().ackMessageRead(message.getFrom(), message.getMsgId());
                     message.isAcked = true;
@@ -83,13 +96,39 @@ public class EaseChatRowText extends EaseChatRow{
 
     @Override
     protected void onUpdateView() {
-        adapter.notifyDataSetChanged();
+        ((EaseMessageAdapter)adapter).refresh();
     }
 
     @Override
     protected void onBubbleClick() {
-        // TODO Auto-generated method stub
-        
+    	// 只有当消息是阅后即焚类型时，实现消息框的点击事件，弹出查看消息内容的对话框，当关闭对话框时销毁消息，否则跳过
+    	if(!message.getStringAttribute(EaseConstant.EASE_ATTR_TYPE, "null").equals(EaseConstant.EASE_ATTR_TYPE_DESTROY)
+    			&& message.direct == Direct.RECEIVE){
+    		return;
+    	}
+    	AlertDialog dialog = new AlertDialog.Builder(context).create();
+    	dialog.setTitle("阅后即焚内容");
+		dialog.setMessage(((TextMessageBody) message.getBody()).getMessage());
+		dialog.show();
+		dialog.setOnDismissListener(new OnDismissListener() {
+			@Override
+			public void onDismiss(DialogInterface dialog) {
+				EMChatManager.getInstance().getConversation(message.getFrom()).removeMessage(message.getMsgId());;
+				activity.runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						try {
+							EMChatManager.getInstance().ackMessageRead(message.getFrom(), message.getMsgId());
+		                    message.isAcked = true;
+							onUpdateView();
+						} catch (EaseMobException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				});
+			}
+		});
     }
 
 
