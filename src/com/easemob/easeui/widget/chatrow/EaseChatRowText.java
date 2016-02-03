@@ -45,7 +45,7 @@ public class EaseChatRowText extends EaseChatRow{
         TextMessageBody txtBody = (TextMessageBody) message.getBody();
         Spannable span = EaseSmileUtils.getSmiledText(context, txtBody.getMessage());
         // 判断是不是阅后即焚的消息
-        if(message.getStringAttribute(EaseConstant.EASE_ATTR_TYPE, "null").equals(EaseConstant.EASE_ATTR_TYPE_DESTROY)
+        if(message.getBooleanAttribute(EaseConstant.EASE_ATTR_READFIRE, false)
         		&&message.direct == Direct.RECEIVE){
         	contentView.setText(String.format("【内容长度 %d】阅读后销毁",txtBody.getMessage().length()));
     	}else{
@@ -83,7 +83,7 @@ public class EaseChatRowText extends EaseChatRow{
         }else{
             if(!message.isAcked() 
             		&& message.getChatType() == ChatType.Chat
-            		&& !message.getStringAttribute(EaseConstant.EASE_ATTR_TYPE, "null").equals(EaseConstant.EASE_ATTR_TYPE_DESTROY)){
+            		&& !message.getBooleanAttribute(EaseConstant.EASE_ATTR_READFIRE, false)){
                 try {
                     EMChatManager.getInstance().ackMessageRead(message.getFrom(), message.getMsgId());
                     message.isAcked = true;
@@ -102,7 +102,7 @@ public class EaseChatRowText extends EaseChatRow{
     @Override
     protected void onBubbleClick() {
     	// 只有当消息是阅后即焚类型时，实现消息框的点击事件，弹出查看消息内容的对话框，当关闭对话框时销毁消息，否则跳过
-    	if(!message.getStringAttribute(EaseConstant.EASE_ATTR_TYPE, "null").equals(EaseConstant.EASE_ATTR_TYPE_DESTROY)
+    	if(!message.getBooleanAttribute(EaseConstant.EASE_ATTR_READFIRE, false)
     			&& message.direct == Direct.RECEIVE){
     		return;
     	}

@@ -6,6 +6,7 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.view.View;
@@ -16,11 +17,13 @@ import android.widget.TextView;
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMMessage;
 import com.easemob.chat.EMMessage.ChatType;
+import com.easemob.chat.EMMessage.Direct;
 import com.easemob.chat.ImageMessageBody;
 import com.easemob.easeui.EaseConstant;
 import com.easemob.easeui.R;
 import com.easemob.easeui.model.EaseImageCache;
 import com.easemob.easeui.ui.EaseShowBigImageActivity;
+import com.easemob.easeui.utils.EaseBlurUtils;
 import com.easemob.easeui.utils.EaseCommonUtils;
 import com.easemob.easeui.utils.EaseImageUtils;
 
@@ -58,8 +61,15 @@ public class EaseChatRowImage extends EaseChatRowFile{
                 percentageView.setVisibility(View.GONE);
                 imageView.setImageResource(R.drawable.ease_default_image);
                 if (imgBody.getLocalUrl() != null) {
-                    if(message.getStringAttribute(EaseConstant.EASE_ATTR_TYPE, "null").equals(EaseConstant.EASE_ATTR_TYPE_DESTROY)){
-                    	imageView.setImageResource(R.drawable.ease_destroy);
+                    if(message.getBooleanAttribute(EaseConstant.EASE_ATTR_READFIRE, false)
+                    		&& message.direct == Direct.RECEIVE){
+                    	String thumbnailPath = EaseImageUtils.getThumbnailImagePath(imgBody.getThumbnailUrl());
+                    	Bitmap bitmap = BitmapFactory.decodeFile(thumbnailPath);
+                    	if(bitmap!=null){
+                        	Bitmap outBitmap = EaseBlurUtils.blurBitmap(bitmap);
+                        	imageView.setImageBitmap(outBitmap);
+                    	}
+//                    	imageView.setImageResource(R.drawable.ease_destroy);
                     }else{
                         String remotePath = imgBody.getRemoteUrl();
                         String filePath = EaseImageUtils.getImagePath(remotePath);
@@ -165,9 +175,7 @@ public class EaseChatRowImage extends EaseChatRowFile{
                     }
                 }
             }.execute();
-
             return true;
         }
     }
-
 }

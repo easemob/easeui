@@ -199,7 +199,6 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
                 titleBar.setTitle(EaseUserUtils.getUserInfo(toChatUsername).getNick());
             }
             titleBar.setRightImageResource(R.drawable.ease_mm_title_remove);
-            titleBar.setFireImageResource(R.drawable.ease_fire_white_24dp);
         } else {
         	titleBar.setRightImageResource(R.drawable.ease_to_group_details_normal);
             if (chatType == EaseConstant.CHATTYPE_GROUP) {
@@ -239,23 +238,6 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
                 }
             }
         });
-        if(chatType == EaseConstant.CHATTYPE_SINGLE){
-	        // 设置阅后即焚开关监听
-	        titleBar.setFireClickListener(new OnClickListener() {
-				
-				@Override
-				public void onClick(View v) {
-					// 根据当前状态，改变标题栏颜色，红色表示阅后即焚状态，蓝色表示正常状态
-					if(isDestroy){
-						titleBar.setBackgroundResource(R.color.top_bar_normal_bg);
-						isDestroy = false;	
-					}else{
-						titleBar.setBackgroundResource(R.color.top_bar_red_bg);
-						isDestroy = true;
-					}
-				}
-			});
-        }
 
         setRefreshLayoutListener();
         
@@ -265,6 +247,40 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
             // 发送要转发的消息
             forwardMessage(forward_msg_id);
         }
+    }
+    
+    /**
+     * 阅后即焚开关
+     */
+    public void onReadFireOnOff(boolean onOff){
+    	if(onOff){
+    		if(chatType == EaseConstant.CHATTYPE_SINGLE){
+				isDestroy = true;
+				titleBar.setBackgroundResource(R.color.top_bar_red_bg);
+	        	titleBar.setFireImageResource(R.drawable.ease_fire_white_24dp);
+		        // 设置阅后即焚开关监听
+		        titleBar.setFireClickListener(new OnClickListener() {
+					
+					@Override
+					public void onClick(View v) {
+						// 根据当前状态，改变标题栏颜色，红色表示阅后即焚状态，蓝色表示正常状态
+						if(isDestroy){
+							titleBar.setBackgroundResource(R.color.top_bar_normal_bg);
+							isDestroy = false;	
+						}else{
+							titleBar.setBackgroundResource(R.color.top_bar_red_bg);
+							isDestroy = true;
+						}
+					}
+				});
+	        }
+    	}else{
+	        if(chatType == EaseConstant.CHATTYPE_SINGLE){
+	        	titleBar.setFireImageResource(android.R.color.transparent);
+		        // 设置阅后即焚开关监听
+		        titleBar.setFireClickListener(null);
+	        }
+    	}
     }
     
     /**
@@ -512,7 +528,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
             // 获取到message
         	EMMessage ackMessage = (EMMessage) event.getData();
         	// 判断接收到ack的这条消息是不是阅后即焚的消息，如果是，则说明对方看过消息了，对方会销毁，这边也删除
-        	if(ackMessage.getStringAttribute(EaseConstant.EASE_ATTR_TYPE, "null").equals(EaseConstant.EASE_ATTR_TYPE_DESTROY)){
+        	if(ackMessage.getBooleanAttribute(EaseConstant.EASE_ATTR_READFIRE, false)){
         		conversation.removeMessage(ackMessage.getMsgId());
         	}
             messageList.refresh();
@@ -528,7 +544,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
         	//获取消息body
             CmdMessageBody cmdMsgBody = (CmdMessageBody) cmdMessage.getBody();
             final String action = cmdMsgBody.action;//获取自定义action
-            if(action.equals(EaseConstant.EASE_ATTR_TYPE_RECALL)){
+            if(action.equals(EaseConstant.EASE_ATTR_REVOKE)){
             	EaseCommonUtils.receiveRecallMessage(cmdMessage);
             	messageList.refresh();
             }

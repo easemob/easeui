@@ -40,7 +40,7 @@ public class EaseChatRowRecall extends EaseChatRow{
     @Override
     protected void onInflatView() {
     	// 撤回消息只有一个布局，不区分发送和接收方
-        if (message.getStringAttribute(EaseConstant.EASE_ATTR_TYPE, "null").equals(EaseConstant.EASE_ATTR_TYPE_RECALL)){
+        if (message.getBooleanAttribute(EaseConstant.EASE_ATTR_REVOKE, false)){
             inflater.inflate(R.layout.ease_row_recall_message, this);
         }
     }

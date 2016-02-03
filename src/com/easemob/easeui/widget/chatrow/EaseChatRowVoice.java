@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.easemob.chat.EMMessage;
+import com.easemob.chat.EMMessage.Direct;
 import com.easemob.chat.VoiceMessageBody;
 import com.easemob.easeui.EaseConstant;
 import com.easemob.easeui.R;
@@ -81,7 +82,8 @@ public class EaseChatRowVoice extends EaseChatRowFile{
 	            progressBar.setVisibility(View.INVISIBLE);
 	
 	        }
-        	if(message.getStringAttribute(EaseConstant.EASE_ATTR_TYPE, "null").equals(EaseConstant.EASE_ATTR_TYPE_DESTROY)){
+        	if(message.getBooleanAttribute(EaseConstant.EASE_ATTR_READFIRE, false)
+        			&& message.direct == Direct.RECEIVE){
         		voiceHintTextView.setVisibility(View.VISIBLE);
         		voiceImageView.setVisibility(View.GONE);
         		voiceHintTextView.setText("【阅后即焚】听后销毁");
@@ -100,7 +102,8 @@ public class EaseChatRowVoice extends EaseChatRowFile{
 
     @Override
     protected void onBubbleClick() {
-    	if(message.getStringAttribute(EaseConstant.EASE_ATTR_TYPE, "null").equals(EaseConstant.EASE_ATTR_TYPE_DESTROY)){
+    	if(message.getBooleanAttribute(EaseConstant.EASE_ATTR_READFIRE, false)
+    			&& message.direct == Direct.RECEIVE){
     		voiceHintTextView.setVisibility(View.GONE);
     		voiceImageView.setVisibility(View.VISIBLE);
     	}

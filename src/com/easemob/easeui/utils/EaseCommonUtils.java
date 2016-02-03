@@ -199,7 +199,7 @@ public class EaseCommonUtils {
         }
         cmdMessage.setReceipt(message.getTo());
         // 创建CMD 消息的消息体 并设置 action 为 recall
-        CmdMessageBody body = new CmdMessageBody(EaseConstant.EASE_ATTR_TYPE_RECALL);
+        CmdMessageBody body = new CmdMessageBody(EaseConstant.EASE_ATTR_REVOKE);
         cmdMessage.addBody(body);
         cmdMessage.setAttribute(EaseConstant.EASE_ATTR_MSG_ID, msgId);
         // 确认无误，开始发送撤回消息的透传
@@ -212,7 +212,7 @@ public class EaseCommonUtils {
                 // 这里需要把消息类型改为 TXT 类型
                 message.setType(EMMessage.Type.TXT);
                 // 设置扩展为撤回消息类型，是为了区分消息的显示
-                message.setAttribute(EaseConstant.EASE_ATTR_TYPE, EaseConstant.EASE_ATTR_TYPE_RECALL);
+                message.setAttribute(EaseConstant.EASE_ATTR_REVOKE, true);
                 // 返回修改消息结果
                 EMChatManager.getInstance().updateMessageBody(message);
                 callBack.onSuccess();
@@ -254,7 +254,7 @@ public class EaseCommonUtils {
         // 这里需要把消息类型改为 TXT 类型
         message.setType(EMMessage.Type.TXT);
         // 设置扩展为撤回消息类型，是为了区分消息的显示
-        message.setAttribute(EaseConstant.EASE_ATTR_TYPE, EaseConstant.EASE_ATTR_TYPE_RECALL);
+        message.setAttribute(EaseConstant.EASE_ATTR_REVOKE, true);
         // 返回修改消息结果
         result = EMChatManager.getInstance().updateMessageBody(message);
         return result;

@@ -18,13 +18,10 @@ public class EaseConstant {
 	// EaseUI 中使用SharedPreference 保存信息的文件名
 	public static final String EASEUI_SHARED_NAME = "easeui_shared";
 
-    // 设置消息中 msgId 扩展的 key
-    public static final String EASE_ATTR_MSG_ID = "msg_id";
     // 设置自己扩展的消息类型的 key
-    public static final String EASE_ATTR_TYPE = "attr_type";
-    public static final String EASE_ATTR_TYPE_RECALL = "recall";
-    public static final String EASE_ATTR_TYPE_DESTROY = "destroy";
-    public static final String EASE_ATTR_TYPE_DESTROYED = "destroyed";
+    public static final String EASE_ATTR_MSG_ID = "em_revoke_messageId";
+    public static final String EASE_ATTR_REVOKE = "em_revoke";
+    public static final String EASE_ATTR_READFIRE = "em_readFire";
 	
     public static final String MESSAGE_ATTR_IS_VOICE_CALL = "is_voice_call";
     public static final String MESSAGE_ATTR_IS_VIDEO_CALL = "is_video_call";

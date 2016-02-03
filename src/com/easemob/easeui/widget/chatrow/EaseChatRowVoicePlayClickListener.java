@@ -81,7 +81,7 @@ public class EaseChatRowVoicePlayClickListener implements View.OnClickListener {
 			mediaPlayer.release();
 		}
 		// 判断的当前播放的这条语音是否是阅后即焚，并且是接收方的消息，如果是 停止播放后删除这条消息
-		if(message.getStringAttribute(EaseConstant.EASE_ATTR_TYPE, "null").equals(EaseConstant.EASE_ATTR_TYPE_DESTROY)
+		if(message.getBooleanAttribute(EaseConstant.EASE_ATTR_READFIRE, false)
 				&& message.direct == Direct.RECEIVE){
 			VoiceMessageBody body = (VoiceMessageBody) message.getBody();
 			File file = new File(body.getLocalUrl());
