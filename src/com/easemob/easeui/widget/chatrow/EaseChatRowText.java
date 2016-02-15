@@ -103,7 +103,7 @@ public class EaseChatRowText extends EaseChatRow{
     protected void onBubbleClick() {
     	// 只有当消息是阅后即焚类型时，实现消息框的点击事件，弹出查看消息内容的对话框，当关闭对话框时销毁消息，否则跳过
     	if(!message.getBooleanAttribute(EaseConstant.EASE_ATTR_READFIRE, false)
-    			&& message.direct == Direct.RECEIVE){
+    			|| message.direct == Direct.SEND){
     		return;
     	}
     	AlertDialog dialog = new AlertDialog.Builder(context).create();
