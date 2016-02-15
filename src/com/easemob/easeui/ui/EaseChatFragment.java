@@ -2,7 +2,7 @@ package com.easemob.easeui.ui;
 
 import java.io.File;
 import java.util.List;
-
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -32,6 +32,7 @@ import com.easemob.EMChatRoomChangeListener;
 import com.easemob.EMEventListener;
 import com.easemob.EMNotifierEvent;
 import com.easemob.EMValueCallBack;
+import com.easemob.chat.CmdMessageBody;
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMChatRoom;
 import com.easemob.chat.EMConversation;
@@ -69,12 +70,15 @@ import com.easemob.util.PathUtil;
  * 参数传入示例可查看demo里的ChatActivity
  *
  */
+@SuppressLint("ResourceAsColor")
 public class EaseChatFragment extends EaseBaseFragment implements EMEventListener {
     protected static final String TAG = "EaseChatFragment";
     protected static final int REQUEST_CODE_MAP = 1;
     protected static final int REQUEST_CODE_CAMERA = 2;
     protected static final int REQUEST_CODE_LOCAL = 3;
 
+    // 是否处于阅后即焚状态的标志，true为阅后即焚状态：此状态下发送的消息都是阅后即焚的消息，暂时实现了文字和图片，false表示正常状态
+    public boolean isDestroy = false;
     /**
      * 传入fragment的参数
      */
@@ -223,7 +227,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
                 getActivity().finish();
             }
         });
-        titleBar.setRightLayoutClickListener(new OnClickListener() {
+        titleBar.setRightLayoutClickListener(new OnClickListener() { 
 
             @Override
             public void onClick(View v) {
@@ -243,6 +247,40 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
             // 发送要转发的消息
             forwardMessage(forward_msg_id);
         }
+    }
+    
+    /**
+     * 阅后即焚开关
+     */
+    public void onReadFireOnOff(boolean onOff){
+    	if(onOff){
+    		if(chatType == EaseConstant.CHATTYPE_SINGLE){
+				isDestroy = true;
+				titleBar.setBackgroundResource(R.color.top_bar_red_bg);
+	        	titleBar.setFireImageResource(R.drawable.ease_fire_white_24dp);
+		        // 设置阅后即焚开关监听
+		        titleBar.setFireClickListener(new OnClickListener() {
+					
+					@Override
+					public void onClick(View v) {
+						// 根据当前状态，改变标题栏颜色，红色表示阅后即焚状态，蓝色表示正常状态
+						if(isDestroy){
+							titleBar.setBackgroundResource(R.color.top_bar_normal_bg);
+							isDestroy = false;	
+						}else{
+							titleBar.setBackgroundResource(R.color.top_bar_red_bg);
+							isDestroy = true;
+						}
+					}
+				});
+	        }
+    	}else{
+	        if(chatType == EaseConstant.CHATTYPE_SINGLE){
+	        	titleBar.setFireImageResource(android.R.color.transparent);
+		        // 设置阅后即焚开关监听
+		        titleBar.setFireClickListener(null);
+	        }
+    	}
     }
     
     /**
@@ -406,7 +444,6 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
                 } else {
                     Toast.makeText(getActivity(), R.string.unable_to_get_loaction, 0).show();
                 }
-                
             }
         }
     }
@@ -414,15 +451,18 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
     @Override
     public void onResume() {
         super.onResume();
-        if(isMessageListInited)
+        if(isMessageListInited){
             messageList.refresh();
+        }
         EaseUI.getInstance().pushActivity(getActivity());
         // register the event listener when enter the foreground
         EMChatManager.getInstance().registerEventListener(
                 this,
                 new EMNotifierEvent.Event[] { EMNotifierEvent.Event.EventNewMessage,
-                        EMNotifierEvent.Event.EventOfflineMessage, EMNotifierEvent.Event.EventDeliveryAck,
-                        EMNotifierEvent.Event.EventReadAck });
+                        EMNotifierEvent.Event.EventOfflineMessage, 
+                        EMNotifierEvent.Event.EventDeliveryAck,
+                        EMNotifierEvent.Event.EventReadAck,
+                        EMNotifierEvent.Event.EventNewCMDMessage});
     }
 
     @Override
@@ -486,6 +526,11 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
         case EventDeliveryAck:
         case EventReadAck:
             // 获取到message
+        	EMMessage ackMessage = (EMMessage) event.getData();
+        	// 判断接收到ack的这条消息是不是阅后即焚的消息，如果是，则说明对方看过消息了，对方会销毁，这边也删除
+        	if(ackMessage.getBooleanAttribute(EaseConstant.EASE_ATTR_READFIRE, false)){
+        		conversation.removeMessage(ackMessage.getMsgId());
+        	}
             messageList.refresh();
             break;
         case EventOfflineMessage:
@@ -494,6 +539,16 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
             // event.getData();
             messageList.refresh();
             break;
+        case EventNewCMDMessage:
+        	EMMessage cmdMessage = (EMMessage) event.getData();
+        	//获取消息body
+            CmdMessageBody cmdMsgBody = (CmdMessageBody) cmdMessage.getBody();
+            final String action = cmdMsgBody.action;//获取自定义action
+            if(action.equals(EaseConstant.EASE_ATTR_REVOKE)){
+            	EaseCommonUtils.receiveRecallMessage(cmdMessage);
+            	messageList.refresh();
+            }
+        	break;
         default:
             break;
         }

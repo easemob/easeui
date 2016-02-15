@@ -17,11 +17,11 @@ public class EaseConstant {
 	
 	// EaseUI 中使用SharedPreference 保存信息的文件名
 	public static final String EASEUI_SHARED_NAME = "easeui_shared";
-	// 自定义EaseImageView 保存设置的key
-	public static final String EASEUI_IMAGEVIEW_BORDER_WIDTH = "border_width";
-	public static final String EASEUI_IMAGEVIEW_BORDER_COLOR = "border_color";
-	public static final String EASEUI_IMAGEVIEW_RADIUS = "radius";
-	public static final String EASEUI_IMAGEVIEW_SHAPE_TYPE = "shape_type";
+
+    // 设置自己扩展的消息类型的 key
+    public static final String EASE_ATTR_MSG_ID = "em_revoke_messageId";
+    public static final String EASE_ATTR_REVOKE = "em_revoke";
+    public static final String EASE_ATTR_READFIRE = "em_readFire";
 	
     public static final String MESSAGE_ATTR_IS_VOICE_CALL = "is_voice_call";
     public static final String MESSAGE_ATTR_IS_VIDEO_CALL = "is_video_call";

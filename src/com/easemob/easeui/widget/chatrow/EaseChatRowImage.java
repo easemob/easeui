@@ -2,9 +2,11 @@ package com.easemob.easeui.widget.chatrow;
 
 import java.io.File;
 
+import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.view.View;
@@ -15,10 +17,13 @@ import android.widget.TextView;
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMMessage;
 import com.easemob.chat.EMMessage.ChatType;
+import com.easemob.chat.EMMessage.Direct;
 import com.easemob.chat.ImageMessageBody;
+import com.easemob.easeui.EaseConstant;
 import com.easemob.easeui.R;
 import com.easemob.easeui.model.EaseImageCache;
 import com.easemob.easeui.ui.EaseShowBigImageActivity;
+import com.easemob.easeui.utils.EaseBlurUtils;
 import com.easemob.easeui.utils.EaseCommonUtils;
 import com.easemob.easeui.utils.EaseImageUtils;
 
@@ -56,12 +61,22 @@ public class EaseChatRowImage extends EaseChatRowFile{
                 percentageView.setVisibility(View.GONE);
                 imageView.setImageResource(R.drawable.ease_default_image);
                 if (imgBody.getLocalUrl() != null) {
-                    // String filePath = imgBody.getLocalUrl();
-                    String remotePath = imgBody.getRemoteUrl();
-                    String filePath = EaseImageUtils.getImagePath(remotePath);
-                    String thumbRemoteUrl = imgBody.getThumbnailUrl();
-                    String thumbnailPath = EaseImageUtils.getThumbnailImagePath(thumbRemoteUrl);
-                    showImageView(thumbnailPath, imageView, filePath, message);
+                    if(message.getBooleanAttribute(EaseConstant.EASE_ATTR_READFIRE, false)
+                    		&& message.direct == Direct.RECEIVE){
+                    	String thumbnailPath = EaseImageUtils.getThumbnailImagePath(imgBody.getThumbnailUrl());
+                    	Bitmap bitmap = BitmapFactory.decodeFile(thumbnailPath);
+                    	if(bitmap!=null){
+                        	Bitmap outBitmap = EaseBlurUtils.blurBitmap(bitmap);
+                        	imageView.setImageBitmap(outBitmap);
+                    	}
+//                    	imageView.setImageResource(R.drawable.ease_destroy);
+                    }else{
+                        String remotePath = imgBody.getRemoteUrl();
+                        String filePath = EaseImageUtils.getImagePath(remotePath);
+                        String thumbRemoteUrl = imgBody.getThumbnailUrl();
+                        String thumbnailPath = EaseImageUtils.getThumbnailImagePath(thumbRemoteUrl);
+                        showImageView(thumbnailPath, imageView, filePath, message);
+                    }
                 }
             }
             return;
@@ -86,12 +101,15 @@ public class EaseChatRowImage extends EaseChatRowFile{
         if (file.exists()) {
             Uri uri = Uri.fromFile(file);
             intent.putExtra("uri", uri);
+            intent.putExtra(EaseConstant.EASE_ATTR_MSG_ID, message.getMsgId());
         } else {
             // The local full size pic does not exist yet.
             // ShowBigImage needs to download it from the server
             // first
             intent.putExtra("secret", imgBody.getSecret());
             intent.putExtra("remotepath", imgBody.getRemoteUrl());
+            // 这里把当前消息的id传递过去，是为了实现查看大图之后销毁这条消息
+            intent.putExtra(EaseConstant.EASE_ATTR_MSG_ID, message.getMsgId());
         }
         if (message != null && message.direct == EMMessage.Direct.RECEIVE && !message.isAcked
                 && message.getChatType() != ChatType.GroupChat) {
@@ -157,9 +175,7 @@ public class EaseChatRowImage extends EaseChatRowFile{
                     }
                 }
             }.execute();
-
             return true;
         }
     }
-
 }

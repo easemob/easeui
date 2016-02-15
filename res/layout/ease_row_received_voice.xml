@@ -44,6 +44,14 @@
 	            android:paddingRight="12dp"
 	            android:layout_centerInParent="true"
                 android:src="@drawable/ease_chatfrom_voice_playing" />
+	        <TextView
+	            android:id="@+id/text_hint"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+                android:gravity="center|left"
+                android:minHeight="38dp"
+	            android:textSize="14sp"
+	            android:visibility="gone"/>
         </RelativeLayout>
 
         <TextView
