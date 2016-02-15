@@ -92,14 +92,18 @@ public class EaseChatMessageList extends RelativeLayout{
      * 刷新列表
      */
     public void refresh(){
-        messageAdapter.refresh();
+        if (messageAdapter != null) {
+            messageAdapter.refresh();
+        }
     }
     
     /**
      * 刷新列表，并且跳至最后一个item
      */
     public void refreshSelectLast(){
-        messageAdapter.refreshSelectLast();
+        if (messageAdapter != null) {
+            messageAdapter.refreshSelectLast();
+        }
     }
     
     /**
@@ -107,7 +111,9 @@ public class EaseChatMessageList extends RelativeLayout{
      * @param position
      */
     public void refreshSeekTo(int position){
-        messageAdapter.refreshSeekTo(position);;
+        if (messageAdapter != null) {
+            messageAdapter.refreshSeekTo(position);
+        }
     }
     
     
@@ -162,7 +168,9 @@ public class EaseChatMessageList extends RelativeLayout{
 	 * @param listener
 	 */
 	public void setItemClickListener(MessageListItemClickListener listener){
-	    messageAdapter.setItemClickListener(listener);
+        if (messageAdapter != null) {
+            messageAdapter.setItemClickListener(listener);
+        }
 	}
 	
 	/**
@@ -170,6 +178,8 @@ public class EaseChatMessageList extends RelativeLayout{
 	 * @param rowProvider
 	 */
 	public void setCustomChatRowProvider(EaseCustomChatRowProvider rowProvider){
-        messageAdapter.setCustomChatRowProvider(rowProvider);
+        if (messageAdapter != null) {
+            messageAdapter.setCustomChatRowProvider(rowProvider);
+        }
     }
 }

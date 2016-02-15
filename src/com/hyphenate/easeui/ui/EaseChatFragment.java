@@ -441,17 +441,23 @@ public class EaseChatFragment extends EaseBaseFragment {
         
 		@Override
 		public void onMessageReadAckReceived(List<EMMessage> messages) {
-            messageList.refresh();
+	        if(isMessageListInited) {
+	            messageList.refresh();
+		    }
 		}
 		
 		@Override
 		public void onMessageDeliveryAckReceived(List<EMMessage> message) {
-            messageList.refresh();
+            if(isMessageListInited) {
+                messageList.refresh();
+            }
 		}
 		
 		@Override
 		public void onMessageChanged(EMMessage message, Object change) {
-            messageList.refresh();
+            if(isMessageListInited) {
+                messageList.refresh();
+            }
 		}
 	};
 	
@@ -483,11 +489,11 @@ public class EaseChatFragment extends EaseBaseFragment {
             EMClient.getInstance().groupManager().removeGroupChangeListener(groupListener);
         }
         if(chatType == EaseConstant.CHATTYPE_CHATROOM){
-        	EMClient.getInstance().chatroomManager().leaveChatRoom(toChatUsername);
+            EMClient.getInstance().chatroomManager().leaveChatRoom(toChatUsername);
         }
         
         if(chatRoomChangeListener != null){
-        	EMClient.getInstance().chatroomManager().removeChatRoomChangeListener(chatRoomChangeListener);
+            EMClient.getInstance().chatroomManager().removeChatRoomChangeListener(chatRoomChangeListener);
         }
     }
 
@@ -672,7 +678,9 @@ public class EaseChatFragment extends EaseBaseFragment {
         //发送消息
         EMClient.getInstance().chatManager().sendMessage(message);
         //刷新ui
-        messageList.refreshSelectLast();
+        if(isMessageListInited) {
+            messageList.refreshSelectLast();
+        }
     }
     
     
