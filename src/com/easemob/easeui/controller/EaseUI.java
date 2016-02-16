@@ -154,23 +154,6 @@ public final class EaseUI {
 		// notifier.setNotificationInfoProvider(getNotificationListener());
 	}
 
-	/**
-	 * 初始化时设置EaseUI中头像显示的属性
-	 * 
-	 * @param borderWidth 边框宽度
-	 * @param borderColor 边框颜色
-	 * @param radius	圆角半径（仅在设置类型为圆角矩形时有效）
-	 * @param shapeType 设置EaseImageView 形状  0：圆形  1：矩形
-	 */
-	public void setEaseUIAvatar(Context context, int borderWidth, int borderColor, int radius, int shapeType) {
-		SharedPreferences sp = context.getSharedPreferences(EaseConstant.EASEUI_SHARED_NAME, Context.MODE_PRIVATE);
-		SharedPreferences.Editor editor = sp.edit();
-		editor.putInt(EaseConstant.EASEUI_IMAGEVIEW_BORDER_WIDTH, borderWidth);
-		editor.putInt(EaseConstant.EASEUI_IMAGEVIEW_BORDER_COLOR, borderColor);
-		editor.putInt(EaseConstant.EASEUI_IMAGEVIEW_RADIUS, radius);
-		editor.putInt(EaseConstant.EASEUI_IMAGEVIEW_SHAPE_TYPE, shapeType);
-		editor.commit();
-	}
 
 	protected EaseNotifier createNotifier() {
 		return new EaseNotifier();
