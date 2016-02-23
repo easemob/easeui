@@ -132,7 +132,6 @@ public class EaseContactAdapter extends ArrayAdapter<EaseUser> implements Sectio
         for (int i = 1; i < count; i++) {
 
             String letter = getItem(i).getInitialLetter();
-            EMLog.d(TAG, "contactadapter getsection getHeader:" + letter + " name:" + getItem(i).getUsername());
             int section = list.size() - 1;
             if (list.get(section) != null && !list.get(section).equals(letter)) {
                 list.add(letter);
