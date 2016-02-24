@@ -154,6 +154,7 @@ public final class EaseUI {
 		// notifier.setNotificationInfoProvider(getNotificationListener());
 	}
 
+	
 	protected EaseNotifier createNotifier() {
 		return new EaseNotifier();
 	}

@@ -5,6 +5,7 @@ import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -97,6 +98,10 @@ public class EaseTitleBar extends RelativeLayout{
     // 设置阅后即焚开关按钮的资源图标
     public void setFireImageResource(int resId){
     	fireImage.setImageResource(resId);
+    }
+    
+    public void closeReadFire(){
+        fireImage.setVisibility(View.GONE);
     }
     
     public void setRightLayoutClickListener(OnClickListener listener){

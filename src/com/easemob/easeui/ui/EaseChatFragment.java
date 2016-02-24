@@ -40,6 +40,7 @@ import com.easemob.chat.EMGroup;
 import com.easemob.chat.EMGroupManager;
 import com.easemob.chat.EMMessage;
 import com.easemob.chat.EMMessage.ChatType;
+import com.easemob.chat.EMMessage.Type;
 import com.easemob.chat.ImageMessageBody;
 import com.easemob.chat.TextMessageBody;
 import com.easemob.easeui.EaseConstant;
@@ -78,7 +79,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
     protected static final int REQUEST_CODE_LOCAL = 3;
 
     // 是否处于阅后即焚状态的标志，true为阅后即焚状态：此状态下发送的消息都是阅后即焚的消息，暂时实现了文字和图片，false表示正常状态
-    public boolean isDestroy = false;
+    public boolean isReadFire = false;
     /**
      * 传入fragment的参数
      */
@@ -250,37 +251,37 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
     }
     
     /**
-     * 阅后即焚开关
+     * by lzan13 
+     * 设置阅后即焚模式的开关，在easeui中默认是关闭状态，需要在Demo层面调用此方法
+     * @param isOpen 
      */
-    public void onReadFireOnOff(boolean onOff){
-    	if(onOff){
-    		if(chatType == EaseConstant.CHATTYPE_SINGLE){
-				isDestroy = true;
-				titleBar.setBackgroundResource(R.color.top_bar_red_bg);
-	        	titleBar.setFireImageResource(R.drawable.ease_fire_white_24dp);
-		        // 设置阅后即焚开关监听
-		        titleBar.setFireClickListener(new OnClickListener() {
-					
-					@Override
-					public void onClick(View v) {
-						// 根据当前状态，改变标题栏颜色，红色表示阅后即焚状态，蓝色表示正常状态
-						if(isDestroy){
-							titleBar.setBackgroundResource(R.color.top_bar_normal_bg);
-							isDestroy = false;	
-						}else{
-							titleBar.setBackgroundResource(R.color.top_bar_red_bg);
-							isDestroy = true;
-						}
-					}
-				});
-	        }
-    	}else{
-	        if(chatType == EaseConstant.CHATTYPE_SINGLE){
-	        	titleBar.setFireImageResource(android.R.color.transparent);
-		        // 设置阅后即焚开关监听
-		        titleBar.setFireClickListener(null);
-	        }
-    	}
+    public void setReadFire(boolean isOpen){
+        if(chatType == EaseConstant.CHATTYPE_SINGLE && isOpen){
+            isReadFire = true;
+            titleBar.setBackgroundResource(R.color.top_bar_red_bg);
+            titleBar.setFireImageResource(R.drawable.ease_fire_white_24dp);
+            Toast.makeText(getActivity(), R.string.toast_read_fire_opened, Toast.LENGTH_LONG).show();
+            // 设置阅后即焚开关监听
+            titleBar.setFireClickListener(new OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    // 根据当前状态，改变标题栏颜色，红色表示阅后即焚状态，蓝色表示正常状态
+                    if(isReadFire){
+                        titleBar.setBackgroundResource(R.color.top_bar_normal_bg);
+                        Toast.makeText(getActivity(), R.string.toast_read_fire_close, Toast.LENGTH_LONG).show();
+                        isReadFire = false;
+                    }else{
+                        titleBar.setBackgroundResource(R.color.top_bar_red_bg);
+                        Toast.makeText(getActivity(), R.string.toast_read_fire_opened, Toast.LENGTH_LONG).show();
+                        isReadFire = true;
+                    }
+                }
+            });
+        }else{
+            titleBar.closeReadFire();
+            titleBar.setBackgroundResource(R.color.top_bar_normal_bg);
+        }
     }
     
     /**
@@ -312,7 +313,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
             } else {
                 conversation.loadMoreGroupMsgFromDB(msgId, pagesize - msgCount);
             }
-        }
+        } 
         
     }
     
@@ -375,7 +376,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
             }
         });
     }
-
+    
     protected void setRefreshLayoutListener() {
         swipeRefreshLayout.setOnRefreshListener(new OnRefreshListener() {
 
@@ -527,8 +528,9 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
         case EventReadAck:
             // 获取到message
         	EMMessage ackMessage = (EMMessage) event.getData();
-        	// 判断接收到ack的这条消息是不是阅后即焚的消息，如果是，则说明对方看过消息了，对方会销毁，这边也删除
-        	if(ackMessage.getBooleanAttribute(EaseConstant.EASE_ATTR_READFIRE, false)){
+        	// 判断接收到ack的这条消息是不是阅后即焚的消息，如果是，则说明对方看过消息了，对方会销毁，这边也删除(现在只有txt iamge file三种消息支持 )
+        	if(ackMessage.getBooleanAttribute(EaseConstant.EASE_ATTR_READFIRE, false) 
+        	        && (ackMessage.getType() == Type.TXT || ackMessage.getType() == Type.VOICE || ackMessage.getType() == Type.IMAGE)){
         		conversation.removeMessage(ackMessage.getMsgId());
         	}
             messageList.refresh();
@@ -545,7 +547,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
             CmdMessageBody cmdMsgBody = (CmdMessageBody) cmdMessage.getBody();
             final String action = cmdMsgBody.action;//获取自定义action
             if(action.equals(EaseConstant.EASE_ATTR_REVOKE)){
-            	EaseCommonUtils.receiveRecallMessage(cmdMessage);
+            	EaseCommonUtils.receiveRevokeMessage(cmdMessage);
             	messageList.refresh();
             }
         	break;

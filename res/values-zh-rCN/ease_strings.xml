@@ -41,6 +41,9 @@
     <string name="clear_all_records">是否清空所有聊天记录？</string>
     <string name="location_recv">[%1$s的位置]</string>
     <string name="location_message">位置信息</string>
+    <string name="readfire_message">[阅后即焚]消息，点击查看</string>
+    <string name="readfire_message_title">阅后即焚消息</string>
+    <string name="readfire_message_content">[内容长度 %1$s]阅读后销毁</string>
     <string name="recording_video">录制视频</string>
     <string name="location_prefix">[我的位置]</string>
     <string name="picture">[图片]</string>
@@ -305,4 +308,6 @@
     <string name="toast_updatenick_fail">更新昵称失败!</string>
     <string name="toast_updatephoto_success">更新头像成功!</string>
     <string name="toast_updatephoto_fail">更新头像失败!</string>
+    <string name="toast_read_fire_opened">阅后即焚模式已经开启</string>
+    <string name="toast_read_fire_close">阅后即焚模式已经关闭</string>
 </resources>

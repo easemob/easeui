@@ -110,6 +110,7 @@ public class EaseShowBigImageActivity extends EaseBaseActivity {
 		image.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
+			    removeMessage();
 				finish();
 			}
 		});
@@ -204,8 +205,32 @@ public class EaseShowBigImageActivity extends EaseBaseActivity {
 
 	@Override
 	protected void onDestroy() {
-		
+	    // 防止被kill，在onDestroy多加一次判断，如果还没删除，就删除掉
+	    EMMessage message = EMChatManager.getInstance().getMessage(msgId);
+	    if(message != null){
+	        removeMessage();
+	    }
 		super.onDestroy();
+	}
+	
+	private void removeMessage(){
+        // 关闭显示大图的界面时判断当前消息是否是要销毁的
+        EMMessage message= EMChatManager.getInstance().getMessage(msgId);
+        if(message.getBooleanAttribute(EaseConstant.EASE_ATTR_READFIRE, false)
+                && message.direct == Direct.RECEIVE){
+            ImageMessageBody body = (ImageMessageBody) message.getBody();
+            File file = new File(body.getLocalUrl());
+            if (file.exists() && file.isFile()) {
+                file.delete();
+            }
+            String path = body.getLocalUrl();
+            String thPath = path.substring(0, path.lastIndexOf("/")) + "/th" + path.substring(path.lastIndexOf("/") + 1);
+            File thFile = new File(thPath);
+            if (thFile.exists() && thFile.isFile()) {
+                thFile.delete();
+            }
+            EMChatManager.getInstance().getConversation(message.getFrom()).removeMessage(msgId);
+        }
 	}
 
 	@Override
@@ -213,23 +238,7 @@ public class EaseShowBigImageActivity extends EaseBaseActivity {
 		if (isDownloaded){
 			setResult(RESULT_OK);
 		}
-		// 关闭显示大图的界面时判断当前消息是否是要销毁的
-		EMMessage message= EMChatManager.getInstance().getMessage(msgId);
-		if(message.getBooleanAttribute(EaseConstant.EASE_ATTR_READFIRE, false)
-				&& message.direct == Direct.RECEIVE){
-			ImageMessageBody body = (ImageMessageBody) message.getBody();
-			File file = new File(body.getLocalUrl());
-	        if (file.exists() && file.isFile()) {
-	            file.delete();
-	        }
-	        String path = body.getLocalUrl();
-	        String thPath = path.substring(0, path.lastIndexOf("/")) + "/th" + path.substring(path.lastIndexOf("/") + 1);
-	        File thFile = new File(thPath);
-	        if (thFile.exists() && thFile.isFile()) {
-	        	thFile.delete();
-	        }
-			EMChatManager.getInstance().getConversation(message.getFrom()).removeMessage(msgId);	
-		}
+	    removeMessage();
 		finish();
 	}
 }

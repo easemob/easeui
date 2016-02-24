@@ -21,17 +21,17 @@ import com.easemob.util.DateUtils;
  * @author lzan13
  *
  */
-public class EaseChatRowRecall extends EaseChatRow{
+public class EaseChatRowRevoke extends EaseChatRow{
 
     private TextView contentvView;
 
-    public EaseChatRowRecall(Context context, EMMessage message, int position, BaseAdapter adapter) {
+    public EaseChatRowRevoke(Context context, EMMessage message, int position, BaseAdapter adapter) {
         super(context, message, position, adapter);
     }
 
     public void setUpView(EMMessage message, int position,
             EaseChatMessageList.MessageListItemClickListener itemClickListener) {
-    	this.message = message;
+        this.message = message;
         this.position = position;
         this.itemClickListener = itemClickListener;
     	onSetUpView();
@@ -39,9 +39,9 @@ public class EaseChatRowRecall extends EaseChatRow{
     
     @Override
     protected void onInflatView() {
-    	// 撤回消息只有一个布局，不区分发送和接收方
+        // 撤回消息只有一个布局，不区分发送和接收方
         if (message.getBooleanAttribute(EaseConstant.EASE_ATTR_REVOKE, false)){
-            inflater.inflate(R.layout.ease_row_recall_message, this);
+            inflater.inflate(R.layout.ease_row_revoke_message, this);
         }
     }
 
@@ -52,7 +52,7 @@ public class EaseChatRowRecall extends EaseChatRow{
 
     @Override
     protected void onSetUpView() {
-    	// 设置时间
+        // 设置时间
         TextView timestamp = (TextView) findViewById(R.id.timestamp);
         if (timestamp != null) {
             if (position == 0) {

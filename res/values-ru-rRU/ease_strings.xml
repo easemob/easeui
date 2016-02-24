@@ -36,6 +36,7 @@
     <string name="clear_all_records">Вы уверены, что хотите очистить все записи?</string>
     <string name="location_recv">[Местоположение%1$]</string>
     <string name="location_message">Информация о местоположении</string>
+    <string name="readfire_message">[Burn After Reading] сообщение, нажмите View</string>
     <string name="recording_video">Сделать видео</string>
     <string name="location_prefix">[Мое местоположение]</string>
     <string name="picture">[Изображение]</string>

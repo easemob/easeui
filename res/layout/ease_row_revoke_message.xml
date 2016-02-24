@@ -32,7 +32,7 @@
             android:paddingRight="8dp"
             android:textColor="#ddffffff"
             android:textSize="15sp" 
-            android:text="撤回消息"
+            android:text=""
             android:background="#89999999"/>
     </LinearLayout>
 

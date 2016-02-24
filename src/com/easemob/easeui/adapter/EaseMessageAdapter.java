@@ -32,7 +32,7 @@ import com.easemob.easeui.widget.chatrow.EaseChatRowBigExpression;
 import com.easemob.easeui.widget.chatrow.EaseChatRowFile;
 import com.easemob.easeui.widget.chatrow.EaseChatRowImage;
 import com.easemob.easeui.widget.chatrow.EaseChatRowLocation;
-import com.easemob.easeui.widget.chatrow.EaseChatRowRecall;
+import com.easemob.easeui.widget.chatrow.EaseChatRowRevoke;
 import com.easemob.easeui.widget.chatrow.EaseChatRowText;
 import com.easemob.easeui.widget.chatrow.EaseChatRowVideo;
 import com.easemob.easeui.widget.chatrow.EaseChatRowVoice;
@@ -63,6 +63,7 @@ public class EaseMessageAdapter extends BaseAdapter{
 	private static final int MESSAGE_TYPE_SENT_EXPRESSION = 12;
 	private static final int MESSAGE_TYPE_RECV_EXPRESSION = 13;
 
+	// 撤回类型的消息，这里只有一种，不需要区分发送方和接收方
     private static final int MESSAGE_TYPE_REVOKE = 14;
 	
 	
@@ -235,7 +236,7 @@ public class EaseMessageAdapter extends BaseAdapter{
             if(message.getBooleanAttribute(EaseConstant.MESSAGE_ATTR_IS_BIG_EXPRESSION, false)){
                 chatRow = new EaseChatRowBigExpression(context, message, position, this);
             }else if(message.getBooleanAttribute(EaseConstant.EASE_ATTR_REVOKE, false)){
-            	return new EaseChatRowRecall(context, message, position, this);
+            	chatRow = new EaseChatRowRevoke(context, message, position, this);
             }else{
                 chatRow = new EaseChatRowText(context, message, position, this);
             }
@@ -270,12 +271,12 @@ public class EaseMessageAdapter extends BaseAdapter{
 			convertView = createChatRow(context, message, position);
 		}
 		
-		if(message.getBooleanAttribute(EaseConstant.EASE_ATTR_REVOKE, false)){
-			((EaseChatRowRecall)convertView).setUpView(message, position, itemClickListener);
-        }else{
+//		if(message.getBooleanAttribute(EaseConstant.EASE_ATTR_REVOKE, false)){
+//			((EaseChatRowRevoke)convertView).setUpView(message, position, itemClickListener);
+//        }else{
     		//缓存的view的message很可能不是当前item的，传入当前message和position更新ui
     		((EaseChatRow)convertView).setUpView(message, position, itemClickListener);
-        }
+//        }
 		return convertView;
 	}
 

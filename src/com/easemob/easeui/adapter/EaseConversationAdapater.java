@@ -148,9 +148,10 @@ public class EaseConversationAdapater extends ArrayAdapter<EMConversation> {
 		if (conversation.getMsgCount() != 0) {
 			// 把最后一条消息的内容作为item的message内容
 			EMMessage lastMessage = conversation.getLastMessage();
-			if(lastMessage.getBooleanAttribute(EaseConstant.EASE_ATTR_REVOKE, false)
+			// 这里判断下当前消息是否为阅后即焚类型，如果是并且同时是最后一条消息，在会话列表就要替换下消息显示内容
+			if(lastMessage.getBooleanAttribute(EaseConstant.EASE_ATTR_READFIRE, false)
 					&& lastMessage.direct == Direct.RECEIVE){
-				holder.message.setText("【阅后即焚】消息，点击查看");
+				holder.message.setText(R.string.readfire_message);
 			}else{
 				holder.message.setText(EaseSmileUtils.getSmiledText(getContext(),
 						EaseCommonUtils.getMessageDigest(lastMessage, (this.getContext()))), BufferType.SPANNABLE);

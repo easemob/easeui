@@ -2,6 +2,7 @@ package com.easemob.easeui.widget.chatrow;
 
 import java.io.File;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
@@ -21,13 +22,14 @@ import com.easemob.chat.EMMessage.Direct;
 import com.easemob.chat.ImageMessageBody;
 import com.easemob.easeui.EaseConstant;
 import com.easemob.easeui.R;
+import com.easemob.easeui.adapter.EaseMessageAdapter;
 import com.easemob.easeui.model.EaseImageCache;
 import com.easemob.easeui.ui.EaseShowBigImageActivity;
 import com.easemob.easeui.utils.EaseBlurUtils;
 import com.easemob.easeui.utils.EaseCommonUtils;
 import com.easemob.easeui.utils.EaseImageUtils;
 
-public class EaseChatRowImage extends EaseChatRowFile{
+public class EaseChatRowImage extends EaseChatRowFile {
 
     protected ImageView imageView;
     private ImageMessageBody imgBody;
@@ -38,7 +40,8 @@ public class EaseChatRowImage extends EaseChatRowFile{
 
     @Override
     protected void onInflatView() {
-        inflater.inflate(message.direct == EMMessage.Direct.RECEIVE ? R.layout.ease_row_received_picture : R.layout.ease_row_sent_picture, this);
+        inflater.inflate(message.direct == EMMessage.Direct.RECEIVE ? R.layout.ease_row_received_picture
+                : R.layout.ease_row_sent_picture, this);
     }
 
     @Override
@@ -47,7 +50,6 @@ public class EaseChatRowImage extends EaseChatRowFile{
         imageView = (ImageView) findViewById(R.id.image);
     }
 
-    
     @Override
     protected void onSetUpView() {
         imgBody = (ImageMessageBody) message.getBody();
@@ -61,39 +63,28 @@ public class EaseChatRowImage extends EaseChatRowFile{
                 percentageView.setVisibility(View.GONE);
                 imageView.setImageResource(R.drawable.ease_default_image);
                 if (imgBody.getLocalUrl() != null) {
-                    if(message.getBooleanAttribute(EaseConstant.EASE_ATTR_READFIRE, false)
-                    		&& message.direct == Direct.RECEIVE){
-                    	String thumbnailPath = EaseImageUtils.getThumbnailImagePath(imgBody.getThumbnailUrl());
-                    	Bitmap bitmap = BitmapFactory.decodeFile(thumbnailPath);
-                    	if(bitmap!=null){
-                        	Bitmap outBitmap = EaseBlurUtils.blurBitmap(bitmap);
-                        	imageView.setImageBitmap(outBitmap);
-                    	}
-//                    	imageView.setImageResource(R.drawable.ease_destroy);
-                    }else{
-                        String remotePath = imgBody.getRemoteUrl();
-                        String filePath = EaseImageUtils.getImagePath(remotePath);
-                        String thumbRemoteUrl = imgBody.getThumbnailUrl();
-                        String thumbnailPath = EaseImageUtils.getThumbnailImagePath(thumbRemoteUrl);
-                        showImageView(thumbnailPath, imageView, filePath, message);
-                    }
+                    String remotePath = imgBody.getRemoteUrl();
+                    String filePath = EaseImageUtils.getImagePath(remotePath);
+                    String thumbRemoteUrl = imgBody.getThumbnailUrl();
+                    String thumbnailPath = EaseImageUtils.getThumbnailImagePath(thumbRemoteUrl);
+                    showImageView(thumbnailPath, imageView, filePath, message);
                 }
             }
             return;
         }
-        
+
         String filePath = imgBody.getLocalUrl();
         if (filePath != null) {
             showImageView(EaseImageUtils.getThumbnailImagePath(filePath), imageView, filePath, message);
-        } 
+        }
         handleSendMessage();
     }
-    
+
     @Override
     protected void onUpdateView() {
-        super.onUpdateView();
+        ((EaseMessageAdapter)adapter).refresh();
     }
-    
+
     @Override
     protected void onBubbleClick() {
         Intent intent = new Intent(context, EaseShowBigImageActivity.class);
@@ -122,7 +113,7 @@ public class EaseChatRowImage extends EaseChatRowFile{
         }
         context.startActivity(intent);
     }
-    
+
     /**
      * load image into image view
      * 
@@ -131,12 +122,19 @@ public class EaseChatRowImage extends EaseChatRowFile{
      * @param position
      * @return the image exists or not
      */
-    private boolean showImageView(final String thumbernailPath, final ImageView iv, final String localFullSizePath,final EMMessage message) {
+    private boolean showImageView(final String thumbernailPath, final ImageView iv, final String localFullSizePath,
+            final EMMessage message) {
         // first check if the thumbnail image already loaded into cache
         Bitmap bitmap = EaseImageCache.getInstance().get(thumbernailPath);
         if (bitmap != null) {
             // thumbnail image is already loaded, reuse the drawable
-            iv.setImageBitmap(bitmap);
+            // 加上当前图片是否是阅后即焚类型的判断，如果是 则模糊图片在设置给imageView控件
+            if (message.getBooleanAttribute(EaseConstant.EASE_ATTR_READFIRE, false)
+                    && message.direct == Direct.RECEIVE) {
+                imageView.setImageBitmap(EaseBlurUtils.blurBitmap(bitmap));
+            } else {
+                iv.setImageBitmap(bitmap);
+            }
             return true;
         } else {
             new AsyncTask<Object, Void, Bitmap>() {
@@ -157,7 +155,13 @@ public class EaseChatRowImage extends EaseChatRowFile{
 
                 protected void onPostExecute(Bitmap image) {
                     if (image != null) {
-                        iv.setImageBitmap(image);
+                        // 加上当前图片是否是阅后即焚类型的判断，如果是 则模糊图片在设置给imageView控件
+                        if (message.getBooleanAttribute(EaseConstant.EASE_ATTR_READFIRE, false)
+                                && message.direct == Direct.RECEIVE) {
+                            imageView.setImageBitmap(EaseBlurUtils.blurBitmap(image));
+                        } else {
+                            iv.setImageBitmap(image);
+                        }
                         EaseImageCache.getInstance().put(thumbernailPath, image);
                     } else {
                         if (message.status == EMMessage.Status.FAIL) {

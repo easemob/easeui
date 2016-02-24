@@ -68,26 +68,25 @@ public class EaseChatRowVoice extends EaseChatRowFile{
         }
         
         if (message.direct == EMMessage.Direct.RECEIVE) {
-	        if (message.isListened()) {
-	            // 隐藏语音未听标志
-	            readStutausView.setVisibility(View.INVISIBLE);
-	        } else {
-	            readStutausView.setVisibility(View.VISIBLE); 
-	        }
-	        EMLog.d(TAG, "it is receive msg");
-	        if (message.status == EMMessage.Status.INPROGRESS) {
-	            progressBar.setVisibility(View.VISIBLE);
-	            setMessageReceiveCallback();
-	        } else {
-	            progressBar.setVisibility(View.INVISIBLE);
-	
-	        }
-        	if(message.getBooleanAttribute(EaseConstant.EASE_ATTR_READFIRE, false)
-        			&& message.direct == Direct.RECEIVE){
-        		voiceHintTextView.setVisibility(View.VISIBLE);
-        		voiceImageView.setVisibility(View.GONE);
-        		voiceHintTextView.setText("【阅后即焚】听后销毁");
-        	}
+            if (message.isListened()) {
+                // 隐藏语音未听标志
+                readStutausView.setVisibility(View.INVISIBLE);
+            } else {
+                readStutausView.setVisibility(View.VISIBLE); 
+            }
+            EMLog.d(TAG, "it is receive msg");
+            if (message.status == EMMessage.Status.INPROGRESS) {
+                progressBar.setVisibility(View.VISIBLE);
+                setMessageReceiveCallback();
+            } else {
+                progressBar.setVisibility(View.INVISIBLE);
+            }
+            if(message.getBooleanAttribute(EaseConstant.EASE_ATTR_READFIRE, false)
+                    && message.direct == Direct.RECEIVE){
+                voiceHintTextView.setVisibility(View.VISIBLE);
+                voiceImageView.setVisibility(View.GONE);
+                voiceHintTextView.setText(R.string.readfire_message);
+            }
             return;
         }
 
@@ -102,11 +101,11 @@ public class EaseChatRowVoice extends EaseChatRowFile{
 
     @Override
     protected void onBubbleClick() {
-    	if(message.getBooleanAttribute(EaseConstant.EASE_ATTR_READFIRE, false)
-    			&& message.direct == Direct.RECEIVE){
-    		voiceHintTextView.setVisibility(View.GONE);
-    		voiceImageView.setVisibility(View.VISIBLE);
-    	}
+        if(message.getBooleanAttribute(EaseConstant.EASE_ATTR_READFIRE, false)
+                && message.direct == Direct.RECEIVE){
+            voiceHintTextView.setVisibility(View.GONE);
+            voiceImageView.setVisibility(View.VISIBLE);
+        }
         new EaseChatRowVoicePlayClickListener(message, voiceImageView, readStutausView, adapter, activity).onClick(bubbleLayout);
     }
     
