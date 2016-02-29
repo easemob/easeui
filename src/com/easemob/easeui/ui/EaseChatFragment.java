@@ -547,7 +547,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
             CmdMessageBody cmdMsgBody = (CmdMessageBody) cmdMessage.getBody();
             final String action = cmdMsgBody.action;//获取自定义action
             if(action.equals(EaseConstant.EASE_ATTR_REVOKE)){
-            	EaseCommonUtils.receiveRevokeMessage(cmdMessage);
+            	EaseCommonUtils.receiveRevokeMessage(getActivity(), cmdMessage);
             	messageList.refresh();
             }
         	break;

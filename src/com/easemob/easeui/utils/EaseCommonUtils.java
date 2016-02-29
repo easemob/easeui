@@ -182,7 +182,7 @@ public class EaseCommonUtils {
      * @param message  需要撤回的消息
      * @param callBack 发送消息的回调，通知调用方发送撤回消息的结果
      */
-    public static void sendRevokeMessage(final EMMessage message, final EMCallBack callBack) {
+    public static void sendRevokeMessage(final Context context, final EMMessage message, final EMCallBack callBack) {
         if(message.status != EMMessage.Status.SUCCESS){
             callBack.onError(0, "sending");
             return;
@@ -210,7 +210,7 @@ public class EaseCommonUtils {
             @Override
             public void onSuccess() {
                 // 更改要撤销的消息的内容，替换为消息已经撤销的提示内容
-                TextMessageBody body = new TextMessageBody("此条消息已撤回");
+                TextMessageBody body = new TextMessageBody(context.getString(R.string.revoke_message_by_self));
                 message.addBody(body);
                 // 这里需要把消息类型改为 TXT 类型
                 message.setType(EMMessage.Type.TXT);
@@ -239,7 +239,7 @@ public class EaseCommonUtils {
      * @param revokeMsg 收到的透传消息，包含需要撤回的消息的 msgId
      * @return 返回撤回结果是否成功
      */
-    public static boolean receiveRevokeMessage(EMMessage revokeMsg) {
+    public static boolean receiveRevokeMessage(Context context, EMMessage revokeMsg) {
         boolean result = false;
         // 从cmd扩展中获取要撤回消息的id
         String msgId = revokeMsg.getStringAttribute(EaseConstant.EASE_ATTR_MSG_ID, null);
@@ -252,7 +252,7 @@ public class EaseCommonUtils {
             return result;
         }
         // 更改要撤销的消息的内容，替换为消息已经撤销的提示内容
-        TextMessageBody body = new TextMessageBody("此条消息已被 " + message.getUserName() + " 撤回");
+        TextMessageBody body = new TextMessageBody(String.format(context.getString(R.string.revoke_message_by_user), message.getFrom()));
         message.addBody(body);
         // 这里需要把消息类型改为 TXT 类型
         message.setType(EMMessage.Type.TXT);
