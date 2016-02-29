@@ -96,7 +96,7 @@ public class EaseChatRowText extends EaseChatRow{
 
     @Override
     protected void onUpdateView() {
-        ((EaseMessageAdapter)adapter).refresh();
+        adapter.notifyDataSetChanged();
     }
 
     @Override
