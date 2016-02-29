@@ -88,11 +88,17 @@ public class EaseChatRowVoicePlayClickListener implements View.OnClickListener {
 	        if (file.exists() && file.isFile()) {
 	            file.delete();
 	        }
+	        // 听完之后，删除消息
 			EMChatManager.getInstance().getConversation(message.getFrom()).removeMessage(message.getMsgId());
+			if(adapter instanceof EaseMessageAdapter){
+	            ((EaseMessageAdapter) adapter).refresh();
+	        }else{
+	            adapter.notifyDataSetChanged();
+	        }
 		}
 		isPlaying = false;
 		playMsgId = null;
-		((EaseMessageAdapter)adapter).refresh();
+		
 	}
 
 	public void playVoice(String filePath) {
