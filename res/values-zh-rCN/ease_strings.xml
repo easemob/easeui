@@ -44,8 +44,8 @@
     <string name="readfire_message">[阅后即焚]消息，点击查看</string>
     <string name="readfire_message_title">阅后即焚消息</string>
     <string name="readfire_message_content">[内容长度 %1$s]阅读后销毁</string>
-    <string name="revoke_message_by_user">此条消息已被 %1$s 撤回</string>
-    <string name="revoke_message_by_self">此消息已撤回</string>
+    <string name="message_revoke_by_user">"此条消息已被  %1$s 撤回"</string>
+    <string name="message_revoke_by_self">"此条消息撤回"</string>
     <string name="recording_video">录制视频</string>
     <string name="location_prefix">[我的位置]</string>
     <string name="picture">[图片]</string>
