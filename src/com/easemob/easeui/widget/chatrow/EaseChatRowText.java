@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
+import android.os.Bundle;
 import android.text.Spannable;
 import android.view.View;
 import android.widget.BaseAdapter;
@@ -19,6 +20,7 @@ import com.easemob.easeui.EaseConstant;
 import com.easemob.easeui.R;
 import com.easemob.easeui.adapter.EaseMessageAdapter;
 import com.easemob.easeui.utils.EaseSmileUtils;
+import com.easemob.easeui.widget.EaseAlertDialog;
 import com.easemob.exceptions.EaseMobException;
 
 public class EaseChatRowText extends EaseChatRow{
@@ -97,7 +99,11 @@ public class EaseChatRowText extends EaseChatRow{
     @Override
     protected void onUpdateView() {
         // 这里必须进行强转一下然后调用adapter的 refresh方法，否则在text类型的消息是阅后即焚时，删除后界面不会刷新
-        ((EaseMessageAdapter)adapter).refresh();
+        if(adapter instanceof EaseMessageAdapter){
+            ((EaseMessageAdapter) adapter).refresh();
+        }else{
+            adapter.notifyDataSetChanged();
+        }
     }
 
     @Override
@@ -107,29 +113,37 @@ public class EaseChatRowText extends EaseChatRow{
                 || message.direct == Direct.SEND){
             return;
         }
-        AlertDialog dialog = new AlertDialog.Builder(context).create();
-        dialog.setTitle(R.string.readfire_message_title);
-        dialog.setMessage(((TextMessageBody) message.getBody()).getMessage());
-        dialog.show();
-        dialog.setOnDismissListener(new OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                EMChatManager.getInstance().getConversation(message.getFrom()).removeMessage(message.getMsgId());;
-                activity.runOnUiThread(new Runnable() {
+        EaseAlertDialog dialog = new EaseAlertDialog(context, 
+                context.getString(R.string.readfire_message_title),
+                ((TextMessageBody) message.getBody()).getMessage(), 
+                null, new EaseAlertDialog.AlertDialogUser() {
+                    
                     @Override
-                    public void run() {
+                    public void onResult(boolean confirmed, Bundle bundle) {
                         try {
-                            EMChatManager.getInstance().ackMessageRead(message.getFrom(), message.getMsgId());
-                            message.isAcked = true;
-                            onUpdateView();
-                        } catch (EaseMobException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-                        }
+                          EMChatManager.getInstance().ackMessageRead(message.getFrom(), message.getMsgId());
+                          message.isAcked = true;
+                          EMChatManager.getInstance().getConversation(message.getFrom()).removeMessage(message.getMsgId());;
+                      } catch (EaseMobException e) {
+                          e.printStackTrace();
+                      }
                     }
-                });
-            }
-        });
+                }, false);
+        // 设置触摸对话框外围不触发事件，防止误触碰
+        dialog.setCanceledOnTouchOutside(false);
+//        dialog.setOnDismissListener(new OnDismissListener() {
+//            @Override
+//            public void onDismiss(DialogInterface dialog) {
+//                try {
+//                    EMChatManager.getInstance().ackMessageRead(message.getFrom(), message.getMsgId());
+//                    message.isAcked = true;
+//                    EMChatManager.getInstance().getConversation(message.getFrom()).removeMessage(message.getMsgId());;
+//                } catch (EaseMobException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        });
+        dialog.show();
     }
 
 
