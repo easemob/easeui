@@ -210,7 +210,7 @@ public class EaseCommonUtils {
             @Override
             public void onSuccess() {
                 // 更改要撤销的消息的内容，替换为消息已经撤销的提示内容
-                TextMessageBody body = new TextMessageBody(context.getString(R.string.message_revoke_by_self));
+                TextMessageBody body = new TextMessageBody(context.getString(R.string.revoke_message_by_self));
                 message.addBody(body);
                 // 这里需要把消息类型改为 TXT 类型
                 message.setType(EMMessage.Type.TXT);
@@ -252,7 +252,7 @@ public class EaseCommonUtils {
             return result;
         }
         // 更改要撤销的消息的内容，替换为消息已经撤销的提示内容
-        TextMessageBody body = new TextMessageBody(String.format(context.getString(R.string.message_revoke_by_user), message.getUserName()));
+        TextMessageBody body = new TextMessageBody(String.format(context.getString(R.string.revoke_message_by_user), message.getFrom()));
         message.addBody(body);
         // 这里需要把消息类型改为 TXT 类型
         message.setType(EMMessage.Type.TXT);

@@ -96,6 +96,7 @@ public class EaseChatRowText extends EaseChatRow{
 
     @Override
     protected void onUpdateView() {
+        // 这里必须进行强转一下然后调用adapter的 refresh方法，否则在text类型的消息是阅后即焚时，删除后界面不会刷新
         ((EaseMessageAdapter)adapter).refresh();
     }
 
