@@ -82,7 +82,7 @@ public class EaseChatRowImage extends EaseChatRowFile {
 
     @Override
     protected void onUpdateView() {
-        adapter.notifyDataSetChanged();
+        super.onUpdateView();
     }
 
     @Override
