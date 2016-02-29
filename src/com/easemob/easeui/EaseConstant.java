@@ -22,6 +22,8 @@ public class EaseConstant {
     public static final String EASE_ATTR_MSG_ID = "em_revoke_messageId";
     public static final String EASE_ATTR_REVOKE = "em_revoke";
     public static final String EASE_ATTR_READFIRE = "em_readFire";
+    // 群 @ 功能key
+    public static final String EASE_ATTR_AT = "em_at";
 	
     public static final String MESSAGE_ATTR_IS_VOICE_CALL = "is_voice_call";
     public static final String MESSAGE_ATTR_IS_VIDEO_CALL = "is_video_call";
