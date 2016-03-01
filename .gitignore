@@ -23,6 +23,10 @@ local.properties
 #*.project
 *.settings
 
-
+#gradle file
+*build/
+.gradle
+.idea/
+*iml
 
 #*.properties
