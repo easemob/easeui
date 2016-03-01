@@ -73,7 +73,7 @@ public class EaseShowBigImageActivity extends EaseBaseActivity {
 		Uri uri = getIntent().getParcelableExtra("uri");
 		String remotepath = getIntent().getExtras().getString("remotepath");
 		String secret = getIntent().getExtras().getString("secret");
-		msgId = getIntent().getExtras().getString(EaseConstant.EASE_ATTR_MSG_ID);
+		msgId = getIntent().getExtras().getString(EaseConstant.EASE_ATTR_REVOKE_MSG_ID);
 		
 		EMLog.d(TAG, "show big image uri:" + uri + " remotepath:" + remotepath);
 

@@ -2,6 +2,10 @@ package com.easemob.easeui.ui;
 
 import java.io.File;
 import java.util.List;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -312,6 +316,21 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
                 conversation.loadMoreMsgFromDB(msgId, pagesize - msgCount);
             } else {
                 conversation.loadMoreGroupMsgFromDB(msgId, pagesize - msgCount);
+                // 检测当前会话是否有人@当前登录账户 
+                String extField = conversation.getExtField();
+                if(extField!= null){
+                    try {
+                        JSONObject obj = new JSONObject(extField);
+                        JSONObject atObj = obj.optJSONObject(EaseConstant.EASE_ATTR_GROUP_AT);
+                        if(atObj != null){
+//                            atObj.put(EaseConstant.EASE_ATTR_GROUP_AT, null);
+                            obj.put(EaseConstant.EASE_ATTR_GROUP_AT, null);
+                            conversation.setExtField(obj.toString());
+                        }
+                    }catch(JSONException e){
+                        e.printStackTrace();
+                    }
+                }
             }
         } 
         
