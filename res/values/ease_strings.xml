@@ -41,6 +41,11 @@
     <string name="clear_all_records">Clear all conversations？</string>
     <string name="location_recv">[%1$s location]</string>
     <string name="location_message">The location information</string>
+    <string name="readfire_message">[Burn After Reading] message, click View</string>
+    <string name="readfire_message_title">Burn After Reading Message</string>
+    <string name="readfire_message_content">[Content Length %1$s] Burn After Reading</string>
+    <string name="revoke_message_by_user"> %1$s already revoke the message</string>
+    <string name="revoke_message_by_self">already revoke the message</string>
     <string name="recording_video">Record video</string>
     <string name="location_prefix">[my location]</string>
     <string name="voice">Voice</string>
@@ -295,4 +300,6 @@
     <string name="toast_updatenick_fail">update nickname fail!</string>
     <string name="toast_updatephoto_success">update photo success!</string>
     <string name="toast_updatephoto_fail">update photo fail!</string>
+    <string name="toast_read_fire_opened">Open Burn After Reading </string>
+    <string name="toast_read_fire_close">Close Burn After Reading </string>
 </resources>

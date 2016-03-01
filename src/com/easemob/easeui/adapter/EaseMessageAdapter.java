@@ -32,6 +32,7 @@ import com.easemob.easeui.widget.chatrow.EaseChatRowBigExpression;
 import com.easemob.easeui.widget.chatrow.EaseChatRowFile;
 import com.easemob.easeui.widget.chatrow.EaseChatRowImage;
 import com.easemob.easeui.widget.chatrow.EaseChatRowLocation;
+import com.easemob.easeui.widget.chatrow.EaseChatRowRevoke;
 import com.easemob.easeui.widget.chatrow.EaseChatRowText;
 import com.easemob.easeui.widget.chatrow.EaseChatRowVideo;
 import com.easemob.easeui.widget.chatrow.EaseChatRowVoice;
@@ -61,6 +62,9 @@ public class EaseMessageAdapter extends BaseAdapter{
 	private static final int MESSAGE_TYPE_RECV_FILE = 11;
 	private static final int MESSAGE_TYPE_SENT_EXPRESSION = 12;
 	private static final int MESSAGE_TYPE_RECV_EXPRESSION = 13;
+
+	// 撤回类型的消息，这里只有一种，不需要区分发送方和接收方
+    private static final int MESSAGE_TYPE_REVOKE = 14;
 	
 	
 	public int itemTypeCount; 
@@ -175,9 +179,9 @@ public class EaseMessageAdapter extends BaseAdapter{
 	 */
 	public int getViewTypeCount() {
 	    if(customRowProvider != null && customRowProvider.getCustomChatRowTypeCount() > 0){
-	        return customRowProvider.getCustomChatRowTypeCount() + 14;
+	        return customRowProvider.getCustomChatRowTypeCount() + 15;
 	    }
-        return 14;
+        return 15;
     }
 	
 
@@ -197,7 +201,9 @@ public class EaseMessageAdapter extends BaseAdapter{
 		if (message.getType() == EMMessage.Type.TXT) {
 		    if(message.getBooleanAttribute(EaseConstant.MESSAGE_ATTR_IS_BIG_EXPRESSION, false)){
 		        return message.direct == EMMessage.Direct.RECEIVE ? MESSAGE_TYPE_RECV_EXPRESSION : MESSAGE_TYPE_SENT_EXPRESSION;
-		    }
+		    }else if(message.getBooleanAttribute(EaseConstant.EASE_ATTR_REVOKE, false)){
+            	return MESSAGE_TYPE_REVOKE;
+            }
 			return message.direct == EMMessage.Direct.RECEIVE ? MESSAGE_TYPE_RECV_TXT : MESSAGE_TYPE_SENT_TXT;
 		}
 		if (message.getType() == EMMessage.Type.IMAGE) {
@@ -229,6 +235,8 @@ public class EaseMessageAdapter extends BaseAdapter{
         case TXT:
             if(message.getBooleanAttribute(EaseConstant.MESSAGE_ATTR_IS_BIG_EXPRESSION, false)){
                 chatRow = new EaseChatRowBigExpression(context, message, position, this);
+            }else if(message.getBooleanAttribute(EaseConstant.EASE_ATTR_REVOKE, false)){
+            	chatRow = new EaseChatRowRevoke(context, message, position, this);
             }else{
                 chatRow = new EaseChatRowText(context, message, position, this);
             }
@@ -262,9 +270,13 @@ public class EaseMessageAdapter extends BaseAdapter{
 		if(convertView == null){
 			convertView = createChatRow(context, message, position);
 		}
-		//缓存的view的message很可能不是当前item的，传入当前message和position更新ui
-		((EaseChatRow)convertView).setUpView(message, position, itemClickListener);
 		
+//		if(message.getBooleanAttribute(EaseConstant.EASE_ATTR_REVOKE, false)){
+//			((EaseChatRowRevoke)convertView).setUpView(message, position, itemClickListener);
+//        }else{
+    		//缓存的view的message很可能不是当前item的，传入当前message和position更新ui
+    		((EaseChatRow)convertView).setUpView(message, position, itemClickListener);
+//        }
 		return convertView;
 	}
 

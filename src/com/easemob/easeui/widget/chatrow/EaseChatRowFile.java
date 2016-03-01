@@ -12,7 +12,6 @@ import android.widget.TextView;
 import com.easemob.EMCallBack;
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMMessage;
-import com.easemob.chat.FileMessageBody;
 import com.easemob.chat.NormalFileMessageBody;
 import com.easemob.easeui.R;
 import com.easemob.easeui.ui.EaseShowNormalFileActivity;

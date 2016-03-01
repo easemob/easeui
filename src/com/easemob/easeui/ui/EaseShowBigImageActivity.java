@@ -19,18 +19,24 @@ import java.util.Map;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ProgressBar;
 
 import com.easemob.EMCallBack;
 import com.easemob.chat.EMChatManager;
+import com.easemob.chat.EMMessage;
+import com.easemob.chat.EMMessage.Direct;
+import com.easemob.chat.ImageMessageBody;
+import com.easemob.easeui.EaseConstant;
 import com.easemob.easeui.R;
 import com.easemob.easeui.model.EaseImageCache;
 import com.easemob.easeui.utils.EaseLoadLocalBigImgTask;
@@ -52,6 +58,8 @@ public class EaseShowBigImageActivity extends EaseBaseActivity {
 	private Bitmap bitmap;
 	private boolean isDownloaded;
 	private ProgressBar loadLocalPb;
+	
+	private String msgId;
 
 	@SuppressLint("NewApi")
 	@Override
@@ -65,6 +73,8 @@ public class EaseShowBigImageActivity extends EaseBaseActivity {
 		Uri uri = getIntent().getParcelableExtra("uri");
 		String remotepath = getIntent().getExtras().getString("remotepath");
 		String secret = getIntent().getExtras().getString("secret");
+		msgId = getIntent().getExtras().getString(EaseConstant.EASE_ATTR_MSG_ID);
+		
 		EMLog.d(TAG, "show big image uri:" + uri + " remotepath:" + remotepath);
 
 		//本地存在，直接显示本地的图片
@@ -100,6 +110,7 @@ public class EaseShowBigImageActivity extends EaseBaseActivity {
 		image.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
+			    removeMessage();
 				finish();
 			}
 		});
@@ -193,9 +204,41 @@ public class EaseShowBigImageActivity extends EaseBaseActivity {
 	}
 
 	@Override
+	protected void onDestroy() {
+	    // 防止被kill，在onDestroy多加一次判断，如果还没删除，就删除掉
+	    EMMessage message = EMChatManager.getInstance().getMessage(msgId);
+	    if(message != null){
+	        removeMessage();
+	    }
+		super.onDestroy();
+	}
+	
+	private void removeMessage(){
+        // 关闭显示大图的界面时判断当前消息是否是要销毁的
+        EMMessage message= EMChatManager.getInstance().getMessage(msgId);
+        if(message.getBooleanAttribute(EaseConstant.EASE_ATTR_READFIRE, false)
+                && message.direct == Direct.RECEIVE){
+            ImageMessageBody body = (ImageMessageBody) message.getBody();
+            File file = new File(body.getLocalUrl());
+            if (file.exists() && file.isFile()) {
+                file.delete();
+            }
+            String path = body.getLocalUrl();
+            String thPath = path.substring(0, path.lastIndexOf("/")) + "/th" + path.substring(path.lastIndexOf("/") + 1);
+            File thFile = new File(thPath);
+            if (thFile.exists() && thFile.isFile()) {
+                thFile.delete();
+            }
+            EMChatManager.getInstance().getConversation(message.getFrom()).removeMessage(msgId);
+        }
+	}
+
+	@Override
 	public void onBackPressed() {
-		if (isDownloaded)
+		if (isDownloaded){
 			setResult(RESULT_OK);
+		}
+	    removeMessage();
 		finish();
 	}
 }
