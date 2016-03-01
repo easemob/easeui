@@ -6,10 +6,16 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.os.Bundle;
 import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.BackgroundColorSpan;
 import android.view.View;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 import android.widget.TextView.BufferType;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMMessage;
@@ -53,6 +59,24 @@ public class EaseChatRowText extends EaseChatRow{
         }else{
             // 设置内容
             contentView.setText(span, BufferType.SPANNABLE);
+        }
+        if(message.getChatType() == ChatType.GroupChat){
+            try {
+                JSONArray jsonArray = message.getJSONArrayAttribute(EaseConstant.EASE_ATTR_GROUP_AT); 
+                for(int i=0; i<jsonArray.length(); i++){
+                    String username = EMChatManager.getInstance().getCurrentUser();
+                    if(jsonArray.optString(i).equals(username)){
+                        int index = txtBody.getMessage().indexOf(username);
+                        span.setSpan(new BackgroundColorSpan(context.getResources().getColor(R.color.holo_blue_bright)),
+                                index - 1,
+                                index + username.length(),
+                                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        contentView.setText(span);
+                    }
+                }
+            } catch (EaseMobException e1) {
+                e1.printStackTrace();
+            }
         }
         handleTextMessage();
     }

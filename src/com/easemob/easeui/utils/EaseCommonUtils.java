@@ -204,7 +204,7 @@ public class EaseCommonUtils {
         // 创建CMD 消息的消息体 并设置 action 为 revoke
         CmdMessageBody body = new CmdMessageBody(EaseConstant.EASE_ATTR_REVOKE);
         cmdMessage.addBody(body);
-        cmdMessage.setAttribute(EaseConstant.EASE_ATTR_MSG_ID, msgId);
+        cmdMessage.setAttribute(EaseConstant.EASE_ATTR_REVOKE_MSG_ID, msgId);
         // 确认无误，开始发送撤回消息的透传
         EMChatManager.getInstance().sendMessage(cmdMessage, new EMCallBack() {
             @Override
@@ -242,7 +242,7 @@ public class EaseCommonUtils {
     public static boolean receiveRevokeMessage(Context context, EMMessage revokeMsg) {
         boolean result = false;
         // 从cmd扩展中获取要撤回消息的id
-        String msgId = revokeMsg.getStringAttribute(EaseConstant.EASE_ATTR_MSG_ID, null);
+        String msgId = revokeMsg.getStringAttribute(EaseConstant.EASE_ATTR_REVOKE_MSG_ID, null);
         if (msgId == null) {
             return result;
         }

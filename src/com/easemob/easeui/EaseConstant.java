@@ -19,11 +19,12 @@ public class EaseConstant {
 	public static final String EASEUI_SHARED_NAME = "easeui_shared";
 
     // 设置自己扩展的消息类型的 key
-    public static final String EASE_ATTR_MSG_ID = "em_revoke_messageId";
+	public static final String EASE_ATTR_MSG_ID = "ease_msg_id";
+	public static final String EASE_ATTR_REVOKE_MSG_ID = "em_revoke_messageId";
     public static final String EASE_ATTR_REVOKE = "em_revoke";
     public static final String EASE_ATTR_READFIRE = "em_readFire";
-    // 群 @ 功能key
-    public static final String EASE_ATTR_AT = "em_at";
+    // 群 @ 功能扩展key
+    public static final String EASE_ATTR_GROUP_AT = "ease_group_at";
 	
     public static final String MESSAGE_ATTR_IS_VOICE_CALL = "is_voice_call";
     public static final String MESSAGE_ATTR_IS_VIDEO_CALL = "is_video_call";
