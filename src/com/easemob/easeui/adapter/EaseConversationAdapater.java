@@ -175,8 +175,9 @@ public class EaseConversationAdapater extends ArrayAdapter<EMConversation> {
 			String extField = conversation.getExtField();
 			if(extField!= null){
 			    try {
+			        // 在conversation的扩展不为空的情况下，直接根据@类型的key获取包含@的json对象，并判断对象是否为空
                     JSONObject obj = new JSONObject(extField);
-                    JSONObject atObj = obj.optJSONObject(EaseConstant.EASE_ATTR_GROUP_AT);
+                    JSONObject atObj = obj.optJSONObject(EaseConstant.EASE_KEY_HAVE_AT);
                     if(atObj != null){
                         String someoneAtYou = mContext.getString(R.string.someone_at_you);
                         Spannable spanable = new SpannableString(someoneAtYou + holder.message.getText());

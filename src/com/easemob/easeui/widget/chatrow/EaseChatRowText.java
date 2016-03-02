@@ -60,9 +60,11 @@ public class EaseChatRowText extends EaseChatRow{
             // 设置内容
             contentView.setText(span, BufferType.SPANNABLE);
         }
+        // 判断消息是否是群聊类型，然后去检查是否有@类型的扩展
         if(message.getChatType() == ChatType.GroupChat){
             try {
-                JSONArray jsonArray = message.getJSONArrayAttribute(EaseConstant.EASE_ATTR_GROUP_AT); 
+                // 获取扩展，
+                JSONArray jsonArray = message.getJSONArrayAttribute(EaseConstant.EASE_ATTR_GROUP_AT_MEMBERS); 
                 for(int i=0; i<jsonArray.length(); i++){
                     String username = EMChatManager.getInstance().getCurrentUser();
                     if(jsonArray.optString(i).equals(username)){

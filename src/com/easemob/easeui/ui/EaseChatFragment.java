@@ -303,6 +303,24 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
         conversation = EMChatManager.getInstance().getConversation(toChatUsername);
         // 把此会话的未读数置为0
         conversation.markAllMessagesAsRead();
+        // 检测当前会话是否有人@当前登录账户 
+        String extField = conversation.getExtField();
+        if(extField!= null){
+            try {
+                // 在conversation的扩展不为空的情况下，直接根据@类型的key获取包含@的json对象，并判断对象是否为空
+                JSONObject obj = new JSONObject(extField);
+                JSONObject atObj = obj.optJSONObject(EaseConstant.EASE_KEY_HAVE_AT);
+                if(atObj != null){
+//                    atObj.put(EaseConstant.EASE_KEY_HAVE_AT, null);
+                    // 这里在打开会话之后，如果有@消息这里更新下conversation的扩展，将有@消息的标志清除
+                    obj.put(EaseConstant.EASE_KEY_HAVE_AT, null);
+                    // 将json对象转为String保存在conversation的ext扩展中
+                    conversation.setExtField(obj.toString());
+                }
+            }catch(JSONException e){
+                e.printStackTrace();
+            }
+        }
         // 初始化db时，每个conversation加载数目是getChatOptions().getNumberOfMessagesLoaded
         // 这个数目如果比用户期望进入会话界面时显示的个数不一样，就多加载一些
         final List<EMMessage> msgs = conversation.getAllMessages();
@@ -316,21 +334,6 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
                 conversation.loadMoreMsgFromDB(msgId, pagesize - msgCount);
             } else {
                 conversation.loadMoreGroupMsgFromDB(msgId, pagesize - msgCount);
-                // 检测当前会话是否有人@当前登录账户 
-                String extField = conversation.getExtField();
-                if(extField!= null){
-                    try {
-                        JSONObject obj = new JSONObject(extField);
-                        JSONObject atObj = obj.optJSONObject(EaseConstant.EASE_ATTR_GROUP_AT);
-                        if(atObj != null){
-//                            atObj.put(EaseConstant.EASE_ATTR_GROUP_AT, null);
-                            obj.put(EaseConstant.EASE_ATTR_GROUP_AT, null);
-                            conversation.setExtField(obj.toString());
-                        }
-                    }catch(JSONException e){
-                        e.printStackTrace();
-                    }
-                }
             }
         } 
         
