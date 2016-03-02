@@ -4,8 +4,16 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.content.Context;
+import android.text.Editable;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.TextUtils;
+import android.text.style.BackgroundColorSpan;
+import android.text.style.ForegroundColorSpan;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,6 +47,9 @@ import com.easemob.util.DateUtils;
  *
  */
 public class EaseConversationAdapater extends ArrayAdapter<EMConversation> {
+    
+    private Context mContext;
+    
 	private static final String TAG = "ChatAllHistoryAdapter";
 	private List<EMConversation> conversationList;
 	private List<EMConversation> copyConversationList;
@@ -60,6 +71,7 @@ public class EaseConversationAdapater extends ArrayAdapter<EMConversation> {
 
 	public EaseConversationAdapater(Context context, int resource, List<EMConversation> objects) {
 		super(context, resource, objects);
+		mContext = context;
 		conversationList = objects;
 		copyConversationList = new ArrayList<EMConversation>();
 		copyConversationList.addAll(objects);
@@ -161,6 +173,26 @@ public class EaseConversationAdapater extends ArrayAdapter<EMConversation> {
 				holder.msgState.setVisibility(View.VISIBLE);
 			} else {
 				holder.msgState.setVisibility(View.GONE);
+			}
+			// 检测当前会话是否有人@当前登录账户 
+			String extField = conversation.getExtField();
+			if(extField!= null){
+			    try {
+			        // 在conversation的扩展不为空的情况下，直接根据@类型的key获取包含@的json对象，并判断对象是否为空
+                    JSONObject obj = new JSONObject(extField);
+                    JSONObject atObj = obj.optJSONObject(EaseConstant.EASE_KEY_HAVE_AT);
+                    if(atObj != null){
+                        String someoneAtYou = mContext.getString(R.string.someone_at_you);
+                        Spannable spanable = new SpannableString(someoneAtYou + holder.message.getText());
+                        spanable.setSpan(new BackgroundColorSpan(mContext.getResources().getColor(R.color.holo_blue_bright)),
+                                0,
+                                someoneAtYou.length(),
+                                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        holder.message.setText(spanable);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
 			}
 		}
 		/**
