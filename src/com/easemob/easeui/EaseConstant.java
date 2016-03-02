@@ -16,15 +16,23 @@ package com.easemob.easeui;
 public class EaseConstant {
 	
 	// EaseUI 中使用SharedPreference 保存信息的文件名
-	public static final String EASEUI_SHARED_NAME = "easeui_shared";
+	public static final String EASEUI_SHARED_NAME = "ease_shared";
 
-    // 设置自己扩展的消息类型的 key
-	public static final String EASE_ATTR_MSG_ID = "ease_msg_id";
+    /**
+     *  设置自己扩展的消息类型的 key
+     */
+	// 通用的 msg_id key
+	public static final String EASE_ATTR_MSG_ID = "em_msg_id";
+	// 需要撤销的消息的 msg_id key
 	public static final String EASE_ATTR_REVOKE_MSG_ID = "em_revoke_messageId";
+	// 撤回消息的 key
     public static final String EASE_ATTR_REVOKE = "em_revoke";
+    // 阅后即焚的 key
     public static final String EASE_ATTR_READFIRE = "em_readFire";
     // 群 @ 功能扩展key
-    public static final String EASE_ATTR_GROUP_AT = "ease_group_at";
+    public static final String EASE_ATTR_GROUP_AT_MEMBERS = "em_group_at_members";
+    
+    public static final String EASE_KEY_HAVE_AT = "have_at";
 	
     public static final String MESSAGE_ATTR_IS_VOICE_CALL = "is_voice_call";
     public static final String MESSAGE_ATTR_IS_VIDEO_CALL = "is_video_call";
