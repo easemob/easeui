@@ -8,12 +8,11 @@ import android.widget.TextView;
 
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMMessage;
-import com.easemob.chat.LocationMessageBody;
 import com.easemob.chat.EMMessage.ChatType;
+import com.easemob.chat.LocationMessageBody;
 import com.easemob.easeui.R;
 import com.easemob.easeui.ui.EaseBaiduMapActivity;
 import com.easemob.exceptions.EaseMobException;
-import com.easemob.util.LatLng;
 
 public class EaseChatRowLocation extends EaseChatRow{
 
@@ -46,10 +45,8 @@ public class EaseChatRowLocation extends EaseChatRow{
 		    setMessageSendCallback();
             switch (message.status) {
             case CREATE: 
-                progressBar.setVisibility(View.VISIBLE);
-                statusView.setVisibility(View.GONE);
-                // 发送消息
-//                sendMsgInBackground(message);
+                progressBar.setVisibility(View.GONE);
+                statusView.setVisibility(View.VISIBLE);
                 break;
             case SUCCESS: // 发送成功
                 progressBar.setVisibility(View.GONE);
@@ -92,26 +89,5 @@ public class EaseChatRowLocation extends EaseChatRow{
         activity.startActivity(intent);
     }
     
-    /*
-	 * 点击地图消息listener
-	 */
-	protected class MapClickListener implements View.OnClickListener {
-
-		LatLng location;
-		String address;
-
-		public MapClickListener(LatLng loc, String address) {
-			location = loc;
-			this.address = address;
-
-		}
-
-		@Override
-		public void onClick(View v) {
-		   
-		}
-
-	}
-
 
 }
