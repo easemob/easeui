@@ -112,7 +112,7 @@ public class EaseCommonUtils {
             }else */if(message.getBooleanAttribute(EaseConstant.MESSAGE_ATTR_IS_VOICE_CALL, false)){
                 digest = getString(context, R.string.voice_call) + txtBody.getMessage();
             }else if(message.getBooleanAttribute(EaseConstant.MESSAGE_ATTR_IS_VIDEO_CALL, false)){
-                digest = getString(context, R.string.video) + txtBody.getMessage();
+                digest = getString(context, R.string.video_call) + txtBody.getMessage();
             }else if(message.getBooleanAttribute(EaseConstant.MESSAGE_ATTR_IS_BIG_EXPRESSION, false)){
                 if(!TextUtils.isEmpty(txtBody.getMessage())){
                     digest = txtBody.getMessage();
