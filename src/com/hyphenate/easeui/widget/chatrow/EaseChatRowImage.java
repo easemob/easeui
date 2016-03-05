@@ -69,11 +69,7 @@ public class EaseChatRowImage extends EaseChatRowFile{
         }
         
         String filePath = imgBody.getLocalUrl();
-        String thumbPath = imgBody.thumbnailLocalPath();
-        if (!new File(thumbPath).exists()) {
-            // 兼容旧版SDK收到的thumbnail
-            thumbPath = EaseImageUtils.getThumbnailImagePath(imgBody.getLocalUrl());
-        }
+        String thumbPath = EaseImageUtils.getThumbnailImagePath(imgBody.getLocalUrl());
         showImageView(thumbPath, imageView, filePath, message);
         handleSendMessage();
     }
@@ -132,7 +128,10 @@ public class EaseChatRowImage extends EaseChatRowFile{
                     File file = new File(thumbernailPath);
                     if (file.exists()) {
                         return EaseImageUtils.decodeScaleImage(thumbernailPath, 160, 160);
-                    } else {
+                    } else if (new File(imgBody.thumbnailLocalPath()).exists()) {
+                        return EaseImageUtils.decodeScaleImage(imgBody.thumbnailLocalPath(), 160, 160);
+                    }
+                    else {
                         if (message.direct() == EMMessage.Direct.SEND) {
                             if (localFullSizePath != null && new File(localFullSizePath).exists()) {
                                 return EaseImageUtils.decodeScaleImage(localFullSizePath, 160, 160);
