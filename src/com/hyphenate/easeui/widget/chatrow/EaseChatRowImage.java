@@ -69,9 +69,12 @@ public class EaseChatRowImage extends EaseChatRowFile{
         }
         
         String filePath = imgBody.getLocalUrl();
-        if (filePath != null) {
-            showImageView(EaseImageUtils.getThumbnailImagePath(filePath), imageView, filePath, message);
-        } 
+        String thumbPath = imgBody.thumbnailLocalPath();
+        if (!new File(thumbPath).exists()) {
+            // 兼容旧版SDK收到的thumbnail
+            thumbPath = EaseImageUtils.getThumbnailImagePath(imgBody.getLocalUrl());
+        }
+        showImageView(thumbPath, imageView, filePath, message);
         handleSendMessage();
     }
     
