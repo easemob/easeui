@@ -189,8 +189,8 @@ public class EaseConversationList extends ListView {
     
     
     /**
-	 * 设置控件形状
-	 * 
+	 * 设置item中的头像形状
+	 * 0：默认，1：圆形，2：矩形圆角
 	 * @param shape
 	 */
 	public void setAvatarShape(int shape) {
@@ -198,25 +198,25 @@ public class EaseConversationList extends ListView {
 	}
 
 	/**
-	 * 设置控件边框宽度
+	 * 设置头像控件边框宽度
 	 * 
 	 * @param width
 	 */
-	public void setBorderWidth(int width) {
+	public void setAvatarBorderWidth(int width) {
 		adapter.setBorderWidth(width);
 	}
 
 	/**
-	 * 设置控件边框颜色
+	 * 设置头像控件边框颜色
 	 * 
 	 * @param color
 	 */
-	public void setBorderColor(int color) {
+	public void setAvatarBorderColor(int color) {
 		adapter.setBorderColor(color);
 	}
 
 	/**
-	 * 设置控件圆角半径
+	 * 设置头像控件圆角半径
 	 * 
 	 * @param radius
 	 */
