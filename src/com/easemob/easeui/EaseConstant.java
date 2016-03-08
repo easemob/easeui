@@ -48,7 +48,6 @@ public class EaseConstant {
 //     */
 //    public static final String MESSAGE_ATTR_BIG_EXPRESSION_URL = "em_big_expression_url";
     
-    
 	public static final int CHATTYPE_SINGLE = 1;
     public static final int CHATTYPE_GROUP = 2;
     public static final int CHATTYPE_CHATROOM = 3;

@@ -16,15 +16,21 @@ package com.easemob.easeui.widget;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.text.Spannable;
+import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.TextView;
 
 import com.easemob.easeui.R;
+import com.easemob.easeui.utils.EaseSmileUtils;
 
 
 public class EaseAlertDialog extends Dialog {
+    
+    // 调用此dialog的上下文对象
+    private Context mContext;
 	
 	public interface AlertDialogUser {
 		public void onResult(boolean confirmed, Bundle bundle);
@@ -38,6 +44,7 @@ public class EaseAlertDialog extends Dialog {
 
 	public EaseAlertDialog(Context context, int msgId) {
 		super(context);
+		mContext = context;
 		this.title = context.getResources().getString(R.string.prompt);
 		this.msg = context.getResources().getString(msgId);
 		this.setCanceledOnTouchOutside(true);
@@ -45,6 +52,7 @@ public class EaseAlertDialog extends Dialog {
 	
 	public EaseAlertDialog(Context context, String msg) {
 		super(context);
+        mContext = context;
 		this.title = context.getResources().getString(R.string.prompt);
 		this.msg = msg;
 		this.setCanceledOnTouchOutside(true);
@@ -52,6 +60,7 @@ public class EaseAlertDialog extends Dialog {
 	
 	public EaseAlertDialog(Context context, int titleId, int msgId) {
 		super(context);
+        mContext = context;
 		this.title = context.getResources().getString(titleId);
 		this.msg = context.getResources().getString(msgId);
 		this.setCanceledOnTouchOutside(true);
@@ -59,6 +68,7 @@ public class EaseAlertDialog extends Dialog {
 	
 	public EaseAlertDialog(Context context, String title, String msg) {
 		super(context);
+        mContext = context;
 		this.title = title;
 		this.msg = msg;
 		this.setCanceledOnTouchOutside(true);
@@ -66,6 +76,7 @@ public class EaseAlertDialog extends Dialog {
 
 	public EaseAlertDialog(Context context, int titleId, int msgId, Bundle bundle, AlertDialogUser user, boolean showCancel) {
 		super(context);
+        mContext = context;
 		this.title = context.getResources().getString(titleId);
 		this.msg = context.getResources().getString(msgId);
 		this.user = user;
@@ -76,6 +87,7 @@ public class EaseAlertDialog extends Dialog {
 	
 	public EaseAlertDialog(Context context, String title, String msg, Bundle bundle, AlertDialogUser user, boolean showCancel) {
 		super(context);
+        mContext = context;
 		this.title = title;
 		this.msg = msg;
 		this.user = user;
@@ -116,8 +128,13 @@ public class EaseAlertDialog extends Dialog {
 			cancel.setVisibility(View.VISIBLE);
 		}
 
-		if (msg != null)
-		    ((TextView)findViewById(R.id.alert_message)).setText(msg);
+		if (msg != null){
+		    Spannable span = EaseSmileUtils.getSmiledText(mContext, msg);
+		    TextView textview = ((TextView)findViewById(R.id.alert_message));
+		    // 为textview设置内容过多时可以滚动，配合布局文件设置
+		    textview.setMovementMethod(ScrollingMovementMethod.getInstance());
+		    textview.setText(span);
+		}
 	}
 	
 	public void onOk(View view){
