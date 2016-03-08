@@ -149,7 +149,8 @@ public class EaseChatRowText extends EaseChatRow{
                         try {
                           EMChatManager.getInstance().ackMessageRead(message.getFrom(), message.getMsgId());
                           message.isAcked = true;
-                          EMChatManager.getInstance().getConversation(message.getFrom()).removeMessage(message.getMsgId());;
+                          EMChatManager.getInstance().getConversation(message.getFrom()).removeMessage(message.getMsgId());
+                          onUpdateView();
                       } catch (EaseMobException e) {
                           e.printStackTrace();
                       }
@@ -157,18 +158,20 @@ public class EaseChatRowText extends EaseChatRow{
                 }, false);
         // 设置触摸对话框外围不触发事件，防止误触碰
         dialog.setCanceledOnTouchOutside(false);
-//        dialog.setOnDismissListener(new OnDismissListener() {
-//            @Override
-//            public void onDismiss(DialogInterface dialog) {
-//                try {
-//                    EMChatManager.getInstance().ackMessageRead(message.getFrom(), message.getMsgId());
-//                    message.isAcked = true;
-//                    EMChatManager.getInstance().getConversation(message.getFrom()).removeMessage(message.getMsgId());;
-//                } catch (EaseMobException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        });
+        // 这里是为了在不是点击OK按钮的情况下关闭对话框的操作
+        dialog.setOnDismissListener(new OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                try {
+                    EMChatManager.getInstance().ackMessageRead(message.getFrom(), message.getMsgId());
+                    message.isAcked = true;
+                    EMChatManager.getInstance().getConversation(message.getFrom()).removeMessage(message.getMsgId());
+                    onUpdateView();
+                } catch (EaseMobException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
         dialog.show();
     }
 

@@ -21,12 +21,14 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.easemob.EMCallBack;
 import com.easemob.chat.CmdMessageBody;
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMMessage;
 import com.easemob.chat.TextMessageBody;
+import com.easemob.chat.EMMessage.Type;
 import com.easemob.easeui.EaseConstant;
 import com.easemob.easeui.R;
 import com.easemob.easeui.domain.EaseUser;
@@ -191,7 +193,7 @@ public class EaseCommonUtils {
         // 因为如果接收方之前不在线，很久之后才收到消息，将导致撤回失败
         long currTime = System.currentTimeMillis();
         long msgTime = message.getMsgTime();
-        if (currTime - msgTime > 120000) {
+        if (currTime < msgTime || (currTime - msgTime) > 1200000) {
             callBack.onError(1, "maxtime");
             return;
         }
@@ -247,7 +249,8 @@ public class EaseCommonUtils {
             return result;
         }
         // 根据得到的msgId 去本地查找这条消息，如果本地已经没有这条消息了，就不用撤回
-        EMMessage message = EMChatManager.getInstance().getMessage(msgId);
+        // 这里为了防止消息没有加载到内存中，使用Conversation的loadMessage方法加载消息
+        EMMessage message = EMChatManager.getInstance().getConversation(revokeMsg.getFrom()).loadMessage(msgId);
         if (message == null) {
             return result;
         }
