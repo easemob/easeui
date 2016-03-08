@@ -124,6 +124,7 @@ public class EaseChatRowText extends EaseChatRow{
                           EMChatManager.getInstance().ackMessageRead(message.getFrom(), message.getMsgId());
                           message.isAcked = true;
                           EMChatManager.getInstance().getConversation(message.getFrom()).removeMessage(message.getMsgId());;
+                          onUpdateView();
                       } catch (EaseMobException e) {
                           e.printStackTrace();
                       }
