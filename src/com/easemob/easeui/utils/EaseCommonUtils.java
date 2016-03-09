@@ -250,9 +250,9 @@ public class EaseCommonUtils {
         }
         // 根据得到的msgId 去本地查找这条消息，如果本地已经没有这条消息了，就不用撤回
         // 这里为了防止消息没有加载到内存中，使用Conversation的loadMessage方法加载消息
-        EMMessage message = EMChatManager.getInstance().getConversation(revokeMsg.getFrom()).loadMessage(msgId);
+        EMMessage message = EMChatManager.getInstance().getMessage(msgId);
         if (message == null) {
-            return result;
+            message = EMChatManager.getInstance().getConversation(revokeMsg.getFrom()).loadMessage(msgId);
         }
         // 更改要撤销的消息的内容，替换为消息已经撤销的提示内容
         TextMessageBody body = new TextMessageBody(String.format(context.getString(R.string.revoke_message_by_user), message.getFrom()));

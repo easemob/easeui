@@ -18,6 +18,7 @@ import com.easemob.EMError;
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMMessage;
 import com.easemob.chat.EMMessage.Direct;
+import com.easemob.easeui.EaseConstant;
 import com.easemob.easeui.R;
 import com.easemob.easeui.adapter.EaseMessageAdapter;
 import com.easemob.easeui.utils.EaseUserUtils;
@@ -138,6 +139,11 @@ public abstract class EaseChatRow extends LinearLayout {
                     deliveredView.setVisibility(View.INVISIBLE);
                 }
                 ackedView.setVisibility(View.VISIBLE);
+                if(message.getBooleanAttribute(EaseConstant.EASE_ATTR_READFIRE, false)){
+                    // 因为当某一条消息不在内存中时，removeMessage方法无效，所以在当前聊天界面显示消息的时候去判断此消息是否是阅后即焚类型，并且已读，这样来进行删除
+                    EMChatManager.getInstance().getConversation(message.getTo()).removeMessage(message.getMsgId());
+                    onUpdateView();
+                }
             } else {
                 ackedView.setVisibility(View.INVISIBLE);
             }
