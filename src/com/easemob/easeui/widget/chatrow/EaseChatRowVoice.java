@@ -7,11 +7,14 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMMessage;
 import com.easemob.chat.EMMessage.Direct;
 import com.easemob.chat.VoiceMessageBody;
 import com.easemob.easeui.EaseConstant;
 import com.easemob.easeui.R;
+import com.easemob.easeui.utils.EaseACKUtil;
+import com.easemob.exceptions.EaseMobException;
 import com.easemob.util.EMLog;
 
 public class EaseChatRowVoice extends EaseChatRowFile{
@@ -105,6 +108,7 @@ public class EaseChatRowVoice extends EaseChatRowFile{
                 && message.direct == Direct.RECEIVE){
             voiceHintTextView.setVisibility(View.GONE);
             voiceImageView.setVisibility(View.VISIBLE);
+            sendACKMessage();
         }
         new EaseChatRowVoicePlayClickListener(message, voiceImageView, readStutausView, adapter, activity).onClick(bubbleLayout);
     }
@@ -117,5 +121,20 @@ public class EaseChatRowVoice extends EaseChatRowFile{
             EaseChatRowVoicePlayClickListener.currentPlayListener.stopPlayVoice();
         }
     }
-    
+
+    /**
+     * ACK 消息的发送，根据是否发送成功做些相应的操作，这里是把发送失败的消息id和username保存在序列化类中
+     */
+    private void sendACKMessage() {
+        try {
+            EMChatManager.getInstance().ackMessageRead(message.getFrom(), message.getMsgId());
+            message.isAcked = true;
+        } catch (EaseMobException e) {
+            e.printStackTrace();
+            EaseACKUtil.getInstance(context).saveACKDataId(message.getMsgId(), message.getFrom());
+        } finally {
+            EMChatManager.getInstance().getConversation(message.getFrom()).removeMessage(message.getMsgId());
+            onUpdateView();
+        }
+    }
 }

@@ -216,6 +216,9 @@ public class EaseShowBigImageActivity extends EaseBaseActivity {
 	private void removeMessage(){
         // 关闭显示大图的界面时判断当前消息是否是要销毁的
         EMMessage message= EMChatManager.getInstance().getMessage(msgId);
+        if(message == null){
+            return;
+        }
         if(message.getBooleanAttribute(EaseConstant.EASE_ATTR_READFIRE, false)
                 && message.direct == Direct.RECEIVE){
             ImageMessageBody body = (ImageMessageBody) message.getBody();

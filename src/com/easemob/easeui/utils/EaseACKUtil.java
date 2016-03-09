@@ -10,9 +10,15 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.io.StreamCorruptedException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Map.Entry;
 
 import com.easemob.chat.EMChatManager;
+import com.easemob.exceptions.EaseMobException;
 
 import android.content.Context;
 
@@ -23,16 +29,16 @@ import android.content.Context;
  *
  */
 public class EaseACKUtil {
-    
+
     private String filePath = "";
-    
+
     private FileInputStream mFileInputStream;
     private FileOutputStream mFileOutputStream;
     private ObjectInputStream mObjInputStream;
     private ObjectOutputStream mObjOutputStream;
 
-    private EaseACKData mACKData;
-    private EaseACKUtil instance;
+    private static EaseACKUtil instance;
+    private EaseACKData ackData;
 
     /**
      * 私有的构造方法，这里来获取保存msgId的序列化类对象
@@ -40,10 +46,20 @@ public class EaseACKUtil {
     private EaseACKUtil(Context context) {
         try {
             // 设置要保存的序列化类的文件路径
-            filePath = context.getFilesDir().getAbsolutePath() + EMChatManager.getInstance().getCurrentUser() + "ease_ack.dat";
-            mFileInputStream = new FileInputStream(new File(filePath));
+            filePath = context.getFilesDir().getAbsolutePath() + "/" + EMChatManager.getInstance().getCurrentUser()
+                    + "/ease_ack.dat";
+            File file = new File(filePath);
+            if (!file.getParentFile().exists()) {
+                file.getParentFile().mkdirs();
+            }
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+            // 将文件读入到文件输入流
+            mFileInputStream = new FileInputStream(file);
             mObjInputStream = new ObjectInputStream(mFileInputStream);
-            mACKData = (EaseACKData) mObjInputStream.readObject();
+            // 从Object输入流读取对象
+            ackData = (EaseACKData) mObjInputStream.readObject();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (StreamCorruptedException e) {
@@ -52,6 +68,20 @@ public class EaseACKUtil {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                if (mFileInputStream != null) {
+                    mFileInputStream.close();
+                }
+                if (mObjInputStream != null) {
+                    mObjInputStream.close();
+                }
+                if (ackData == null) {
+                    ackData = new EaseACKData();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -60,7 +90,7 @@ public class EaseACKUtil {
      * 
      * @return
      */
-    public EaseACKUtil getInstance(Context context) {
+    public static EaseACKUtil getInstance(Context context) {
         if (instance == null) {
             instance = new EaseACKUtil(context);
         }
@@ -72,8 +102,8 @@ public class EaseACKUtil {
      * 
      * @param msgId
      */
-    public void saveMsgId(String msgId) {
-        mACKData.addMsgId(msgId);
+    public void saveACKDataId(String msgId, String username) {
+        ackData.addACKData(msgId, username);
         saveDataToDisk();
     }
 
@@ -82,8 +112,8 @@ public class EaseACKUtil {
      * 
      * @param msgId
      */
-    public void deleteMsgId(String msgId) {
-        mACKData.removeMsgId(msgId);
+    public void deleteACKData(String msgId) {
+        ackData.removeACKData(msgId);
         saveDataToDisk();
     }
 
@@ -92,50 +122,64 @@ public class EaseACKUtil {
      */
     public void saveDataToDisk() {
         try {
-            mFileOutputStream = new FileOutputStream(new File(filePath));
+            File file = new File(filePath);
+            if (!file.getParentFile().exists()) {
+                file.getParentFile().mkdirs();
+            }
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+            mFileOutputStream = new FileOutputStream(file);
             mObjOutputStream = new ObjectOutputStream(mFileOutputStream);
-            
-            
+            // 将对象写入到输出流中
+            mObjOutputStream.writeObject(ackData);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                if (mFileOutputStream != null) {
+                    mFileOutputStream.close();
+                }
+                if (mObjOutputStream != null) {
+                    mObjOutputStream.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     /**
-     * 获取当前所有未发送已读回执的msgId
+     * 获取当前所有未发送已读回执的集合
      * 
-     * @return
+     * @return 返回消息回执未发送成功的集合
      */
-    public List<String> getAllACKMsgId() {
-        List<String> list = new ArrayList<String>();
-
-        return list;
+    public Map<String, String> getACKMap() {
+        return ackData.getACKMap();
     }
 
-    private class EaseACKData implements Serializable {
-
-        // 保存需要发送的ack消息id
-        private List<String> mMsgIdList = new ArrayList<String>();
-
-        /**
-         * 将不能发送ack的 msgId 加入到当前集合
-         * 
-         * @param msgId
-         */
-        public void addMsgId(String msgId) {
-            mMsgIdList.add(msgId);
+    /**
+     * 当连接到服务器之后，这里开始检查是否有没有发送的ack回执消息，
+     */
+    public void checkACKData() {
+        Map<String, String> ackMap = getACKMap();
+        Set set = ackMap.entrySet();
+        Iterator iterator = set.iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<String, String> mapEntry = (Entry<String, String>) iterator.next();
+            try {
+                EMChatManager.getInstance().ackMessageRead(mapEntry.getValue(), mapEntry.getKey());
+//                deleteACKData(mapEntry.getKey());
+                iterator.remove();
+            } catch (EaseMobException e) {
+                e.printStackTrace();
+            } catch (Exception e){
+                e.printStackTrace();
+            }
         }
-
-        /**
-         * 将已经发送的ack的 msgId 移除当前集合
-         * 
-         * @param msgId
-         */
-        public void removeMsgId(String msgId) {
-            mMsgIdList.remove(msgId);
-        }
+        ackData.setACKMap(ackMap);
+        saveDataToDisk();
     }
-
 }
