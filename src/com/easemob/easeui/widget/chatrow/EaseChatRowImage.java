@@ -122,8 +122,11 @@ public class EaseChatRowImage extends EaseChatRowFile {
             e.printStackTrace();
             EaseACKUtil.getInstance(context).saveACKDataId(message.getMsgId(), message.getFrom());
         } finally {
-            EMChatManager.getInstance().getConversation(message.getFrom()).removeMessage(message.getMsgId());
-            onUpdateView();
+        	if(message.getBooleanAttribute(EaseConstant.EASE_ATTR_READFIRE, false)
+                    && message.direct == Direct.RECEIVE){
+        		EMChatManager.getInstance().getConversation(message.getFrom()).removeMessage(message.getMsgId());
+        		onUpdateView();
+        	}
         }
     }
     /**
