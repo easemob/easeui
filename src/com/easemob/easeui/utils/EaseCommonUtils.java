@@ -194,7 +194,7 @@ public class EaseCommonUtils {
         // 因为如果接收方之前不在线，很久之后才收到消息，将导致撤回失败
         long currTime = System.currentTimeMillis();
         long msgTime = message.getMsgTime();
-        if (currTime < msgTime || (currTime - msgTime) > 1200000) {
+        if (currTime < msgTime || (currTime - msgTime) > 120000) {
             callBack.onError(1, "maxtime");
             return;
         }
