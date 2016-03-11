@@ -95,6 +95,9 @@ public class EaseChatRowVoice extends EaseChatRowFile{
                     voiceHintTextView.setText(R.string.readfire_message);
                     voiceImageView.setVisibility(View.GONE);
             	}
+            }else{
+                voiceHintTextView.setVisibility(View.GONE);
+                voiceImageView.setVisibility(View.VISIBLE);
             }
             return;
         }
