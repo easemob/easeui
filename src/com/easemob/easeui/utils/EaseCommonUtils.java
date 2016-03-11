@@ -21,12 +21,15 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.easemob.EMCallBack;
 import com.easemob.chat.CmdMessageBody;
 import com.easemob.chat.EMChatManager;
+import com.easemob.chat.EMConversation;
 import com.easemob.chat.EMMessage;
 import com.easemob.chat.TextMessageBody;
+import com.easemob.chat.EMMessage.Type;
 import com.easemob.easeui.EaseConstant;
 import com.easemob.easeui.R;
 import com.easemob.easeui.domain.EaseUser;
@@ -191,7 +194,7 @@ public class EaseCommonUtils {
         // 因为如果接收方之前不在线，很久之后才收到消息，将导致撤回失败
         long currTime = System.currentTimeMillis();
         long msgTime = message.getMsgTime();
-        if (currTime - msgTime > 120000) {
+        if (currTime < msgTime || (currTime - msgTime) > 120000) {
             callBack.onError(1, "maxtime");
             return;
         }
@@ -240,6 +243,7 @@ public class EaseCommonUtils {
      * @return 返回撤回结果是否成功
      */
     public static boolean receiveRevokeMessage(Context context, EMMessage revokeMsg) {
+    	EMConversation conversation = EMChatManager.getInstance().getConversation(revokeMsg.getFrom());
         boolean result = false;
         // 从cmd扩展中获取要撤回消息的id
         String msgId = revokeMsg.getStringAttribute(EaseConstant.EASE_ATTR_REVOKE_MSG_ID, null);
@@ -247,9 +251,10 @@ public class EaseCommonUtils {
             return result;
         }
         // 根据得到的msgId 去本地查找这条消息，如果本地已经没有这条消息了，就不用撤回
+        // 这里为了防止消息没有加载到内存中，使用Conversation的loadMessage方法加载消息
         EMMessage message = EMChatManager.getInstance().getMessage(msgId);
         if (message == null) {
-            return result;
+            message = conversation.loadMessage(msgId);
         }
         // 更改要撤销的消息的内容，替换为消息已经撤销的提示内容
         TextMessageBody body = new TextMessageBody(String.format(context.getString(R.string.revoke_message_by_user), message.getFrom()));
@@ -260,6 +265,9 @@ public class EaseCommonUtils {
         message.setAttribute(EaseConstant.EASE_ATTR_REVOKE, true);
         // 返回修改消息结果
         result = EMChatManager.getInstance().updateMessageBody(message);
+        // 因为Android这边没有修改消息未读数的方法，这里只能通过conversation的getMessage方法来实现未读数减一
+        conversation.getMessage(msgId);
+        message.isAcked = true;
         return result;
     }
 
