@@ -102,8 +102,6 @@ public class EaseConversationList extends ListView {
             switch (message.what) {
             case MSG_REFRESH_ADAPTER_DATA:
                 if (adapter != null) {
-                    conversationList.clear();
-                    conversationList.addAll(loadConversationsWithRecentChat());
                     adapter.notifyDataSetChanged();
                 }
                 break;
@@ -114,72 +112,12 @@ public class EaseConversationList extends ListView {
     };
     
 
-    /**
-     * 获取所有会话
-     * 
-     * @param context
-     * @return
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        +    */
-    private List<EMConversation> loadConversationsWithRecentChat() {
-        // 获取所有会话，包括陌生人
-        Map<String, EMConversation> conversations = EMChatManager.getInstance().getAllConversations();
-        // 过滤掉messages size为0的conversation
-        /**
-         * 如果在排序过程中有新消息收到，lastMsgTime会发生变化
-         * 影响排序过程，Collection.sort会产生异常
-         * 保证Conversation在Sort过程中最后一条消息的时间不变 
-         * 避免并发问题
-         */
-        List<Pair<Long, EMConversation>> sortList = new ArrayList<Pair<Long, EMConversation>>();
-        synchronized (conversations) {
-            for (EMConversation conversation : conversations.values()) {
-                if (conversation.getAllMessages().size() != 0) {
-                    sortList.add(new Pair<Long, EMConversation>(conversation.getLastMessage().getMsgTime(), conversation));
-                }
-            }
-        }
-        try {
-            // Internal is TimSort algorithm, has bug
-            sortConversationByLastChatTime(sortList);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        List<EMConversation> list = new ArrayList<EMConversation>();
-        for (Pair<Long, EMConversation> sortItem : sortList) {
-            list.add(sortItem.second);
-        }
-        return list;
-    }
-
-    /**
-     * 根据最后一条消息的时间排序
-     * 
-     * @param usernames
-     */
-    private void sortConversationByLastChatTime(List<Pair<Long, EMConversation>> conversationList) {
-        Collections.sort(conversationList, new Comparator<Pair<Long, EMConversation>>() {
-            @Override
-            public int compare(final Pair<Long, EMConversation> con1, final Pair<Long, EMConversation> con2) {
-
-                if (con1.first == con2.first) {
-                    return 0;
-                } else if (con2.first > con1.first) {
-                    return 1;
-                } else {
-                    return -1;
-                }
-            }
-
-        });
-    }
     
     public EMConversation getItem(int position) {
         return (EMConversation)adapter.getItem(position);
     }
     
     public void refresh() {
-        conversationList = loadConversationsWithRecentChat();
-
         handler.sendEmptyMessage(MSG_REFRESH_ADAPTER_DATA);
     }
     
@@ -189,8 +127,8 @@ public class EaseConversationList extends ListView {
     
     
     /**
-	 * 设置控件形状
-	 * 
+	 * 设置item中的头像形状
+	 * 0：默认，1：圆形，2：矩形圆角
 	 * @param shape
 	 */
 	public void setAvatarShape(int shape) {
@@ -198,25 +136,25 @@ public class EaseConversationList extends ListView {
 	}
 
 	/**
-	 * 设置控件边框宽度
+	 * 设置头像控件边框宽度
 	 * 
 	 * @param width
 	 */
-	public void setBorderWidth(int width) {
+	public void setAvatarBorderWidth(int width) {
 		adapter.setBorderWidth(width);
 	}
 
 	/**
-	 * 设置控件边框颜色
+	 * 设置头像控件边框颜色
 	 * 
 	 * @param color
 	 */
-	public void setBorderColor(int color) {
+	public void setAvatarBorderColor(int color) {
 		adapter.setBorderColor(color);
 	}
 
 	/**
-	 * 设置控件圆角半径
+	 * 设置头像控件圆角半径
 	 * 
 	 * @param radius
 	 */
