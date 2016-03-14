@@ -25,9 +25,11 @@ import com.easemob.easeui.R;
 import com.easemob.easeui.adapter.EaseMessageAdapter;
 import com.easemob.easeui.model.EaseImageCache;
 import com.easemob.easeui.ui.EaseShowBigImageActivity;
+import com.easemob.easeui.utils.EaseACKUtil;
 import com.easemob.easeui.utils.EaseBlurUtils;
 import com.easemob.easeui.utils.EaseCommonUtils;
 import com.easemob.easeui.utils.EaseImageUtils;
+import com.easemob.exceptions.EaseMobException;
 
 public class EaseChatRowImage extends EaseChatRowFile {
 
@@ -92,7 +94,7 @@ public class EaseChatRowImage extends EaseChatRowFile {
         if (file.exists()) {
             Uri uri = Uri.fromFile(file);
             intent.putExtra("uri", uri);
-            intent.putExtra(EaseConstant.EASE_ATTR_MSG_ID, message.getMsgId());
+            intent.putExtra(EaseConstant.EASE_ATTR_REVOKE_MSG_ID, message.getMsgId());
         } else {
             // The local full size pic does not exist yet.
             // ShowBigImage needs to download it from the server
@@ -100,20 +102,33 @@ public class EaseChatRowImage extends EaseChatRowFile {
             intent.putExtra("secret", imgBody.getSecret());
             intent.putExtra("remotepath", imgBody.getRemoteUrl());
             // 这里把当前消息的id传递过去，是为了实现查看大图之后销毁这条消息
-            intent.putExtra(EaseConstant.EASE_ATTR_MSG_ID, message.getMsgId());
+            intent.putExtra(EaseConstant.EASE_ATTR_REVOKE_MSG_ID, message.getMsgId());
         }
         if (message != null && message.direct == EMMessage.Direct.RECEIVE && !message.isAcked
                 && message.getChatType() != ChatType.GroupChat) {
-            try {
-                EMChatManager.getInstance().ackMessageRead(message.getFrom(), message.getMsgId());
-                message.isAcked = true;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            sendACKMessage();
         }
         context.startActivity(intent);
     }
 
+    /**
+     * ACK 消息的发送，根据是否发送成功做些相应的操作，这里是把发送失败的消息id和username保存在序列化类中
+     */
+    private void sendACKMessage() {
+        try {
+            EMChatManager.getInstance().ackMessageRead(message.getFrom(), message.getMsgId());
+            message.isAcked = true;
+        } catch (EaseMobException e) {
+            e.printStackTrace();
+            EaseACKUtil.getInstance(context).saveACKDataId(message.getMsgId(), message.getFrom());
+        } finally {
+        	if(message.getBooleanAttribute(EaseConstant.EASE_ATTR_READFIRE, false)
+                    && message.direct == Direct.RECEIVE){
+        		EMChatManager.getInstance().getConversation(message.getFrom()).removeMessage(message.getMsgId());
+        		onUpdateView();
+        	}
+        }
+    }
     /**
      * load image into image view
      * 

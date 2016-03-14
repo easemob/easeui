@@ -33,7 +33,10 @@
             android:gravity="center_horizontal"
             android:padding="5dp"
             android:textColor="#333"
-            android:textSize="18sp" />
+            android:textSize="18sp" 
+            android:scrollbars="vertical"
+            android:fadeScrollbars="false"
+            android:maxHeight="320dp"/>
 
     </LinearLayout>
 

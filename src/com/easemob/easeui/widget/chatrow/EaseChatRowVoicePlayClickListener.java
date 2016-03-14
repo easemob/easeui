@@ -35,6 +35,8 @@ import com.easemob.easeui.EaseConstant;
 import com.easemob.easeui.R;
 import com.easemob.easeui.adapter.EaseMessageAdapter;
 import com.easemob.easeui.controller.EaseUI;
+import com.easemob.easeui.utils.EaseACKUtil;
+import com.easemob.exceptions.EaseMobException;
 import com.easemob.util.EMLog;
 
 /**
@@ -83,23 +85,39 @@ public class EaseChatRowVoicePlayClickListener implements View.OnClickListener {
 		// 判断的当前播放的这条语音是否是阅后即焚，并且是接收方的消息，如果是 停止播放后删除这条消息
 		if(message.getBooleanAttribute(EaseConstant.EASE_ATTR_READFIRE, false)
 				&& message.direct == Direct.RECEIVE){
-			VoiceMessageBody body = (VoiceMessageBody) message.getBody();
-			File file = new File(body.getLocalUrl());
-	        if (file.exists() && file.isFile()) {
-	            file.delete();
-	        }
-	        // 听完之后，删除消息
-			EMChatManager.getInstance().getConversation(message.getFrom()).removeMessage(message.getMsgId());
-			if(adapter instanceof EaseMessageAdapter){
-	            ((EaseMessageAdapter) adapter).refresh();
-	        }else{
-	            adapter.notifyDataSetChanged();
-	        }
+	        // 听完之后，发送ACK并删除消息
+	        sendACKMessage();
 		}
 		isPlaying = false;
 		playMsgId = null;
 		
 	}
+	
+	/**
+     * ACK 消息的发送，根据是否发送成功做些相应的操作，这里是把发送失败的消息id和username保存在序列化类中
+     */
+    private void sendACKMessage() {
+        try {
+            EMChatManager.getInstance().ackMessageRead(message.getFrom(), message.getMsgId());
+            message.isAcked = true;
+        } catch (EaseMobException e) {
+            e.printStackTrace();
+            // 发送ACK 失败，将ack信息保存在序列化的类中
+            EaseACKUtil.getInstance(activity).saveACKDataId(message.getMsgId(), message.getFrom());
+        } finally {
+        	VoiceMessageBody body = (VoiceMessageBody) message.getBody();
+			File file = new File(body.getLocalUrl());
+	        if (file.exists() && file.isFile()) {
+	            file.delete();
+	        };
+            EMChatManager.getInstance().getConversation(message.getFrom()).removeMessage(message.getMsgId());
+			if(adapter instanceof EaseMessageAdapter){
+	            ((EaseMessageAdapter) adapter).refresh();
+	        }else{
+	            adapter.notifyDataSetChanged();
+	        }
+        }
+    }
 
 	public void playVoice(String filePath) {
 		if (!(new File(filePath).exists())) {
