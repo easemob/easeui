@@ -171,26 +171,6 @@ public class EaseConversationAdapater extends ArrayAdapter<EMConversation> {
 			} else {
 				holder.msgState.setVisibility(View.GONE);
 			}
-			// 检测当前会话是否有人@当前登录账户 
-			String extField = conversation.getExtField();
-			if(extField!= null){
-			    try {
-			        // 在conversation的扩展不为空的情况下，直接根据@类型的key获取包含@的json对象，并判断对象是否为空
-                    JSONObject obj = new JSONObject(extField);
-                    JSONObject atObj = obj.optJSONObject(EaseConstant.EASE_KEY_HAVE_AT);
-                    if(atObj != null){
-                        String someoneAtYou = mContext.getString(R.string.someone_at_you);
-                        Spannable spanable = new SpannableString(someoneAtYou + holder.message.getText());
-                        spanable.setSpan(new BackgroundColorSpan(mContext.getResources().getColor(R.color.holo_blue_bright)),
-                                0,
-                                someoneAtYou.length(),
-                                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                        holder.message.setText(spanable);
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-			}
 		}
 		/**
 		 * 设置自定义 ImageView 的属性
