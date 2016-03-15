@@ -259,7 +259,9 @@ public class EaseConversationAdapater extends ArrayAdapter<EMConversation> {
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
             conversationList.clear();
-            conversationList.addAll((List<EMConversation>) results.values);
+            if (results.values != null) {
+                conversationList.addAll((List<EMConversation>) results.values);
+            }
             if (results.count > 0) {
                 notiyfyByFilter = true;
                 notifyDataSetChanged();
