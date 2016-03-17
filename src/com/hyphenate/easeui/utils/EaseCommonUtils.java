@@ -13,11 +13,10 @@
  */
 package com.hyphenate.easeui.utils;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import com.hyphenate.chat.EMConversation;
 import com.hyphenate.chat.EMConversation.EMConversationType;
-import com.hyphenate.chat.adapter.EMAConversation.EMAConversationType;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMTextMessageBody;
 import com.hyphenate.easeui.EaseConstant;
@@ -25,6 +24,7 @@ import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.domain.EaseUser;
 import com.hyphenate.util.EMLog;
 import com.hyphenate.util.HanziToPinyin;
+import com.hyphenate.util.HanziToPinyin.Token;
 
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningTaskInfo;
@@ -32,6 +32,7 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.text.TextUtils;
+import android.util.Log;
 
 public class EaseCommonUtils {
 	private static final String TAG = "CommonUtils";
@@ -160,22 +161,38 @@ public class EaseCommonUtils {
      * @param user
      */
     public static void setUserInitialLetter(EaseUser user) {
-        String headerName = null;
-        if (!TextUtils.isEmpty(user.getNick())) {
-            headerName = user.getNick();
-        } else {
-            headerName = user.getUsername();
-        }
-        if (Character.isDigit(headerName.charAt(0))) {
-            user.setInitialLetter("#");
-        } else {
-            user.setInitialLetter(HanziToPinyin.getInstance().get(headerName.substring(0, 1)).get(0).target.substring(0, 1)
-                    .toUpperCase());
-            char header = user.getInitialLetter().toLowerCase().charAt(0);
-            if (header < 'a' || header > 'z') {
-                user.setInitialLetter("#");
+        final String DefaultLetter = "#";
+        String letter = DefaultLetter;
+        
+        final class GetInitialLetter {
+            String getLetter(String name) {
+                if (TextUtils.isEmpty(name)) {
+                    return DefaultLetter;
+                }
+                char char0 = name.toLowerCase().charAt(0);
+                if (Character.isDigit(char0)) {
+                    return DefaultLetter;
+                }
+                if (char0 < 'a' || char0 > 'z') {
+                    return DefaultLetter;
+                }
+                ArrayList<Token> l = HanziToPinyin.getInstance().get(name.substring(0, 1));
+                if (l != null && l.size() > 0 && l.get(0).target.length() > 0)
+                {
+                    Token token = l.get(0);
+                    return token.target.substring(0, 1);
+                }
+                return DefaultLetter;
             }
         }
+        
+        if ( !TextUtils.isEmpty(user.getNick()) ) {
+            letter = new GetInitialLetter().getLetter(user.getNick());
+        } 
+        if (letter == DefaultLetter && !TextUtils.isEmpty(user.getUsername())) {
+            letter = new GetInitialLetter().getLetter(user.getUsername());
+        }
+        user.setInitialLetter(letter);
     }
     
     /**
