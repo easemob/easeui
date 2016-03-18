@@ -665,6 +665,9 @@ public class EaseChatFragment extends EaseBaseFragment {
     }
     
     protected void sendMessage(EMMessage message){
+        if (message == null) {
+            return;
+        }
         if(chatFragmentListener != null){
             //设置扩展属性
             chatFragmentListener.onSetMessageAttributes(message);
