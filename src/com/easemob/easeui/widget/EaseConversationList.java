@@ -92,7 +92,7 @@ public class EaseConversationList extends ListView {
     	this.conversationList = conversationList;
     	this.conversationListHelper = helper;
         adapter = new EaseConversationAdapater(context, 0, conversationList);
-        adapter.setCvsListHelper(helper);
+        adapter.setCvsListHelper(conversationListHelper);
         adapter.setPrimaryColor(primaryColor);
         adapter.setPrimarySize(primarySize);
         adapter.setSecondaryColor(secondaryColor);
@@ -177,7 +177,7 @@ public class EaseConversationList extends ListView {
 		 */
 		String onSetItemSecondaryText(EMMessage lastMessage);
 	}
-	public void setConversationListeHelper(EaseConversationListHelper helper){
+	public void setConversationListHelper(EaseConversationListHelper helper){
 		conversationListHelper = helper;
 	}
 }
