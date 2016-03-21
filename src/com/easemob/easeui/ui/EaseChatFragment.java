@@ -323,8 +323,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
     }
     
     protected void onMessageListInit(){
-        messageList.init(toChatUsername, chatType, chatFragmentListener != null ? 
-                chatFragmentListener.onSetCustomChatRowProvider() : null);
+        messageList.init(toChatUsername, chatType, chatFragmentHelper != null ? 
+                chatFragmentHelper.onSetCustomChatRowProvider() : null);
         //设置list item里的控件的点击事件
         setListItemClickListener();
         
@@ -346,8 +346,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
             
             @Override
             public void onUserAvatarClick(String username) {
-                if(chatFragmentListener != null){
-                    chatFragmentListener.onAvatarClick(username);
+                if(chatFragmentHelper != null){
+                    chatFragmentHelper.onAvatarClick(username);
                 }
             }
             
@@ -367,15 +367,15 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
             @Override
             public void onBubbleLongClick(EMMessage message) {
                 contextMenuMessage = message;
-                if(chatFragmentListener != null){
-                    chatFragmentListener.onMessageBubbleLongClick(message);
+                if(chatFragmentHelper != null){
+                    chatFragmentHelper.onMessageBubbleLongClick(message);
                 }
             }
             
             @Override
             public boolean onBubbleClick(EMMessage message) {
-                if(chatFragmentListener != null){
-                    return chatFragmentListener.onMessageBubbleClick(message);
+                if(chatFragmentHelper != null){
+                    return chatFragmentHelper.onMessageBubbleClick(message);
                 }
                 return false; 
             }
@@ -668,8 +668,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
 
         @Override
         public void onClick(int itemId, View view) {
-            if(chatFragmentListener != null){
-                if(chatFragmentListener.onExtendMenuItemClick(itemId, view)){
+            if(chatFragmentHelper != null){
+                if(chatFragmentHelper.onExtendMenuItemClick(itemId, view)){
                     return;
                 }
             }
@@ -730,9 +730,9 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
     }
     
     protected void sendMessage(EMMessage message){
-        if(chatFragmentListener != null){
+        if(chatFragmentHelper != null){
             //设置扩展属性
-            chatFragmentListener.onSetMessageAttributes(message);
+            chatFragmentHelper.onSetMessageAttributes(message);
         }
         // 如果是群聊，设置chattype,默认是单聊
         if (chatType == EaseConstant.CHATTYPE_GROUP){
@@ -891,12 +891,12 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
                 Toast.makeText(getActivity(), R.string.gorup_not_found, 0).show();
                 return;
             }
-            if(chatFragmentListener != null){
-                chatFragmentListener.onEnterToChatDetails();
+            if(chatFragmentHelper != null){
+                chatFragmentHelper.onEnterToChatDetails();
             }
         }else if(chatType == EaseConstant.CHATTYPE_CHATROOM){
-        	if(chatFragmentListener != null){
-        		chatFragmentListener.onEnterToChatDetails();
+        	if(chatFragmentHelper != null){
+        		chatFragmentHelper.onEnterToChatDetails();
         	}
         }
     }
@@ -987,12 +987,13 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
     }
     
    
-    protected EaseChatFragmentListener chatFragmentListener;
-    public void setChatFragmentListener(EaseChatFragmentListener chatFragmentListener){
-        this.chatFragmentListener = chatFragmentListener;
+    protected EaseChatFragmentHelper chatFragmentHelper;
+    public void setChatFragmentHelper(EaseChatFragmentHelper chatFragmentHelper){
+        this.chatFragmentHelper = chatFragmentHelper;
     }
     
-    public interface EaseChatFragmentListener{
+    
+    public interface EaseChatFragmentHelper{
         /**
          * 设置消息扩展属性
          */
@@ -1033,6 +1034,5 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
          */
         EaseCustomChatRowProvider onSetCustomChatRowProvider();
     }
-    
     
 }

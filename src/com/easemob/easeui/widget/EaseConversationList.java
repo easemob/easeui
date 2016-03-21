@@ -85,8 +85,14 @@ public class EaseConversationList extends ListView {
     }
     
     public void init(List<EMConversation> conversationList){
-        this.conversationList = conversationList;
+        this.init(conversationList, null);
+    }
+    
+    public void init(List<EMConversation> conversationList, EaseConversationListHelper helper){
+    	this.conversationList = conversationList;
+    	this.conversationListHelper = helper;
         adapter = new EaseConversationAdapater(context, 0, conversationList);
+        adapter.setCvsListHelper(conversationListHelper);
         adapter.setPrimaryColor(primaryColor);
         adapter.setPrimarySize(primarySize);
         adapter.setSecondaryColor(secondaryColor);
@@ -160,5 +166,18 @@ public class EaseConversationList extends ListView {
 	 */
 	public void setAvatarRadius(int radius) {
 		adapter.setAvatarRadius(radius);
+	}
+	
+	private EaseConversationListHelper conversationListHelper;
+	public interface EaseConversationListHelper{
+		/**
+		 * 设置listview item
+		 * @param lastMessage
+		 * @return
+		 */
+		String onSetItemSecondaryText(EMMessage lastMessage);
+	}
+	public void setConversationListHelper(EaseConversationListHelper helper){
+		conversationListHelper = helper;
 	}
 }
