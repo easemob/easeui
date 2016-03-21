@@ -6,6 +6,7 @@ import java.util.List;
 
 import android.content.Context;
 import android.text.TextUtils;
+import android.util.Pair;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,6 +33,7 @@ import com.easemob.easeui.utils.EaseCommonUtils;
 import com.easemob.easeui.utils.EaseSmileUtils;
 import com.easemob.easeui.utils.EaseUserUtils;
 import com.easemob.easeui.widget.EaseImageView;
+import com.easemob.easeui.widget.EaseConversationList.EaseConversationListHelper;
 import com.easemob.util.DateUtils;
 
 /**
@@ -64,7 +66,7 @@ public class EaseConversationAdapater extends ArrayAdapter<EMConversation> {
 		copyConversationList = new ArrayList<EMConversation>();
 		copyConversationList.addAll(objects);
 	}
-
+	
 	public void setAvatarShape(int shape) {
 		this.avatarShape = shape;
 	}
@@ -81,10 +83,6 @@ public class EaseConversationAdapater extends ArrayAdapter<EMConversation> {
 		this.avatarRadius = avatarRadius;
 	}
 
-	@Override
-	public int getCount() {
-		return conversationList.size();
-	}
 
 	@Override
 	public EMConversation getItem(int arg0) {
@@ -94,10 +92,6 @@ public class EaseConversationAdapater extends ArrayAdapter<EMConversation> {
 		return null;
 	}
 
-	@Override
-	public long getItemId(int position) {
-		return position;
-	}
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
@@ -148,6 +142,10 @@ public class EaseConversationAdapater extends ArrayAdapter<EMConversation> {
 		if (conversation.getMsgCount() != 0) {
 			// 把最后一条消息的内容作为item的message内容
 			EMMessage lastMessage = conversation.getLastMessage();
+			String content = null;
+			if(cvsListHelper != null){
+				content = cvsListHelper.onSetItemSecondaryText(lastMessage);
+			}
 			// 这里判断下当前消息是否为阅后即焚类型，如果是并且同时是最后一条消息，在会话列表就要替换下消息显示内容
 			if(lastMessage.getBooleanAttribute(EaseConstant.EASE_ATTR_READFIRE, false)
 					&& lastMessage.direct == Direct.RECEIVE){
@@ -155,6 +153,9 @@ public class EaseConversationAdapater extends ArrayAdapter<EMConversation> {
 			}else{
 				holder.message.setText(EaseSmileUtils.getSmiledText(getContext(),
 						EaseCommonUtils.getMessageDigest(lastMessage, (this.getContext()))), BufferType.SPANNABLE);
+			}
+			if(content != null){
+				holder.message.setText(content);
 			}
 			holder.time.setText(DateUtils.getTimestampString(new Date(lastMessage.getMsgTime())));
 			if (lastMessage.direct == EMMessage.Direct.SEND && lastMessage.status == EMMessage.Status.FAIL) {
@@ -307,6 +308,11 @@ public class EaseConversationAdapater extends ArrayAdapter<EMConversation> {
 		}
 
 	}
+	
+	private EaseConversationListHelper cvsListHelper;
+	public void setCvsListHelper(EaseConversationListHelper cvsListHelper){
+		this.cvsListHelper = cvsListHelper;
+	}
 
 	private static class ViewHolder {
 		/** 和谁的聊天记录 */
@@ -325,4 +331,5 @@ public class EaseConversationAdapater extends ArrayAdapter<EMConversation> {
 		RelativeLayout list_itease_layout;
 
 	}
+	
 }
