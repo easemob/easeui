@@ -171,7 +171,7 @@ public class EaseConversationList extends ListView {
 	private EaseConversationListHelper conversationListHelper;
 	public interface EaseConversationListHelper{
 		/**
-		 * 设置listview item
+		 * 设置listview item次行内容
 		 * @param lastMessage
 		 * @return
 		 */
