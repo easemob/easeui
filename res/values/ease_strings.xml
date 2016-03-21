@@ -44,9 +44,8 @@
     <string name="readfire_message">[Burn After Reading] message, click View</string>
     <string name="readfire_message_title">Burn After Reading Message</string>
     <string name="readfire_message_content">[Content Length %1$s] Burn After Reading</string>
-    <string name="message_revoke_by_user">" %1$s already revoke the message"</string>
-    <string name="message_revoke_by_self">"already revoke the message"</string>
-    <string name="someone_at_you">"[Someone @ You]"</string>
+    <string name="revoke_message_by_user"> %1$s already revoke the message</string>
+    <string name="revoke_message_by_self">already revoke the message</string>
     <string name="recording_video">Record video</string>
     <string name="location_prefix">[my location]</string>
     <string name="voice">Voice</string>
