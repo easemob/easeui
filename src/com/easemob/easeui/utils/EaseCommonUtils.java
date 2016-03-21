@@ -257,7 +257,7 @@ public class EaseCommonUtils {
             message = conversation.loadMessage(msgId);
         }
         // 更改要撤销的消息的内容，替换为消息已经撤销的提示内容
-        TextMessageBody body = new TextMessageBody(String.format(context.getString(R.string.revoke_message_by_user), message.getUserName()));
+        TextMessageBody body = new TextMessageBody(String.format(context.getString(R.string.revoke_message_by_user), message.getFrom()));
         message.addBody(body);
         // 这里需要把消息类型改为 TXT 类型
         message.setType(EMMessage.Type.TXT);
