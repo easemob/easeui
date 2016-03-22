@@ -90,7 +90,9 @@ public class EaseConversationList extends ListView {
     
     public void init(List<EMConversation> conversationList, EaseConversationListHelper helper){
     	this.conversationList = conversationList;
-    	this.conversationListHelper = helper;
+    	if(helper != null){
+    		this.conversationListHelper = helper;
+    	}
         adapter = new EaseConversationAdapater(context, 0, conversationList);
         adapter.setCvsListHelper(conversationListHelper);
         adapter.setPrimaryColor(primaryColor);
