@@ -313,4 +313,6 @@
     <string name="toast_updatephoto_fail">更新头像失败!</string>
     <string name="toast_read_fire_opened">阅后即焚模式已经开启</string>
     <string name="toast_read_fire_close">阅后即焚模式已经关闭</string>
+    
+    <string name="title_inputting">对方正在输入...</string>
 </resources>

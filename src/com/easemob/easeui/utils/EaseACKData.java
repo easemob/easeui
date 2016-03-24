@@ -4,22 +4,28 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * 序列化类，为了保存发送ACK失败的消息的数据
+ * 
+ * @author lzan13
+ *
+ */
 public class EaseACKData implements Serializable {
 
     // 注意定义此属性
     private static final long serialVersionUID = 521125L;
 
     private Map<String, String> ackMap;
-    
-    public EaseACKData(){
+
+    public EaseACKData() {
         ackMap = new HashMap<String, String>();
     }
 
     public Map<String, String> getACKMap() {
         return ackMap;
     }
-    
-    public void setACKMap(Map<String, String> map){
+
+    public void setACKMap(Map<String, String> map) {
         ackMap = map;
     }
 

@@ -2,7 +2,10 @@ package com.easemob.easeui.ui;
 
 import java.io.File;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -16,10 +19,12 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.provider.MediaStore;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.text.ClipboardManager;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -82,8 +87,21 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
     protected static final int REQUEST_CODE_CAMERA = 2;
     protected static final int REQUEST_CODE_LOCAL = 3;
 
-    // 是否处于阅后即焚状态的标志，true为阅后即焚状态：此状态下发送的消息都是阅后即焚的消息，暂时实现了文字和图片，false表示正常状态
+    /**
+     * 是否处于阅后即焚状态的标志，true为阅后即焚状态：此状态下发送的消息都是阅后即焚的消息，暂时实现了文字和图片，false表示正常状态
+     */
     public boolean isReadFire = false;
+    
+    // 定时器
+    protected Timer mTimer;
+    // 自定义Handler 主要做一些子线程通知UI线程的刷新操作
+    protected EaseHandler mHandler = new EaseHandler();
+    // 记录上次输入状态设置时间
+    protected long oldTime = 0L;
+    // 输入状态  0 输入中，1 正常
+    protected final int INPUT_STATUS_INPUTTING = 0;
+    protected final int INPUT_STATUS_NORMAL = 1;
+    
     /**
      * 传入fragment的参数
      */
@@ -97,8 +115,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
     
     protected InputMethodManager inputManager;
     protected ClipboardManager clipboard;
-
-    protected Handler handler = new Handler();
+    
     protected File cameraFile;
     protected EaseVoiceRecorderView voiceRecorderView;
     protected SwipeRefreshLayout swipeRefreshLayout;
@@ -161,6 +178,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
 
             @Override
             public void onSendMessage(String content) {
+                // 将时间设置为初始状态
+                oldTime = 0L;
                 // 发送文本消息
                 sendTextMessage(content);
             }
@@ -305,17 +324,17 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
         conversation.markAllMessagesAsRead();
         // 检测当前会话是否有人@当前登录账户 
         String extField = conversation.getExtField();
-        if(extField!= null){
+        if(!TextUtils.isEmpty(extField)){
             try {
                 // 在conversation的扩展不为空的情况下，直接根据@类型的key获取包含@的json对象，并判断对象是否为空
-                JSONObject obj = new JSONObject(extField);
-                JSONObject atObj = obj.optJSONObject(EaseConstant.EASE_KEY_HAVE_AT);
-                if(atObj != null){
+                JSONObject extObject = new JSONObject(extField);
+                JSONArray atArray = extObject.optJSONArray(EaseConstant.EASE_KEY_HAVE_AT);
+                if(atArray != null){
 //                    atObj.put(EaseConstant.EASE_KEY_HAVE_AT, null);
                     // 这里在打开会话之后，如果有@消息这里更新下conversation的扩展，将有@消息的标志清除
-                    obj.put(EaseConstant.EASE_KEY_HAVE_AT, null);
+                    extObject.put(EaseConstant.EASE_KEY_HAVE_AT, null);
                     // 将json对象转为String保存在conversation的ext扩展中
-                    conversation.setExtField(obj.toString());
+                    conversation.setExtField(extObject.toString());
                 }
             }catch(JSONException e){
                 e.printStackTrace();
@@ -534,17 +553,21 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
                 // 单聊消息
                 username = message.getFrom();
             }
-
             // 如果是当前会话的消息，刷新聊天页面
             if (username.equals(toChatUsername)) {
                 messageList.refreshSelectLast();
                 // 声音和震动提示有新消息
                 EaseUI.getInstance().getNotifier().viberateAndPlayTone(message);
             } else {
+                // 首先判断当前消息是否是群聊的消息，然后判断是否有 @ 类型的扩展
+                if(message.getChatType() == ChatType.GroupChat){
+                    EaseCommonUtils.saveAtToConversationExt(message);
+                }
                 // 如果消息不是和当前聊天ID的消息
                 EaseUI.getInstance().getNotifier().onNewMsg(message);
             }
-
+            // 收到新消息应该将输入状态设置为正常，就是显示用户名称
+            mHandler.sendMessage(mHandler.obtainMessage(INPUT_STATUS_NORMAL));
             break;
         case EventDeliveryAck:
         case EventReadAck:
@@ -558,10 +581,15 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
             messageList.refresh();
             break;
         case EventOfflineMessage:
-            // a list of offline messages
-            // List<EMMessage> offlineMessages = (List<EMMessage>)
-            // event.getData();
             messageList.refresh();
+            List<EMMessage> messages = (List<EMMessage>) event.getData();
+            for(int i=0; i<messages.size(); i++){
+                String chatId = messages.get(i).getChatType() == ChatType.Chat ? messages.get(i).getFrom() : messages.get(i).getTo();
+                // 首先判断当前消息是否是群聊的消息，然后判断是否有 @ 类型的扩展
+                if(messages.get(i).getChatType() == ChatType.GroupChat && !chatId.equals(toChatUsername)){
+                    EaseCommonUtils.saveAtToConversationExt(messages.get(i));
+                }
+            }
             break;
         case EventNewCMDMessage:
         	EMMessage cmdMessage = (EMMessage) event.getData();
@@ -572,13 +600,64 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
             	EaseCommonUtils.receiveRevokeMessage(getActivity(), cmdMessage);
             	messageList.refresh();
             }
+            if(action.equals(EaseConstant.EASE_ATTR_INPUT_STATUS)){
+                mHandler.sendMessage(mHandler.obtainMessage(INPUT_STATUS_INPUTTING));
+            }
         	break;
         default:
             break;
         }
 
     }
-
+    
+    /**
+     * 设置对方正在输入状态，主要是接收到CMD消息后，得知对方正在输入
+     */
+    private void setInputStatus(){
+        // 设置title为正在输入状态
+        titleBar.setTitle(getActivity().getString(R.string.title_inputting));
+        if(mTimer == null){
+            mTimer = new Timer();
+        }else{
+            mTimer.purge();
+        }
+        // 创建定时器任务
+        TimerTask task = new TimerTask() {
+            
+            @Override
+            public void run() {
+                mHandler.sendMessage(mHandler.obtainMessage(INPUT_STATUS_NORMAL));
+            }
+        };
+        mTimer.schedule(task, EaseConstant.EASE_ATTR_INPUT_STATUS_TIME);
+    }
+    /**
+     * 自定义Handler类
+     * @author lzan13
+     * 现在主要用于刷新对方输入状态
+     */
+    class EaseHandler extends Handler{
+        @Override
+        public void handleMessage(Message msg) {
+            switch(msg.what){
+            case 0:
+                setInputStatus();
+                break;
+            case 1:
+                // 设置输入状态为正常状态
+                titleBar.setTitle(toChatUsername);
+                if(EaseUserUtils.getUserInfo(toChatUsername) != null){
+                    titleBar.setTitle(EaseUserUtils.getUserInfo(toChatUsername).getNick());
+                }
+                if(mTimer != null){
+                    mTimer.purge();
+                    mTimer = null;
+                }
+                break;
+            }
+        }
+    }
+    
     public void onBackPressed() {
         if (inputMenu.onBackPressed()) {
             getActivity().finish();

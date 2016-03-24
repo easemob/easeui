@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -156,7 +157,6 @@ public class EaseConversationAdapater extends ArrayAdapter<EMConversation> {
 		} else {
 			holder.unreadLabel.setVisibility(View.INVISIBLE);
 		}
-
 		if (conversation.getMsgCount() != 0) {
 			// 把最后一条消息的内容作为item的message内容
 			EMMessage lastMessage = conversation.getLastMessage();
@@ -176,14 +176,15 @@ public class EaseConversationAdapater extends ArrayAdapter<EMConversation> {
 			}
 			// 检测当前会话是否有人@当前登录账户 
 			String extField = conversation.getExtField();
-			if(extField!= null){
+			if(!TextUtils.isEmpty(extField)){
 			    try {
 			        // 在conversation的扩展不为空的情况下，直接根据@类型的key获取包含@的json对象，并判断对象是否为空
-                    JSONObject obj = new JSONObject(extField);
-                    JSONObject atObj = obj.optJSONObject(EaseConstant.EASE_KEY_HAVE_AT);
-                    if(atObj != null){
+                    JSONObject extObject = new JSONObject(extField);
+                    JSONArray atArray = extObject.optJSONArray(EaseConstant.EASE_KEY_HAVE_AT);
+                    if(atArray != null && atArray.length() > 0){
+                        EMMessage atMessage = conversation.loadMessage(atArray.getString(atArray.length() - 1));
                         String someoneAtYou = mContext.getString(R.string.someone_at_you);
-                        Spannable spanable = new SpannableString(someoneAtYou + holder.message.getText());
+                        Spannable spanable = new SpannableString(someoneAtYou + atMessage.getFrom() + ": " + holder.message.getText());
                         spanable.setSpan(new BackgroundColorSpan(mContext.getResources().getColor(R.color.holo_blue_bright)),
                                 0,
                                 someoneAtYou.length(),
