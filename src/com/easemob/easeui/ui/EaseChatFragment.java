@@ -21,6 +21,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
+import android.provider.SyncStateContract.Constants;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.text.ClipboardManager;
@@ -597,10 +598,12 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
             CmdMessageBody cmdMsgBody = (CmdMessageBody) cmdMessage.getBody();
             final String action = cmdMsgBody.action;//获取自定义action
             if(action.equals(EaseConstant.EASE_ATTR_REVOKE)){
-            	EaseCommonUtils.receiveRevokeMessage(getActivity(), cmdMessage);
-            	messageList.refresh();
+                EaseCommonUtils.receiveRevokeMessage(getActivity(), cmdMessage);
+                messageList.refresh();
             }
-            if(action.equals(EaseConstant.EASE_ATTR_INPUT_STATUS)){
+            if(action.equals(EaseConstant.EASE_ATTR_INPUT_STATUS) 
+                    && cmdMessage.getChatType() == ChatType.Chat
+                    && cmdMessage.getFrom().equals(toChatUsername)){
                 mHandler.sendMessage(mHandler.obtainMessage(INPUT_STATUS_INPUTTING));
             }
         	break;
