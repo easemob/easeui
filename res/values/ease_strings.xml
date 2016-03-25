@@ -303,5 +303,6 @@
     <string name="toast_read_fire_opened">Open Burn After Reading </string>
     <string name="toast_read_fire_close">Close Burn After Reading </string>
     
+    <string name="someone_at_you">[Some one @ you]</string>
     <string name="title_inputting">Inputting...</string>
 </resources>

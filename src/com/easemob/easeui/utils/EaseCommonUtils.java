@@ -14,6 +14,7 @@
 package com.easemob.easeui.utils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -315,21 +316,31 @@ public class EaseCommonUtils {
                     // 获取会话的扩展
                     String extField = conversation.getExtField();
                     JSONObject extObject = null;
-                    if(TextUtils.isEmpty(extField)){
+                    if (TextUtils.isEmpty(extField)) {
                         extObject = new JSONObject();
-                    }else{
+                    } else {
                         extObject = new JSONObject(extField);
                     }
-                    
-                    // 获取保存带有@扩展的的消息id
-                    JSONArray atArray = extObject.optJSONArray(EaseConstant.EASE_KEY_HAVE_AT);
-                    if (atArray == null) {
-                        atArray = new JSONArray();
+                    String str = extObject.optString(EaseConstant.EASE_KEY_HAVE_AT);
+                    StringBuffer strBuffer = new StringBuffer(str);
+                    if(strBuffer.length() == 0){
+                        strBuffer.append(message.getMsgId());
+                    }else{
+                        strBuffer.append("_" + message.getMsgId());
                     }
-                    // 将包含有@ 扩展的消息添加到Conversation的扩展中去
-                    atArray.put(message.getMsgId());
-                    // 将内层@类型的json数据设置给外层obj json对象
-                    extObject.put(EaseConstant.EASE_KEY_HAVE_AT, atArray);
+                    
+                    // 将内层@类型的数据设置给外层obj json对象
+                    extObject.put(EaseConstant.EASE_KEY_HAVE_AT, strBuffer.toString());
+                    
+//                    // 获取保存带有@扩展的的消息id
+//                    JSONArray atArray = extObject.optJSONArray(EaseConstant.EASE_KEY_HAVE_AT);
+//                    if (atArray == null) {
+//                        atArray = new JSONArray();
+//                    }
+//                    // 将包含有@ 扩展的消息添加到Conversation的扩展中去
+//                    atArray.put(message.getMsgId());
+//                    // 将内层@类型的json数据设置给外层obj json对象
+//                    extObject.put(EaseConstant.EASE_KEY_HAVE_AT, atArray);
                     // 将json对象转为String保存在conversation的ext扩展中
                     conversation.setExtField(extObject.toString());
                 }
@@ -356,21 +367,30 @@ public class EaseCommonUtils {
             String extField = conversation.getExtField();
             if (!TextUtils.isEmpty(extField)) {
                 JSONObject extObject = new JSONObject(extField);
-                // 获取保存带有@扩展的的消息id
-                JSONArray atArray = extObject.optJSONArray(EaseConstant.EASE_KEY_HAVE_AT);
-                if(atArray != null && atArray.length() > 0){
-                    List<String> atList = new ArrayList<String>(); 
-                    for(int i=0; i<atArray.length(); i++){
-                        atList.add(atArray.getString(i));
-                    }
-                    atList.remove(msgId);
-                    JSONArray atArray2 = new JSONArray();
-                    for(int i=0; i<atList.size(); i++){
-                        atArray2.put(atList.get(i));
-                    }
-                    extObject.put(EaseConstant.EASE_KEY_HAVE_AT, atArray2);
+                String str = extObject.optString(EaseConstant.EASE_KEY_HAVE_AT);
+                if(!TextUtils.isEmpty(str)){
+                    List<String> list = Arrays.asList(str.split("_"));
+                    list.remove(msgId);
+                    String temp = list.toString();
+                    String result = temp.replaceAll("^\\[| |\\]$", "");
+                    extObject.put(EaseConstant.EASE_KEY_HAVE_AT, result);
                     conversation.setExtField(extObject.toString());
                 }
+//                // 获取保存带有@扩展的的消息id
+//                JSONArray atArray = extObject.optJSONArray(EaseConstant.EASE_KEY_HAVE_AT);
+//                if (atArray != null && atArray.length() > 0) {
+//                    List<String> atList = new ArrayList<String>();
+//                    for (int i = 0; i < atArray.length(); i++) {
+//                        atList.add(atArray.getString(i));
+//                    }
+//                    atList.remove(msgId);
+//                    JSONArray atArray2 = new JSONArray();
+//                    for (int i = 0; i < atList.size(); i++) {
+//                        atArray2.put(atList.get(i));
+//                    }
+//                    extObject.put(EaseConstant.EASE_KEY_HAVE_AT, atArray2);
+//                    conversation.setExtField(extObject.toString());
+//                }
             }
         } catch (JSONException e) {
             e.printStackTrace();

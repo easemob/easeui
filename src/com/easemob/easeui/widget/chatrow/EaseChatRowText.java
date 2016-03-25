@@ -5,10 +5,13 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.os.Bundle;
 import android.text.Spannable;
+import android.text.style.BackgroundColorSpan;
 import android.view.View;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 import android.widget.TextView.BufferType;
+
+import org.json.JSONArray;
 
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMMessage;
@@ -65,7 +68,7 @@ public class EaseChatRowText extends EaseChatRow {
                     if (jsonArray.optString(i).equals(username)) {
                         int index = txtBody.getMessage().indexOf(username);
                         span.setSpan(new BackgroundColorSpan(context.getResources().getColor(R.color.holo_blue_bright)),
-                                index - 2, index + username.length() + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                index - 1, index + username.length() + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                         contentView.setText(span);
                     }
                 }

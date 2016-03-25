@@ -329,14 +329,21 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
             try {
                 // 在conversation的扩展不为空的情况下，直接根据@类型的key获取包含@的json对象，并判断对象是否为空
                 JSONObject extObject = new JSONObject(extField);
-                JSONArray atArray = extObject.optJSONArray(EaseConstant.EASE_KEY_HAVE_AT);
-                if(atArray != null){
-//                    atObj.put(EaseConstant.EASE_KEY_HAVE_AT, null);
+                String str = extObject.optString(EaseConstant.EASE_KEY_HAVE_AT);
+                if(!TextUtils.isEmpty(str)){
                     // 这里在打开会话之后，如果有@消息这里更新下conversation的扩展，将有@消息的标志清除
                     extObject.put(EaseConstant.EASE_KEY_HAVE_AT, null);
                     // 将json对象转为String保存在conversation的ext扩展中
                     conversation.setExtField(extObject.toString());
                 }
+//                JSONArray atArray = extObject.optJSONArray(EaseConstant.EASE_KEY_HAVE_AT);
+//                if(atArray != null){
+////                    atObj.put(EaseConstant.EASE_KEY_HAVE_AT, null);
+//                    // 这里在打开会话之后，如果有@消息这里更新下conversation的扩展，将有@消息的标志清除
+//                    extObject.put(EaseConstant.EASE_KEY_HAVE_AT, null);
+//                    // 将json对象转为String保存在conversation的ext扩展中
+//                    conversation.setExtField(extObject.toString());
+//                }
             }catch(JSONException e){
                 e.printStackTrace();
             }
