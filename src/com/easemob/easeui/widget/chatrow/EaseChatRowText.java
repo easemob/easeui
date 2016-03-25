@@ -72,7 +72,7 @@ public class EaseChatRowText extends EaseChatRow {
                     if (jsonArray.optString(i).equals(username)) {
                         int index = txtBody.getMessage().indexOf(username);
                         span.setSpan(new BackgroundColorSpan(context.getResources().getColor(R.color.holo_blue_bright)),
-                                index - 1, index + username.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                index - 2, index + username.length() + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                         contentView.setText(span);
                     }
                 }
