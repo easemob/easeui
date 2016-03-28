@@ -321,17 +321,20 @@ public class EaseCommonUtils {
                     } else {
                         extObject = new JSONObject(extField);
                     }
+                    // 使用StringBuffer的方式保存 msgId扩展
                     String str = extObject.optString(EaseConstant.EASE_KEY_HAVE_AT);
                     StringBuffer strBuffer = new StringBuffer(str);
+                    // 将msgId以","分割保存
                     if(strBuffer.length() == 0){
                         strBuffer.append(message.getMsgId());
                     }else{
-                        strBuffer.append("_" + message.getMsgId());
+                        strBuffer.append("," + message.getMsgId());
                     }
                     
                     // 将内层@类型的数据设置给外层obj json对象
                     extObject.put(EaseConstant.EASE_KEY_HAVE_AT, strBuffer.toString());
                     
+                    // 使用JSONArray的方式保存 msgId扩展
 //                    // 获取保存带有@扩展的的消息id
 //                    JSONArray atArray = extObject.optJSONArray(EaseConstant.EASE_KEY_HAVE_AT);
 //                    if (atArray == null) {
@@ -369,11 +372,14 @@ public class EaseCommonUtils {
                 JSONObject extObject = new JSONObject(extField);
                 String str = extObject.optString(EaseConstant.EASE_KEY_HAVE_AT);
                 if(!TextUtils.isEmpty(str)){
-                    List<String> list = Arrays.asList(str.split("_"));
+                    // 将conversation扩展中的msgId字符串转换为list集合，用于删除某一项
+                    List<String> list = new ArrayList<String>(Arrays.asList(str.split(",")));
                     list.remove(msgId);
+                    // 将处理后的集合转为String，然后用正则表达式进行替换，变成用","分割的一个字符串，然后设置给conversation的扩展
                     String temp = list.toString();
                     String result = temp.replaceAll("^\\[| |\\]$", "");
                     extObject.put(EaseConstant.EASE_KEY_HAVE_AT, result);
+                    // 保存conversation的扩展
                     conversation.setExtField(extObject.toString());
                 }
 //                // 获取保存带有@扩展的的消息id
@@ -389,6 +395,7 @@ public class EaseCommonUtils {
 //                        atArray2.put(atList.get(i));
 //                    }
 //                    extObject.put(EaseConstant.EASE_KEY_HAVE_AT, atArray2);
+//                    // 保存conversation的扩展
 //                    conversation.setExtField(extObject.toString());
 //                }
             }

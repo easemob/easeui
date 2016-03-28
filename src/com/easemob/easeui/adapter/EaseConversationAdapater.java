@@ -194,7 +194,7 @@ public class EaseConversationAdapater extends ArrayAdapter<EMConversation> {
                     // 使用 StringBuffer 的方式，在conversation的扩展不为空的情况下，直接根据@类型的key获取包含@的json对象，并判断对象是否为空
                     String str = extObject.optString(EaseConstant.EASE_KEY_HAVE_AT);
                     if(str.length() > 0){
-                        List<String> list = Arrays.asList(str.split("_"));
+                        List<String> list = Arrays.asList(str.split(","));
                         EMMessage atMessage = conversation.loadMessage(list.get(list.size() - 1));
                         String someoneAtYou = mContext.getString(R.string.someone_at_you);
                         Spannable spanable = new SpannableString(someoneAtYou + atMessage.getFrom() + ": " + holder.message.getText());
