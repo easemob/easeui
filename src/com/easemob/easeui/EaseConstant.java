@@ -29,7 +29,14 @@ public class EaseConstant {
     public static final String EASE_ATTR_REVOKE = "em_revoke";
     // 阅后即焚的 key
     public static final String EASE_ATTR_READFIRE = "em_readFire";
+    // 群 @ 功能扩展key
+    public static final String EASE_ATTR_GROUP_AT_MEMBERS = "em_group_at_members";
+    // 输入状态
+    public static final String EASE_ATTR_INPUT_STATUS = "em_inputState";
+    public static final int EASE_ATTR_INPUT_STATUS_TIME = 5000;
     
+    public static final String EASE_KEY_HAVE_AT = "em_have_at";
+	
     public static final String MESSAGE_ATTR_IS_VOICE_CALL = "is_voice_call";
     public static final String MESSAGE_ATTR_IS_VIDEO_CALL = "is_video_call";
     
