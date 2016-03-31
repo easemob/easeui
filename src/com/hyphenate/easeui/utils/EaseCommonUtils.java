@@ -173,14 +173,16 @@ public class EaseCommonUtils {
                 if (Character.isDigit(char0)) {
                     return DefaultLetter;
                 }
-                if (char0 < 'a' || char0 > 'z') {
-                    return DefaultLetter;
-                }
                 ArrayList<Token> l = HanziToPinyin.getInstance().get(name.substring(0, 1));
                 if (l != null && l.size() > 0 && l.get(0).target.length() > 0)
                 {
                     Token token = l.get(0);
-                    return token.target.substring(0, 1);
+                    String letter = token.target.substring(0, 1);
+                    char c = letter.toLowerCase().charAt(0);
+                    if (c < 'a' || c > 'z') {
+                        return DefaultLetter;
+                    }
+                    return letter;
                 }
                 return DefaultLetter;
             }
