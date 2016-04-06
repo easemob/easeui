@@ -54,7 +54,6 @@ public class EaseConversationListFragment extends EaseBaseFragment {
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);
 		if (savedInstanceState != null && savedInstanceState.getBoolean("isConflict", false))
 			return;
 		super.onActivityCreated(savedInstanceState);
