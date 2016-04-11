@@ -19,11 +19,11 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 
-public class EaseExpressionPagerAdapter extends PagerAdapter {
+public class EaseViewsPagerAdapter extends PagerAdapter {
 
 	private List<View> views;
 
-	public EaseExpressionPagerAdapter(List<View> views) {
+	public EaseViewsPagerAdapter(List<View> views) {
 		this.views = views;
 	}
 

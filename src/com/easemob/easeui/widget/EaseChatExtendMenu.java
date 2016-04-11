@@ -5,6 +5,8 @@ import java.util.List;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -17,48 +19,80 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.easemob.easeui.R;
+import com.easemob.easeui.adapter.EaseViewsPagerAdapter;
 import com.easemob.util.DensityUtil;
 
 /**
  * 按+按钮出来的扩展按钮
  *
  */
-public class EaseChatExtendMenu extends GridView{
+public class EaseChatExtendMenu extends ViewPager{
 
-    protected Context context;
-    private List<ChatMenuItemModel> itemModels = new ArrayList<ChatMenuItemModel>();
+	protected Context context;
+	protected int numColumns = 4;
+	protected List<ChatMenuItemModel> itemModels = new ArrayList<ChatMenuItemModel>();
+	protected List<View> views = new ArrayList<View>();
+	private int widthMeasureSpec;
+	private int heightMeasureSpec;
 
-    public EaseChatExtendMenu(Context context, AttributeSet attrs, int defStyle) {
-        this(context, attrs);
-    }
+	public EaseChatExtendMenu(Context context, AttributeSet attrs) {
+		super(context, attrs);
+		init(context, attrs);
+	}
 
-    public EaseChatExtendMenu(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        init(context, attrs);
-    }
-
-    public EaseChatExtendMenu(Context context) {
-        super(context);
-        init(context, null);
-    }
-    
-    private void init(Context context, AttributeSet attrs){
+	public EaseChatExtendMenu(Context context) {
+		this(context,null);
+	}
+	
+	private void init(Context context, AttributeSet attrs){
         this.context = context;
         TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.EaseChatExtendMenu);
-        int numColumns = ta.getInt(R.styleable.EaseChatExtendMenu_numColumns, 4);
+        numColumns = ta.getInt(R.styleable.EaseChatExtendMenu_numColumns, 4);
         ta.recycle();
-        
-        setNumColumns(numColumns);
-        setStretchMode(GridView.STRETCH_COLUMN_WIDTH);
-        setGravity(Gravity.CENTER_VERTICAL);
-        setVerticalSpacing(DensityUtil.dip2px(context, 8));
     }
-    
-    /**
+	
+	/**
      * 初始化
      */
     public void init(){
-        setAdapter(new ItemAdapter(context, itemModels));
+    	int pageCount = 0;
+    	int totalSize = itemModels.size();
+    	int itemSize = numColumns * 2;
+    	if(totalSize != 0){
+    		pageCount = totalSize % itemSize == 0 ?
+    				totalSize / itemSize : totalSize / itemSize + 1;
+    		if(pageCount == 0) pageCount = 1;
+			for(int i = 0; i < pageCount; i++){
+	    		GridView gridView = new EaseExpandGridView(context);
+	    		gridView.setNumColumns(numColumns);
+	    		gridView.setStretchMode(GridView.STRETCH_COLUMN_WIDTH);
+	    		gridView.setGravity(Gravity.CENTER_VERTICAL);
+	    		gridView.setVerticalSpacing(DensityUtil.dip2px(context, 8));
+	    		List<ChatMenuItemModel> list = new ArrayList<ChatMenuItemModel>();
+	            if(i != pageCount -1){
+	                list.addAll(itemModels.subList(i * itemSize, (i+1) * itemSize));
+	            }else{
+	                list.addAll(itemModels.subList(i * itemSize, totalSize));
+	            }
+	            gridView.setAdapter(new ItemAdapter(context, list));
+	            views.add(gridView);
+	    	}
+			setAdapter(new EaseViewsPagerAdapter(views));
+			measure(widthMeasureSpec, heightMeasureSpec);
+    	}
+    }
+    
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+    	this.widthMeasureSpec = widthMeasureSpec;
+    	this.heightMeasureSpec = heightMeasureSpec;
+    	View child = getChildAt(0);
+    	if (child != null) {
+    		child.measure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(0, MeasureSpec.AT_MOST));
+        	int height = child.getMeasuredHeight();
+        	heightMeasureSpec = MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY);
+		}
+    	super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
     
     /**
@@ -99,6 +133,17 @@ public class EaseChatExtendMenu extends GridView{
     }
     
     
+    public interface EaseChatExtendMenuItemClickListener{
+        void onClick(int itemId, View view);
+    }
+    
+    class ChatMenuItemModel{
+        String name;
+        int image;
+        int id;
+        EaseChatExtendMenuItemClickListener clickListener;
+    }
+    
     private class ItemAdapter extends ArrayAdapter<ChatMenuItemModel>{
 
         private Context context;
@@ -130,19 +175,6 @@ public class EaseChatExtendMenu extends GridView{
         }
         
         
-    }
-    
-    
-    public interface EaseChatExtendMenuItemClickListener{
-        void onClick(int itemId, View view);
-    }
-    
-    
-    class ChatMenuItemModel{
-        String name;
-        int image;
-        int id;
-        EaseChatExtendMenuItemClickListener clickListener;
     }
     
     class ChatMenuItem extends LinearLayout {
