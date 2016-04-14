@@ -27,7 +27,7 @@ public abstract class EaseBaseFragment extends Fragment{
     /**
      * 显示标题栏
      */
-    public void ShowTitleBar(){
+    public void showTitleBar(){
         if(titleBar != null){
             titleBar.setVisibility(View.VISIBLE);
         }

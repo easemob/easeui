@@ -8,7 +8,7 @@ public class DemoApplication extends Application{
     @Override
     public void onCreate() {
         super.onCreate();
-        EaseUI.getInstance().init(this);
+        EaseUI.getInstance().init(this, null);
     }
     
 }

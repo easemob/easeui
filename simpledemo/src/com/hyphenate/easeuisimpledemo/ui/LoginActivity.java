@@ -9,9 +9,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.hyphenate.EMCallBack;
-import com.hyphenate.chat.EMChat;
-import com.hyphenate.chat.EMChatManager;
-import com.hyphenate.chat.EMContactManager;
+import com.hyphenate.chat.EMClient;
 import com.hyphenate.easeui.ui.EaseBaseActivity;
 import com.hyphenate.easeuisimpledemo.R;
 
@@ -22,7 +20,7 @@ public class LoginActivity extends EaseBaseActivity{
     @Override
     protected void onCreate(Bundle arg0) {
         super.onCreate(arg0);
-        if(EMChat.getInstance().isLoggedIn()){
+        if(EMClient.getInstance().isLoggedInBefore()){
             //登录过直接进入主页面
             startActivity(new Intent(this, MainActivity.class));
             finish();
@@ -38,7 +36,7 @@ public class LoginActivity extends EaseBaseActivity{
             @Override
             public void onClick(View v) {
                 //登录
-                EMChatManager.getInstance().login(usernameView.getText().toString(), pwdView.getText().toString(), new EMCallBack() {
+                EMClient.getInstance().login(usernameView.getText().toString(), pwdView.getText().toString(), new EMCallBack() {
                     
                     @Override
                     public void onSuccess() {

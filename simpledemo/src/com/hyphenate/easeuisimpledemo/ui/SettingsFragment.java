@@ -2,6 +2,7 @@ package com.hyphenate.easeuisimpledemo.ui;
 
 import com.hyphenate.EMCallBack;
 import com.hyphenate.chat.EMChatManager;
+import com.hyphenate.chat.EMClient;
 import com.hyphenate.easeuisimpledemo.DemoApplication;
 import com.hyphenate.easeuisimpledemo.R;
 
@@ -29,7 +30,7 @@ public class SettingsFragment extends Fragment{
             
             @Override
             public void onClick(View v) {
-                EMChatManager.getInstance().logout(new EMCallBack() {
+                EMClient.getInstance().logout(false, new EMCallBack() {
                     
                     @Override
                     public void onSuccess() {
