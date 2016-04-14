@@ -9,9 +9,11 @@ import android.view.inputmethod.InputMethodManager;
 
 import com.easemob.easeui.R;
 import com.easemob.easeui.widget.EaseTitleBar;
+import com.easemob.util.EMLog;
 
 public abstract class EaseBaseFragment extends Fragment{
-    protected EaseTitleBar titleBar;
+    private static final String TAG = EaseBaseFragment.class.getSimpleName();
+	protected EaseTitleBar titleBar;
     protected InputMethodManager inputMethodManager;
 
     @Override
@@ -27,9 +29,11 @@ public abstract class EaseBaseFragment extends Fragment{
     /**
      * 显示标题栏
      */
-    public void ShowTitleBar(){
+    public void showTitleBar(){
         if(titleBar != null){
             titleBar.setVisibility(View.VISIBLE);
+        }else{
+        	EMLog.e(TAG, "cant find titlebar");
         }
     }
     
@@ -39,6 +43,8 @@ public abstract class EaseBaseFragment extends Fragment{
     public void hideTitleBar(){
         if(titleBar != null){
             titleBar.setVisibility(View.GONE);
+        }else{
+        	EMLog.e(TAG, "cant find titlebar");
         }
     }
     
