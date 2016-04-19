@@ -177,9 +177,9 @@ public class EaseCommonUtils {
                 if (l != null && l.size() > 0 && l.get(0).target.length() > 0)
                 {
                     Token token = l.get(0);
-                    String letter = token.target.substring(0, 1);
-                    char c = letter.toLowerCase().charAt(0);
-                    if (c < 'a' || c > 'z') {
+                    String letter = token.target.substring(0, 1).toUpperCase();
+                    char c = letter.charAt(0);
+                    if (c < 'A' || c > 'Z') {
                         return DefaultLetter;
                     }
                     return letter;
