@@ -20,6 +20,7 @@ import com.hyphenate.easeui.controller.EaseUI;
 import com.hyphenate.easeui.domain.EaseEmojicon;
 import com.hyphenate.easeui.utils.EaseCommonUtils;
 import com.hyphenate.easeui.utils.EaseImageUtils;
+import com.hyphenate.easeui.utils.EaseSmileUtils;
 import com.hyphenate.easeui.utils.EaseUserUtils;
 import com.hyphenate.easeui.widget.EaseAlertDialog;
 import com.hyphenate.easeui.widget.EaseAlertDialog.AlertDialogUser;
@@ -630,6 +631,7 @@ public class EaseChatFragment extends EaseBaseFragment {
     //发送消息方法
     //==========================================================================
     protected void sendTextMessage(String content) {
+        System.out.println(content);
         EMMessage message = EMMessage.createTxtSendMessage(content, toChatUsername);
         sendMessage(message);
     }
