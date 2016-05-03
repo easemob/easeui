@@ -522,10 +522,10 @@ public class EaseChatFragment extends EaseBaseFragment {
                         EMChatRoom room = EMClient.getInstance().chatroomManager().getChatRoom(toChatUsername);
                         if (room != null) {
                             titleBar.setTitle(room.getName());
+                            EMLog.d(TAG, "join room success : " + room.getName());
                         } else {
                             titleBar.setTitle(toChatUsername);
                         }
-                        EMLog.d(TAG, "join room success : " + room.getName());
                         addChatRoomChangeListenr();
                         onConversationInit();
                         onMessageListInit();
