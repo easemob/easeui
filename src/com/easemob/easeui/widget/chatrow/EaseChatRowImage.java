@@ -105,7 +105,7 @@ public class EaseChatRowImage extends EaseChatRowFile {
             intent.putExtra(EaseConstant.EASE_ATTR_REVOKE_MSG_ID, message.getMsgId());
         }
         if (message != null && message.direct == EMMessage.Direct.RECEIVE && !message.isAcked
-                && message.getChatType() != ChatType.GroupChat) {
+        		&& message.getChatType() == ChatType.Chat) {
             sendACKMessage();
         }
         context.startActivity(intent);

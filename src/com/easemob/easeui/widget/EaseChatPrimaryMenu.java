@@ -16,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.easemob.easeui.R;
+import com.easemob.util.EMLog;
 
 /**
  * 聊天输入栏主菜单栏
