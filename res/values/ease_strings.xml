@@ -277,6 +277,7 @@
     <string name="nickname_description">Once this nick is set, this nick will be used in push notification (by default this is HuanXin ID ) when the receiver is using the IOS device.</string>
     <string name="error_send_invalid_content">The message content is not allowed to be sent!</string>
     <string name="error_send_not_in_the_group">You already were not in the group</string>
+    <string name="error_send_in_blacklist">Failed due to in the blacklist</string>
     <string name="refreshing_group_list">Refreshing group list</string>
     <string name="failed_to_load_data">Failed to load data, please check network or try again later</string>
     <string name="searching">searching</string>
