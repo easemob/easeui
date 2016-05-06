@@ -305,6 +305,8 @@ public abstract class EaseChatRow extends LinearLayout {
                         Toast.makeText(activity,activity.getString(R.string.send_fail) + activity.getString(R.string.error_send_invalid_content), 0).show();
                     } else if (message.getError() == EMError.MESSAGE_SEND_NOT_IN_THE_GROUP) {
                         Toast.makeText(activity,activity.getString(R.string.send_fail) + activity.getString(R.string.error_send_not_in_the_group), 0).show();
+                    } else if (message.getError() == EMError.MESSAGE_SEND_IN_BLACKLIST) {
+                        Toast.makeText(activity,activity.getString(R.string.send_fail) + activity.getString(R.string.error_send_in_blacklist), 0).show();
                     } else {
                         Toast.makeText(activity,activity.getString(R.string.send_fail) + activity.getString(R.string.connect_failuer_toast), 0).show();
                     }

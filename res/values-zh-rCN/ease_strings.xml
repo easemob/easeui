@@ -287,6 +287,7 @@
     <string name="group_search_failed">搜索失败</string>
     <string name="error_send_invalid_content">你发送了不合法的消息内容</string>
     <string name="error_send_not_in_the_group">你已经不在此群了</string>
+    <string name="error_send_in_blacklist">你在黑名单中</string>
     <string name="refreshing_group_list">正在刷新群列表</string>
     <string name="failed_to_load_data">加载数据失败，请检查网络或稍后重试</string>
     <string name="searching">正在搜索..</string>
