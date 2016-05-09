@@ -110,7 +110,7 @@ public class EaseChatRowVideo extends EaseChatRowFile{
         intent.putExtra("secret", videoBody.getSecret());
         intent.putExtra("remotepath", videoBody.getRemoteUrl());
         if (message != null && message.direct == EMMessage.Direct.RECEIVE && !message.isAcked
-                && message.getChatType() != ChatType.GroupChat) {
+                && message.getChatType() == ChatType.Chat) {
             message.isAcked = true;
             try {
                 EMChatManager.getInstance().ackMessageRead(message.getFrom(), message.getMsgId());
