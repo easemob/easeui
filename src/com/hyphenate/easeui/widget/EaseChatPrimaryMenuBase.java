@@ -7,6 +7,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.RelativeLayout;
 
 public abstract class EaseChatPrimaryMenuBase extends RelativeLayout{
@@ -58,6 +59,15 @@ public abstract class EaseChatPrimaryMenuBase extends RelativeLayout{
      */
     public abstract void onExtendMenuContainerHide();
     
+    
+    /**
+     * 往文本输入框插入文本
+     * @param text 文本内容
+     */
+    public abstract void onTextInsert(CharSequence text);
+    
+    public abstract EditText getEditText();
+    
     /**
      * 隐藏软键盘
      */
@@ -67,6 +77,7 @@ public abstract class EaseChatPrimaryMenuBase extends RelativeLayout{
                 inputManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
         }
     }
+    
     
     public interface EaseChatPrimaryMenuListener{
         /**
@@ -102,5 +113,6 @@ public abstract class EaseChatPrimaryMenuBase extends RelativeLayout{
         void onEditTextClicked();
         
     }
+    
 
 }

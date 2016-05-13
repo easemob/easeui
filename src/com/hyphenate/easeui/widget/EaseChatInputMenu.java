@@ -237,6 +237,15 @@ public class EaseChatInputMenu extends LinearLayout {
         });
 
     }
+    
+   
+    /**
+     * 往文本输入框中插入文本
+     * @param text
+     */
+    public void insertText(String text){
+        getPrimaryMenu().onTextInsert(text);
+    }
 
     /**
      * 显示或隐藏图标按钮页

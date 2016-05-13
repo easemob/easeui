@@ -14,6 +14,7 @@
 package com.hyphenate.easeui.domain;
 
 import com.hyphenate.chat.EMContact;
+import com.hyphenate.easeui.utils.EaseCommonUtils;
 
 public class EaseUser extends EMContact {
     
@@ -31,6 +32,9 @@ public class EaseUser extends EMContact {
 	}
 
 	public String getInitialLetter() {
+	    if(initialLetter == null){
+            EaseCommonUtils.setUserInitialLetter(this);
+        }
 		return initialLetter;
 	}
 
