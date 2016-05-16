@@ -12,6 +12,7 @@ import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMMessage.ChatType;
 import com.hyphenate.chat.core.EMPreferenceUtils;
 import com.hyphenate.easeui.EaseConstant;
+import com.hyphenate.easeui.domain.EaseUser;
 import com.hyphenate.easeui.utils.EaseUserUtils;
 
 public class EaseAtMessageHelper {
@@ -70,7 +71,7 @@ public class EaseAtMessageHelper {
     }
     
     /**
-     * 获取消息内容包含的@人的id list
+     * 获取消息内容包含的@人的id list,发送的时候使用此方法
      * @param content
      * @return
      */
@@ -89,7 +90,7 @@ public class EaseAtMessageHelper {
                     if(list == null){
                         list = new ArrayList<>();
                     }
-                    list.add(nick);
+                    list.add(username);
                 }
             }
             return list;
@@ -110,7 +111,7 @@ public class EaseAtMessageHelper {
                 if(usernameStr != null){
                     String[] usernames = usernameStr.split(",");
                     for(String username : usernames){
-                        if(!EMClient.getInstance().getCurrentUser().equals(username)){
+                        if(EMClient.getInstance().getCurrentUser().equals(username)){
                             if(!atMeGroupList.contains(groupId)){
                                 atMeGroupList.add(groupId);
                                 break;
@@ -151,6 +152,23 @@ public class EaseAtMessageHelper {
      */
     public boolean hasAtMeMsg(String groupId){
         return atMeGroupList.contains(groupId);
+    }
+    
+    public boolean isAtMeMsg(EMMessage message){
+        EaseUser user = EaseUserUtils.getUserInfo(message.getFrom());
+        if(user != null){
+            String atUsername = message.getStringAttribute(EaseConstant.MESSAGE_ATTR_AT_MSG, null);
+            if(atUsername != null){
+                String[] atUsernames = atUsername.split(",");
+                for(String username : atUsernames){
+                    if(username.equals(EMClient.getInstance().getCurrentUser())){
+                        return true;
+                    }
+                }
+            }
+            
+        }
+        return false;
     }
     
     public String atListToString(List<String> atList){

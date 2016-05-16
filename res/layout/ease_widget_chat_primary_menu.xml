@@ -68,7 +68,7 @@
             android:layout_weight="1"
             android:gravity="bottom" >
 
-            <com.hyphenate.easeui.widget.EaseChatEditText
+            <EditText
                 android:id="@+id/et_sendmessage"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

@@ -680,7 +680,7 @@ public class EaseChatFragment extends EaseBaseFragment {
      * @param username
      */
     protected void inputAtUsername(String username){
-        inputAtUsername(username, false);
+        inputAtUsername(username, true);
     }
     
 
