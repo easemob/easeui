@@ -291,7 +291,7 @@ public class EaseChatFragment extends EaseBaseFragment {
             public boolean onTouch(View v, MotionEvent event) {
                 hideKeyboard();
                 inputMenu.hideExtendMenuContainer();
-                return true;
+                return false;
             }
         });
         
