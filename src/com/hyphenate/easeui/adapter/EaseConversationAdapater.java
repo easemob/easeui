@@ -30,6 +30,7 @@ import com.hyphenate.easeui.domain.EaseUser;
 import com.hyphenate.easeui.utils.EaseCommonUtils;
 import com.hyphenate.easeui.utils.EaseSmileUtils;
 import com.hyphenate.easeui.utils.EaseUserUtils;
+import com.hyphenate.easeui.widget.EaseConversationList.EaseConversationListHelper;
 import com.hyphenate.util.DateUtils;
 
 /**
@@ -125,9 +126,15 @@ public class EaseConversationAdapater extends ArrayAdapter<EMConversation> {
         if (conversation.getAllMsgCount() != 0) {
             // 把最后一条消息的内容作为item的message内容
             EMMessage lastMessage = conversation.getLastMessage();
+            String content = null;
+            if(cvsListHelper != null){
+                content = cvsListHelper.onSetItemSecondaryText(lastMessage);
+            }
             holder.message.setText(EaseSmileUtils.getSmiledText(getContext(), EaseCommonUtils.getMessageDigest(lastMessage, (this.getContext()))),
                     BufferType.SPANNABLE);
-
+            if(content != null){
+                holder.message.setText(content);
+            }
             holder.time.setText(DateUtils.getTimestampString(new Date(lastMessage.getMsgTime())));
             if (lastMessage.direct() == EMMessage.Direct.SEND && lastMessage.status() == EMMessage.Status.FAIL) {
                 holder.msgState.setVisibility(View.VISIBLE);
@@ -272,7 +279,12 @@ public class EaseConversationAdapater extends ArrayAdapter<EMConversation> {
         }
 
     }
-    
+
+    private EaseConversationListHelper cvsListHelper;
+
+    public void setCvsListHelper(EaseConversationListHelper cvsListHelper){
+        this.cvsListHelper = cvsListHelper;
+    }
     
     private static class ViewHolder {
         /** 和谁的聊天记录 */
