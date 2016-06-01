@@ -1,44 +1,5 @@
 package com.hyphenate.easeui.ui;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.json.JSONObject;
-
-import com.hyphenate.EMChatRoomChangeListener;
-import com.hyphenate.EMMessageListener;
-import com.hyphenate.EMValueCallBack;
-import com.hyphenate.chat.EMChatRoom;
-import com.hyphenate.chat.EMClient;
-import com.hyphenate.chat.EMConversation;
-import com.hyphenate.chat.EMGroup;
-import com.hyphenate.chat.EMImageMessageBody;
-import com.hyphenate.chat.EMMessage;
-import com.hyphenate.chat.EMMessage.ChatType;
-import com.hyphenate.chat.EMTextMessageBody;
-import com.hyphenate.easeui.EaseConstant;
-import com.hyphenate.easeui.R;
-import com.hyphenate.easeui.adapter.EaseMessageAdapter;
-import com.hyphenate.easeui.controller.EaseUI;
-import com.hyphenate.easeui.domain.EaseEmojicon;
-import com.hyphenate.easeui.model.EaseAtMessageHelper;
-import com.hyphenate.easeui.utils.EaseCommonUtils;
-import com.hyphenate.easeui.utils.EaseImageUtils;
-import com.hyphenate.easeui.utils.EaseSmileUtils;
-import com.hyphenate.easeui.utils.EaseUserUtils;
-import com.hyphenate.easeui.widget.EaseAlertDialog;
-import com.hyphenate.easeui.widget.EaseAlertDialog.AlertDialogUser;
-import com.hyphenate.easeui.widget.EaseChatExtendMenu;
-import com.hyphenate.easeui.widget.EaseChatInputMenu;
-import com.hyphenate.easeui.widget.EaseChatInputMenu.ChatInputMenuListener;
-import com.hyphenate.easeui.widget.EaseChatMessageList;
-import com.hyphenate.easeui.widget.EaseVoiceRecorderView;
-import com.hyphenate.easeui.widget.EaseVoiceRecorderView.EaseVoiceRecorderCallback;
-import com.hyphenate.easeui.widget.chatrow.EaseCustomChatRowProvider;
-import com.hyphenate.util.EMLog;
-import com.hyphenate.util.PathUtil;
-
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ClipboardManager;
@@ -63,6 +24,39 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import com.hyphenate.EMChatRoomChangeListener;
+import com.hyphenate.EMMessageListener;
+import com.hyphenate.EMValueCallBack;
+import com.hyphenate.chat.EMChatRoom;
+import com.hyphenate.chat.EMClient;
+import com.hyphenate.chat.EMConversation;
+import com.hyphenate.chat.EMGroup;
+import com.hyphenate.chat.EMImageMessageBody;
+import com.hyphenate.chat.EMMessage;
+import com.hyphenate.chat.EMMessage.ChatType;
+import com.hyphenate.chat.EMTextMessageBody;
+import com.hyphenate.easeui.EaseConstant;
+import com.hyphenate.easeui.R;
+import com.hyphenate.easeui.controller.EaseUI;
+import com.hyphenate.easeui.domain.EaseEmojicon;
+import com.hyphenate.easeui.model.EaseAtMessageHelper;
+import com.hyphenate.easeui.utils.EaseCommonUtils;
+import com.hyphenate.easeui.utils.EaseUserUtils;
+import com.hyphenate.easeui.widget.EaseAlertDialog;
+import com.hyphenate.easeui.widget.EaseAlertDialog.AlertDialogUser;
+import com.hyphenate.easeui.widget.EaseChatExtendMenu;
+import com.hyphenate.easeui.widget.EaseChatInputMenu;
+import com.hyphenate.easeui.widget.EaseChatInputMenu.ChatInputMenuListener;
+import com.hyphenate.easeui.widget.EaseChatMessageList;
+import com.hyphenate.easeui.widget.EaseVoiceRecorderView;
+import com.hyphenate.easeui.widget.EaseVoiceRecorderView.EaseVoiceRecorderCallback;
+import com.hyphenate.easeui.widget.chatrow.EaseCustomChatRowProvider;
+import com.hyphenate.util.EMLog;
+import com.hyphenate.util.PathUtil;
+
+import java.io.File;
+import java.util.List;
 
 /**
  * 可以直接new出来使用的聊天对话页面fragment，
@@ -422,7 +416,7 @@ public class EaseChatFragment extends EaseBaseFragment {
 
 
     EMMessageListener msgListener = new EMMessageListener() {
-		
+
 		@Override
 		public void onMessageReceived(List<EMMessage> messages) {
 
@@ -435,7 +429,7 @@ public class EaseChatFragment extends EaseBaseFragment {
                     // 单聊消息
                     username = message.getFrom();
                 }
-    
+
                 // 如果是当前会话的消息，刷新聊天页面
                 if (username.equals(toChatUsername)) {
                     messageList.refreshSelectLast();
@@ -451,26 +445,26 @@ public class EaseChatFragment extends EaseBaseFragment {
                 }
 		    }
 		}
-        
+
 		@Override
         public void onCmdMessageReceived(List<EMMessage> messages) {
-            
+
         }
-        
+
 		@Override
 		public void onMessageReadAckReceived(List<EMMessage> messages) {
 	        if(isMessageListInited) {
 	            messageList.refresh();
 		    }
 		}
-		
+
 		@Override
 		public void onMessageDeliveryAckReceived(List<EMMessage> message) {
             if(isMessageListInited) {
                 messageList.refresh();
             }
 		}
-		
+
 		@Override
 		public void onMessageChanged(EMMessage message, Object change) {
             if(isMessageListInited) {
@@ -478,7 +472,7 @@ public class EaseChatFragment extends EaseBaseFragment {
             }
 		}
 	};
-	
+
     @Override
     public void onResume() {
         super.onResume();

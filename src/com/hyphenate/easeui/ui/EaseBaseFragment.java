@@ -59,6 +59,6 @@ public abstract class EaseBaseFragment extends Fragment{
      * 设置属性，监听等
      */
     protected abstract void setUpView();
-    
-    
+
+
 }
