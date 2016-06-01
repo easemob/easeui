@@ -257,4 +257,17 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
         showNormalFaceImage();
     }
 
+    @Override
+    public void onTextInsert(CharSequence text) {
+       int start = editText.getSelectionStart();
+       Editable editable = editText.getEditableText();
+       editable.insert(start, text);
+       setModeKeyboard();
+    }
+
+    @Override
+    public EditText getEditText() {
+        return editText;
+    }
+
 }

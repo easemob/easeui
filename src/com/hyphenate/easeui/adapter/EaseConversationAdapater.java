@@ -27,6 +27,7 @@ import com.hyphenate.chat.EMGroupManager;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.domain.EaseUser;
+import com.hyphenate.easeui.model.EaseAtMessageHelper;
 import com.hyphenate.easeui.utils.EaseCommonUtils;
 import com.hyphenate.easeui.utils.EaseSmileUtils;
 import com.hyphenate.easeui.utils.EaseUserUtils;
@@ -92,6 +93,7 @@ public class EaseConversationAdapater extends ArrayAdapter<EMConversation> {
             holder.avatar = (ImageView) convertView.findViewById(R.id.avatar);
             holder.msgState = convertView.findViewById(R.id.msg_state);
             holder.list_itease_layout = (RelativeLayout) convertView.findViewById(R.id.list_itease_layout);
+            holder.motioned = (TextView) convertView.findViewById(R.id.mentioned);
             convertView.setTag(holder);
         }
         holder.list_itease_layout.setBackgroundResource(R.drawable.ease_mm_listitem);
@@ -102,6 +104,12 @@ public class EaseConversationAdapater extends ArrayAdapter<EMConversation> {
         String username = conversation.getUserName();
         
         if (conversation.getType() == EMConversationType.GroupChat) {
+            String groupId = conversation.getUserName();
+            if(EaseAtMessageHelper.get().hasAtMeMsg(groupId)){
+                holder.motioned.setVisibility(View.VISIBLE);
+            }else{
+                holder.motioned.setVisibility(View.GONE);
+            }
             // 群聊消息，显示群聊头像
             holder.avatar.setImageResource(R.drawable.ease_group_icon);
             EMGroup group = EMClient.getInstance().groupManager().getGroup(username);
@@ -301,7 +309,7 @@ public class EaseConversationAdapater extends ArrayAdapter<EMConversation> {
         View msgState;
         /** 整个list中每一行总布局 */
         RelativeLayout list_itease_layout;
-
+        TextView motioned;
     }
 }
 

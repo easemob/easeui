@@ -274,19 +274,36 @@ public abstract class EaseChatRow extends LinearLayout {
             });
         }
 
-        userAvatarView.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                if (itemClickListener != null) {
-                    if (message.direct() == Direct.SEND) {
-                        itemClickListener.onUserAvatarClick(EMClient.getInstance().getCurrentUser());
-                    } else {
-                        itemClickListener.onUserAvatarClick(message.getFrom());
+        if(userAvatarView != null){
+            userAvatarView.setOnClickListener(new OnClickListener() {
+    
+                @Override
+                public void onClick(View v) {
+                    if (itemClickListener != null) {
+                        if (message.direct() == Direct.SEND) {
+                            itemClickListener.onUserAvatarClick(EMClient.getInstance().getCurrentUser());
+                        } else {
+                            itemClickListener.onUserAvatarClick(message.getFrom());
+                        }
                     }
                 }
-            }
-        });
+            });
+            userAvatarView.setOnLongClickListener(new OnLongClickListener() {
+                
+                @Override
+                public boolean onLongClick(View v) {
+                    if(itemClickListener != null){
+                        if (message.direct() == Direct.SEND) {
+                            itemClickListener.onUserAvatarLongClick(EMClient.getInstance().getCurrentUser());
+                        } else {
+                            itemClickListener.onUserAvatarLongClick(message.getFrom());
+                        }
+                        return true;
+                    }
+                    return false;
+                }
+            });
+        }
     }
 
 

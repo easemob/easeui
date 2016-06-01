@@ -1,15 +1,20 @@
 package com.hyphenate.easeui.controller;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.hyphenate.EMMessageListener;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMOptions;
+import com.hyphenate.chat.EMMessage.ChatType;
+import com.hyphenate.easeui.EaseConstant;
 import com.hyphenate.easeui.domain.EaseEmojicon;
 import com.hyphenate.easeui.domain.EaseUser;
+import com.hyphenate.easeui.model.EaseAtMessageHelper;
 import com.hyphenate.easeui.model.EaseNotifier;
 
 import android.app.Activity;
@@ -115,6 +120,7 @@ public final class EaseUI {
         }
         
         initNotifier();
+        registerMessageListener();
         
         if(settingsProvider == null){
             settingsProvider = new DefaultSettingsProvider();
@@ -124,6 +130,7 @@ public final class EaseUI {
         return true;
     }
     
+
     protected EMOptions initChatOptions(){
         Log.d(TAG, "init HuanXin Options");
         
@@ -143,6 +150,31 @@ public final class EaseUI {
     void initNotifier(){
         notifier = createNotifier();
         notifier.init(appContext);
+    }
+    
+    private void registerMessageListener() {
+        EMClient.getInstance().chatManager().addMessageListener(new EMMessageListener() {
+            
+            @Override
+            public void onMessageReceived(List<EMMessage> messages) {
+                EaseAtMessageHelper.get().parseMessages(messages);
+            }
+            @Override
+            public void onMessageReadAckReceived(List<EMMessage> messages) {
+                
+            }
+            @Override
+            public void onMessageDeliveryAckReceived(List<EMMessage> messages) {
+            }
+            @Override
+            public void onMessageChanged(EMMessage message, Object change) {
+                
+            }
+            @Override
+            public void onCmdMessageReceived(List<EMMessage> messages) {
+                
+            }
+        });
     }
     
     protected EaseNotifier createNotifier(){
@@ -301,5 +333,9 @@ public final class EaseUI {
         }
 
         
+    }
+    
+    public Context getContext(){
+        return appContext;
     }
 }
