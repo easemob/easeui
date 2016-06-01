@@ -67,7 +67,7 @@ import java.util.List;
  * 参数传入示例可查看demo里的ChatActivity
  *
  */
-public class EaseChatFragment extends EaseBaseFragment {
+public class EaseChatFragment extends EaseBaseFragment implements EMMessageListener {
     protected static final String TAG = "EaseChatFragment";
     protected static final int REQUEST_CODE_MAP = 1;
     protected static final int REQUEST_CODE_CAMERA = 2;
@@ -415,64 +415,6 @@ public class EaseChatFragment extends EaseBaseFragment {
     }
 
 
-    EMMessageListener msgListener = new EMMessageListener() {
-
-		@Override
-		public void onMessageReceived(List<EMMessage> messages) {
-
-		    for (EMMessage message : messages) {
-                String username = null;
-                // 群组消息
-                if (message.getChatType() == ChatType.GroupChat || message.getChatType() == ChatType.ChatRoom) {
-                    username = message.getTo();
-                } else {
-                    // 单聊消息
-                    username = message.getFrom();
-                }
-
-                // 如果是当前会话的消息，刷新聊天页面
-                if (username.equals(toChatUsername)) {
-                    messageList.refreshSelectLast();
-                    EaseAtMessageHelper.get().parseMessages(messages);
-                    if(EaseAtMessageHelper.get().getAtMeGroups().contains(toChatUsername)){
-                        EaseAtMessageHelper.get().removeAtMeGroup(toChatUsername);
-                    }
-                    // 声音和震动提示有新消息
-                    EaseUI.getInstance().getNotifier().viberateAndPlayTone(message);
-                } else {
-                    // 如果消息不是和当前聊天ID的消息
-                    EaseUI.getInstance().getNotifier().onNewMsg(message);
-                }
-		    }
-		}
-
-		@Override
-        public void onCmdMessageReceived(List<EMMessage> messages) {
-
-        }
-
-		@Override
-		public void onMessageReadAckReceived(List<EMMessage> messages) {
-	        if(isMessageListInited) {
-	            messageList.refresh();
-		    }
-		}
-
-		@Override
-		public void onMessageDeliveryAckReceived(List<EMMessage> message) {
-            if(isMessageListInited) {
-                messageList.refresh();
-            }
-		}
-
-		@Override
-		public void onMessageChanged(EMMessage message, Object change) {
-            if(isMessageListInited) {
-                messageList.refresh();
-            }
-		}
-	};
-
     @Override
     public void onResume() {
         super.onResume();
@@ -480,7 +422,7 @@ public class EaseChatFragment extends EaseBaseFragment {
             messageList.refresh();
         EaseUI.getInstance().pushActivity(getActivity());
         // register the event listener when enter the foreground
-        EMClient.getInstance().chatManager().addMessageListener(msgListener);
+        EMClient.getInstance().chatManager().addMessageListener(this);
         
         if(chatType == EaseConstant.CHATTYPE_GROUP){
             EaseAtMessageHelper.get().removeAtMeGroup(toChatUsername);
@@ -492,7 +434,7 @@ public class EaseChatFragment extends EaseBaseFragment {
         super.onStop();
         // unregister this event listener when this activity enters the
         // background
-        EMClient.getInstance().chatManager().removeMessageListener(msgListener);
+        EMClient.getInstance().chatManager().removeMessageListener(this);
 
         // 把此activity 从foreground activity 列表里移除
         EaseUI.getInstance().popActivity(getActivity());
@@ -539,10 +481,10 @@ public class EaseChatFragment extends EaseBaseFragment {
                         EMChatRoom room = EMClient.getInstance().chatroomManager().getChatRoom(toChatUsername);
                         if (room != null) {
                             titleBar.setTitle(room.getName());
+                            EMLog.d(TAG, "join room success : " + room.getName());
                         } else {
                             titleBar.setTitle(toChatUsername);
                         }
-                        EMLog.d(TAG, "join room success : " + room.getName());
                         addChatRoomChangeListenr();
                         onConversationInit();
                         onMessageListInit();
@@ -611,6 +553,57 @@ public class EaseChatFragment extends EaseBaseFragment {
                 Toast.makeText(getActivity(), toastContent, Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+//EMMessageListener implement method
+    @Override
+    public void onMessageReceived(List<EMMessage> messages) {
+        for (EMMessage message : messages) {
+            String username = null;
+            // 群组消息
+            if (message.getChatType() == ChatType.GroupChat || message.getChatType() == ChatType.ChatRoom) {
+                username = message.getTo();
+            } else {
+                // 单聊消息
+                username = message.getFrom();
+            }
+
+            // 如果是当前会话的消息，刷新聊天页面
+            if (username.equals(toChatUsername)) {
+                messageList.refreshSelectLast();
+                // 声音和震动提示有新消息
+                EaseUI.getInstance().getNotifier().viberateAndPlayTone(message);
+            } else {
+                // 如果消息不是和当前聊天ID的消息
+                EaseUI.getInstance().getNotifier().onNewMsg(message);
+            }
+        }
+    }
+
+    @Override
+    public void onCmdMessageReceived(List<EMMessage> messages) {
+
+    }
+
+    @Override
+    public void onMessageReadAckReceived(List<EMMessage> messages) {
+        if(isMessageListInited) {
+            messageList.refresh();
+        }
+    }
+
+    @Override
+    public void onMessageDeliveryAckReceived(List<EMMessage> messages) {
+        if(isMessageListInited) {
+            messageList.refresh();
+        }
+    }
+
+    @Override
+    public void onMessageChanged(EMMessage emMessage, Object change) {
+        if(isMessageListInited) {
+            messageList.refresh();
+        }
     }
 
     /**

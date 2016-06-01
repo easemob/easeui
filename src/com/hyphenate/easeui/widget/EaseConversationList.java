@@ -8,6 +8,7 @@ import java.util.Map;
 
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMConversation;
+import com.hyphenate.chat.EMMessage;
 import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.adapter.EaseConversationAdapater;
 
@@ -61,12 +62,18 @@ public class EaseConversationList extends ListView {
         ta.recycle();
         
     }
-    
+
     public void init(List<EMConversation> conversationList){
-    	passedListRef = conversationList;
-        conversations.addAll(conversationList);
-        
-        adapter = new EaseConversationAdapater(context, 0, conversations);
+        this.init(conversationList, null);
+    }
+
+    public void init(List<EMConversation> conversationList, EaseConversationListHelper helper){
+        conversations = conversationList;
+        if(helper != null){
+            this.conversationListHelper = helper;
+        }
+        adapter = new EaseConversationAdapater(context, 0, conversationList);
+        adapter.setCvsListHelper(conversationListHelper);
         adapter.setPrimaryColor(primaryColor);
         adapter.setPrimarySize(primarySize);
         adapter.setSecondaryColor(secondaryColor);
@@ -82,9 +89,6 @@ public class EaseConversationList extends ListView {
             switch (message.what) {
             case MSG_REFRESH_ADAPTER_DATA:
                 if (adapter != null) {
-                	adapter.clear();
-                    conversations.clear();
-                    conversations.addAll(passedListRef);
                     adapter.notifyDataSetChanged();
                 }
                 break;
@@ -167,7 +171,19 @@ public class EaseConversationList extends ListView {
     public void filter(CharSequence str) {
         adapter.getFilter().filter(str);
     }
-    
-    
-    
+
+
+    private EaseConversationListHelper conversationListHelper;
+
+    public interface EaseConversationListHelper{
+        /**
+         * 设置listview item次行内容
+         * @param lastMessage
+         * @return
+         */
+        String onSetItemSecondaryText(EMMessage lastMessage);
+    }
+    public void setConversationListHelper(EaseConversationListHelper helper){
+        conversationListHelper = helper;
+    }
 }
