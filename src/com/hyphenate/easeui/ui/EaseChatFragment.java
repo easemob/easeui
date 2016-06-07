@@ -555,7 +555,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         });
     }
 
-//EMMessageListener implement method
+//EMMessageListener implement method =============================================
     @Override
     public void onMessageReceived(List<EMMessage> messages) {
         for (EMMessage message : messages) {
@@ -605,7 +605,9 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             messageList.refresh();
         }
     }
-
+//EMMessageListener implement method ========================================================
+    
+    
     /**
      * 扩展菜单栏item点击事件
      *
