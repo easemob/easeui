@@ -56,7 +56,7 @@ public class EaseChatRowFile extends EaseChatRow{
         String filePath = fileMessageBody.getLocalUrl();
         fileNameView.setText(fileMessageBody.getFileName());
         fileSizeView.setText(TextFormater.getDataSize(fileMessageBody.getFileSize()));
-        if (message.direct() == EMMessage.Direct.RECEIVE) { // 接收的消息
+        if (message.direct() == EMMessage.Direct.RECEIVE) {
             File file = new File(filePath);
             if (file != null && file.exists()) {
                 fileStateView.setText(R.string.Have_downloaded);
@@ -66,12 +66,12 @@ public class EaseChatRowFile extends EaseChatRow{
             return;
         }
 
-        // until here, deal with send voice msg
+        // until here, to sending message
         handleSendMessage();
 	}
 
 	/**
-	 * 处理发送消息
+	 * handle sending message
 	 */
     protected void handleSendMessage() {
         setMessageSendCallback();
@@ -116,10 +116,10 @@ public class EaseChatRowFile extends EaseChatRow{
         String filePath = fileMessageBody.getLocalUrl();
         File file = new File(filePath);
         if (file != null && file.exists()) {
-            // 文件存在，直接打开
+            // open files if it exist
             FileUtils.openFile(file, (Activity) context);
         } else {
-            // 下载
+            // download the file
             context.startActivity(new Intent(context, EaseShowNormalFileActivity.class).putExtra("msgbody", message.getBody()));
         }
         if (message.direct() == EMMessage.Direct.RECEIVE && !message.isAcked() && message.getChatType() == ChatType.Chat) {

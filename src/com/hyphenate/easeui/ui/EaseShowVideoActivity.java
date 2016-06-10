@@ -23,9 +23,7 @@ import com.hyphenate.util.EMLog;
 import com.hyphenate.util.PathUtil;
 
 /**
- * 展示视频内容
- * 
- * @author Administrator
+ * show the video
  * 
  */
 public class EaseShowVideoActivity extends EaseBaseActivity{
@@ -81,8 +79,8 @@ public class EaseShowVideoActivity extends EaseBaseActivity{
 	}
 	
 	/**
-	 * 播放本地视频
-	 * @param localPath 视频路径
+	 * show local video
+	 * @param localPath -- local path of the video file
 	 */
 	private void showLocalVideo(String localPath){
 		Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -96,7 +94,7 @@ public class EaseShowVideoActivity extends EaseBaseActivity{
 	
 
 	/**
-	 * 下载视频文件
+	 * download video file
 	 */
 	private void downloadVideo(final String remoteUrl,
 			final Map<String, String> header) {

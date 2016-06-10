@@ -34,7 +34,7 @@ public class EaseShowNormalFileActivity extends EaseBaseActivity {
 			maps.put("share-secret", messageBody.getSecret());
 		}
 		
-		//下载文件
+		//download file
 		EMClient.getInstance().chatManager().downloadFile(messageBody.getRemoteUrl(), messageBody.getLocalUrl(), maps,
                 new EMCallBack() {
                     

@@ -19,11 +19,11 @@ import com.hyphenate.easeui.utils.EaseCommonUtils;
 public class EaseUser extends EMContact {
     
     /**
-     * 昵称首字母
+     * initial letter for nickname
      */
 	protected String initialLetter;
 	/**
-	 * 用户头像
+	 * avatar of the user
 	 */
 	protected String avatar;
 	

@@ -37,7 +37,7 @@ import android.util.Log;
 public class EaseCommonUtils {
 	private static final String TAG = "CommonUtils";
 	/**
-	 * 检测网络是否可用
+	 * check if network avalable
 	 * 
 	 * @param context
 	 * @return
@@ -55,11 +55,11 @@ public class EaseCommonUtils {
 	}
 
 	/**
-	 * 检测Sdcard是否存在
+	 * check if sdcard exist
 	 * 
 	 * @return
 	 */
-	public static boolean isExitsSdcard() {
+	public static boolean isSdcardExist() {
 		if (android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED))
 			return true;
 		else
@@ -76,7 +76,7 @@ public class EaseCommonUtils {
 	}
 
 	/**
-     * 根据消息内容和消息类型获取消息内容提示
+     * Get digest according message type and content
      * 
      * @param message
      * @param context
@@ -85,32 +85,27 @@ public class EaseCommonUtils {
     public static String getMessageDigest(EMMessage message, Context context) {
         String digest = "";
         switch (message.getType()) {
-        case LOCATION: // 位置消息
+        case LOCATION:
             if (message.direct() == EMMessage.Direct.RECEIVE) {
-                //从sdk中提到了ui中，使用更简单不犯错的获取string方法
-//              digest = EasyUtils.getAppResourceString(context, "location_recv");
                 digest = getString(context, R.string.location_recv);
                 digest = String.format(digest, message.getFrom());
                 return digest;
             } else {
-//              digest = EasyUtils.getAppResourceString(context, "location_prefix");
                 digest = getString(context, R.string.location_prefix);
             }
             break;
-        case IMAGE: // 图片消息
+        case IMAGE:
             digest = getString(context, R.string.picture);
             break;
-        case VOICE:// 语音消息
+        case VOICE:
             digest = getString(context, R.string.voice_prefix);
             break;
-        case VIDEO: // 视频消息
+        case VIDEO:
             digest = getString(context, R.string.video);
             break;
-        case TXT: // 文本消息
+        case TXT:
             EMTextMessageBody txtBody = (EMTextMessageBody) message.getBody();
-            /*if(((DemoHXSDKHelper)HXSDKHelper.getInstance()).isRobotMenuMessage(message)){
-                digest = ((DemoHXSDKHelper)HXSDKHelper.getInstance()).getRobotMenuMessageDigest(message);
-            }else */if(message.getBooleanAttribute(EaseConstant.MESSAGE_ATTR_IS_VOICE_CALL, false)){
+            if(message.getBooleanAttribute(EaseConstant.MESSAGE_ATTR_IS_VOICE_CALL, false)){
                 digest = getString(context, R.string.voice_call) + txtBody.getMessage();
             }else if(message.getBooleanAttribute(EaseConstant.MESSAGE_ATTR_IS_VIDEO_CALL, false)){
                 digest = getString(context, R.string.video_call) + txtBody.getMessage();
@@ -124,7 +119,7 @@ public class EaseCommonUtils {
                 digest = txtBody.getMessage();
             }
             break;
-        case FILE: //普通文件消息
+        case FILE:
             digest = getString(context, R.string.file);
             break;
         default:
@@ -140,7 +135,7 @@ public class EaseCommonUtils {
     }
 	
 	/**
-	 * 获取栈顶的activity
+	 * get top activity
 	 * @param context
 	 * @return
 	 */
@@ -155,7 +150,7 @@ public class EaseCommonUtils {
 	}
 	
 	/**
-     * 设置user昵称(没有昵称取username)的首字母属性，方便通讯中对联系人按header分类显示，以及通过右侧ABCD...字母栏快速定位联系人
+     * set initial letter of according user's nickname( username if no nickname)
      * 
      * @param username
      * @param user
@@ -200,7 +195,7 @@ public class EaseCommonUtils {
     }
     
     /**
-     * 将应用的会话类型转化为SDK的会话类型
+     * change the chat type to EMConversationType
      * @param chatType
      * @return
      */

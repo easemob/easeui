@@ -48,7 +48,7 @@ public class EaseChatRowImage extends EaseChatRowFile{
     @Override
     protected void onSetUpView() {
         imgBody = (EMImageMessageBody) message.getBody();
-        // 接收方向的消息
+        // received messages
         if (message.direct() == EMMessage.Direct.RECEIVE) {
             if (imgBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.DOWNLOADING ||
                     imgBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.PENDING) {
@@ -60,7 +60,7 @@ public class EaseChatRowImage extends EaseChatRowFile{
                 imageView.setImageResource(R.drawable.ease_default_image);
                 String thumbPath = imgBody.thumbnailLocalPath();
                 if (!new File(thumbPath).exists()) {
-                    // 兼容旧版SDK收到的thumbnail
+                	// to make it compatible with thumbnail received in previous version
                     thumbPath = EaseImageUtils.getThumbnailImagePath(imgBody.getLocalUrl());
                 }
                 showImageView(thumbPath, imageView, imgBody.getLocalUrl(), message);

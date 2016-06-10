@@ -100,22 +100,18 @@ public class EaseConversationList extends ListView {
     
 
     /**
-     * 获取所有会话
+     * load conversations
      * 
      * @param context
      * @return
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         +    */
     private List<EMConversation> loadConversationsWithRecentChat() {
-        // 获取所有会话，包括陌生人
         Map<String, EMConversation> conversations = EMClient.getInstance().chatManager().getAllConversations();
-        // 过滤掉messages size为0的conversation
-        /**
-         * 如果在排序过程中有新消息收到，lastMsgTime会发生变化
-         * 影响排序过程，Collection.sort会产生异常
-         * 保证Conversation在Sort过程中最后一条消息的时间不变 
-         * 避免并发问题
-         */
         List<Pair<Long, EMConversation>> sortList = new ArrayList<Pair<Long, EMConversation>>();
+        /**
+         * lastMsgTime will change if there is new message during sorting
+         * so use synchronized to make sure timestamp of last message won't change.
+         */
         synchronized (conversations) {
             for (EMConversation conversation : conversations.values()) {
                 if (conversation.getAllMessages().size() != 0) {
@@ -137,7 +133,7 @@ public class EaseConversationList extends ListView {
     }
 
     /**
-     * 根据最后一条消息的时间排序
+     * sorting according timestamp of last message
      * 
      * @param usernames
      */
@@ -177,7 +173,7 @@ public class EaseConversationList extends ListView {
 
     public interface EaseConversationListHelper{
         /**
-         * 设置listview item次行内容
+         * set content of second line
          * @param lastMessage
          * @return
          */

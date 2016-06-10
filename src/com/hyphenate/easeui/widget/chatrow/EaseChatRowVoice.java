@@ -17,7 +17,7 @@ public class EaseChatRowVoice extends EaseChatRowFile{
 
     private ImageView voiceImageView;
     private TextView voiceLengthView;
-    private ImageView readStutausView;
+    private ImageView readStatusView;
 
     public EaseChatRowVoice(Context context, EMMessage message, int position, BaseAdapter adapter) {
         super(context, message, position, adapter);
@@ -33,7 +33,7 @@ public class EaseChatRowVoice extends EaseChatRowFile{
     protected void onFindViewById() {
         voiceImageView = ((ImageView) findViewById(R.id.iv_voice));
         voiceLengthView = (TextView) findViewById(R.id.tv_length);
-        readStutausView = (ImageView) findViewById(R.id.iv_unread_voice);
+        readStatusView = (ImageView) findViewById(R.id.iv_unread_voice);
     }
 
     @Override
@@ -66,10 +66,10 @@ public class EaseChatRowVoice extends EaseChatRowFile{
         
         if (message.direct() == EMMessage.Direct.RECEIVE) {
             if (message.isListened()) {
-                // 隐藏语音未听标志
-                readStutausView.setVisibility(View.INVISIBLE);
+                // hide the unread icon
+                readStatusView.setVisibility(View.INVISIBLE);
             } else {
-                readStutausView.setVisibility(View.VISIBLE);
+                readStatusView.setVisibility(View.VISIBLE);
             }
             EMLog.d(TAG, "it is receive msg");
             if (voiceBody.downloadStatus() == EMFileMessageBody.EMDownloadStatus.DOWNLOADING ||
@@ -83,7 +83,7 @@ public class EaseChatRowVoice extends EaseChatRowFile{
             return;
         }
 
-        // until here, deal with send voice msg
+        // until here, handle sending voice message
         handleSendMessage();
     }
 
@@ -94,14 +94,13 @@ public class EaseChatRowVoice extends EaseChatRowFile{
 
     @Override
     protected void onBubbleClick() {
-        new EaseChatRowVoicePlayClickListener(message, voiceImageView, readStutausView, adapter, activity).onClick(bubbleLayout);
+        new EaseChatRowVoicePlayClickListener(message, voiceImageView, readStatusView, adapter, activity).onClick(bubbleLayout);
     }
     
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         if (EaseChatRowVoicePlayClickListener.currentPlayListener != null && EaseChatRowVoicePlayClickListener.isPlaying) {
-            // 停止语音播放
             EaseChatRowVoicePlayClickListener.currentPlayListener.stopPlayVoice();
         }
     }

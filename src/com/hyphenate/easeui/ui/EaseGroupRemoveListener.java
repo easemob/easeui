@@ -3,7 +3,7 @@ package com.hyphenate.easeui.ui;
 import com.hyphenate.EMGroupChangeListener;
 
 /**
- * 群组被解散或者被T监听
+ * group change listener
  *
  */
 public abstract class EaseGroupRemoveListener implements EMGroupChangeListener{

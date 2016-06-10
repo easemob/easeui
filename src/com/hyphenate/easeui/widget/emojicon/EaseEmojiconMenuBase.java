@@ -24,7 +24,7 @@ public class EaseEmojiconMenuBase extends LinearLayout{
 
     
     /**
-     * 设置回调监听
+     * set emojicon menu listener
      * @param listener
      */
     public void setEmojiconMenuListener(EaseEmojiconMenuListener listener){
@@ -33,12 +33,12 @@ public class EaseEmojiconMenuBase extends LinearLayout{
     
     public interface EaseEmojiconMenuListener{
         /**
-         * 表情被点击
+         * on emojicon clicked
          * @param emojicon
          */
         void onExpressionClicked(EaseEmojicon emojicon);
         /**
-         * 删除按钮被点击
+         * on delete image clicked
          */
         void onDeleteImageClicked();
     }

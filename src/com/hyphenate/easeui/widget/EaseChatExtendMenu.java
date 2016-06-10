@@ -20,7 +20,7 @@ import com.hyphenate.easeui.R;
 import com.hyphenate.util.DensityUtil;
 
 /**
- * 按+按钮出来的扩展按钮
+ * Extend menu when user want send image, voice clip, etc
  *
  */
 public class EaseChatExtendMenu extends GridView{
@@ -55,23 +55,23 @@ public class EaseChatExtendMenu extends GridView{
     }
     
     /**
-     * 初始化
+     * init
      */
     public void init(){
         setAdapter(new ItemAdapter(context, itemModels));
     }
     
     /**
-     * 注册menu item
+     * register menu item
      * 
      * @param name
-     *            item名字
+     *            item name
      * @param drawableRes
-     *            item背景
+     *            background of item
      * @param itemId
      *             id
      * @param listener
-     *            item点击事件
+     *            on click event of item
      */
     public void registerMenuItem(String name, int drawableRes, int itemId, EaseChatExtendMenuItemClickListener listener) {
         ChatMenuItemModel item = new ChatMenuItemModel();
@@ -83,16 +83,16 @@ public class EaseChatExtendMenu extends GridView{
     }
     
     /**
-     * 注册menu item
+     * register menu item
      * 
      * @param nameRes
-     *            item名字的resource id
+     *            resource id of itme name
      * @param drawableRes
-     *            item背景
+     *            background of item
      * @param itemId
      *             id
      * @param listener
-     *            item点击事件
+     *             on click event of item
      */
     public void registerMenuItem(int nameRes, int drawableRes, int itemId, EaseChatExtendMenuItemClickListener listener) {
         registerMenuItem(context.getString(nameRes), drawableRes, itemId, listener);

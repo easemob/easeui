@@ -50,7 +50,7 @@ public class EaseEmojiconScrollTabBar extends RelativeLayout{
     }
     
     /**
-     * 添加tab
+     * add tab
      * @param icon
      */
     public void addTab(int icon){
@@ -74,7 +74,7 @@ public class EaseEmojiconScrollTabBar extends RelativeLayout{
     }
     
     /**
-     * 移除tab
+     * remove tab
      * @param position
      */
     public void removeTab(int position){
@@ -130,6 +130,5 @@ public class EaseEmojiconScrollTabBar extends RelativeLayout{
     public interface EaseScrollTabBarItemClickListener{
         void onItemClick(int position);
     }
-    
 
 }

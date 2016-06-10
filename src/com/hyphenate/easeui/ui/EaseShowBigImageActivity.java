@@ -41,7 +41,7 @@ import com.hyphenate.util.ImageUtils;
 import com.hyphenate.util.PathUtil;
 
 /**
- * 下载显示大图
+ * download and show original image
  * 
  */
 public class EaseShowBigImageActivity extends EaseBaseActivity {
@@ -69,7 +69,7 @@ public class EaseShowBigImageActivity extends EaseBaseActivity {
 		String secret = getIntent().getExtras().getString("secret");
 		EMLog.d(TAG, "show big image uri:" + uri + " remotepath:" + remotepath);
 
-		//本地存在，直接显示本地的图片
+		//show the image if it exist in local path
 		if (uri != null && new File(uri.getPath()).exists()) {
 			EMLog.d(TAG, "showbigimage file exists. directly show it");
 			DisplayMetrics metrics = new DisplayMetrics();
@@ -88,7 +88,7 @@ public class EaseShowBigImageActivity extends EaseBaseActivity {
 			} else {
 				image.setImageBitmap(bitmap);
 			}
-		} else if (remotepath != null) { //去服务器下载图片
+		} else if (remotepath != null) { //download image from server
 			EMLog.d(TAG, "download remote image");
 			Map<String, String> maps = new HashMap<String, String>();
 			if (!TextUtils.isEmpty(secret)) {
@@ -108,10 +108,11 @@ public class EaseShowBigImageActivity extends EaseBaseActivity {
 	}
 	
 	/**
-	 * 下载图片
+	 * download image
 	 * 
 	 * @param remoteFilePath
 	 */
+	@SuppressLint("NewApi")
 	private void downloadImage(final String remoteFilePath, final Map<String, String> headers) {
 		String str1 = getResources().getString(R.string.Download_the_pictures);
 		pd = new ProgressDialog(this);
