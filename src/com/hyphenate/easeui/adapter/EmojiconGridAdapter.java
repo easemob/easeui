@@ -36,11 +36,10 @@ public class EmojiconGridAdapter extends ArrayAdapter<EaseEmojicon>{
         }
         
         ImageView imageView = (ImageView) convertView.findViewById(R.id.iv_expression);
-        TextView textView = (TextView) convertView.findViewById(R.id.tv_name);
         EaseEmojicon emojicon = getItem(position);
-        if(textView != null && emojicon.getName() != null){
-            textView.setText(emojicon.getName());
-        }
+
+        //if you want show a name for the icons, you can set text to R.id.tv_name
+
         if(EaseSmileUtils.DELETE_KEY.equals(emojicon.getEmojiText())){
             imageView.setImageResource(R.drawable.ease_delete_expression);
         }else{

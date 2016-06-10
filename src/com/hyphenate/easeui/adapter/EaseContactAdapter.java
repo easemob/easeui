@@ -82,9 +82,8 @@ public class EaseContactAdapter extends ArrayAdapter<EaseUser> implements Sectio
         } else {
             holder.headerView.setVisibility(View.GONE);
         }
-        //设置头像
+
         EaseUserUtils.setUserNick(username, holder.nameView);
-        //设置头像
         EaseUserUtils.setUserAvatar(getContext(), username, holder.avatar);
         
        
@@ -176,9 +175,6 @@ public class EaseContactAdapter extends ArrayAdapter<EaseUser> implements Sectio
                 final ArrayList<EaseUser> newValues = new ArrayList<EaseUser>();
                 for(int i=0;i<count;i++){
                     final EaseUser user = mOriginalList.get(i);
-//                    String username = user.getNick();
-//                    if(username == null)
-//                        username = user.getNick();
                     String username = user.getUsername();
                     
                     if(username.startsWith(prefixString)){
