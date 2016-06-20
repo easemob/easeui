@@ -21,7 +21,7 @@ import com.hyphenate.easeui.utils.EaseCommonUtils;
 import com.hyphenate.easeui.widget.chatrow.EaseChatRowVoicePlayClickListener;
 
 /**
- * 按住说话录制控件
+ * Voice recorder view
  *
  */
 public class EaseVoiceRecorderView extends RelativeLayout {
@@ -37,7 +37,7 @@ public class EaseVoiceRecorderView extends RelativeLayout {
     protected Handler micImageHandler = new Handler() {
         @Override
         public void handleMessage(android.os.Message msg) {
-            // 切换msg切换图片
+            // change image
             micImage.setImageDrawable(micImages[msg.what]);
         }
     };
@@ -66,7 +66,7 @@ public class EaseVoiceRecorderView extends RelativeLayout {
 
         voiceRecorder = new EaseVoiceRecorder(micImageHandler);
 
-        // 动画资源文件,用于录制语音时
+        // animation resources, used for recording
         micImages = new Drawable[] { getResources().getDrawable(R.drawable.ease_record_animate_01),
                 getResources().getDrawable(R.drawable.ease_record_animate_02),
                 getResources().getDrawable(R.drawable.ease_record_animate_03),
@@ -87,7 +87,7 @@ public class EaseVoiceRecorderView extends RelativeLayout {
     }
 
     /**
-     * 长按说话按钮touch事件
+     * on speak button touched
      * 
      * @param v
      * @param event
@@ -143,7 +143,7 @@ public class EaseVoiceRecorderView extends RelativeLayout {
 
     public interface EaseVoiceRecorderCallback {
         /**
-         * 录音完毕
+         * on voice record complete
          * 
          * @param voiceFilePath
          *            录音完毕后的文件路径
@@ -154,7 +154,7 @@ public class EaseVoiceRecorderView extends RelativeLayout {
     }
 
     public void startRecording() {
-        if (!EaseCommonUtils.isExitsSdcard()) {
+        if (!EaseCommonUtils.isSdcardExist()) {
             Toast.makeText(context, R.string.Send_voice_need_sdcard_support, Toast.LENGTH_SHORT).show();
             return;
         }
@@ -190,7 +190,7 @@ public class EaseVoiceRecorderView extends RelativeLayout {
         if (wakeLock.isHeld())
             wakeLock.release();
         try {
-            // 停止录音
+            // stop recording
             if (voiceRecorder.isRecording()) {
                 voiceRecorder.discardRecording();
                 this.setVisibility(View.INVISIBLE);

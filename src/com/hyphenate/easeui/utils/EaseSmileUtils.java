@@ -91,9 +91,9 @@ public class EaseSmileUtils {
 	}
 
 	/**
-	 * 添加文字表情mapping
-	 * @param emojiText emoji文本内容
-	 * @param icon 图片资源id或者本地路径
+	 * add text and icon to the map
+	 * @param emojiText-- text of emoji
+	 * @param icon -- resource id or local path
 	 */
 	public static void addPattern(String emojiText, Object icon){
 	    emoticons.put(Pattern.compile(Pattern.quote(emojiText)), icon);

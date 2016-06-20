@@ -25,10 +25,12 @@ import com.hyphenate.easeui.widget.emojicon.EaseEmojiconMenuBase;
 import com.hyphenate.easeui.widget.emojicon.EaseEmojiconMenuBase.EaseEmojiconMenuListener;
 
 /**
- * 聊天页面底部的聊天输入菜单栏 <br/>
- * 主要包含3个控件:EaseChatPrimaryMenu(主菜单栏，包含文字输入、发送等功能), <br/>
- * EaseChatExtendMenu(扩展栏，点击加号按钮出来的小宫格的菜单栏), <br/>
- * 以及EaseEmojiconMenu(表情栏)
+ * input menu
+ * 
+ * including below component:
+ *    EaseChatPrimaryMenu: main menu bar, text input, send button
+ *    EaseChatExtendMenu: grid menu with image, file, location, etc
+ *    EaseEmojiconMenu: emoji icons
  */
 public class EaseChatInputMenu extends LinearLayout {
     FrameLayout primaryMenuContainer, emojiconMenuContainer;
@@ -65,28 +67,29 @@ public class EaseChatInputMenu extends LinearLayout {
         emojiconMenuContainer = (FrameLayout) findViewById(R.id.emojicon_menu_container);
         chatExtendMenuContainer = (FrameLayout) findViewById(R.id.extend_menu_container);
 
-         // 扩展按钮栏
+         // extend menu
          chatExtendMenu = (EaseChatExtendMenu) findViewById(R.id.extend_menu);
         
 
     }
 
     /**
-     * init view 此方法需放在registerExtendMenuItem后面及setCustomEmojiconMenu，
-     * setCustomPrimaryMenu(如果需要自定义这两个menu)后面
-     * @param emojiconGroupList 表情组类别，传null使用easeui默认的表情
+     * init view 
+     * 
+     * This method should be called after registerExtendMenuItem(), setCustomEmojiconMenu() and setCustomPrimaryMenu().
+     * @param emojiconGroupList --will use default if null
      */
     public void init(List<EaseEmojiconGroupEntity> emojiconGroupList) {
         if(inited){
             return;
         }
-        // 主按钮菜单栏,没有自定义的用默认的
+        // primary menu, use default if no customized one
         if(chatPrimaryMenu == null){
             chatPrimaryMenu = (EaseChatPrimaryMenu) layoutInflater.inflate(R.layout.ease_layout_chat_primary_menu, null);
         }
         primaryMenuContainer.addView(chatPrimaryMenu);
 
-        // 表情栏，没有自定义的用默认的
+        // emojicon menu, use default if no customized one
         if(emojiconMenu == null){
             emojiconMenu = (EaseEmojiconMenu) layoutInflater.inflate(R.layout.ease_layout_emojicon_menu, null);
             if(emojiconGroupList == null){
@@ -98,7 +101,6 @@ public class EaseChatInputMenu extends LinearLayout {
         emojiconMenuContainer.addView(emojiconMenu);
 
         processChatMenu();
-        // 初始化extendmenu
         chatExtendMenu.init();
         
         inited = true;
@@ -109,8 +111,7 @@ public class EaseChatInputMenu extends LinearLayout {
     }
     
     /**
-     * 设置自定义的表情栏，该控件需要继承自EaseEmojiconMenuBase，
-     * 以及回调你想要回调出去的事件给设置的EaseEmojiconMenuListener
+     * set custom emojicon menu
      * @param customEmojiconMenu
      */
     public void setCustomEmojiconMenu(EaseEmojiconMenuBase customEmojiconMenu){
@@ -118,9 +119,8 @@ public class EaseChatInputMenu extends LinearLayout {
     }
     
     /**
-     * 设置自定义的主菜单栏，该控件需要继承自EaseChatPrimaryMenuBase，
-     * 以及回调你想要回调出去的事件给设置的EaseEmojiconMenuListener
-     * @param customEmojiconMenu
+     * set custom primary menu
+     * @param customPrimaryMenu
      */
     public void setCustomPrimaryMenu(EaseChatPrimaryMenuBase customPrimaryMenu){
         this.chatPrimaryMenu = customPrimaryMenu;
@@ -140,16 +140,16 @@ public class EaseChatInputMenu extends LinearLayout {
     
 
     /**
-     * 注册扩展菜单的item
+     * register menu item
      * 
      * @param name
-     *            item名字
+     *            item name
      * @param drawableRes
-     *            item背景
+     *            background of item
      * @param itemId
-     *            id
+     *             id
      * @param listener
-     *            item点击事件
+     *            on click event of item
      */
     public void registerExtendMenuItem(String name, int drawableRes, int itemId,
             EaseChatExtendMenuItemClickListener listener) {
@@ -157,16 +157,16 @@ public class EaseChatInputMenu extends LinearLayout {
     }
 
     /**
-     * 注册扩展菜单的item
+     * register menu item
      * 
      * @param name
-     *            item名字
+     *            resource id of item name
      * @param drawableRes
-     *            item背景
+     *            background of item
      * @param itemId
-     *            id
+     *             id
      * @param listener
-     *            item点击事件
+     *            on click event of item
      */
     public void registerExtendMenuItem(int nameRes, int drawableRes, int itemId,
             EaseChatExtendMenuItemClickListener listener) {
@@ -175,7 +175,7 @@ public class EaseChatInputMenu extends LinearLayout {
 
 
     protected void processChatMenu() {
-        // 发送消息栏
+        // send message button
         chatPrimaryMenu.setChatPrimaryMenuListener(new EaseChatPrimaryMenuListener() {
 
             @Override
@@ -240,7 +240,7 @@ public class EaseChatInputMenu extends LinearLayout {
     
    
     /**
-     * 往文本输入框中插入文本
+     * insert text
      * @param text
      */
     public void insertText(String text){
@@ -248,7 +248,7 @@ public class EaseChatInputMenu extends LinearLayout {
     }
 
     /**
-     * 显示或隐藏图标按钮页
+     * show or hide extend menu
      * 
      */
     protected void toggleMore() {
@@ -268,13 +268,11 @@ public class EaseChatInputMenu extends LinearLayout {
             } else {
                 chatExtendMenuContainer.setVisibility(View.GONE);
             }
-
         }
-
     }
 
     /**
-     * 显示或隐藏表情页
+     * show or hide emojicon
      */
     protected void toggleEmojicon() {
         if (chatExtendMenuContainer.getVisibility() == View.GONE) {
@@ -299,14 +297,14 @@ public class EaseChatInputMenu extends LinearLayout {
     }
 
     /**
-     * 隐藏软键盘
+     * hide keyboard
      */
     private void hideKeyboard() {
         chatPrimaryMenu.hideKeyboard();
     }
 
     /**
-     * 隐藏整个扩展按钮栏(包括表情栏)
+     * hide extend menu
      */
     public void hideExtendMenuContainer() {
         chatExtendMenu.setVisibility(View.GONE);
@@ -316,10 +314,10 @@ public class EaseChatInputMenu extends LinearLayout {
     }
 
     /**
-     * 系统返回键被按时调用此方法
+     * when back key pressed
      * 
-     * @return 返回false表示返回键时扩展菜单栏时打开状态，true则表示按返回键时扩展栏是关闭状态<br/>
-     *         如果返回时打开状态状态，会先关闭扩展栏再返回值
+     * @return false--extend menu is on, will hide it first
+     *         true --extend menu is off 
      */
     public boolean onBackPressed() {
         if (chatExtendMenuContainer.getVisibility() == View.VISIBLE) {
@@ -338,21 +336,21 @@ public class EaseChatInputMenu extends LinearLayout {
 
     public interface ChatInputMenuListener {
         /**
-         * 发送消息按钮点击
+         * when send message button pressed
          * 
          * @param content
-         *            文本内容
+         *            message content
          */
         void onSendMessage(String content);
         
         /**
-         * 大表情被点击
+         * when big icon pressed
          * @param emojicon
          */
         void onBigExpressionClicked(EaseEmojicon emojicon);
 
         /**
-         * 长按说话按钮touch事件
+         * when speak button is touched
          * @param v
          * @param event
          * @return

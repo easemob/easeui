@@ -18,7 +18,7 @@ import com.hyphenate.easeui.widget.emojicon.EaseEmojiconPagerView.EaseEmojiconPa
 import com.hyphenate.easeui.widget.emojicon.EaseEmojiconScrollTabBar.EaseScrollTabBarItemClickListener;
 
 /**
- * 表情图片控件
+ * Emojicon menu
  */
 public class EaseEmojiconMenu extends EaseEmojiconMenuBase{
 	
@@ -86,7 +86,7 @@ public class EaseEmojiconMenu extends EaseEmojiconMenuBase{
 	
 	
 	/**
-     * 添加表情组
+     * add emojicon group
      * @param groupEntity
      */
     public void addEmojiconGroup(EaseEmojiconGroupEntity groupEntity){
@@ -96,7 +96,7 @@ public class EaseEmojiconMenu extends EaseEmojiconMenuBase{
     }
     
     /**
-     * 添加一系列表情组
+     * add emojicon group list
      * @param groupEntitieList
      */
     public void addEmojiconGroup(List<EaseEmojiconGroupEntity> groupEntitieList){
@@ -110,7 +110,7 @@ public class EaseEmojiconMenu extends EaseEmojiconMenuBase{
     }
     
     /**
-     * 移除表情组
+     * remove emojicon group
      * @param position
      */
     public void removeEmojiconGroup(int position){

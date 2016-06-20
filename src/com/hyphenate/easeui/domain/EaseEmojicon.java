@@ -5,9 +5,9 @@ public class EaseEmojicon {
     }
     
     /**
-     * 构造函数
-     * @param icon 静态图片resource id
-     * @param emojiText 表情emoji文本内容
+     * constructor
+     * @param icon- resource id of the icon
+     * @param emojiText- text of emoji icon
      */
     public EaseEmojicon(int icon, String emojiText){
         this.icon = icon;
@@ -16,10 +16,10 @@ public class EaseEmojicon {
     }
     
     /**
-     * 构造函数
-     * @param icon 静态图片resource id
-     * @param emojiText emojiText 表情emoji文本内容
-     * @param type 表情类型
+     * constructor
+     * @param icon - resource id of the icon
+     * @param emojiText - text of emoji icon
+     * @param type - normal or big
      */
     public EaseEmojicon(int icon, String emojiText, Type type){
         this.icon = icon;
@@ -29,7 +29,7 @@ public class EaseEmojicon {
     
     
     /**
-     * 唯一识别号
+     * identity code
      */
     private String identityCode;
     
@@ -44,33 +44,33 @@ public class EaseEmojicon {
     private int bigIcon;
     
     /**
-     * 表情emoji文本内容,大表情此项内容可以为null
+     * text of emoji, could be null for big icon
      */
     private String emojiText;
     
     /**
-     * 表情所对应的名称
+     * name of emoji icon
      */
     private String name;
     
     /**
-     * 普通or大表情
+     * normal or big
      */
     private Type type;
     
     /**
-     * 表情静态图片地址
+     * path of icon
      */
     private String iconPath;
     
     /**
-     * 大表情图片地址
+     * path of big icon
      */
     private String bigIconPath;
     
     
     /**
-     * 获取静态图片(小图片)资源id
+     * get the resource id of the icon
      * @return
      */
     public int getIcon() {
@@ -79,7 +79,7 @@ public class EaseEmojicon {
 
 
     /**
-     * 设置静态图片资源id
+     * set the resource id of the icon
      * @param icon
      */
     public void setIcon(int icon) {
@@ -88,7 +88,7 @@ public class EaseEmojicon {
 
 
     /**
-     * 获取大图片资源id
+     * get the resource id of the big icon
      * @return
      */
     public int getBigIcon() {
@@ -97,7 +97,7 @@ public class EaseEmojicon {
 
 
     /**
-     * 设置大图片资源id
+     * set the resource id of the big icon
      * @return
      */
     public void setBigIcon(int dynamicIcon) {
@@ -106,7 +106,7 @@ public class EaseEmojicon {
 
 
     /**
-     * 获取emoji文本内容
+     * get text of emoji icon
      * @return
      */
     public String getEmojiText() {
@@ -115,7 +115,7 @@ public class EaseEmojicon {
 
 
     /**
-     * 设置emoji文本内容
+     * set text of emoji icon
      * @param emojiText
      */
     public void setEmojiText(String emojiText) {
@@ -123,7 +123,7 @@ public class EaseEmojicon {
     }
 
     /**
-     * 获取表情名称
+     * get name of emoji icon
      * @return
      */
     public String getName() {
@@ -131,7 +131,7 @@ public class EaseEmojicon {
     }
     
     /**
-     * 设置表情名称
+     * set name of emoji icon
      * @param name
      */
     public void setName(String name) {
@@ -139,7 +139,7 @@ public class EaseEmojicon {
     }
 
     /**
-     * 获取表情类型
+     * get type
      * @return
      */
     public Type getType() {
@@ -148,7 +148,7 @@ public class EaseEmojicon {
 
 
     /**
-     * 设置表情类型
+     * set type
      * @param type
      */
     public void setType(Type type) {
@@ -157,7 +157,7 @@ public class EaseEmojicon {
 
 
     /**
-     * 获取静态图片地址
+     * get icon path
      * @return
      */
     public String getIconPath() {
@@ -166,7 +166,7 @@ public class EaseEmojicon {
 
 
     /**
-     * 设置静态图片地址
+     * set icon path
      * @param iconPath
      */
     public void setIconPath(String iconPath) {
@@ -175,7 +175,7 @@ public class EaseEmojicon {
 
 
     /**
-     * 获取大图(动态地址)地址()
+     * get path of big icon
      * @return
      */
     public String getBigIconPath() {
@@ -184,7 +184,7 @@ public class EaseEmojicon {
 
 
     /**
-     * 设置大图(动态地址)地址
+     * set path of big icon
      * @param bigIconPath
      */
     public void setBigIconPath(String bigIconPath) {
@@ -192,7 +192,7 @@ public class EaseEmojicon {
     }
 
     /**
-     * 获取识别码
+     * get identity code
      * @return
      */
     public String getIdentityCode() {
@@ -200,7 +200,7 @@ public class EaseEmojicon {
     }
     
     /**
-     * 设置识别码
+     * set identity code
      * @param identityId
      */
     public void setIdentityCode(String identityCode) {
@@ -219,11 +219,11 @@ public class EaseEmojicon {
 
     public enum Type{
         /**
-         * 普通表情，可以一次输入多个到edittext
+         * normal icon, can be input one or more in edit view
          */
         NORMAL,
         /**
-         * 大表情，点击之后直接发送
+         * big icon, send out directly when your press it
          */
         BIG_EXPRESSION
     }

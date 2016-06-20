@@ -20,7 +20,7 @@ public class EaseUserUtils {
     }
     
     /**
-     * 根据username获取相应user
+     * get EaseUser according username
      * @param username
      * @return
      */
@@ -32,7 +32,7 @@ public class EaseUserUtils {
     }
     
     /**
-     * 设置用户头像
+     * set user avatar
      * @param username
      */
     public static void setUserAvatar(Context context, String username, ImageView imageView){
@@ -42,7 +42,7 @@ public class EaseUserUtils {
                 int avatarResId = Integer.parseInt(user.getAvatar());
                 Glide.with(context).load(avatarResId).into(imageView);
             } catch (Exception e) {
-                //正常的string路径
+                //use default avatar
                 Glide.with(context).load(user.getAvatar()).diskCacheStrategy(DiskCacheStrategy.ALL).placeholder(R.drawable.ease_default_avatar).into(imageView);
             }
         }else{
@@ -51,7 +51,7 @@ public class EaseUserUtils {
     }
     
     /**
-     * 设置用户昵称
+     * set user's nickname
      */
     public static void setUserNick(String username,TextView textView){
         if(textView != null){

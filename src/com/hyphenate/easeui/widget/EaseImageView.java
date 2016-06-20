@@ -20,30 +20,29 @@ import com.hyphenate.easeui.R;
 
 /**
  * Created by lzan13 on 2015/4/30.
- * 自定义 ImageView 控件，实现了圆角和边框，以及按下变色
+ * customized ImageView，Rounded Rectangle and border is implemented, and change color when you press
  */
 public class EaseImageView extends ImageView {
-    // 图片按下的画笔
+    // paint when user press
     private Paint pressPaint;
-    // 图片的宽高
     private int width;
     private int height;
 
-    // 定义 Bitmap 的默认配置
+    // default bitmap config
     private static final Bitmap.Config BITMAP_CONFIG = Bitmap.Config.ARGB_8888;
     private static final int COLORDRAWABLE_DIMENSION = 1;
 
-    // 边框颜色
+    // border color
     private int borderColor;
-    // 边框宽度
+    // width of border
     private int borderWidth;
-    // 按下的透明度
+    // alpha when pressed
     private int pressAlpha;
-    // 按下的颜色
+    // color when pressed
     private int pressColor;
-    // 圆角半径
+    // radius
     private int radius;
-    // 图片类型（矩形，圆形）
+    // rectangle or round, 1 is circle, 2 is rectangle
     private int shapeType;
 
     public EaseImageView(Context context) {
@@ -63,7 +62,7 @@ public class EaseImageView extends ImageView {
 
 
     private void init(Context context, AttributeSet attrs) {
-        //初始化默认值
+        //init the value
         borderWidth = 0;
         borderColor = 0xddffffff;
         pressAlpha = 0x42;
@@ -71,7 +70,7 @@ public class EaseImageView extends ImageView {
         radius = 16;
         shapeType = 0;
 
-        // 获取控件的属性值
+        // get attribute of EaseImageView
         if (attrs != null) {
             TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.EaseImageView);
             borderColor = array.getColor(R.styleable.EaseImageView_ease_border_color, borderColor);
@@ -83,7 +82,7 @@ public class EaseImageView extends ImageView {
             array.recycle();
         }
 
-        // 按下的画笔设置
+        // set paint when pressed
         pressPaint = new Paint();
         pressPaint.setAntiAlias(true);
         pressPaint.setStyle(Paint.Style.FILL);
@@ -103,12 +102,11 @@ public class EaseImageView extends ImageView {
             super.onDraw(canvas);
             return;
         }
-        // 获取当前控件的 drawable
         Drawable drawable = getDrawable();
         if (drawable == null) {
             return;
         }
-        // 这里 get 回来的宽度和高度是当前控件相对应的宽度和高度（在 xml 设置）
+        // the width and height is in xml file
         if (getWidth() == 0 || getHeight() == 0) {
             return;
         }
@@ -120,21 +118,17 @@ public class EaseImageView extends ImageView {
     }
 
     /**
-     * 实现圆角的绘制
+     * draw Rounded Rectangle
      *
      * @param canvas
      * @param bitmap
      */
     private void drawDrawable(Canvas canvas, Bitmap bitmap) {
-        // 画笔
         Paint paint = new Paint();
-        // 颜色设置
         paint.setColor(0xffffffff);
-        // 抗锯齿
-        paint.setAntiAlias(true);
-        //Paint 的 Xfermode，PorterDuff.Mode.SRC_IN 取两层图像的交集部门, 只显示上层图像。
+        paint.setAntiAlias(true); //smooths out the edges of what is being drawn
         PorterDuffXfermode xfermode = new PorterDuffXfermode(PorterDuff.Mode.SRC_IN);
-        // 标志
+        // set flags
         int saveFlags = Canvas.MATRIX_SAVE_FLAG
                 | Canvas.CLIP_SAVE_FLAG
                 | Canvas.HAS_ALPHA_LAYER_SAVE_FLAG
@@ -143,50 +137,44 @@ public class EaseImageView extends ImageView {
         canvas.saveLayer(0, 0, width, height, null, saveFlags);
 
         if (shapeType == 1) {
-            // 画遮罩，画出来就是一个和空间大小相匹配的圆（这里在半径上 -1 是为了不让图片超出边框）
             canvas.drawCircle(width / 2, height / 2, width / 2 - 1, paint);
         } else if (shapeType == 2) {
-            // 当ShapeType == 2 时 图片为圆角矩形 （这里在宽高上 -1 是为了不让图片超出边框）
             RectF rectf = new RectF(1, 1, getWidth() - 1, getHeight() - 1);
             canvas.drawRoundRect(rectf, radius + 1, radius + 1, paint);
         }
 
         paint.setXfermode(xfermode);
 
-        // 空间的大小 / bitmap 的大小 = bitmap 缩放的倍数
         float scaleWidth = ((float) getWidth()) / bitmap.getWidth();
         float scaleHeight = ((float) getHeight()) / bitmap.getHeight();
 
         Matrix matrix = new Matrix();
         matrix.postScale(scaleWidth, scaleHeight);
 
-        //bitmap 缩放
+        //bitmap scale
         bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
 
-        //draw 上去
         canvas.drawBitmap(bitmap, 0, 0, paint);
         canvas.restore();
     }
 
     /**
-     * 绘制控件的按下效果
+     * draw the effect when pressed
      *
      * @param canvas
      */
     private void drawPress(Canvas canvas) {
-        // 这里根据类型判断绘制的效果是圆形还是矩形
+        // check is rectangle or circle
         if (shapeType == 1) {
-            // 当ShapeType == 1 时 图片为圆形 （这里在半径上 -1 是为了不让图片超出边框）
             canvas.drawCircle(width / 2, height / 2, width / 2 - 1, pressPaint);
         } else if (shapeType == 2) {
-            // 当ShapeType == 2 时 图片为圆角矩形 （这里在宽高上 -1 是为了不让图片超出边框）
             RectF rectF = new RectF(1, 1, width - 1, height - 1);
             canvas.drawRoundRect(rectF, radius + 1, radius + 1, pressPaint);
         }
     }
 
     /**
-     * 绘制自定义控件边框
+     * draw customized border
      *
      * @param canvas
      */
@@ -197,11 +185,10 @@ public class EaseImageView extends ImageView {
             paint.setStyle(Paint.Style.STROKE);
             paint.setColor(borderColor);
             paint.setAntiAlias(true);
-            // 根据控件类型的属性去绘制圆形或者矩形
+            // // check is rectangle or circle
             if (shapeType == 1) {
                 canvas.drawCircle(width / 2, height / 2, (width - borderWidth) / 2, paint);
             } else if (shapeType == 2) {
-                // 当ShapeType = 1 时 图片为圆角矩形
                 RectF rectf = new RectF(borderWidth / 2, borderWidth / 2, getWidth() - borderWidth / 2,
                         getHeight() - borderWidth / 2);
                 canvas.drawRoundRect(rectf, radius, radius, paint);
@@ -210,7 +197,7 @@ public class EaseImageView extends ImageView {
     }
 
     /**
-     * 重写父类的 onSizeChanged 方法，检测控件宽高的变化
+     * monitor the size change
      *
      * @param w
      * @param h
@@ -225,7 +212,7 @@ public class EaseImageView extends ImageView {
     }
 
     /**
-     * 重写 onTouchEvent 监听方法，用来监听自定义控件是否被触摸
+     * monitor if touched
      *
      * @param event
      * @return
@@ -282,7 +269,7 @@ public class EaseImageView extends ImageView {
     }
 
     /**
-     * 设置边框颜色
+     * set border color
      *
      * @param borderColor
      */
@@ -292,7 +279,7 @@ public class EaseImageView extends ImageView {
     }
 
     /**
-     * 设置边框宽度
+     * set border width
      *
      * @param borderWidth
      */
@@ -301,7 +288,7 @@ public class EaseImageView extends ImageView {
     }
 
     /**
-     * 设置图片按下颜色透明度
+     * set alpha when pressed
      *
      * @param pressAlpha
      */
@@ -310,7 +297,7 @@ public class EaseImageView extends ImageView {
     }
 
     /**
-     * 设置图片按下的颜色
+     * set color when pressed
      *
      * @param pressColor
      */
@@ -319,7 +306,7 @@ public class EaseImageView extends ImageView {
     }
 
     /**
-     * 设置倒角半径
+     * set radius
      *
      * @param radius
      */
@@ -329,7 +316,7 @@ public class EaseImageView extends ImageView {
     }
 
     /**
-     * 设置形状类型
+     * set shape
      *
      * @param shapeType
      */

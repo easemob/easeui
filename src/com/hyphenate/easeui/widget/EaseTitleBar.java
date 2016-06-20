@@ -12,7 +12,7 @@ import android.widget.TextView;
 import com.hyphenate.easeui.R;
 
 /**
- * 标题栏
+ * title bar
  *
  */
 public class EaseTitleBar extends RelativeLayout{

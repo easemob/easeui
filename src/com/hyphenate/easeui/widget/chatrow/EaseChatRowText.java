@@ -51,18 +51,16 @@ public class EaseChatRowText extends EaseChatRow{
             case CREATE: 
                 progressBar.setVisibility(View.GONE);
                 statusView.setVisibility(View.VISIBLE);
-                // 发送消息
-//                sendMsgInBackground(message);
                 break;
-            case SUCCESS: // 发送成功
+            case SUCCESS:
                 progressBar.setVisibility(View.GONE);
                 statusView.setVisibility(View.GONE);
                 break;
-            case FAIL: // 发送失败
+            case FAIL:
                 progressBar.setVisibility(View.GONE);
                 statusView.setVisibility(View.VISIBLE);
                 break;
-            case INPROGRESS: // 发送中
+            case INPROGRESS:
                 progressBar.setVisibility(View.VISIBLE);
                 statusView.setVisibility(View.GONE);
                 break;

@@ -14,6 +14,7 @@
 
 package com.hyphenate.easeui.ui;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -24,6 +25,7 @@ import android.view.inputmethod.InputMethodManager;
 
 import com.hyphenate.easeui.controller.EaseUI;
 
+@SuppressLint("NewApi")
 public class EaseBaseActivity extends FragmentActivity {
 
     protected InputMethodManager inputMethodManager;
@@ -32,7 +34,7 @@ public class EaseBaseActivity extends FragmentActivity {
     protected void onCreate(Bundle arg0) {
         super.onCreate(arg0);
         //http://stackoverflow.com/questions/4341600/how-to-prevent-multiple-instances-of-an-activity-when-it-is-launched-with-differ/
-        //理论上应该放在launcher activity,放在基类中所有集成此库的app都可以避免此问题
+        // should be in launcher activity, but all app use this can avoid the problem
         if(!isTaskRoot()){
             Intent intent = getIntent();
             String action = intent.getAction();
@@ -49,11 +51,9 @@ public class EaseBaseActivity extends FragmentActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        // onresume时，取消notification显示
+        // cancel the notification
         EaseUI.getInstance().getNotifier().reset();
-        
     }
-
     
     protected void hideSoftKeyboard() {
         if (getWindow().getAttributes().softInputMode != WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN) {
@@ -64,7 +64,7 @@ public class EaseBaseActivity extends FragmentActivity {
     }
 
     /**
-     * 返回
+     * back
      * 
      * @param view
      */

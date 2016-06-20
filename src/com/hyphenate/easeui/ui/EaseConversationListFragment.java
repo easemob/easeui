@@ -36,7 +36,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 
 /**
- * 会话列表fragment
+ * conversation fragment
  *
  */
 public class EaseConversationListFragment extends EaseBaseFragment{
@@ -74,11 +74,9 @@ public class EaseConversationListFragment extends EaseBaseFragment{
     @Override
     protected void initView() {
         inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-        //会话列表控件
         conversationListView = (EaseConversationList) getView().findViewById(R.id.list);
-        // 搜索框
         query = (EditText) getView().findViewById(R.id.query);
-        // 搜索框中清除button
+        // button to clear content in search bar
         clearSearch = (ImageButton) getView().findViewById(R.id.search_clear);
         errorItemContainer = (FrameLayout) getView().findViewById(R.id.fl_error_item);
     }
@@ -178,14 +176,14 @@ public class EaseConversationListFragment extends EaseBaseFragment{
     };
     
     /**
-     * 连接到服务器
+     * connected to server
      */
     protected void onConnectionConnected(){
         errorItemContainer.setVisibility(View.GONE);
     }
     
     /**
-     * 连接断开
+     * disconnected with server
      */
     protected void onConnectionDisconnected(){
         errorItemContainer.setVisibility(View.VISIBLE);
@@ -193,7 +191,7 @@ public class EaseConversationListFragment extends EaseBaseFragment{
     
 
     /**
-     * 刷新页面
+     * refresh ui
      */
     public void refresh() {
     	if(!handler.hasMessages(MSG_REFRESH)){
@@ -202,28 +200,22 @@ public class EaseConversationListFragment extends EaseBaseFragment{
     }
     
     /**
-     * 获取会话列表
+     * load conversation list
      * 
-     * @param context
      * @return
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         +    */
     protected List<EMConversation> loadConversationList(){
-        // 获取所有会话，包括陌生人
+        // get all conversations
         Map<String, EMConversation> conversations = EMClient.getInstance().chatManager().getAllConversations();
-        // 过滤掉messages size为0的conversation
-        /**
-         * 如果在排序过程中有新消息收到，lastMsgTime会发生变化
-         * 影响排序过程，Collection.sort会产生异常
-         * 保证Conversation在Sort过程中最后一条消息的时间不变 
-         * 避免并发问题
-         */
         List<Pair<Long, EMConversation>> sortList = new ArrayList<Pair<Long, EMConversation>>();
+        /**
+         * lastMsgTime will change if there is new message during sorting
+         * so use synchronized to make sure timestamp of last message won't change.
+         */
         synchronized (conversations) {
             for (EMConversation conversation : conversations.values()) {
                 if (conversation.getAllMessages().size() != 0) {
-                    //if(conversation.getType() != EMConversationType.ChatRoom){
-                        sortList.add(new Pair<Long, EMConversation>(conversation.getLastMessage().getMsgTime(), conversation));
-                    //}
+                    sortList.add(new Pair<Long, EMConversation>(conversation.getLastMessage().getMsgTime(), conversation));
                 }
             }
         }
@@ -241,9 +233,9 @@ public class EaseConversationListFragment extends EaseBaseFragment{
     }
 
     /**
-     * 根据最后一条消息的时间排序
+     * sort conversations according time stamp of last message
      * 
-     * @param usernames
+     * @param conversationList
      */
     private void sortConversationByLastChatTime(List<Pair<Long, EMConversation>> conversationList) {
         Collections.sort(conversationList, new Comparator<Pair<Long, EMConversation>>() {
@@ -303,14 +295,14 @@ public class EaseConversationListFragment extends EaseBaseFragment{
     
     public interface EaseConversationListItemClickListener {
         /**
-         * 会话listview item点击事件
-         * @param conversation 被点击item所对应的会话
+         * click event for conversation list
+         * @param conversation -- clicked item
          */
         void onListItemClicked(EMConversation conversation);
     }
     
     /**
-     * 设置listview item点击事件
+     * set conversation list item click listener
      * @param listItemClickListener
      */
     public void setConversationListItemClickListener(EaseConversationListItemClickListener listItemClickListener){

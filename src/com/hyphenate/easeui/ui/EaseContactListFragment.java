@@ -50,7 +50,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 /**
- * 联系人列表页
+ * contact list
  * 
  */
 public class EaseContactListFragment extends EaseBaseFragment {
@@ -77,7 +77,7 @@ public class EaseContactListFragment extends EaseBaseFragment {
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        //防止被T后，没点确定按钮然后按了home键，长期在后台又进app导致的crash
+    	//to avoid crash when open app after long time stay in background after user logged into another device
         if(savedInstanceState != null && savedInstanceState.getBoolean("isConflict", false))
             return;
         super.onActivityCreated(savedInstanceState);
@@ -90,7 +90,7 @@ public class EaseContactListFragment extends EaseBaseFragment {
         contactListLayout = (EaseContactList) getView().findViewById(R.id.contact_list);        
         listView = contactListLayout.getListView();
         
-        //搜索框
+        //search
         query = (EditText) getView().findViewById(R.id.query);
         clearSearch = (ImageButton) getView().findViewById(R.id.search_clear);
     }
@@ -99,9 +99,7 @@ public class EaseContactListFragment extends EaseBaseFragment {
     protected void setUpView() {
         EMClient.getInstance().addConnectionListener(connectionListener);
         
-        //黑名单列表
         contactList = new ArrayList<EaseUser>();
-        // 获取设置contactlist
         getContactList();
         //init list
         contactListLayout.init(contactList);
@@ -113,7 +111,6 @@ public class EaseContactListFragment extends EaseBaseFragment {
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     EaseUser user = (EaseUser)listView.getItemAtPosition(position);
                     listItemClickListener.onListItemClicked(user);
-//                    itemClickLaunchIntent.putExtra(EaseConstant.USER_ID, username);
                 }
             });
         }
@@ -147,7 +144,6 @@ public class EaseContactListFragment extends EaseBaseFragment {
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                // 隐藏软键盘
                 hideSoftKeyboard();
                 return false;
             }
@@ -175,7 +171,7 @@ public class EaseContactListFragment extends EaseBaseFragment {
 
 
     /**
-     * 把user移入到黑名单
+     * move user to blacklist
      */
     protected void moveToBlacklist(final String username){
         final ProgressDialog pd = new ProgressDialog(getActivity());
@@ -188,7 +184,7 @@ public class EaseContactListFragment extends EaseBaseFragment {
         new Thread(new Runnable() {
             public void run() {
                 try {
-                    //加入到黑名单
+                    //move to blacklist
                     EMClient.getInstance().contactManager().addUserToBlackList(username,false);
                     getActivity().runOnUiThread(new Runnable() {
                         public void run() {
@@ -211,7 +207,7 @@ public class EaseContactListFragment extends EaseBaseFragment {
         
     }
     
-    // 刷新ui
+    // refresh ui
     public void refresh() {
         getContactList();
         contactListLayout.refresh();
@@ -228,11 +224,10 @@ public class EaseContactListFragment extends EaseBaseFragment {
     
 
     /**
-     * 获取联系人列表，并过滤掉黑名单和排序
+     * get contact list and sort, will filter out users in blacklist
      */
     protected void getContactList() {
         contactList.clear();
-            //获取联系人列表
         if(contactsMap == null){
             return;
         }
@@ -241,13 +236,13 @@ public class EaseContactListFragment extends EaseBaseFragment {
             List<String> blackList = EMClient.getInstance().contactManager().getBlackListUsernames();
             while (iterator.hasNext()) {
                 Entry<String, EaseUser> entry = iterator.next();
-                //兼容以前的通讯录里的已有的数据显示，加上此判断，如果是新集成的可以去掉此判断
+                // to make it compatible with data in previous version, you can remove this check if this is new app
                 if (!entry.getKey().equals("item_new_friends")
                         && !entry.getKey().equals("item_groups")
                         && !entry.getKey().equals("item_chatroom")
                         && !entry.getKey().equals("item_robots")){
                     if(!blackList.contains(entry.getKey())){
-                        //不显示黑名单中的用户
+                        //filter out users in blacklist
                         EaseUser user = entry.getValue();
                         EaseCommonUtils.setUserInitialLetter(user);
                         contactList.add(user);
@@ -256,7 +251,7 @@ public class EaseContactListFragment extends EaseBaseFragment {
             }
         }
 
-        // 排序
+        // sorting
         Collections.sort(contactList, new Comparator<EaseUser>() {
 
             @Override
@@ -317,7 +312,7 @@ public class EaseContactListFragment extends EaseBaseFragment {
     }
     
     /**
-     * 设置需要显示的数据map，key为环信用户id
+     * set contacts map, key is the hyphenate id
      * @param contactsMap
      */
     public void setContactsMap(Map<String, EaseUser> contactsMap){
@@ -326,14 +321,14 @@ public class EaseContactListFragment extends EaseBaseFragment {
     
     public interface EaseContactListItemClickListener {
         /**
-         * 联系人listview item点击事件
-         * @param user 被点击item所对应的user对象
+         * on click event for item in contact list 
+         * @param user --the user of item
          */
         void onListItemClicked(EaseUser user);
     }
     
     /**
-     * 设置listview item点击事件
+     * set contact list item click listener
      * @param listItemClickListener
      */
     public void setContactListItemClickListener(EaseContactListItemClickListener listItemClickListener){

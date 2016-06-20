@@ -17,7 +17,6 @@
         android:id="@+id/tv_name"
         android:textSize="11sp"
         android:textColor="@color/gray_normal"
-        android:text="流泪"
         />
 
 </LinearLayout>

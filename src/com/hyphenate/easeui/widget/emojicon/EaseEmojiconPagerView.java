@@ -88,7 +88,7 @@ public class EaseEmojiconPagerView extends ViewPager{
     
     
     /**
-     * 设置当前表情组位置
+     * set emojicon group position
      * @param position
      */
     public void setGroupPostion(int position){
@@ -102,7 +102,7 @@ public class EaseEmojiconPagerView extends ViewPager{
     }
     
     /**
-     * 获取表情组的gridview list
+     * get emojicon group gridview list
      * @param groupEntity
      * @return
      */
@@ -162,7 +162,7 @@ public class EaseEmojiconPagerView extends ViewPager{
     
 
     /**
-     * 添加表情组
+     * add emojicon group
      * @param groupEntity
      */
     public void addEmojiconGroup(EaseEmojiconGroupEntity groupEntity, boolean notifyDataChange) {
@@ -180,7 +180,7 @@ public class EaseEmojiconPagerView extends ViewPager{
     }
     
     /**
-     * 移除表情组
+     * remove emojicon group
      * @param position
      */
     public void removeEmojiconGroup(int position){
@@ -193,7 +193,7 @@ public class EaseEmojiconPagerView extends ViewPager{
     }
     
     /**
-     * 获取pager数量
+     * get size of pages
      * @param emojiconList
      * @return
      */
@@ -216,9 +216,9 @@ public class EaseEmojiconPagerView extends ViewPager{
         	int groupPosition = 0;
             for(EaseEmojiconGroupEntity groupEntity : groupEntities){
             	int groupPageSize = getPageSize(groupEntity);
-            	//选中的position在当前遍历的group里
+            	//if the position is in current group
             	if(endSize + groupPageSize > position){
-            		//前面的group切换过来的
+            		//this is means user swipe to here from previous page
             		if(previousPagerPosition - endSize < 0){
             			if(pagerViewListener != null){
             				pagerViewListener.onGroupPositionChanged(groupPosition, groupPageSize);
@@ -226,7 +226,7 @@ public class EaseEmojiconPagerView extends ViewPager{
             			}
             			break;
             		}
-            		//后面的group切换过来的
+            		//this is means user swipe to here from back page
             		if(previousPagerPosition - endSize >= groupPageSize){
             			if(pagerViewListener != null){
             				pagerViewListener.onGroupPositionChanged(groupPosition, groupPageSize);
@@ -235,7 +235,7 @@ public class EaseEmojiconPagerView extends ViewPager{
             			break;
             		}
             		
-            		//当前group的pager切换
+            		//page changed
             		if(pagerViewListener != null){
             			pagerViewListener.onGroupInnerPagePostionChanged(previousPagerPosition-endSize, position-endSize);
             		}
@@ -261,33 +261,33 @@ public class EaseEmojiconPagerView extends ViewPager{
     
     public interface EaseEmojiconPagerViewListener{
         /**
-         * pagerview初始化完毕
-         * @param groupMaxPageSize 最大表情组的page大小
-         * @param firstGroupPageSize 第一组的page大小
+         * pagerview initialized
+         * @param groupMaxPageSize --max pages size
+         * @param firstGroupPageSize-- size of first group pages
          */
         void onPagerViewInited(int groupMaxPageSize, int firstGroupPageSize);
         
     	/**
-    	 * 表情组位置变动(从一组表情组移动另一组)
-    	 * @param groupPosition 表情组位置
-    	 * @param pagerSizeOfGroup 表情组里的pager的size
+    	 * group position changed
+    	 * @param groupPosition--group position
+    	 * @param pagerSizeOfGroup--page size of group
     	 */
     	void onGroupPositionChanged(int groupPosition, int pagerSizeOfGroup);
     	/**
-    	 * 表情组内的page位置变动
+    	 * page position changed
     	 * @param oldPosition
     	 * @param newPosition
     	 */
     	void onGroupInnerPagePostionChanged(int oldPosition, int newPosition);
     	
     	/**
-    	 * 从别的表情组切过来的page位置变动
+    	 * group page position changed
     	 * @param position
     	 */
     	void onGroupPagePostionChangedTo(int position);
     	
     	/**
-    	 * 表情组最大pager数变化
+    	 * max page size changed
     	 * @param maxCount
     	 */
     	void onGroupMaxPageSizeChanged(int maxCount);

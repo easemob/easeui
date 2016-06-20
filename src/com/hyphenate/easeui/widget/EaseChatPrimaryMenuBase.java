@@ -36,7 +36,7 @@ public abstract class EaseChatPrimaryMenuBase extends RelativeLayout{
     }
     
     /**
-     * 设置主按钮栏相关listener
+     * set primary menu listener
      * @param listener
      */
     public void setChatPrimaryMenuListener(EaseChatPrimaryMenuListener listener){
@@ -44,32 +44,32 @@ public abstract class EaseChatPrimaryMenuBase extends RelativeLayout{
     }
     
     /**
-     * 表情输入
+     * emoji icon input event
      * @param emojiContent
      */
     public abstract void onEmojiconInputEvent(CharSequence emojiContent);
 
     /**
-     * 表情删除
+     * emoji icon delete event
      */
     public abstract void onEmojiconDeleteEvent();
     
     /**
-     * 整个扩展按钮栏(包括表情栏)隐藏
+     * hide extend menu
      */
     public abstract void onExtendMenuContainerHide();
     
     
     /**
-     * 往文本输入框插入文本
-     * @param text 文本内容
+     * insert text
+     * @param text
      */
     public abstract void onTextInsert(CharSequence text);
     
     public abstract EditText getEditText();
     
     /**
-     * 隐藏软键盘
+     * hide keyboard
      */
     public void hideKeyboard() {
         if (activity.getWindow().getAttributes().softInputMode != WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN) {
@@ -81,38 +81,37 @@ public abstract class EaseChatPrimaryMenuBase extends RelativeLayout{
     
     public interface EaseChatPrimaryMenuListener{
         /**
-         * 发送按钮点击事件
-         * @param content 发送内容
+         * when send button clicked
+         * @param content
          */
         void onSendBtnClicked(String content);
         
         /**
-         * 长按说话按钮ontouch事件
+         * when speak button is touched
          * @return
          */
         boolean onPressToSpeakBtnTouch(View v, MotionEvent event);
         
         /**
-         * 长按说话按钮隐藏或显示事件
+         * toggle on/off voice button
          */
         void onToggleVoiceBtnClicked();
         
         /**
-         * 隐藏或显示扩展menu按钮点击点击事件
+         * toggle on/off extend menu
          */
         void onToggleExtendClicked();
         
         /**
-         * 隐藏或显示表情栏按钮点击事件
+         * toggle on/off emoji icon
          */
         void onToggleEmojiconClicked();
         
         /**
-         * 文字输入框点击事件
+         * on text input is clicked
          */
         void onEditTextClicked();
         
     }
-    
 
 }

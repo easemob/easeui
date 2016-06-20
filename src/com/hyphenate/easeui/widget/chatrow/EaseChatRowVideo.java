@@ -54,8 +54,6 @@ public class EaseChatRowVideo extends EaseChatRowFile{
 	@Override
 	protected void onSetUpView() {
 	    EMVideoMessageBody videoBody = (EMVideoMessageBody) message.getBody();
-        // final File image=new File(PathUtil.getInstance().getVideoPath(),
-        // videoBody.getFileName());
         String localThumb = videoBody.getLocalThumb();
 
         if (localThumb != null) {
@@ -66,7 +64,6 @@ public class EaseChatRowVideo extends EaseChatRowFile{
             String time = DateUtils.toTime(videoBody.getDuration());
             timeLengthView.setText(time);
         }
-//        playView.setImageResource(R.drawable.video_play_btn_small_nor);
 
         if (message.direct() == EMMessage.Direct.RECEIVE) {
             if (videoBody.getVideoFileLength() > 0) {
@@ -97,7 +94,7 @@ public class EaseChatRowVideo extends EaseChatRowFile{
 
             return;
         }
-        //处理发送方消息
+        //handle sending message
         handleSendMessage();
 	}
 	
@@ -121,13 +118,13 @@ public class EaseChatRowVideo extends EaseChatRowFile{
 	}
 	
 	/**
-     * 展示视频缩略图
+     * show video thumbnails
      * 
      * @param localThumb
-     *            本地缩略图路径
+     *            local path for thumbnail
      * @param iv
      * @param thumbnailUrl
-     *            远程缩略图路径
+     *            Url on server for thumbnails
      * @param message
      */
     private void showVideoThumbView(final String localThumb, final ImageView iv, String thumbnailUrl, final EMMessage message) {
@@ -169,7 +166,5 @@ public class EaseChatRowVideo extends EaseChatRowFile{
         }
         
     }
-    
-    
 
 }

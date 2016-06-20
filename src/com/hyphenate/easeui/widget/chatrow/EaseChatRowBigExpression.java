@@ -13,7 +13,7 @@ import com.hyphenate.easeui.controller.EaseUI;
 import com.hyphenate.easeui.domain.EaseEmojicon;
 
 /**
- * 大表情(动态表情)
+ * big emoji icons
  *
  */
 public class EaseChatRowBigExpression extends EaseChatRowText{

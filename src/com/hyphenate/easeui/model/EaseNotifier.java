@@ -1,13 +1,13 @@
 /************************************************************
- *  * EaseMob CONFIDENTIAL 
+ *  * Hyphenate CONFIDENTIAL 
  * __________________ 
  * Copyright (C) 2016 Hyphenate Inc. All rights reserved. 
  *  
  * NOTICE: All information contained herein is, and remains 
- * the property of EaseMob Technologies.
+ * the property of Hyphenate Inc.
  * Dissemination of this information or reproduction of this material 
  * is strictly forbidden unless prior written permission is obtained
- * from EaseMob Technologies.
+ * from Hyphenate Inc.
  */
 package com.hyphenate.easeui.model;
 
@@ -38,7 +38,7 @@ import android.os.Vibrator;
 import android.support.v4.app.NotificationCompat;
 
 /**
- * 新消息提醒class
+ * new message notifier class
  * 
  * this class is subject to be inherited and implement the relative APIs
  */
@@ -73,7 +73,6 @@ public class EaseNotifier {
     }
     
     /**
-     * 开发者可以重载此函数
      * this function can be override
      * @param context
      * @return
@@ -96,7 +95,6 @@ public class EaseNotifier {
     }
     
     /**
-     * 开发者可以重载此函数
      * this function can be override
      */
     public void reset(){
@@ -115,9 +113,7 @@ public class EaseNotifier {
     }
 
     /**
-     * 处理新收到的消息，然后发送通知
-     * 
-     * 开发者可以重载此函数
+     * handle the new message
      * this function can be override
      * 
      * @param message
@@ -131,7 +127,7 @@ public class EaseNotifier {
             return;
         }
         
-        // 判断app是否在后台
+        // check if app running background
         if (!EasyUtils.isAppRunningForeground(appContext)) {
             EMLog.d(TAG, "app is running in backgroud");
             sendNotification(message, false);
@@ -140,7 +136,7 @@ public class EaseNotifier {
 
         }
         
-        viberateAndPlayTone(message);
+        vibrateAndPlayTone(message);
     }
     
     public synchronized void onNewMesg(List<EMMessage> messages) {
@@ -151,18 +147,18 @@ public class EaseNotifier {
         if(!settingsProvider.isMsgNotifyAllowed(null)){
             return;
         }
-        // 判断app是否在后台
+        // check if app running background
         if (!EasyUtils.isAppRunningForeground(appContext)) {
             EMLog.d(TAG, "app is running in backgroud");
             sendNotification(messages, false);
         } else {
             sendNotification(messages, true);
         }
-        viberateAndPlayTone(messages.get(messages.size()-1));
+        vibrateAndPlayTone(messages.get(messages.size()-1));
     }
 
     /**
-     * 发送通知栏提示
+     * send it to notification bar
      * This can be override by subclass to provide customer implementation
      * @param messages
      * @param isForeground
@@ -182,7 +178,7 @@ public class EaseNotifier {
     }
     
     /**
-     * 发送通知栏提示
+     * send it to notification bar
      * This can be override by subclass to provide customer implementation
      * @param message
      */
@@ -215,18 +211,16 @@ public class EaseNotifier {
             PackageManager packageManager = appContext.getPackageManager();
             String appname = (String) packageManager.getApplicationLabel(appContext.getApplicationInfo());
             
-            // notification titile
+            // notification title
             String contentTitle = appname;
             if (notificationInfoProvider != null) {
                 String customNotifyText = notificationInfoProvider.getDisplayedText(message);
                 String customCotentTitle = notificationInfoProvider.getTitle(message);
                 if (customNotifyText != null){
-                    // 设置自定义的状态栏提示内容
                     notifyText = customNotifyText;
                 }
                     
                 if (customCotentTitle != null){
-                    // 设置自定义的通知栏标题
                     contentTitle = customCotentTitle;
                 }   
             }
@@ -239,7 +233,6 @@ public class EaseNotifier {
 
             Intent msgIntent = appContext.getPackageManager().getLaunchIntentForPackage(packageName);
             if (notificationInfoProvider != null) {
-                // 设置自定义的notification点击跳转intent
                 msgIntent = notificationInfoProvider.getLaunchIntent(message);
             }
 
@@ -290,15 +283,14 @@ public class EaseNotifier {
     }
 
     /**
-     * 手机震动和声音提示
+     * vibrate and  play tone
      */
-    public void viberateAndPlayTone(EMMessage message) {
+    public void vibrateAndPlayTone(EMMessage message) {
         if(message != null){
             if(EMClient.getInstance().chatManager().isSlientMessage(message)){
                 return;
             } 
         }
-        
         
         if (System.currentTimeMillis() - lastNotifiyTime < 1000) {
             // received new messages within 2 seconds, skip play ringtone
@@ -308,7 +300,7 @@ public class EaseNotifier {
         try {
             lastNotifiyTime = System.currentTimeMillis();
             
-            // 判断是否处于静音模式
+            // check if in silent mode
             if (audioManager.getRingerMode() == AudioManager.RINGER_MODE_SILENT) {
                 EMLog.e(TAG, "in slient mode now");
                 return;
@@ -361,7 +353,7 @@ public class EaseNotifier {
 
 
     /**
-     * 设置通知栏消息Provider
+     * set notification info Provider
      * 
      * @param provider
      */
@@ -371,24 +363,20 @@ public class EaseNotifier {
 
     public interface EaseNotificationInfoProvider {
         /**
-         * 设置发送notification时状态栏提示新消息的内容(比如Xxx发来了一条图片消息)
+         * set the notification content, such as "you received a new image from xxx"
          * 
          * @param message
-         *            接收到的消息
-         * @return null为使用默认
+         * @return null-will use the default text
          */
         String getDisplayedText(EMMessage message);
 
         /**
-         * 设置notification持续显示的新消息提示(比如2个联系人发来了5条消息)
+         * set the notification content: such as "you received 5 message from 2 contacts"
          * 
          * @param message
-         *            接收到的消息
-         * @param fromUsersNum
-         *            发送人的数量
-         * @param messageNum
-         *            消息数量
-         * @return null为使用默认
+         * @param fromUsersNum- number of message sender
+         * @param messageNum -number of messages
+         * @return null-will use the default text
          */
         String getLatestText(EMMessage message, int fromUsersNum, int messageNum);
 
@@ -396,24 +384,23 @@ public class EaseNotifier {
          * 设置notification标题
          * 
          * @param message
-         * @return null为使用默认
+         * @return null- will use the default text
          */
         String getTitle(EMMessage message);
 
         /**
-         * 设置小图标
+         * set the small icon
          * 
          * @param message
-         * @return 0使用默认图标
+         * @return 0- will use the default icon
          */
         int getSmallIcon(EMMessage message);
 
         /**
-         * 设置notification点击时的跳转intent
+         * set the intent when notification is pressed
          * 
          * @param message
-         *            显示在notification上最近的一条消息
-         * @return null为使用默认
+         * @return null- will use the default icon
          */
         Intent getLaunchIntent(EMMessage message);
     }

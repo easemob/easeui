@@ -32,7 +32,7 @@ public final class EaseUI {
     private static EaseUI instance = null;
     
     /**
-     * 用户属性提供者
+     * user profile provider
      */
     private EaseUserProfileProvider userProvider;
     
@@ -54,7 +54,7 @@ public final class EaseUI {
     private EaseNotifier notifier = null;
     
     /**
-     * 用来记录注册了eventlistener的foreground Activity
+     * save foreground Activity which registered eventlistener
      */
     private List<Activity> activityList = new ArrayList<Activity>();
     
@@ -72,7 +72,7 @@ public final class EaseUI {
     private EaseUI(){}
     
     /**
-     * 获取EaseUI单实例对象
+     * get instance of EaseUI
      * @return
      */
     public synchronized static EaseUI getInstance(){
@@ -83,14 +83,12 @@ public final class EaseUI {
     }
     
     /**
-     *this function will initialize the HuanXin SDK
+     *this function will initialize the SDK and easeUI kit
      * 
-     * @return boolean true if caller can continue to call HuanXin related APIs after calling onInit, otherwise false.
+     * @return boolean true if caller can continue to call SDK related APIs after calling onInit, otherwise false.
      * 
-     * 初始化环信sdk及easeui库
-     * 返回true如果正确初始化，否则false，如果返回为false，请在后续的调用中不要调用任何和环信相关的代码
      * @param context
-     * @param options 聊天相关的设置，传null则使用默认的
+     * @param options use default if options is null
      * @return
      */
     public synchronized boolean init(Context context, EMOptions options){
@@ -103,14 +101,12 @@ public final class EaseUI {
         String processAppName = getAppName(pid);
         
         Log.d(TAG, "process app name : " + processAppName);
-        
-        // 如果app启用了远程的service，此application:onCreate会被调用2次
-        // 为了防止环信SDK被初始化2次，加此判断会保证SDK被初始化1次
-        // 默认的app会在以包名为默认的process name下运行，如果查到的process name不是app的process name就立即返回
+
+        // if there is application has remote service, application:onCreate() maybe called twice
+        // this check is to make sure SDK will initialized only once
+        // return if process name is not application's name since the package name is the default process name
         if (processAppName == null || !processAppName.equalsIgnoreCase(appContext.getPackageName())) {
             Log.e(TAG, "enter the service process!");
-            
-            // 则此application::onCreate 是被service 调用的，直接返回
             return false;
         }
         if(options == null){
@@ -133,18 +129,16 @@ public final class EaseUI {
 
     protected EMOptions initChatOptions(){
         Log.d(TAG, "init HuanXin Options");
-        
-        // 获取到EMChatOptions对象
+
         EMOptions options = new EMOptions();
-        // 默认添加好友时，是不需要验证的，改成需要验证
+        // change to need confirm contact invitation
         options.setAcceptInvitationAlways(false);
-        // 设置是否需要已读回执
+        // set if need read ack
         options.setRequireAck(true);
-        // 设置是否需要已送达回执
+        // set if need delivery ack
         options.setRequireDeliveryAck(false);
         
         return options;
-//        notifier.setNotificationInfoProvider(getNotificationListener());
     }
     
     void initNotifier(){
@@ -190,7 +184,7 @@ public final class EaseUI {
     }
     
     /**
-     * 设置用户属性提供者
+     * set user profile provider
      * @param provider
      */
     public void setUserProfileProvider(EaseUserProfileProvider userProvider){
@@ -198,7 +192,7 @@ public final class EaseUI {
     }
     
     /**
-     * 获取用户属性提供者
+     * get user profile provider
      * @return
      */
     public EaseUserProfileProvider getUserProfileProvider(){
@@ -244,33 +238,33 @@ public final class EaseUI {
     }
     
     /**
-     * 用户属性提供者
+     * User profile provider
      * @author wei
      *
      */
     public interface EaseUserProfileProvider {
         /**
-         * 返回此username对应的user
-         * @param username 环信id
+         * return EaseUser for input username
+         * @param username
          * @return
          */
         EaseUser getUser(String username);
     }
     
     /**
-     * 表情信息提供者
+     * Emojicon provider
      *
      */
     public interface EaseEmojiconInfoProvider {
         /**
-         * 根据唯一识别号返回此表情内容
+         * return EaseEmojicon for input emojiconIdentityCode
          * @param emojiconIdentityCode
          * @return
          */
         EaseEmojicon getEmojiconInfo(String emojiconIdentityCode);
         
         /**
-         * 获取文字表情的映射Map,map的key为表情的emoji文本内容，value为对应的图片资源id或者本地路径(不能为网络地址)
+         * get Emojicon map, key is the text of emoji, value is the resource id or local path of emoji icon(can't be URL on internet)
          * @return
          */
         Map<String, Object> getTextEmojiconMapping();
@@ -279,7 +273,7 @@ public final class EaseUI {
     private EaseEmojiconInfoProvider emojiconInfoProvider;
     
     /**
-     * 获取表情提供者
+     * Emojicon provider
      * @return
      */
     public EaseEmojiconInfoProvider getEmojiconInfoProvider(){
@@ -287,7 +281,7 @@ public final class EaseUI {
     }
     
     /**
-     * 设置表情信息提供者
+     * set Emojicon provider
      * @param emojiconInfoProvider
      */
     public void setEmojiconInfoProvider(EaseEmojiconInfoProvider emojiconInfoProvider){
@@ -295,7 +289,7 @@ public final class EaseUI {
     }
     
     /**
-     * 新消息提示设置的提供者
+     * new message options provider
      *
      */
     public interface EaseSettingsProvider {
@@ -330,9 +324,7 @@ public final class EaseUI {
         @Override
         public boolean isSpeakerOpened() {
             return true;
-        }
-
-        
+        } 
     }
     
     public Context getContext(){
