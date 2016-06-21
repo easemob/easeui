@@ -44,6 +44,6 @@ android {
 
 dependencies {
 	//release时需要把hyphenatechatsdk的依赖注释掉，sdk已经被打成jar包放在libs底下
-	compile project(':hyphenatechatsdk')
+	//compile project(':hyphenatechatsdk')
     compile fileTree(dir: 'libs', include: '*.jar')
 }
