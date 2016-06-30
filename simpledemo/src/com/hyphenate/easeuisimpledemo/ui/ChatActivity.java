@@ -18,10 +18,10 @@ public class ChatActivity extends EaseBaseActivity{
         super.onCreate(arg0);
         setContentView(R.layout.activity_chat);
         activityInstance = this;
-        //聊天人或群id
+        //user or group id
         toChatUsername = getIntent().getExtras().getString(EaseConstant.EXTRA_USER_ID);
         chatFragment = new EaseChatFragment();
-        //传入参数
+        //set arguments
         chatFragment.setArguments(getIntent().getExtras());
         getSupportFragmentManager().beginTransaction().add(R.id.container, chatFragment).commit();
         
@@ -35,7 +35,7 @@ public class ChatActivity extends EaseBaseActivity{
     
     @Override
     protected void onNewIntent(Intent intent) {
-        // 点击notification bar进入聊天页面，保证只有一个聊天页面
+        // enter to chat activity when click notification bar, here make sure only one chat activiy
         String username = intent.getStringExtra("userId");
         if (toChatUsername.equals(username))
             super.onNewIntent(intent);
