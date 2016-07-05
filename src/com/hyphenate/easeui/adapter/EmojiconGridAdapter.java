@@ -1,7 +1,5 @@
 package com.hyphenate.easeui.adapter;
 
-import java.util.List;
-
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +12,8 @@ import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.domain.EaseEmojicon;
 import com.hyphenate.easeui.domain.EaseEmojicon.Type;
 import com.hyphenate.easeui.utils.EaseSmileUtils;
+
+import java.util.List;
 
 public class EmojiconGridAdapter extends ArrayAdapter<EaseEmojicon>{
 
@@ -34,11 +34,13 @@ public class EmojiconGridAdapter extends ArrayAdapter<EaseEmojicon>{
                 convertView = View.inflate(getContext(), R.layout.ease_row_expression, null);
             }
         }
-        
-        ImageView imageView = (ImageView) convertView.findViewById(R.id.iv_expression);
-        EaseEmojicon emojicon = getItem(position);
 
-        //if you want show a name for the icons, you can set text to R.id.tv_name
+        ImageView imageView = (ImageView) convertView.findViewById(R.id.iv_expression);
+        TextView textView = (TextView) convertView.findViewById(R.id.tv_name);
+        EaseEmojicon emojicon = getItem(position);
+        if(textView != null && emojicon.getName() != null){
+            textView.setText(emojicon.getName());
+        }
 
         if(EaseSmileUtils.DELETE_KEY.equals(emojicon.getEmojiText())){
             imageView.setImageResource(R.drawable.ease_delete_expression);

@@ -13,6 +13,7 @@ import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
+import android.view.ContextThemeWrapper;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -394,7 +395,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 if (locationAddress != null && !locationAddress.equals("")) {
                     sendLocationMessage(latitude, longitude, locationAddress);
                 } else {
-                    Toast.makeText(getActivity(), R.string.unable_to_get_loaction, 0).show();
+                    Toast.makeText(getActivity(), R.string.unable_to_get_loaction, Toast.LENGTH_SHORT).show();
                 }
                 
             }
@@ -430,10 +431,11 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     @Override
     public void onDestroy() {
         super.onDestroy();
-        
+
         if (groupListener != null) {
             EMClient.getInstance().groupManager().removeGroupChangeListener(groupListener);
         }
+
         if(chatType == EaseConstant.CHATTYPE_CHATROOM){
             EMClient.getInstance().chatroomManager().leaveChatRoom(toChatUsername);
         }
@@ -447,6 +449,10 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     public void onBackPressed() {
         if (inputMenu.onBackPressed()) {
             getActivity().finish();
+            if(chatType == EaseConstant.CHATTYPE_GROUP){
+                EaseAtMessageHelper.get().removeAtMeGroup(toChatUsername);
+                EaseAtMessageHelper.get().cleanToAtUserList();
+            }
             if (chatType == EaseConstant.CHATTYPE_CHATROOM) {
             	EMClient.getInstance().chatroomManager().leaveChatRoom(toChatUsername);
             }
@@ -634,16 +640,12 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         }
         EaseAtMessageHelper.get().addAtUser(username);
         if(EaseUserUtils.getUserInfo(username) != null){
-            if(autoAddAtSymbol)
-                inputMenu.insertText("@" + EaseUserUtils.getUserInfo(username) + " ");
-            else
-                inputMenu.insertText(EaseUserUtils.getUserInfo(username) + " ");
-        }else{
-            if(autoAddAtSymbol)
-                inputMenu.insertText("@" + username + " ");
-            else
-                inputMenu.insertText(username + " ");
+            username = EaseUserUtils.getUserInfo(username).getNick();
         }
+        if(autoAddAtSymbol)
+            inputMenu.insertText("@" + username + " ");
+        else
+            inputMenu.insertText(username + " ");
     }
     
     
@@ -676,8 +678,13 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             return;
         }
         EMMessage message = EMMessage.createTxtSendMessage(content, toChatUsername);
-        message.setAttribute(EaseConstant.MESSAGE_ATTR_AT_MSG,
-                EaseAtMessageHelper.get().atListToString(EaseAtMessageHelper.get().getAtMessageUsername(content)));
+        EMGroup group = EMClient.getInstance().groupManager().getGroup(toChatUsername);
+        if(EMClient.getInstance().getCurrentUser().equals(group.getOwner()) && EaseAtMessageHelper.get().containsAtAll(content)){
+            message.setAttribute(EaseConstant.MESSAGE_ATTR_AT_MSG, EaseConstant.MESSAGE_ATTR_VALUE_AT_MSG_ALL);
+        }else {
+            message.setAttribute(EaseConstant.MESSAGE_ATTR_AT_MSG,
+                    EaseAtMessageHelper.get().atListToString(EaseAtMessageHelper.get().getAtMessageUsername(content)));
+        }
         sendMessage(message);
         
     }

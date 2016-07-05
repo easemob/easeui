@@ -126,7 +126,8 @@
 	<string name="Please_enter_a_username">请输入用户名</string>
     <string name="is_down_please_wait">正在下载视频请稍候</string>
     <string name="Exit_the_group_chat">退出群聊</string>
-    
+    <string name="all_members">所有成员</string>
+
     <string name="not_add_myself">不能添加自己</string>
     <string name="This_user_is_already_your_friend">此用户已是你的好友</string>
     <string name="Add_a_friend">加个好友呗</string>

@@ -122,7 +122,7 @@
     <string name="is_down_please_wait">Downloading video, please try again later</string>
     <string name="Exit_the_group_chat">Exit the group</string>
     <string name="Please_enter_a_username">Please enter a username</string>
-    
+
     <string name="not_add_myself">"Can't add myself"</string>
     <string name="This_user_is_already_your_friend">This user is already your friend</string>
     <string name="Add_a_friend">Let me to be your friend!</string>
@@ -255,6 +255,7 @@
     <string name="Send_the_following_pictures">Send the following pictures?</string>
     <string name="search_new">Search</string>
     <string name="were_mentioned">You were montioned</string>
+    <string name="all_members">All members</string>
     
     <string name="Delete_the_contact">Delete the contact</string>
     <string name="Move_into_the_blacklist_new">Move into the blacklist</string>
