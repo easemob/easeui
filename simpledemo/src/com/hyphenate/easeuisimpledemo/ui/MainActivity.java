@@ -42,7 +42,7 @@ public class MainActivity extends EaseBaseActivity{
         mTabs[0] = (Button) findViewById(R.id.btn_conversation);
         mTabs[1] = (Button) findViewById(R.id.btn_address_list);
         mTabs[2] = (Button) findViewById(R.id.btn_setting);
-        // 把第一个tab设为选中状态
+        // set first tab as selected
         mTabs[0].setSelected(true);
         
         conversationListFragment = new EaseConversationListFragment();
@@ -64,14 +64,14 @@ public class MainActivity extends EaseBaseActivity{
             }
         });
         fragments = new Fragment[] { conversationListFragment, contactListFragment, settingFragment };
-        // 添加显示第一个fragment
+        // add and show first fragment
         getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, conversationListFragment)
                 .add(R.id.fragment_container, contactListFragment).hide(contactListFragment).show(conversationListFragment)
                 .commit();
     }
     
     /**
-     * button点击事件
+     * onTabClicked
      * 
      * @param view
      */
@@ -96,13 +96,14 @@ public class MainActivity extends EaseBaseActivity{
             trx.show(fragments[index]).commit();
         }
         mTabs[currentTabIndex].setSelected(false);
-        // 把当前tab设为选中状态
+        // set current tab as selected.
         mTabs[index].setSelected(true);
         currentTabIndex = index;
     }
     
     /**
-     * 临时生成的数据，密码皆为123456，可以登录测试接发消息
+     * prepared users, password is "123456"
+     * you can use these user to test
      * @return
      */
     private Map<String, EaseUser> getContacts(){

@@ -21,7 +21,7 @@ public class LoginActivity extends EaseBaseActivity{
     protected void onCreate(Bundle arg0) {
         super.onCreate(arg0);
         if(EMClient.getInstance().isLoggedInBefore()){
-            //登录过直接进入主页面
+            //enter to main activity directly if you logged in before.
             startActivity(new Intent(this, MainActivity.class));
             finish();
         }
@@ -35,7 +35,7 @@ public class LoginActivity extends EaseBaseActivity{
             
             @Override
             public void onClick(View v) {
-                //登录
+                //login
                 EMClient.getInstance().login(usernameView.getText().toString(), pwdView.getText().toString(), new EMCallBack() {
                     
                     @Override
@@ -53,7 +53,7 @@ public class LoginActivity extends EaseBaseActivity{
                     public void onError(int code, String error) {
                         runOnUiThread(new Runnable() {
                             public void run() {
-                                Toast.makeText(getApplicationContext(), "登录失败", 0).show();
+                                Toast.makeText(getApplicationContext(), "login failed", 0).show();
                             }
                         });
                     }
