@@ -211,7 +211,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
             @Override
             public void onClick(View v) {
-                getActivity().finish();
+                onBackPressed();
             }
         });
         titleBar.setRightLayoutClickListener(new OnClickListener() {
