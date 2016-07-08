@@ -241,9 +241,9 @@ public class EaseConversationListFragment extends EaseBaseFragment{
             @Override
             public int compare(final Pair<Long, EMConversation> con1, final Pair<Long, EMConversation> con2) {
 
-                if (con1.first == con2.first) {
+                if (con1.first.equals(con2.first)) {
                     return 0;
-                } else if (con2.first > con1.first) {
+                } else if (con2.first.longValue() > con1.first.longValue()) {
                     return 1;
                 } else {
                     return -1;

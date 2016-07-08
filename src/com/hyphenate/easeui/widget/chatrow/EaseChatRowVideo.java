@@ -1,8 +1,13 @@
 package com.hyphenate.easeui.widget.chatrow;
 
-import java.io.File;
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.os.AsyncTask;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.TextView;
 
-import com.hyphenate.chat.EMChatManager;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMFileMessageBody;
 import com.hyphenate.chat.EMMessage;
@@ -17,27 +22,20 @@ import com.hyphenate.util.EMLog;
 import com.hyphenate.util.ImageUtils;
 import com.hyphenate.util.TextFormater;
 
-import android.content.Context;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.os.AsyncTask;
-import android.widget.BaseAdapter;
-import android.widget.ImageView;
-import android.widget.TextView;
+import java.io.File;
 
 public class EaseChatRowVideo extends EaseChatRowFile{
 
 	private ImageView imageView;
     private TextView sizeView;
     private TextView timeLengthView;
-    private ImageView playView;
 
     public EaseChatRowVideo(Context context, EMMessage message, int position, BaseAdapter adapter) {
 		super(context, message, position, adapter);
 	}
 
 	@Override
-	protected void onInflatView() {
+	protected void onInflateView() {
 		inflater.inflate(message.direct() == EMMessage.Direct.RECEIVE ?
 				R.layout.ease_row_received_video : R.layout.ease_row_sent_video, this);
 	}
@@ -47,7 +45,7 @@ public class EaseChatRowVideo extends EaseChatRowFile{
 	    imageView = ((ImageView) findViewById(R.id.chatting_content_iv));
         sizeView = (TextView) findViewById(R.id.chatting_size_iv);
         timeLengthView = (TextView) findViewById(R.id.chatting_length_iv);
-        playView = (ImageView) findViewById(R.id.chatting_status_btn);
+        ImageView playView = (ImageView) findViewById(R.id.chatting_status_btn);
         percentageView = (TextView) findViewById(R.id.percentage);
 	}
 

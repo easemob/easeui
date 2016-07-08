@@ -86,7 +86,7 @@ public class EaseChatExtendMenu extends GridView{
      * register menu item
      * 
      * @param nameRes
-     *            resource id of itme name
+     *            resource id of item name
      * @param drawableRes
      *            background of item
      * @param itemId

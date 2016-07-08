@@ -1,8 +1,5 @@
 package com.hyphenate.easeui.widget.emojicon;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -17,6 +14,9 @@ import com.hyphenate.easeui.domain.EaseEmojiconGroupEntity;
 import com.hyphenate.easeui.widget.emojicon.EaseEmojiconPagerView.EaseEmojiconPagerViewListener;
 import com.hyphenate.easeui.widget.emojicon.EaseEmojiconScrollTabBar.EaseScrollTabBarItemClickListener;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Emojicon menu
  */
@@ -24,8 +24,6 @@ public class EaseEmojiconMenu extends EaseEmojiconMenuBase{
 	
 	private int emojiconColumns;
 	private int bigEmojiconColumns;
-	private final int defaultBigColumns = 4;
-	private final int defaultColumns = 7;
     private EaseEmojiconScrollTabBar tabBar;
     private EaseEmojiconIndicatorView indicatorView;
     private EaseEmojiconPagerView pagerView;
@@ -52,8 +50,10 @@ public class EaseEmojiconMenu extends EaseEmojiconMenuBase{
 	private void init(Context context, AttributeSet attrs){
 		LayoutInflater.from(context).inflate(R.layout.ease_widget_emojicon, this);
 		TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.EaseEmojiconMenu);
-		emojiconColumns = ta.getInt(R.styleable.EaseEmojiconMenu_emojiconColumns, defaultColumns);
-		bigEmojiconColumns = ta.getInt(R.styleable.EaseEmojiconMenu_bigEmojiconRows, defaultBigColumns);
+        int defaultColumns = 7;
+        emojiconColumns = ta.getInt(R.styleable.EaseEmojiconMenu_emojiconColumns, defaultColumns);
+        int defaultBigColumns = 4;
+        bigEmojiconColumns = ta.getInt(R.styleable.EaseEmojiconMenu_bigEmojiconRows, defaultBigColumns);
 		ta.recycle();
 		
 		pagerView = (EaseEmojiconPagerView) findViewById(R.id.pager_view);

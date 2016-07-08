@@ -36,7 +36,7 @@ import java.util.List;
  * conversation list adapter
  *
  */
-public class EaseConversationAdapater extends ArrayAdapter<EMConversation> {
+public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
     private static final String TAG = "ChatAllHistoryAdapter";
     private List<EMConversation> conversationList;
     private List<EMConversation> copyConversationList;
@@ -50,8 +50,8 @@ public class EaseConversationAdapater extends ArrayAdapter<EMConversation> {
     protected int secondarySize;
     protected float timeSize;
 
-    public EaseConversationAdapater(Context context, int resource,
-            List<EMConversation> objects) {
+    public EaseConversationAdapter(Context context, int resource,
+                                   List<EMConversation> objects) {
         super(context, resource, objects);
         conversationList = objects;
         copyConversationList = new ArrayList<EMConversation>();
@@ -253,12 +253,12 @@ public class EaseConversationAdapater extends ArrayAdapter<EMConversation> {
                             final int wordCount = words.length;
 
                             // Start at index 0, in case valueText starts with space(s)
-                            for (int k = 0; k < wordCount; k++) {
-                                if (words[k].startsWith(prefixString)) {
-                                    newValues.add(value);
-                                    break;
-                                }
+                        for (String word : words) {
+                            if (word.startsWith(prefixString)) {
+                                newValues.add(value);
+                                break;
                             }
+                        }
                     }
                 }
 

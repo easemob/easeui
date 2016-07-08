@@ -38,7 +38,7 @@ public class EaseSidebar extends View{
 	private ListView mListView;
 	private Context context;
 	
-	private SectionIndexer sectionIndexter = null;
+	private SectionIndexer sectionIndexer = null;
 	
 	public void setListView(ListView listView){
 		mListView = listView;
@@ -92,25 +92,25 @@ public class EaseSidebar extends View{
 		String headerString = sections[sectionForPoint(event.getY())];
 		header.setText(headerString);
 		ListAdapter adapter = mListView.getAdapter();
-		if(sectionIndexter == null){
+		if(sectionIndexer == null){
     		if(adapter instanceof HeaderViewListAdapter){
-    		    sectionIndexter = (SectionIndexer) ((HeaderViewListAdapter) adapter).getWrappedAdapter();
+    		    sectionIndexer = (SectionIndexer) ((HeaderViewListAdapter) adapter).getWrappedAdapter();
     		}else if(adapter instanceof SectionIndexer){
-    		    sectionIndexter = (SectionIndexer)adapter;
+    		    sectionIndexer = (SectionIndexer)adapter;
     		}else{
-    		    throw new RuntimeException("listview sets adpater does not implement SectionIndexer interface");
+    		    throw new RuntimeException("listview sets adapter does not implement SectionIndexer interface");
     		}
 		}
-		String[] adapterSections = (String[]) sectionIndexter.getSections();
+		String[] adapterSections = (String[]) sectionIndexer.getSections();
 		try {
 			for (int i = adapterSections.length - 1; i > -1; i--) {
 				if(adapterSections[i].equals(headerString)){
-					mListView.setSelection(sectionIndexter.getPositionForSection(i));
+					mListView.setSelection(sectionIndexer.getPositionForSection(i));
 					break;
 				}
 			}
 		} catch (Exception e) {
-			Log.e("setHeaderTextAndscroll", e.getMessage());
+			Log.e("setHeaderTextAndScroll", e.getMessage());
 		}
 		
 	}

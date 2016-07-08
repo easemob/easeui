@@ -64,7 +64,10 @@ public class EaseAtMessageHelper {
             for(String username : toAtUserList){
                 String nick = username;
                 if(EaseUserUtils.getUserInfo(username) != null){
-                    nick = EaseUserUtils.getUserInfo(username).getNick();
+                    EaseUser user = EaseUserUtils.getUserInfo(username);
+                    if (user != null) {
+                        nick = user.getNick();
+                    }
                 }
                 if(content.contains(nick)){
                     return true;
@@ -96,7 +99,10 @@ public class EaseAtMessageHelper {
             for(String username : toAtUserList){
                 String nick = username;
                 if(EaseUserUtils.getUserInfo(username) != null){
-                    nick = EaseUserUtils.getUserInfo(username).getNick();
+                    EaseUser user = EaseUserUtils.getUserInfo(username);
+                    if (user != null) {
+                        nick = user.getNick();
+                    }
                 }
                 if(content.contains(nick)){
                     if(list == null){
@@ -115,7 +121,7 @@ public class EaseAtMessageHelper {
      */
     public void parseMessages(List<EMMessage> messages) {
         int size = atMeGroupList.size();
-        EMMessage[] msgs = messages.toArray(new EMMessage[]{});
+        EMMessage[] msgs = messages.toArray(new EMMessage[messages.size()]);
         for(EMMessage msg : msgs){
             if(msg.getChatType() == ChatType.GroupChat){
                 String groupId = msg.getTo();

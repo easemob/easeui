@@ -1,6 +1,11 @@
 package com.hyphenate.easeui.widget.chatrow;
 
-import java.io.File;
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.view.View;
+import android.widget.BaseAdapter;
+import android.widget.TextView;
 
 import com.hyphenate.EMCallBack;
 import com.hyphenate.chat.EMClient;
@@ -13,12 +18,7 @@ import com.hyphenate.exceptions.HyphenateException;
 import com.hyphenate.util.FileUtils;
 import com.hyphenate.util.TextFormater;
 
-import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
-import android.view.View;
-import android.widget.BaseAdapter;
-import android.widget.TextView;
+import java.io.File;
 
 public class EaseChatRowFile extends EaseChatRow{
 
@@ -36,7 +36,7 @@ public class EaseChatRowFile extends EaseChatRow{
 	}
 
 	@Override
-	protected void onInflatView() {
+	protected void onInflateView() {
 	    inflater.inflate(message.direct() == EMMessage.Direct.RECEIVE ? 
 	            R.layout.ease_row_received_file : R.layout.ease_row_sent_file, this);
 	}
@@ -58,7 +58,7 @@ public class EaseChatRowFile extends EaseChatRow{
         fileSizeView.setText(TextFormater.getDataSize(fileMessageBody.getFileSize()));
         if (message.direct() == EMMessage.Direct.RECEIVE) {
             File file = new File(filePath);
-            if (file != null && file.exists()) {
+            if (file.exists()) {
                 fileStateView.setText(R.string.Have_downloaded);
             } else {
                 fileStateView.setText(R.string.Did_not_download);
@@ -115,7 +115,7 @@ public class EaseChatRowFile extends EaseChatRow{
     protected void onBubbleClick() {
         String filePath = fileMessageBody.getLocalUrl();
         File file = new File(filePath);
-        if (file != null && file.exists()) {
+        if (file.exists()) {
             // open files if it exist
             FileUtils.openFile(file, (Activity) context);
         } else {

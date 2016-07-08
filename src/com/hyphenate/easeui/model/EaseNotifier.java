@@ -11,18 +11,6 @@
  */
 package com.hyphenate.easeui.model;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-
-import com.hyphenate.chat.EMChatManager;
-import com.hyphenate.chat.EMClient;
-import com.hyphenate.chat.EMMessage;
-import com.hyphenate.easeui.controller.EaseUI;
-import com.hyphenate.easeui.controller.EaseUI.EaseSettingsProvider;
-import com.hyphenate.util.EMLog;
-import com.hyphenate.util.EasyUtils;
-
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -36,6 +24,17 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Vibrator;
 import android.support.v4.app.NotificationCompat;
+
+import com.hyphenate.chat.EMClient;
+import com.hyphenate.chat.EMMessage;
+import com.hyphenate.easeui.controller.EaseUI;
+import com.hyphenate.easeui.controller.EaseUI.EaseSettingsProvider;
+import com.hyphenate.util.EMLog;
+import com.hyphenate.util.EasyUtils;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * new message notifier class

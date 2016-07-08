@@ -67,9 +67,7 @@ public class EaseBaiduMapActivity extends EaseBaseActivity {
 	public static EaseBaiduMapActivity instance = null;
 	ProgressDialog progressDialog;
 	private BaiduMap mBaiduMap;
-	
-	private LocationMode mCurrentMode;
-	
+
 	public class BaiduSDKReceiver extends BroadcastReceiver {
 		public void onReceive(Context context, Intent intent) {
 			String s = intent.getAction();
@@ -98,7 +96,7 @@ public class EaseBaiduMapActivity extends EaseBaseActivity {
 		sendButton = (Button) findViewById(R.id.btn_location_send);
 		Intent intent = getIntent();
 		double latitude = intent.getDoubleExtra("latitude", 0);
-		mCurrentMode = LocationMode.NORMAL;
+		LocationMode mCurrentMode = LocationMode.NORMAL;
 		mBaiduMap = mMapView.getMap();
 		MapStatusUpdate msu = MapStatusUpdateFactory.zoomTo(15.0f);
 		mBaiduMap.setMapStatus(msu);
@@ -106,7 +104,7 @@ public class EaseBaiduMapActivity extends EaseBaseActivity {
 		if (latitude == 0) {
 			mMapView = new MapView(this, new BaiduMapOptions());
 			mBaiduMap.setMyLocationConfigeration(new MyLocationConfiguration(
-							mCurrentMode, true, null));
+					mCurrentMode, true, null));
 			showMapWithLocationClient();
 		} else {
 			double longtitude = intent.getDoubleExtra("longitude", 0);

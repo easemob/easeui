@@ -15,7 +15,6 @@ package com.hyphenate.easeui.widget.chatrow;
 
 import java.io.File;
 
-import com.hyphenate.chat.EMChatManager;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMMessage.ChatType;

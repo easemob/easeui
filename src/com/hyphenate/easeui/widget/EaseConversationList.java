@@ -10,7 +10,7 @@ import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMConversation;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.easeui.R;
-import com.hyphenate.easeui.adapter.EaseConversationAdapater;
+import com.hyphenate.easeui.adapter.EaseConversationAdapter;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -33,7 +33,7 @@ public class EaseConversationList extends ListView {
     protected final int MSG_REFRESH_ADAPTER_DATA = 0;
     
     protected Context context;
-    protected EaseConversationAdapater adapter;
+    protected EaseConversationAdapter adapter;
     protected List<EMConversation> conversations = new ArrayList<EMConversation>();
     protected List<EMConversation> passedListRef = null;
     
@@ -72,7 +72,7 @@ public class EaseConversationList extends ListView {
         if(helper != null){
             this.conversationListHelper = helper;
         }
-        adapter = new EaseConversationAdapater(context, 0, conversationList);
+        adapter = new EaseConversationAdapter(context, 0, conversationList);
         adapter.setCvsListHelper(conversationListHelper);
         adapter.setPrimaryColor(primaryColor);
         adapter.setPrimarySize(primarySize);
@@ -112,11 +112,9 @@ public class EaseConversationList extends ListView {
          * lastMsgTime will change if there is new message during sorting
          * so use synchronized to make sure timestamp of last message won't change.
          */
-        synchronized (conversations) {
-            for (EMConversation conversation : conversations.values()) {
-                if (conversation.getAllMessages().size() != 0) {
-                    sortList.add(new Pair<Long, EMConversation>(conversation.getLastMessage().getMsgTime(), conversation));
-                }
+        for (EMConversation conversation : conversations.values()) {
+            if (conversation.getAllMessages().size() != 0) {
+                sortList.add(new Pair<Long, EMConversation>(conversation.getLastMessage().getMsgTime(), conversation));
             }
         }
         try {
@@ -134,17 +132,15 @@ public class EaseConversationList extends ListView {
 
     /**
      * sorting according timestamp of last message
-     * 
-     * @param usernames
      */
     private void sortConversationByLastChatTime(List<Pair<Long, EMConversation>> conversationList) {
         Collections.sort(conversationList, new Comparator<Pair<Long, EMConversation>>() {
             @Override
             public int compare(final Pair<Long, EMConversation> con1, final Pair<Long, EMConversation> con2) {
 
-                if (con1.first == con2.first) {
+                if (con1.first.equals(con2.first)) {
                     return 0;
-                } else if (con2.first > con1.first) {
+                } else if (con2.first.longValue() > con1.first.longValue()) {
                     return 1;
                 } else {
                     return -1;

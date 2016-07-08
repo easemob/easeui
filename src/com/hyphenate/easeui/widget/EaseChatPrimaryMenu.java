@@ -31,9 +31,6 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
     private ImageView faceNormal;
     private ImageView faceChecked;
     private Button buttonMore;
-    private RelativeLayout faceLayout;
-    private Context context;
-    private EaseVoiceRecorderView voiceRecorderView;
 
     public EaseChatPrimaryMenu(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
@@ -50,7 +47,7 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
     }
 
     private void init(final Context context, AttributeSet attrs) {
-        this.context = context;
+        Context context1 = context;
         LayoutInflater.from(context).inflate(R.layout.ease_widget_chat_primary_menu, this);
         editText = (EditText) findViewById(R.id.et_sendmessage);
         buttonSetModeKeyboard = findViewById(R.id.btn_set_mode_keyboard);
@@ -60,7 +57,7 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
         buttonPressToSpeak = findViewById(R.id.btn_press_to_speak);
         faceNormal = (ImageView) findViewById(R.id.iv_face_normal);
         faceChecked = (ImageView) findViewById(R.id.iv_face_checked);
-        faceLayout = (RelativeLayout) findViewById(R.id.rl_face);
+        RelativeLayout faceLayout = (RelativeLayout) findViewById(R.id.rl_face);
         buttonMore = (Button) findViewById(R.id.btn_more);
         edittext_layout.setBackgroundResource(R.drawable.ease_input_bar_bg_normal);
         
@@ -126,7 +123,7 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
      * @param voiceRecorderView
      */
     public void setPressToSpeakRecorderView(EaseVoiceRecorderView voiceRecorderView){
-        this.voiceRecorderView = voiceRecorderView;
+        EaseVoiceRecorderView voiceRecorderView1 = voiceRecorderView;
     }
 
     /**
@@ -148,7 +145,7 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
     }
     
     /**
-     * on clicke event
+     * on clicked event
      * @param view
      */
     @Override

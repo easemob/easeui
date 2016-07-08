@@ -13,10 +13,6 @@
  */
 package com.hyphenate.easeui.ui;
 
-import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
-
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.graphics.Bitmap;
@@ -30,7 +26,6 @@ import android.view.View.OnClickListener;
 import android.widget.ProgressBar;
 
 import com.hyphenate.EMCallBack;
-import com.hyphenate.chat.EMChatManager;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.model.EaseImageCache;
@@ -38,7 +33,10 @@ import com.hyphenate.easeui.utils.EaseLoadLocalBigImgTask;
 import com.hyphenate.easeui.widget.photoview.EasePhotoView;
 import com.hyphenate.util.EMLog;
 import com.hyphenate.util.ImageUtils;
-import com.hyphenate.util.PathUtil;
+
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * download and show original image
@@ -52,7 +50,6 @@ public class EaseShowBigImageActivity extends EaseBaseActivity {
 	private String localFilePath;
 	private Bitmap bitmap;
 	private boolean isDownloaded;
-	private ProgressBar loadLocalPb;
 
 	@SuppressLint("NewApi")
 	@Override
@@ -61,7 +58,7 @@ public class EaseShowBigImageActivity extends EaseBaseActivity {
 		super.onCreate(savedInstanceState);
 
 		image = (EasePhotoView) findViewById(R.id.image);
-		loadLocalPb = (ProgressBar) findViewById(R.id.pb_load_local);
+		ProgressBar loadLocalPb = (ProgressBar) findViewById(R.id.pb_load_local);
 		default_res = getIntent().getIntExtra("default_image", R.drawable.ease_default_avatar);
 		Uri uri = getIntent().getParcelableExtra("uri");
 		String remotepath = getIntent().getExtras().getString("remotepath");
