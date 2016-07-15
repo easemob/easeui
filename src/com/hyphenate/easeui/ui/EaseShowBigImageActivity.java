@@ -143,7 +143,7 @@ public class EaseShowBigImageActivity extends EaseBaseActivity {
 							EaseImageCache.getInstance().put(localFilePath, bitmap);
 							isDownloaded = true;
 						}
-						if (EaseShowBigImageActivity.this.isFinishing() || EaseShowBigImageActivity.this.isDestroyed()) {
+						if (isFinishing() || isDestroyed()) {
 						    return;
 						}
 						if (pd != null) {
