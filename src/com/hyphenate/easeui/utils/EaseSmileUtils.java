@@ -78,9 +78,9 @@ public class EaseSmileUtils {
 
 	static {
 	    EaseEmojicon[] emojicons = EaseDefaultEmojiconDatas.getData();
-	    for(int i = 0; i < emojicons.length; i++){
-	        addPattern(emojicons[i].getEmojiText(), emojicons[i].getIcon());
-	    }
+		for (EaseEmojicon emojicon : emojicons) {
+			addPattern(emojicon.getEmojiText(), emojicon.getIcon());
+		}
 	    EaseEmojiconInfoProvider emojiconInfoProvider = EaseUI.getInstance().getEmojiconInfoProvider();
 	    if(emojiconInfoProvider != null && emojiconInfoProvider.getTextEmojiconMapping() != null){
 	        for(Entry<String, Object> entry : emojiconInfoProvider.getTextEmojiconMapping().entrySet()){

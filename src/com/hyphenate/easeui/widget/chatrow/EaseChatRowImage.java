@@ -12,7 +12,6 @@ import com.hyphenate.easeui.model.EaseImageCache;
 import com.hyphenate.easeui.ui.EaseShowBigImageActivity;
 import com.hyphenate.easeui.utils.EaseCommonUtils;
 import com.hyphenate.easeui.utils.EaseImageUtils;
-import com.hyphenate.util.EMLog;
 
 import android.content.Context;
 import android.content.Intent;
@@ -34,7 +33,7 @@ public class EaseChatRowImage extends EaseChatRowFile{
     }
 
     @Override
-    protected void onInflatView() {
+    protected void onInflateView() {
         inflater.inflate(message.direct() == EMMessage.Direct.RECEIVE ? R.layout.ease_row_received_picture : R.layout.ease_row_sent_picture, this);
     }
 

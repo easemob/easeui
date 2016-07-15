@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Handler;
 import android.util.AttributeSet;
@@ -79,6 +80,7 @@ public class EaseChatInputMenu extends LinearLayout {
      * This method should be called after registerExtendMenuItem(), setCustomEmojiconMenu() and setCustomPrimaryMenu().
      * @param emojiconGroupList --will use default if null
      */
+    @SuppressLint("InflateParams")
     public void init(List<EaseEmojiconGroupEntity> emojiconGroupList) {
         if(inited){
             return;

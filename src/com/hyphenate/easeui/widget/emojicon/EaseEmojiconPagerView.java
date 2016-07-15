@@ -24,8 +24,7 @@ public class EaseEmojiconPagerView extends ViewPager{
 
     private Context context;
     private List<EaseEmojiconGroupEntity> groupEntities;
-    private List<EaseEmojicon> totalEmojiconList = new ArrayList<EaseEmojicon>();
-    
+
     private PagerAdapter pagerAdapter;
     
     private int emojiconRows = 3;
@@ -64,7 +63,6 @@ public class EaseEmojiconPagerView extends ViewPager{
         for(int i = 0; i < groupEntities.size(); i++){
             EaseEmojiconGroupEntity group = groupEntities.get(i);
             List<EaseEmojicon> groupEmojicons = group.getEmojiconList();
-            totalEmojiconList.addAll(groupEmojicons);
             List<View> gridViews = getGroupGridViews(group);
             if(i == 0){
                 firstGroupPageSize = gridViews.size();

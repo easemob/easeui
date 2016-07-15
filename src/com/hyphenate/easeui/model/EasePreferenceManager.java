@@ -1,17 +1,19 @@
 package com.hyphenate.easeui.model;
 
-import java.util.Set;
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.SharedPreferences;
 
 import com.hyphenate.easeui.controller.EaseUI;
 
-import android.content.Context;
-import android.content.SharedPreferences;
+import java.util.Set;
 
 public class EasePreferenceManager {
     private SharedPreferences.Editor editor;
     private SharedPreferences mSharedPreferences;
     private static final String KEY_AT_GROUPS = "AT_GROUPS"; 
     
+    @SuppressLint("CommitPrefEdits")
     private EasePreferenceManager(){
         mSharedPreferences = EaseUI.getInstance().getContext().getSharedPreferences("EM_SP_AT_MESSAGE", Context.MODE_PRIVATE);
         editor = mSharedPreferences.edit();
@@ -29,9 +31,8 @@ public class EasePreferenceManager {
     
     public void setAtMeGroups(Set<String> groups) {
         editor.remove(KEY_AT_GROUPS);
-        editor.commit();
         editor.putStringSet(KEY_AT_GROUPS, groups);
-        editor.commit();
+        editor.apply();
     }
     
     public Set<String> getAtMeGroups(){

@@ -207,7 +207,7 @@ public class EaseEmojicon {
         this.identityCode = identityCode;
     }
 
-    public static final String newEmojiText(int codePoint) {
+    public static String newEmojiText(int codePoint) {
         if (Character.charCount(codePoint) == 1) {
             return String.valueOf(codePoint);
         } else {

@@ -27,7 +27,7 @@ import com.hyphenate.easeui.R;
 public class EaseAlertDialog extends Dialog {
 	
 	public interface AlertDialogUser {
-		public void onResult(boolean confirmed, Bundle bundle);
+		void onResult(boolean confirmed, Bundle bundle);
 	}
 
 	private String title;

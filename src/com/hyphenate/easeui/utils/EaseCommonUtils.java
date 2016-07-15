@@ -32,7 +32,6 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.text.TextUtils;
-import android.util.Log;
 
 public class EaseCommonUtils {
 	private static final String TAG = "CommonUtils";
@@ -60,10 +59,7 @@ public class EaseCommonUtils {
 	 * @return
 	 */
 	public static boolean isSdcardExist() {
-		if (android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED))
-			return true;
-		else
-			return false;
+		return android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
 	}
 	
 	public static EMMessage createExpressionMessage(String toChatUsername, String expressioName, String identityCode){
@@ -188,7 +184,7 @@ public class EaseCommonUtils {
             user.setInitialLetter(letter);
             return;
         } 
-        if (letter == DefaultLetter && !TextUtils.isEmpty(user.getUsername())) {
+        if (letter.equals(DefaultLetter) && !TextUtils.isEmpty(user.getUsername())) {
             letter = new GetInitialLetter().getLetter(user.getUsername());
         }
         user.setInitialLetter(letter);
