@@ -97,59 +97,7 @@ public class EaseConversationList extends ListView {
             }
         }
     };
-    
 
-    /**
-     * load conversations
-     * 
-     * @param context
-     * @return
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        +    */
-    private List<EMConversation> loadConversationsWithRecentChat() {
-        Map<String, EMConversation> conversations = EMClient.getInstance().chatManager().getAllConversations();
-        List<Pair<Long, EMConversation>> sortList = new ArrayList<Pair<Long, EMConversation>>();
-        /**
-         * lastMsgTime will change if there is new message during sorting
-         * so use synchronized to make sure timestamp of last message won't change.
-         */
-        for (EMConversation conversation : conversations.values()) {
-            if (conversation.getAllMessages().size() != 0) {
-                sortList.add(new Pair<Long, EMConversation>(conversation.getLastMessage().getMsgTime(), conversation));
-            }
-        }
-        try {
-            // Internal is TimSort algorithm, has bug
-            sortConversationByLastChatTime(sortList);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        List<EMConversation> list = new ArrayList<EMConversation>();
-        for (Pair<Long, EMConversation> sortItem : sortList) {
-            list.add(sortItem.second);
-        }
-        return list;
-    }
-
-    /**
-     * sorting according timestamp of last message
-     */
-    private void sortConversationByLastChatTime(List<Pair<Long, EMConversation>> conversationList) {
-        Collections.sort(conversationList, new Comparator<Pair<Long, EMConversation>>() {
-            @Override
-            public int compare(final Pair<Long, EMConversation> con1, final Pair<Long, EMConversation> con2) {
-
-                if (con1.first.equals(con2.first)) {
-                    return 0;
-                } else if (con2.first.longValue() > con1.first.longValue()) {
-                    return 1;
-                } else {
-                    return -1;
-                }
-            }
-
-        });
-    }
-    
     public EMConversation getItem(int position) {
         return (EMConversation)adapter.getItem(position);
     }

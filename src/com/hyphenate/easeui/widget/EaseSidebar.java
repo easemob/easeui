@@ -38,7 +38,7 @@ public class EaseSidebar extends View{
 	private ListView mListView;
 	private Context context;
 	
-	private SectionIndexer sectionIndexer = null;
+	private SectionIndexer sectionIndex = null;
 	
 	public void setListView(ListView listView){
 		mListView = listView;
@@ -92,20 +92,20 @@ public class EaseSidebar extends View{
 		String headerString = sections[sectionForPoint(event.getY())];
 		header.setText(headerString);
 		ListAdapter adapter = mListView.getAdapter();
-		if(sectionIndexer == null){
+		if(sectionIndex == null){
     		if(adapter instanceof HeaderViewListAdapter){
-    		    sectionIndexer = (SectionIndexer) ((HeaderViewListAdapter) adapter).getWrappedAdapter();
+    		    sectionIndex = (SectionIndexer) ((HeaderViewListAdapter) adapter).getWrappedAdapter();
     		}else if(adapter instanceof SectionIndexer){
-    		    sectionIndexer = (SectionIndexer)adapter;
+    		    sectionIndex = (SectionIndexer)adapter;
     		}else{
     		    throw new RuntimeException("listview sets adapter does not implement SectionIndexer interface");
     		}
 		}
-		String[] adapterSections = (String[]) sectionIndexer.getSections();
+		String[] adapterSections = (String[]) sectionIndex.getSections();
 		try {
 			for (int i = adapterSections.length - 1; i > -1; i--) {
 				if(adapterSections[i].equals(headerString)){
-					mListView.setSelection(sectionIndexer.getPositionForSection(i));
+					mListView.setSelection(sectionIndex.getPositionForSection(i));
 					break;
 				}
 			}
