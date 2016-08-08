@@ -984,7 +984,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         }
 
         @Override
-        public void onGroupDestroy(final String groupId, String groupName) {
+        public void onGroupDestroyed(final String groupId, String groupName) {
         	// prompt group is dismissed and finish this activity
             getActivity().runOnUiThread(new Runnable() {
                 public void run() {
