@@ -30,7 +30,6 @@ import android.widget.Toast;
 
 import com.baidu.location.BDLocation;
 import com.baidu.location.BDLocationListener;
-import com.baidu.location.BDNotifyListener;
 import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
 import com.baidu.mapapi.SDKInitializer;
@@ -57,7 +56,6 @@ public class EaseBaiduMapActivity extends EaseBaseActivity {
 	// 定位相关
 	LocationClient mLocClient;
 	public MyLocationListenner myListener = new MyLocationListenner();
-	public NotifyLister mNotifyer = null;
 
 	Button sendButton = null;
 
@@ -252,11 +250,6 @@ public class EaseBaiduMapActivity extends EaseBaseActivity {
 			if (poiLocation == null) {
 				return;
 			}
-		}
-	}
-
-	public class NotifyLister extends BDNotifyListener {
-		public void onNotify(BDLocation mlocation, float distance) {
 		}
 	}
 
