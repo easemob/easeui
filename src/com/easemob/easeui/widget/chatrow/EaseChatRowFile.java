@@ -14,6 +14,7 @@ import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMMessage;
 import com.easemob.chat.NormalFileMessageBody;
 import com.easemob.chat.EMMessage.ChatType;
+import com.easemob.chat.EMMessage.Status;
 import com.easemob.easeui.R;
 import com.easemob.easeui.ui.EaseShowNormalFileActivity;
 import com.easemob.exceptions.EaseMobException;
@@ -74,7 +75,8 @@ public class EaseChatRowFile extends EaseChatRow{
 	 * 处理发送消息
 	 */
     protected void handleSendMessage() {
-        setMessageSendCallback();
+    	if(message.status != Status.SUCCESS && message.status != Status.FAIL)
+    		setMessageSendCallback();
         switch (message.status) {
         case SUCCESS:
             progressBar.setVisibility(View.INVISIBLE);

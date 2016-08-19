@@ -167,16 +167,21 @@ public class EaseCommonUtils {
         } else {
             headerName = user.getUsername();
         }
-        if (Character.isDigit(headerName.charAt(0))) {
-            user.setInitialLetter("#");
-        } else {
-            user.setInitialLetter(HanziToPinyin.getInstance().get(headerName.substring(0, 1)).get(0).target.substring(0, 1)
-                    .toUpperCase());
-            char header = user.getInitialLetter().toLowerCase().charAt(0);
-            if (header < 'a' || header > 'z') {
-                user.setInitialLetter("#");
-            }
-        }
+        try {
+			if (Character.isDigit(headerName.charAt(0))) {
+			    user.setInitialLetter("#");
+			} else {
+			    user.setInitialLetter(HanziToPinyin.getInstance().get(headerName.substring(0, 1)).get(0).target.substring(0, 1)
+			            .toUpperCase());
+			    char header = user.getInitialLetter().toLowerCase().charAt(0);
+			    if (header < 'a' || header > 'z') {
+			        user.setInitialLetter("#");
+			    }
+			}
+		} catch (Exception e) {
+			EMLog.e(TAG, "nick: " + headerName);
+			user.setInitialLetter("#");
+		}
     }
     
     /**

@@ -12,6 +12,7 @@ import android.widget.TextView.BufferType;
 
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMMessage;
+import com.easemob.chat.EMMessage.Status;
 import com.easemob.chat.TextMessageBody;
 import com.easemob.chat.EMMessage.ChatType;
 import com.easemob.chat.EMMessage.Direct;
@@ -59,7 +60,8 @@ public class EaseChatRowText extends EaseChatRow {
 
     protected void handleTextMessage() {
         if (message.direct == EMMessage.Direct.SEND) {
-            setMessageSendCallback();
+        	if(message.status != Status.SUCCESS && message.status != Status.FAIL)
+        		setMessageSendCallback();
             switch (message.status) {
             case CREATE:
                 progressBar.setVisibility(View.GONE);
