@@ -515,8 +515,10 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
                 username = message.getFrom();
             }
 
+            EMLog.d(TAG,"onEvent: From: " + message.getFrom() + " to: " + message.getTo());
             // 如果是当前会话的消息，刷新聊天页面
-            if (username.equals(toChatUsername)) {
+            // if sync with other terminal, the getTo() equals toChatUsername
+            if (username.equals(toChatUsername) || message.getTo().equals(toChatUsername)) {
                 messageList.refreshSelectLast();
                 // 声音和震动提示有新消息
                 EaseUI.getInstance().getNotifier().viberateAndPlayTone(message);
