@@ -89,8 +89,8 @@ public class EaseChatRowImage extends EaseChatRowFile{
             // The local full size pic does not exist yet.
             // ShowBigImage needs to download it from the server
             // first
-            intent.putExtra("secret", imgBody.getSecret());
-            intent.putExtra("remotepath", imgBody.getRemoteUrl());
+            String msgId = message.getMsgId();
+            intent.putExtra("messageId", msgId);
             intent.putExtra("localUrl", imgBody.getLocalUrl());
         }
         if (message != null && message.direct() == EMMessage.Direct.RECEIVE && !message.isAcked()
