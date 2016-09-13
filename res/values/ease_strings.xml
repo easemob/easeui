@@ -108,7 +108,7 @@
     <string name="password">Password</string>
     <string name="register">Register</string>
     <string name="confirmpassword">Confirm password</string>
-    <string name="downwaiting">Downloading the file, please try again later</string>
+    <string name="downwaiting">Downloading the file, please wait a moment</string>
     <string name="mute">Mute</string>
     <string name="Hands_free">Hands free</string>
     <string name="hang_up">Hang up</string>
@@ -119,7 +119,7 @@
     <string name="Group_chat">Group chat</string>
     <string name="chat_room">Chat room</string>
     <string name="not_download">Did not download:</string>
-    <string name="is_down_please_wait">Downloading video, please try again later</string>
+    <string name="is_down_please_wait">Downloading video, please wait a moment</string>
     <string name="Exit_the_group_chat">Exit the group</string>
     <string name="Please_enter_a_username">Please enter a username</string>
 
