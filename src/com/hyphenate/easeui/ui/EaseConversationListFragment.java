@@ -137,7 +137,7 @@ public class EaseConversationListFragment extends EaseBaseFragment{
         
         @Override
         public void onDisconnected(int error) {
-            if (error == EMError.USER_REMOVED || error == EMError.USER_LOGIN_ANOTHER_DEVICE) {
+            if (error == EMError.USER_REMOVED || error == EMError.USER_LOGIN_ANOTHER_DEVICE || error == EMError.SERVER_SERVICE_RESTRICTED) {
                 isConflict = true;
             } else {
                handler.sendEmptyMessage(0);
