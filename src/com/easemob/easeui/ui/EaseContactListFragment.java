@@ -234,12 +234,12 @@ public class EaseContactListFragment extends EaseBaseFragment {
      * 获取联系人列表，并过滤掉黑名单和排序
      */
     protected void getContactList() {
+        //获取联系人列表
+        if(contactsMap == null){
+            return;
+        }
         contactList.clear();
-        synchronized (contactList) {
-            //获取联系人列表
-            if(contactsMap == null){
-                return;
-            }
+        synchronized (contactsMap) {
             Iterator<Entry<String, EaseUser>> iterator = contactsMap.entrySet().iterator();
             while (iterator.hasNext()) {
                 Entry<String, EaseUser> entry = iterator.next();
