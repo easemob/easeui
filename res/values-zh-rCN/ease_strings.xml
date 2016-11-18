@@ -65,7 +65,6 @@
     <string name="dissolution_group_hint">退出后，此群将被解散</string>
     <string name="exit_group">退出</string>
     <string name="connect_conflict">同一帐号已在其他设备登录</string>
-    <string name="ease_user_remove">此用户已被移除</string>
     <string name="set">设置</string>
     <string name="notify">新消息提醒</string>
     <string name="newnotify">接收新消息通知</string>
@@ -258,6 +257,7 @@
     <string name="Send_the_following_pictures">发送以下图片？</string>
     <string name="search_new">搜</string>
     <string name="were_mentioned">[有人@我]</string>
+    
     
     <string name="Delete_the_contact">删除联系人</string>
     <string name="Move_into_the_blacklist_new">移入到黑名单</string>

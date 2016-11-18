@@ -26,8 +26,8 @@
         
         
          <Button
-              android:enabled="false"
-              android:id="@+id/btn_location_send"
+            android:enabled="false"
+            android:id="@+id/btn_location_send"
             android:layout_width="52dp"
             android:layout_height="match_parent"
             android:layout_alignParentRight="true"

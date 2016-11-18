@@ -66,7 +66,6 @@
     <string name="dissolution_group_hint">The group will be dismissed after exiting</string>
     <string name="exit_group">Exit</string>
     <string name="connect_conflict">The same account was loggedin in other device</string>
-    <string name="ease_user_remove">This user has been removed</string>
     <string name="set">Settings</string>
     <string name="notify">New message notification</string>
     <string name="newnotify">Receiving a new message</string>
