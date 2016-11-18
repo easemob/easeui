@@ -290,7 +290,7 @@
     <string name="toast_nick_not_isnull">nick cannot be empty!</string>
     <string name="dl_update_nick">update nickname</string>
     <string name="dl_update_photo">update photo</string>
-    <string name="dl_waiting">waiting...</string>
+    <string name="dl_waiting">waiting…</string>
     <string name="toast_updatenick_success">update nickname success!</string>
     <string name="toast_updatenick_fail">update nickname fail!</string>
     <string name="toast_updatephoto_success">update photo success!</string>
