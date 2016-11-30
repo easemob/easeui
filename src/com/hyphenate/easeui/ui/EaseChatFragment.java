@@ -38,7 +38,7 @@ import com.hyphenate.chat.EMMessage.ChatType;
 import com.hyphenate.chat.EMTextMessageBody;
 import com.hyphenate.easeui.EaseConstant;
 import com.hyphenate.easeui.R;
-import com.hyphenate.easeui.controller.EaseUI;
+import com.hyphenate.easeui.EaseUI;
 import com.hyphenate.easeui.domain.EaseEmojicon;
 import com.hyphenate.easeui.domain.EaseUser;
 import com.hyphenate.easeui.model.EaseAtMessageHelper;
@@ -140,6 +140,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         messageList = (EaseChatMessageList) getView().findViewById(R.id.message_list);
         if(chatType != EaseConstant.CHATTYPE_SINGLE)
             messageList.setShowUserNick(true);
+//        messageList.setAvatarShape(1);
         listView = messageList.getListView();
 
         extendMenuItemClickListener = new MyItemClickListener();

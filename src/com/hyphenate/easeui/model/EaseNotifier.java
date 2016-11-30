@@ -27,8 +27,8 @@ import android.support.v4.app.NotificationCompat;
 
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMMessage;
-import com.hyphenate.easeui.controller.EaseUI;
-import com.hyphenate.easeui.controller.EaseUI.EaseSettingsProvider;
+import com.hyphenate.easeui.EaseUI;
+import com.hyphenate.easeui.EaseUI.EaseSettingsProvider;
 import com.hyphenate.util.EMLog;
 import com.hyphenate.util.EasyUtils;
 

@@ -17,23 +17,23 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin_chat_activity" >
 
-        <ImageView
+        <com.hyphenate.easeui.widget.EaseImageView
             android:id="@+id/iv_userhead"
             android:layout_width="@dimen/size_avatar"
             android:layout_height="@dimen/size_avatar"
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
             android:layout_marginRight="@dimen/margin_chat_activity"
-            android:background="@drawable/ease_default_avatar"
+            android:src="@drawable/ease_default_avatar"
             android:scaleType="fitXY" />
 
         <RelativeLayout
             android:id="@+id/bubble"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" 
+            android:layout_height="wrap_content"
             android:layout_marginRight="@dimen/margin_chat_activity"
             android:layout_toLeftOf="@id/iv_userhead"
-             android:background="@drawable/ease_chatto_bg"
+            android:background="@drawable/ease_chatto_bg"
             >
 
             <TextView
@@ -51,7 +51,7 @@
                 android:maxWidth="225.0dip"
                 android:textSize="15sp" />
         </RelativeLayout>
-        
+
        <!--  <TextView
             android:id="@+id/tv_userid"
             android:visibility="gone"

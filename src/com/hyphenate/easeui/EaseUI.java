@@ -1,9 +1,10 @@
-package com.hyphenate.easeui.controller;
+package com.hyphenate.easeui;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import android.app.Activity;
+import android.app.ActivityManager;
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.util.Log;
 
 import com.hyphenate.EMMessageListener;
 import com.hyphenate.chat.EMClient;
@@ -13,12 +14,12 @@ import com.hyphenate.easeui.domain.EaseEmojicon;
 import com.hyphenate.easeui.domain.EaseUser;
 import com.hyphenate.easeui.model.EaseAtMessageHelper;
 import com.hyphenate.easeui.model.EaseNotifier;
+import com.hyphenate.easeui.domain.EaseAvatarOptions;
 
-import android.app.Activity;
-import android.app.ActivityManager;
-import android.content.Context;
-import android.content.pm.PackageManager;
-import android.util.Log;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 public final class EaseUI {
     private static final String TAG = EaseUI.class.getSimpleName();
@@ -34,6 +35,8 @@ public final class EaseUI {
     private EaseUserProfileProvider userProvider;
     
     private EaseSettingsProvider settingsProvider;
+
+    private EaseAvatarOptions avatarOptions;
     
     /**
      * application context
@@ -122,7 +125,7 @@ public final class EaseUI {
         sdkInited = true;
         return true;
     }
-    
+
 
     protected EMOptions initChatOptions(){
         Log.d(TAG, "init HuanXin Options");
@@ -179,6 +182,15 @@ public final class EaseUI {
     public boolean hasForegroundActivies(){
         return activityList.size() != 0;
     }
+
+
+    public void setAvatarOptions(EaseAvatarOptions avatarOptions) {
+        this.avatarOptions = avatarOptions;
+    }
+    public EaseAvatarOptions getAvatarOptions(){
+        return  avatarOptions;
+    }
+
     
     /**
      * set user profile provider

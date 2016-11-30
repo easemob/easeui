@@ -2,7 +2,6 @@ package com.hyphenate.easeui.widget;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.drawable.Drawable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -14,11 +13,12 @@ import com.hyphenate.chat.EMConversation;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.adapter.EaseMessageAdapter;
+import com.hyphenate.easeui.model.styles.EaseMessageListItemStyle;
 import com.hyphenate.easeui.utils.EaseCommonUtils;
 import com.hyphenate.easeui.widget.chatrow.EaseCustomChatRowProvider;
 
 public class EaseChatMessageList extends RelativeLayout{
-    
+
     protected static final String TAG = "EaseChatMessageList";
     protected ListView listView;
     protected SwipeRefreshLayout swipeRefreshLayout;
@@ -27,12 +27,10 @@ public class EaseChatMessageList extends RelativeLayout{
     protected int chatType;
     protected String toChatUsername;
     protected EaseMessageAdapter messageAdapter;
-    protected boolean showUserNick;
-    protected boolean showAvatar;
-    protected Drawable myBubbleBg;
-    protected Drawable otherBuddleBg;
 
-	public EaseChatMessageList(Context context, AttributeSet attrs, int defStyle) {
+    protected EaseMessageListItemStyle itemStyle;
+
+    public EaseChatMessageList(Context context, AttributeSet attrs, int defStyle) {
         this(context, attrs);
     }
 
@@ -66,10 +64,7 @@ public class EaseChatMessageList extends RelativeLayout{
         
         conversation = EMClient.getInstance().chatManager().getConversation(toChatUsername, EaseCommonUtils.getConversationType(chatType), true);
         messageAdapter = new EaseMessageAdapter(context, toChatUsername, chatType, listView);
-        messageAdapter.setShowAvatar(showAvatar);
-        messageAdapter.setShowUserNick(showUserNick);
-        messageAdapter.setMyBubbleBg(myBubbleBg);
-        messageAdapter.setOtherBuddleBg(otherBuddleBg);
+        messageAdapter.setItemStyle(itemStyle);
         messageAdapter.setCustomChatRowProvider(customChatRowProvider);
         // set message adapter
         listView.setAdapter(messageAdapter);
@@ -79,10 +74,13 @@ public class EaseChatMessageList extends RelativeLayout{
     
     protected void parseStyle(Context context, AttributeSet attrs) {
         TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.EaseChatMessageList);
-        showAvatar = ta.getBoolean(R.styleable.EaseChatMessageList_msgListShowUserAvatar, true);
-        myBubbleBg = ta.getDrawable(R.styleable.EaseChatMessageList_msgListMyBubbleBackground);
-        otherBuddleBg = ta.getDrawable(R.styleable.EaseChatMessageList_msgListMyBubbleBackground);
-        showUserNick = ta.getBoolean(R.styleable.EaseChatMessageList_msgListShowUserNick, false);
+        EaseMessageListItemStyle.Builder builder = new EaseMessageListItemStyle.Builder();
+        builder.showAvatar(ta.getBoolean(R.styleable.EaseChatMessageList_msgListShowUserAvatar, true))
+                .showUserNick(ta.getBoolean(R.styleable.EaseChatMessageList_msgListShowUserNick, false))
+                .myBubbleBg(ta.getDrawable(R.styleable.EaseChatMessageList_msgListMyBubbleBackground))
+                .otherBuddleBg(ta.getDrawable(R.styleable.EaseChatMessageList_msgListMyBubbleBackground));
+
+        itemStyle = builder.build();
         ta.recycle();
     }
     
@@ -127,15 +125,16 @@ public class EaseChatMessageList extends RelativeLayout{
 	    return messageAdapter.getItem(position);
 	}
 
-	public void setShowUserNick(boolean showUserNick){
-	    this.showUserNick = showUserNick;
-	}
-	
-	public boolean isShowUserNick(){
-	    return showUserNick;
-	}
-	
-	public interface MessageListItemClickListener{
+    public void setShowUserNick(boolean showUserNick){
+        itemStyle.setShowUserNick(showUserNick);
+    }
+
+    public boolean isShowUserNick(){
+        return itemStyle.isShowUserNick();
+    }
+
+
+    public interface MessageListItemClickListener{
 	    void onResendClick(EMMessage message);
 	    /**
 	     * there is default handling when bubble is clicked, if you want handle it, return true

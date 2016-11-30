@@ -26,6 +26,7 @@ import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMConversation;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.easeui.EaseConstant;
+import com.hyphenate.easeui.model.styles.EaseMessageListItemStyle;
 import com.hyphenate.easeui.utils.EaseCommonUtils;
 import com.hyphenate.easeui.widget.EaseChatMessageList.MessageListItemClickListener;
 import com.hyphenate.easeui.widget.chatrow.EaseChatRow;
@@ -81,6 +82,7 @@ public class EaseMessageAdapter extends BaseAdapter{
     private Drawable otherBuddleBg;
 
     private ListView listView;
+	private EaseMessageListItemStyle itemStyle;
 
 	public EaseMessageAdapter(Context context, String username, int chatType, ListView listView) {
 		this.context = context;
@@ -262,36 +264,15 @@ public class EaseMessageAdapter extends BaseAdapter{
 		}
 
 		//refresh ui with messages
-		((EaseChatRow)convertView).setUpView(message, position, itemClickListener);
+		((EaseChatRow)convertView).setUpView(message, position, itemClickListener, itemStyle);
 		
 		return convertView;
 	}
 
 
-	public String getToChatUsername(){
-	    return toChatUsername;
+	public void setItemStyle(EaseMessageListItemStyle itemStyle){
+		this.itemStyle = itemStyle;
 	}
-	
-	
-	
-	public void setShowUserNick(boolean showUserNick) {
-        this.showUserNick = showUserNick;
-    }
-
-
-    public void setShowAvatar(boolean showAvatar) {
-        this.showAvatar = showAvatar;
-    }
-
-
-    public void setMyBubbleBg(Drawable myBubbleBg) {
-        this.myBubbleBg = myBubbleBg;
-    }
-
-
-    public void setOtherBuddleBg(Drawable otherBuddleBg) {
-        this.otherBuddleBg = otherBuddleBg;
-    }
 
 
     public void setItemClickListener(MessageListItemClickListener listener){
@@ -318,7 +299,7 @@ public class EaseMessageAdapter extends BaseAdapter{
     }
 
 
-    public Drawable getOtherBuddleBg() {
+    public Drawable getOtherBubbleBg() {
         return otherBuddleBg;
     }
 
