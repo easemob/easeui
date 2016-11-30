@@ -16,11 +16,15 @@ import com.hyphenate.EMError;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMMessage.Direct;
+import com.hyphenate.easeui.EaseUI;
 import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.adapter.EaseMessageAdapter;
+import com.hyphenate.easeui.domain.EaseAvatarOptions;
+import com.hyphenate.easeui.model.styles.EaseMessageListItemStyle;
 import com.hyphenate.easeui.utils.EaseUserUtils;
 import com.hyphenate.easeui.widget.EaseChatMessageList;
 import com.hyphenate.easeui.widget.EaseChatMessageList.MessageListItemClickListener;
+import com.hyphenate.easeui.widget.EaseImageView;
 import com.hyphenate.util.DateUtils;
 
 import java.util.Date;
@@ -51,6 +55,7 @@ public abstract class EaseChatRow extends LinearLayout {
     protected EMCallBack messageReceiveCallback;
 
     protected MessageListItemClickListener itemClickListener;
+    protected EaseMessageListItemStyle itemStyle;
 
     public EaseChatRow(Context context, EMMessage message, int position, BaseAdapter adapter) {
         super(context);
@@ -86,10 +91,12 @@ public abstract class EaseChatRow extends LinearLayout {
      * @param position
      */
     public void setUpView(EMMessage message, int position,
-            EaseChatMessageList.MessageListItemClickListener itemClickListener) {
+            EaseChatMessageList.MessageListItemClickListener itemClickListener,
+                          EaseMessageListItemStyle itemStyle) {
         this.message = message;
         this.position = position;
         this.itemClickListener = itemClickListener;
+        this.itemStyle = itemStyle;
 
         setUpBaseView();
         onSetUpView();
@@ -140,29 +147,46 @@ public abstract class EaseChatRow extends LinearLayout {
                 ackedView.setVisibility(View.INVISIBLE);
             }
         }
-        
 
-        if (adapter instanceof EaseMessageAdapter) {
-            if (((EaseMessageAdapter) adapter).isShowAvatar())
-                userAvatarView.setVisibility(View.VISIBLE);
-            else
-                userAvatarView.setVisibility(View.GONE);
+        if (itemStyle != null) {
+            if (userAvatarView != null) {
+                if (itemStyle.isShowAvatar()) {
+                    userAvatarView.setVisibility(View.VISIBLE);
+                    EaseAvatarOptions avatarOptions = EaseUI.getInstance().getAvatarOptions();
+                    if(avatarOptions != null && userAvatarView instanceof EaseImageView){
+                        EaseImageView avatarView = ((EaseImageView)userAvatarView);
+                        if(avatarOptions.getAvatarShape() != 0)
+                            avatarView.setShapeType(avatarOptions.getAvatarShape());
+                        if(avatarOptions.getAvatarBorderWidth() != 0)
+                            avatarView.setBorderWidth(avatarOptions.getAvatarBorderWidth());
+                        if(avatarOptions.getAvatarBorderColor() != 0)
+                            avatarView.setBorderColor(avatarOptions.getAvatarBorderColor());
+                        if(avatarOptions.getAvatarRadius() != 0)
+                            avatarView.setRadius(avatarOptions.getAvatarRadius());
+                    }
+                } else {
+                    userAvatarView.setVisibility(View.GONE);
+                }
+            }
             if (usernickView != null) {
-                if (((EaseMessageAdapter) adapter).isShowUserNick())
+                if (itemStyle.isShowUserNick())
                     usernickView.setVisibility(View.VISIBLE);
                 else
                     usernickView.setVisibility(View.GONE);
             }
-            if (message.direct() == Direct.SEND) {
-                if (((EaseMessageAdapter) adapter).getMyBubbleBg() != null) {
-                    bubbleLayout.setBackgroundDrawable(((EaseMessageAdapter) adapter).getMyBubbleBg());
-                }
-            } else if (message.direct() == Direct.RECEIVE) {
-                if (((EaseMessageAdapter) adapter).getOtherBuddleBg() != null) {
-                    bubbleLayout.setBackgroundDrawable(((EaseMessageAdapter) adapter).getOtherBuddleBg());
+            if (bubbleLayout != null) {
+                if (message.direct() == Direct.SEND) {
+                    if (itemStyle.getMyBubbleBg() != null) {
+                        bubbleLayout.setBackgroundDrawable(((EaseMessageAdapter) adapter).getMyBubbleBg());
+                    }
+                } else if (message.direct() == Direct.RECEIVE) {
+                    if (itemStyle.getOtherBubbleBg() != null) {
+                        bubbleLayout.setBackgroundDrawable(((EaseMessageAdapter) adapter).getOtherBubbleBg());
+                    }
                 }
             }
         }
+
     }
 
     /**

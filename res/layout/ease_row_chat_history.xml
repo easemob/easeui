@@ -12,7 +12,7 @@
         android:layout_height="match_parent"
         android:layout_alignParentLeft="true" >
 
-      <ImageView
+      <com.hyphenate.easeui.widget.EaseImageView
             android:id="@+id/avatar"
             android:layout_width="45dp"
             android:layout_height="45dp"

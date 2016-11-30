@@ -20,7 +20,7 @@ import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMMessage.ChatType;
 import com.hyphenate.chat.EMVoiceMessageBody;
 import com.hyphenate.easeui.R;
-import com.hyphenate.easeui.controller.EaseUI;
+import com.hyphenate.easeui.EaseUI;
 import com.hyphenate.util.EMLog;
 
 import android.app.Activity;

@@ -4,7 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.hyphenate.easeui.controller.EaseUI;
+import com.hyphenate.easeui.EaseUI;
 
 import java.util.Set;
 
