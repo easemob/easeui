@@ -99,10 +99,10 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
         // get conversation
         EMConversation conversation = getItem(position);
         // get username or group id
-        String username = conversation.getUserName();
+        String username = conversation.conversationId();
         
         if (conversation.getType() == EMConversationType.GroupChat) {
-            String groupId = conversation.getUserName();
+            String groupId = conversation.conversationId();
             if(EaseAtMessageHelper.get().hasAtMeMsg(groupId)){
                 holder.motioned.setVisibility(View.VISIBLE);
             }else{
@@ -233,7 +233,7 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
 
                 for (int i = 0; i < count; i++) {
                     final EMConversation value = mOriginalValues.get(i);
-                    String username = value.getUserName();
+                    String username = value.conversationId();
                     
                     EMGroup group = EMClient.getInstance().groupManager().getGroup(username);
                     if(group != null){

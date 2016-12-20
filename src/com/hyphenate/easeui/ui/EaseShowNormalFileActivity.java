@@ -26,6 +26,7 @@ public class EaseShowNormalFileActivity extends EaseBaseActivity {
         if (!(message.getBody() instanceof EMFileMessageBody)) {
             Toast.makeText(EaseShowNormalFileActivity.this, "Unsupported message body", Toast.LENGTH_SHORT).show();
             finish();
+            return;
         }
         final File file = new File(((EMFileMessageBody)message.getBody()).getLocalUrl());
 
