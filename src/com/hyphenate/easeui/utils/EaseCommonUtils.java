@@ -205,4 +205,20 @@ public class EaseCommonUtils {
         }
     }
 
+    /**
+     * \~chinese
+     * 判断是否是免打扰的消息,如果是app中应该不要给用户提示新消息
+     * @param message
+     * return
+     *
+     * \~english
+     * check if the message is kind of slient message, if that's it, app should not play tone or vibrate
+     *
+     * @param message
+     * @return
+     */
+    public static boolean isSilentMessage(EMMessage message){
+        return message.getBooleanAttribute("em_ignore_notification", false);
+    }
+
 }
