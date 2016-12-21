@@ -101,7 +101,7 @@ public class EaseChatRowVideo extends EaseChatRowFile{
 	    EMVideoMessageBody videoBody = (EMVideoMessageBody) message.getBody();
         EMLog.d(TAG, "video view is on click");
         Intent intent = new Intent(context, EaseShowVideoActivity.class);
-        intent.putExtra("message", message);
+        intent.putExtra("msg", message);
         if (message != null && message.direct() == EMMessage.Direct.RECEIVE && !message.isAcked()
                 && message.getChatType() == ChatType.Chat) {
             try {

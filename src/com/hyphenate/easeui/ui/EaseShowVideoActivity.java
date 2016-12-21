@@ -41,7 +41,7 @@ public class EaseShowVideoActivity extends EaseBaseActivity{
 		loadingLayout = (RelativeLayout) findViewById(R.id.loading_layout);
 		progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
-		final EMMessage message = getIntent().getParcelableExtra("message");
+		final EMMessage message = getIntent().getParcelableExtra("msg");
 		if (!(message.getBody() instanceof EMVideoMessageBody)) {
 			Toast.makeText(EaseShowVideoActivity.this, "Unsupported message body", Toast.LENGTH_SHORT).show();
 			finish();
