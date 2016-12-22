@@ -16,7 +16,7 @@ public class EaseAvatarOptions {
 
     /**
      * 设置item中的头像形状
-     * 0：默认，1：圆形，2：矩形圆角
+     * 0：默认，1：圆形，2：矩形
      * @param shape
      */
     public void setAvatarShape(int avatarShape) {
@@ -28,7 +28,7 @@ public class EaseAvatarOptions {
     }
 
     /**
-     * 设置头像控件圆角半径
+     * 设置倒角
      *
      * @param radius
      */

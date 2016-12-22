@@ -1,9 +1,10 @@
 package com.hyphenate.easeuisimpledemo;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-public class MainActivity extends AppCompatActivity {
+import com.hyphenate.easeui.ui.EaseBaseActivity;
+
+public class MainActivity extends EaseBaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
