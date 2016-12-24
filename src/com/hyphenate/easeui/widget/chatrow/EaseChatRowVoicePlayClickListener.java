@@ -129,7 +129,7 @@ public class EaseChatRowVoicePlayClickListener implements View.OnClickListener {
 					// 隐藏自己未播放这条语音消息的标志
 					iv_read_status.setVisibility(View.INVISIBLE);
 					message.setListened(true);
-					EMClient.getInstance().chatManager().setMessageListened(message);
+					EMClient.getInstance().chatManager().setVoiceMessageListened(message);
 				}
 
 			}

@@ -15,19 +15,19 @@ public abstract class EaseGroupRemoveListener implements EMGroupChangeListener{
     }
 
     @Override
-    public void onApplicationReceived(String groupId, String groupName, String applyer, String reason) {
+    public void onRequestToJoinReceived(String groupId, String groupName, String applyer, String reason) {
         // TODO Auto-generated method stub
         
     }
 
     @Override
-    public void onApplicationAccept(String groupId, String groupName, String accepter) {
+    public void onRequestToJoinAccepted(String groupId, String groupName, String accepter) {
         // TODO Auto-generated method stub
         
     }
 
     @Override
-    public void onApplicationDeclined(String groupId, String groupName, String decliner, String reason) {
+    public void onRequestToJoinDeclined(String groupId, String groupName, String decliner, String reason) {
         // TODO Auto-generated method stub
         
     }
