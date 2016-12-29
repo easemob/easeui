@@ -7,8 +7,6 @@ android {
     defaultConfig {
         minSdkVersion 11
         targetSdkVersion 22
-        versionCode 1
-        versionName "1.0"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -19,12 +17,22 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+        lintOptions {
+            checkReleaseBuilds false
+            // Or, if you prefer, you can continue to check for errors in release builds,
+            // but continue the build even when errors are found:
+            abortOnError false
+        }
+
 }
 
 dependencies {
     //release时需要把hyphenatechatsdk的依赖注释掉，sdk已经被打成jar包放在libs底下
     compile project(':hyphenatechatsdk')
     compile fileTree(dir: 'libs', include: ['*.jar'])
+//    compile files('libs/BaiduLBS_Android.jar', 'libs/glide-3.6.1.jar')
+
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
