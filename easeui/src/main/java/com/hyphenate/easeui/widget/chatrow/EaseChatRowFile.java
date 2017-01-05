@@ -120,7 +120,7 @@ public class EaseChatRowFile extends EaseChatRow{
             FileUtils.openFile(file, (Activity) context);
         } else {
             // download the file
-            context.startActivity(new Intent(context, EaseShowNormalFileActivity.class).putExtra("msgbody", message.getBody()));
+            context.startActivity(new Intent(context, EaseShowNormalFileActivity.class).putExtra("msg", message));
         }
         if (message.direct() == EMMessage.Direct.RECEIVE && !message.isAcked() && message.getChatType() == ChatType.Chat) {
             try {

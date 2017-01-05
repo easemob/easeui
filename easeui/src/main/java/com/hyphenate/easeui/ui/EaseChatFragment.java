@@ -528,7 +528,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             }
 
             @Override
-            public void onMemberKicked(String roomId, String roomName, String participant) {
+            public void onRemovedFromChatRoom(String roomId, String roomName, String participant) {
                 if (roomId.equals(toChatUsername)) {
                     String curUser = EMClient.getInstance().getCurrentUser();
                     if (curUser.equals(participant)) {
@@ -582,14 +582,14 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     }
 
     @Override
-    public void onMessageReadAckReceived(List<EMMessage> messages) {
+    public void onMessageRead(List<EMMessage> messages) {
         if(isMessageListInited) {
             messageList.refresh();
         }
     }
 
     @Override
-    public void onMessageDeliveryAckReceived(List<EMMessage> messages) {
+    public void onMessageDelivered(List<EMMessage> messages) {
         if(isMessageListInited) {
             messageList.refresh();
         }

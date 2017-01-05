@@ -154,11 +154,11 @@ public final class EaseUI {
                 EaseAtMessageHelper.get().parseMessages(messages);
             }
             @Override
-            public void onMessageReadAckReceived(List<EMMessage> messages) {
+            public void onMessageRead(List<EMMessage> messages) {
                 
             }
             @Override
-            public void onMessageDeliveryAckReceived(List<EMMessage> messages) {
+            public void onMessageDelivered(List<EMMessage> messages) {
             }
             @Override
             public void onMessageChanged(EMMessage message, Object change) {
