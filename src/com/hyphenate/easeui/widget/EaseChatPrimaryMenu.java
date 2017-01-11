@@ -10,12 +10,15 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.hyphenate.easeui.R;
+import com.hyphenate.util.EMLog;
 
 /**
  * primary menu
@@ -31,6 +34,7 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
     private ImageView faceNormal;
     private ImageView faceChecked;
     private Button buttonMore;
+    private boolean ctrlPress = false;
 
     public EaseChatPrimaryMenu(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
@@ -104,7 +108,43 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
 
             }
         });
-        
+
+        editText.setOnKeyListener(new OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                EMLog.d("key", "keyCode:" + keyCode + " action:" + event.getAction());
+
+                // test on Mac virtual machine: ctrl map to KEYCODE_UNKNOWN
+                if (keyCode == KeyEvent.KEYCODE_UNKNOWN) {
+                    if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                        ctrlPress = true;
+                    } else if (event.getAction() == KeyEvent.ACTION_UP) {
+                        ctrlPress = false;
+                    }
+                }
+                return false;
+            }
+        });
+
+        editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                EMLog.d("key", "keyCode:" + event.getKeyCode() + " action" + event.getAction() + " ctrl:" + ctrlPress);
+                if (actionId == EditorInfo.IME_ACTION_SEND ||
+                        (event.getKeyCode() == KeyEvent.KEYCODE_ENTER &&
+                         event.getAction() == KeyEvent.ACTION_DOWN &&
+                         ctrlPress == true)) {
+                    String s = editText.getText().toString();
+                    editText.setText("");
+                    listener.onSendBtnClicked(s);
+                    return true;
+                }
+                else{
+                    return false;
+                }
+            }
+        });
+
         
         buttonPressToSpeak.setOnTouchListener(new OnTouchListener() {
             
