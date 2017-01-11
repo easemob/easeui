@@ -36,6 +36,7 @@ import com.easemob.EMValueCallBack;
 import com.easemob.chat.CmdMessageBody;
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMChatRoom;
+import com.easemob.chat.EMContactManager;
 import com.easemob.chat.EMConversation;
 import com.easemob.chat.EMGroup;
 import com.easemob.chat.EMGroupManager;
@@ -104,7 +105,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
     protected boolean isloading;
     protected boolean haveMoreData = true;
     protected int pagesize = 20;
-    protected GroupListener groupListener;
+    protected GroupRemoveListener groupRemoveListener;
+    protected ContactRemoveListener contactRemoveListener;
     protected EMMessage contextMenuMessage;
     
     static final int ITEM_TAKE_PICTURE = 1;
@@ -209,13 +211,17 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
                 if (group != null)
                     titleBar.setTitle(group.getGroupName());
                 // 监听当前会话的群聊解散被T事件
-                groupListener = new GroupListener();
-                EMGroupManager.getInstance().addGroupChangeListener(groupListener);
+                groupRemoveListener = new GroupRemoveListener();
+                EMGroupManager.getInstance().addGroupChangeListener(groupRemoveListener);
             } else {
                 onChatRoomViewCreation();
             }
 
         }
+        //listen contact be removed
+        contactRemoveListener = new ContactRemoveListener();
+        EMContactManager.getInstance().addContactListener(contactRemoveListener);
+
         if (chatType != EaseConstant.CHATTYPE_CHATROOM) {
             onConversationInit();
             onMessageListInit();
@@ -482,8 +488,11 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (groupListener != null) {
-            EMGroupManager.getInstance().removeGroupChangeListener(groupListener);
+        if (groupRemoveListener != null) {
+            EMGroupManager.getInstance().removeGroupChangeListener(groupRemoveListener);
+        }
+        if (contactRemoveListener != null) {
+            EMContactManager.getInstance().removeContactListener(contactRemoveListener);
         }
         if(chatType == EaseConstant.CHATTYPE_CHATROOM){
             EMChatManager.getInstance().leaveChatRoom(toChatUsername);
@@ -955,7 +964,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
      * 监测群组解散或者被T事件
      * 
      */
-    class GroupListener extends EaseGroupRemoveListener {
+    class GroupRemoveListener extends EaseGroupRemoveListener {
 
         @Override
         public void onUserRemoved(final String groupId, String groupName) {
@@ -983,6 +992,14 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
             });
         }
 
+    }
+
+    class ContactRemoveListener extends EaseContactRemoveListener{
+
+        @Override
+        public void onContactDeleted(List<String> usernameList) {
+            getActivity().finish();
+        }
     }
     
    
