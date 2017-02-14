@@ -80,7 +80,8 @@
                 android:paddingLeft="1dp"
                 android:paddingRight="1dp"
                 android:paddingTop="3dp"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+                android:imeOptions="actionSend"/>
 
             <RelativeLayout 
                 android:id="@+id/rl_face"
