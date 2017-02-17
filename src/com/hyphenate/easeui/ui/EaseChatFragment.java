@@ -1046,7 +1046,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             getActivity().runOnUiThread(new Runnable() {
                 public void run() {
                     if (roomId.equals(toChatUsername)) {
-                        Toast.makeText(getActivity(), R.string.is_quit_the_group_chat, Toast.LENGTH_LONG).show();
+                        Toast.makeText(getActivity(), R.string.is_quit_the_chat_room, Toast.LENGTH_LONG).show();
                         Activity activity = getActivity();
                         if (activity != null && !activity.isFinishing()) {
                             activity.finish();
