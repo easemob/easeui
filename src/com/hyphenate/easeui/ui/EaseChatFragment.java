@@ -590,6 +590,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             if (username.equals(toChatUsername) || message.getTo().equals(toChatUsername)) {
                 messageList.refreshSelectLast();
                 EaseUI.getInstance().getNotifier().vibrateAndPlayTone(message);
+                conversation.markMessageAsRead(message.getMsgId());
             } else {
                 EaseUI.getInstance().getNotifier().onNewMsg(message);
             }
@@ -903,7 +904,9 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             @Override
             public void onResult(boolean confirmed, Bundle bundle) {
                 if(confirmed){
-                    EMClient.getInstance().chatManager().deleteConversation(toChatUsername, true);
+                    if (conversation != null) {
+                        conversation.clearAllMessages();
+                    }
                     messageList.refresh();
                 }
             }
@@ -1046,7 +1049,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             getActivity().runOnUiThread(new Runnable() {
                 public void run() {
                     if (roomId.equals(toChatUsername)) {
-                        Toast.makeText(getActivity(), R.string.is_quit_the_chat_room, Toast.LENGTH_LONG).show();
+                        Toast.makeText(getActivity(), R.string.quiting_the_chat_room, Toast.LENGTH_LONG).show();
                         Activity activity = getActivity();
                         if (activity != null && !activity.isFinishing()) {
                             activity.finish();
