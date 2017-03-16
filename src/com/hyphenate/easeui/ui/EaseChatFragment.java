@@ -13,6 +13,7 @@ import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -22,6 +23,7 @@ import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -42,6 +44,7 @@ import com.hyphenate.easeui.domain.EaseEmojicon;
 import com.hyphenate.easeui.domain.EaseUser;
 import com.hyphenate.easeui.model.EaseAtMessageHelper;
 import com.hyphenate.easeui.utils.EaseCommonUtils;
+import com.hyphenate.easeui.utils.EaseConversationExtUtils;
 import com.hyphenate.easeui.utils.EaseUserUtils;
 import com.hyphenate.easeui.widget.EaseAlertDialog;
 import com.hyphenate.easeui.widget.EaseAlertDialog.AlertDialogUser;
@@ -110,6 +113,10 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     protected int[] itemIds = { ITEM_TAKE_PICTURE, ITEM_PICTURE, ITEM_LOCATION };
     private boolean isMessageListInited;
     protected MyItemClickListener extendMenuItemClickListener;
+
+
+    // 输入框
+    private EditText inputView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -238,6 +245,14 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         String forward_msg_id = getArguments().getString("forward_msg_id");
         if (forward_msg_id != null) {
             forwardMessage(forward_msg_id);
+        }
+
+        // 获取输入框，
+        inputView = (EditText) getView().findViewById(R.id.et_sendmessage);
+        // 判断是否有草稿
+        String draft = EaseConversationExtUtils.getConversationDraft(conversation);
+        if (!TextUtils.isEmpty(draft)) {
+            inputView.setText(draft);
         }
     }
     
@@ -452,6 +467,18 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     }
 
     public void onBackPressed() {
+        /**
+         * 判断聊天输入框内容是否为空，不为空就保存输入框内容到{@link EMConversation}的扩展中
+         * 调用{@link EaseConversationExtUtils#setConversationDraft(EMConversation, String)}方法
+         */
+        String draft = inputView.getText().toString().trim();
+        if (!TextUtils.isEmpty(draft)) {
+            // 将输入框的内容保存为草稿
+            EaseConversationExtUtils.setConversationDraft(conversation, draft);
+        } else {
+            // 清空会话对象扩展中保存的草稿
+            EaseConversationExtUtils.setConversationDraft(conversation, "");
+        }
         if (inputMenu.onBackPressed()) {
             getActivity().finish();
             if(chatType == EaseConstant.CHATTYPE_GROUP){
