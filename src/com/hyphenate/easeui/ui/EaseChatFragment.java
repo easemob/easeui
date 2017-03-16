@@ -589,9 +589,27 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             // if the message is for current conversation
             if (username.equals(toChatUsername) || message.getTo().equals(toChatUsername)) {
                 messageList.refreshSelectLast();
-                EaseUI.getInstance().getNotifier().vibrateAndPlayTone(message);
+                if (message.getChatType() == EMMessage.ChatType.GroupChat){
+                    List<String> disabledIds = EMClient.getInstance().pushManager().getNoPushGroups();
+                    if (disabledIds==null || !disabledIds.contains(message.getTo())){
+
+                        EaseUI.getInstance().getNotifier().vibrateAndPlayTone(message);
+                    }
+
+                }else {
+                    EaseUI.getInstance().getNotifier().vibrateAndPlayTone(message);
+                }
             } else {
-                EaseUI.getInstance().getNotifier().onNewMsg(message);
+                if (message.getChatType() == EMMessage.ChatType.GroupChat){
+                    List<String> disabledIds = EMClient.getInstance().pushManager().getNoPushGroups();
+                    if (disabledIds==null || !disabledIds.contains(message.getTo())){
+
+                        EaseUI.getInstance().getNotifier().onNewMsg(message);
+                    }
+
+                }else {
+                    EaseUI.getInstance().getNotifier().onNewMsg(message);
+                }
             }
         }
     }
