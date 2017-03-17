@@ -5,6 +5,7 @@ import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMMessage.ChatType;
 import com.hyphenate.chat.EMTextMessageBody;
 import com.hyphenate.easeui.R;
+import com.hyphenate.easeui.utils.EaseMessageUtils;
 import com.hyphenate.easeui.utils.EaseSmileUtils;
 import com.hyphenate.exceptions.HyphenateException;
 
@@ -48,7 +49,7 @@ public class EaseChatRowText extends EaseChatRow{
         if (message.direct() == EMMessage.Direct.SEND) {
             setMessageSendCallback();
             switch (message.status()) {
-            case CREATE: 
+            case CREATE:
                 progressBar.setVisibility(View.GONE);
                 statusView.setVisibility(View.VISIBLE);
                 break;
@@ -74,6 +75,10 @@ public class EaseChatRowText extends EaseChatRow{
                 } catch (HyphenateException e) {
                     e.printStackTrace();
                 }
+            }else if(!message.isAcked() && message.getChatType() == ChatType.GroupChat){
+                EaseMessageUtils.sendGroupReadMessage(message.getFrom(), message.getTo(), message.getMsgId());
+                message.setAcked(true);
+                EMClient.getInstance().chatManager().updateMessage(message);
             }
         }
     }
@@ -86,7 +91,7 @@ public class EaseChatRowText extends EaseChatRow{
     @Override
     protected void onBubbleClick() {
         // TODO Auto-generated method stub
-        
+
     }
 
 

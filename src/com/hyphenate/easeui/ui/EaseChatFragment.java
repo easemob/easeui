@@ -59,14 +59,11 @@ import com.hyphenate.easeui.widget.EaseChatMessageList;
 import com.hyphenate.easeui.widget.EaseVoiceRecorderView;
 import com.hyphenate.easeui.widget.EaseVoiceRecorderView.EaseVoiceRecorderCallback;
 import com.hyphenate.easeui.widget.chatrow.EaseCustomChatRowProvider;
-import com.hyphenate.exceptions.HyphenateException;
 import com.hyphenate.util.EMLog;
 import com.hyphenate.util.PathUtil;
 
 import java.io.File;
 import java.util.List;
-import org.json.JSONArray;
-import org.json.JSONException;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -722,8 +719,12 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     @Override
     public void onCmdMessageReceived(List<EMMessage> messages) {
         for (final EMMessage message : messages) {
-            // 统计群组消息已读人数
-            EaseMessageUtils.statisticsMember(message);
+            // 判断当前 cmd 的 action 是不是统计群消息已读
+            String action = ((EMCmdMessageBody) message.getBody()).action();
+            if (action.equals(EaseConstant.GROUP_READ_ACTION)) {
+                EaseMessageUtils.receiveGroupReadMessage(message);
+                messageList.refresh();
+            }
 
             EMCmdMessageBody body = (EMCmdMessageBody) message.getBody();
             // 判断消息是否是当前会话的消息，并且收到的CMD是否是输入状态的消息

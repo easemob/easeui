@@ -107,37 +107,76 @@ public class EaseMessageUtils {
     }
 
     /**
+     * 发送一条群成员已读消息的 cmd 消息
+     *
+     * @param to 已读消息的发送者
+     * @param conversationId 消息所属会话
+     * @param msgId 已读的 msgId
+     */
+    public static void sendGroupReadMessage(String to, String conversationId, String msgId) {
+        EMMessage message = EMMessage.createSendMessage(EMMessage.Type.CMD);
+        EMCmdMessageBody body = new EMCmdMessageBody(EaseConstant.GROUP_READ_ACTION);
+        message.addBody(body);
+        message.setTo(to);
+        message.setAttribute(EaseConstant.GROUP_READ_CONVERSATION_ID, conversationId);
+
+        JSONArray array = new JSONArray();
+        array.put(msgId);
+        message.setAttribute(EaseConstant.GROUP_READ_MSG_ID_ARRAY, array);
+
+        EMClient.getInstance().chatManager().sendMessage(message);
+    }
+
+    /**
      * 统计群消息已读人数列表
      *
      * @param cmdMessage 需要判断的统计的 CMD 消息
      */
-    public static boolean statisticsMember(EMMessage cmdMessage) {
-        // 判断当前 cmd 的 action 是不是统计群消息已读
-        String action = ((EMCmdMessageBody) cmdMessage.getBody()).action();
-        if (action.equals(EaseConstant.GROUP_READ_ACTION)) {
-            String conversationId =
-                    cmdMessage.getStringAttribute(EaseConstant.GROUP_READ_CONVERSATION_ID, "");
-            EMConversation groupConversation = EMClient.getInstance()
-                    .chatManager()
-                    .getConversation(conversationId, EMConversation.EMConversationType.GroupChat);
-            try {
-                JSONArray msgIDArray =
-                        cmdMessage.getJSONArrayAttribute(EaseConstant.GROUP_READ_MSG_ID_ARRAY);
-                for (int i = 0; i < msgIDArray.length(); i++) {
-                    String msgId = msgIDArray.getString(i);
-                    EMMessage message = groupConversation.getMessage(msgId, true);
-                    JSONArray memberArray =
-                            message.getJSONArrayAttribute(EaseConstant.GROUP_READ_MEMBER_ARRAY);
-                    memberArray.put(cmdMessage.getFrom());
-                    EMClient.getInstance().chatManager().updateMessage(message);
+    public static boolean receiveGroupReadMessage(EMMessage cmdMessage) {
+        String conversationId =
+                cmdMessage.getStringAttribute(EaseConstant.GROUP_READ_CONVERSATION_ID, "");
+        EMConversation groupConversation = EMClient.getInstance()
+                .chatManager()
+                .getConversation(conversationId, EMConversation.EMConversationType.GroupChat);
+        try {
+            // 获取对方发来的已读 msgId
+            JSONArray msgIdArray =
+                    cmdMessage.getJSONArrayAttribute(EaseConstant.GROUP_READ_MSG_ID_ARRAY);
+            for (int i = 0; i < msgIdArray.length(); i++) {
+                String msgId = msgIdArray.getString(i);
+                EMMessage message = groupConversation.getMessage(msgId, true);
+                // 获取当前消息已读成员数组
+                JSONArray memberArray = getReadMembers(message);
+                if (memberArray == null) {
+                    memberArray = new JSONArray();
                 }
-                return true;
-            } catch (HyphenateException e) {
-                e.printStackTrace();
-            } catch (JSONException e) {
-                e.printStackTrace();
+                // 将新的已读成员添加到数组中，然后重新设置给消息
+                memberArray.put(cmdMessage.getFrom());
+                message.setAttribute(EaseConstant.GROUP_READ_MEMBER_ARRAY, memberArray);
+                // 设置消息 ack 为已读
+                message.setAcked(true);
+                // 更新消息
+                EMClient.getInstance().chatManager().updateMessage(message);
             }
+            return true;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (HyphenateException e) {
+            e.printStackTrace();
         }
         return false;
+    }
+
+    /**
+     * 获取当前消息有多少成员已读
+     */
+    public static JSONArray getReadMembers(EMMessage message) {
+        try {
+            JSONArray array = message.getJSONArrayAttribute(EaseConstant.GROUP_READ_MEMBER_ARRAY);
+            return array;
+        } catch (HyphenateException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

@@ -31,7 +31,7 @@ public class EaseConstant {
     public static final String GROUP_READ_ACTION = "group_read_action";
     public static final String GROUP_READ_MSG_ID_ARRAY = "group_read_msg_id_array";
     public static final String GROUP_READ_CONVERSATION_ID = "group_read_conversation_id";
-    public static final String GROUP_READ_MEMBER_ARRAY = "group_read_MEMBER_ARRAY";
+    public static final String GROUP_READ_MEMBER_ARRAY = "group_read_member_array";
 
     public static final int CHATTYPE_SINGLE = 1;
     public static final int CHATTYPE_GROUP = 2;
