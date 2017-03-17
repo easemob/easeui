@@ -12,7 +12,8 @@
 *bin/
 *gen/
 #*/assets/
-*/libs/easemobchat_2.0.0.jar
+*/libs/hyphenatechat_3.3.0.jar
+*/libs
 
 
 # Local configuration file (sdk path, etc)
