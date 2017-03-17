@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--背景色-->
+    <item>
+        <shape android:dither="true" android:shape="rectangle">
+            <corners android:radius="@dimen/recall_dimen_bg"/>
+
+            <solid android:color="@color/recall_black"/>
+            <!--<stroke android:width="@dimen/ml_dimen_1" android:color="@color/ml_border_black"/>-->
+            <!--<padding android:bottom="@dimen/ml_dimen_4" android:left="@dimen/ml_dimen_8" android:right="@dimen/ml_dimen_8" android:top="@dimen/ml_dimen_4" />-->
+        </shape>
+    </item>
+</selector>

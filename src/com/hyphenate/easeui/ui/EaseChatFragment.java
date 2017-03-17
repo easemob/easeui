@@ -14,6 +14,8 @@ import android.provider.MediaStore;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.text.TextUtils;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -46,6 +48,7 @@ import com.hyphenate.easeui.domain.EaseUser;
 import com.hyphenate.easeui.model.EaseAtMessageHelper;
 import com.hyphenate.easeui.utils.EaseCommonUtils;
 import com.hyphenate.easeui.utils.EaseConversationExtUtils;
+import com.hyphenate.easeui.utils.EaseMessageUtils;
 import com.hyphenate.easeui.utils.EaseUserUtils;
 import com.hyphenate.easeui.widget.EaseAlertDialog;
 import com.hyphenate.easeui.widget.EaseAlertDialog.AlertDialogUser;
@@ -64,6 +67,8 @@ import java.io.File;
 import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONException;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * you can new an EaseChatFragment to use or you can inherit it to expand.
@@ -118,9 +123,15 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     private boolean isMessageListInited;
     protected MyItemClickListener extendMenuItemClickListener;
 
-
     // 输入框
     private EditText inputView;
+    private EditText mEdsendmessage;
+    // 检测输入状态的开始时间
+    private long mOldTime;
+    // 定时器，主要用来更新对方输入状态
+    private Timer mTimer;
+    // 记录对方输入状态
+    private boolean isInput;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -158,6 +169,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         registerExtendMenuItem();
         // init input menu
         inputMenu.init(null);
+        mEdsendmessage = (EditText) getView().findViewById(R.id.et_sendmessage);
+        mOldTime = 0;
         inputMenu.setChatInputMenuListener(new ChatInputMenuListener() {
 
             @Override
@@ -182,6 +195,32 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             }
         });
 
+        //输入框监听事件
+        mEdsendmessage.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // 当新增内容长度为1时采取判断增加的字符是否为@符号
+                if (conversation.getType() == EMConversation.EMConversationType.Chat) {
+                    if ((System.currentTimeMillis() - mOldTime)
+                            > EaseConstant.TIME_INPUT_STATUS) {
+                        mOldTime = System.currentTimeMillis();
+                        // 调用发送输入状态方法
+                        EaseMessageUtils.sendInputStatusMessage(toChatUsername);
+                    }
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
         swipeRefreshLayout = messageList.getSwipeRefreshLayout();
         swipeRefreshLayout.setColorSchemeResources(R.color.holo_blue_bright, R.color.holo_green_light,
                 R.color.holo_orange_light, R.color.holo_red_light);
@@ -190,6 +229,35 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
         getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
     }
+
+    /**
+     * 设置对方正在输入状态，主要是接收到CMD消息后，得知对方正在输入
+     */
+    private void setInputStatus() {
+        // 设置title为正在输入状态
+        titleBar.setTitle(getString(R.string.title_input_status));
+        if (mTimer == null) {
+            mTimer = new Timer();
+        } else {
+            mTimer.purge();
+        }
+        // 创建定时器任务
+        TimerTask task = new TimerTask() {
+            @Override public void run() {
+                // 执行定时器把当前对方输入状态设置为false
+                isInput = false;
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override public void run() {
+                        titleBar.setTitle(toChatUsername);
+                    }
+                });
+
+            }
+        };
+        // 设置定时任务
+        mTimer.schedule(task, EaseConstant.TIME_INPUT_STATUS);
+    }
+
 
     protected void setUpView() {
         titleBar.setTitle(toChatUsername);
@@ -229,6 +297,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             @Override
             public void onClick(View v) {
                 onBackPressed();
+
             }
         });
         titleBar.setRightLayoutClickListener(new OnClickListener() {
@@ -484,6 +553,9 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             EaseConversationExtUtils.setConversationDraft(conversation, "");
         }
         if (inputMenu.onBackPressed()) {
+            if(mTimer != null){
+                mTimer.cancel();
+            }
             getActivity().finish();
             if(chatType == EaseConstant.CHATTYPE_GROUP){
                 EaseAtMessageHelper.get().removeAtMeGroup(toChatUsername);
@@ -619,18 +691,61 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
             // if the message is for current conversation
             if (username.equals(toChatUsername) || message.getTo().equals(toChatUsername)) {
+                // 收到新消息就把对方正在输入状态设置为false
+                isInput = false;
                 messageList.refreshSelectLast();
-                EaseUI.getInstance().getNotifier().vibrateAndPlayTone(message);
+                if (message.getChatType() == EMMessage.ChatType.GroupChat){
+                    List<String> disabledIds = EMClient.getInstance().pushManager().getNoPushGroups();
+                    if (disabledIds==null || !disabledIds.contains(message.getTo())){
+
+                        EaseUI.getInstance().getNotifier().vibrateAndPlayTone(message);
+                    }
+
+                }else {
+                    EaseUI.getInstance().getNotifier().vibrateAndPlayTone(message);
+                }
             } else {
-                EaseUI.getInstance().getNotifier().onNewMsg(message);
+                if (message.getChatType() == EMMessage.ChatType.GroupChat){
+                    List<String> disabledIds = EMClient.getInstance().pushManager().getNoPushGroups();
+                    if (disabledIds==null || !disabledIds.contains(message.getTo())){
+
+                        EaseUI.getInstance().getNotifier().onNewMsg(message);
+                    }
+
+                }else {
+                    EaseUI.getInstance().getNotifier().onNewMsg(message);
+                }
             }
         }
     }
 
     @Override
     public void onCmdMessageReceived(List<EMMessage> messages) {
-        for (EMMessage message : messages) {
-            statisticsMember(message);
+        for (final EMMessage message : messages) {
+            // 统计群组消息已读人数
+            EaseMessageUtils.statisticsMember(message);
+
+            EMCmdMessageBody body = (EMCmdMessageBody) message.getBody();
+            // 判断消息是否是当前会话的消息，并且收到的CMD是否是输入状态的消息
+            if (toChatUsername.equals(message.getFrom())
+                    && body.action()
+                    .equals(EaseConstant.INPUT_TYPE)
+                    && message.getChatType() == EMMessage.ChatType.Chat
+                    && message.getFrom().equals(toChatUsername)) {
+                // 收到输入状态新消息则把对方正在输入状态设置为true
+                isInput = true;
+                //通知ui修改状态
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        // 判断是不是对方输入状态的信息
+                        if (message.getType() == EMMessage.Type.CMD && isInput) {
+                            setInputStatus();
+                            return;
+                        }
+                    }
+                });
+            }
         }
     }
 
@@ -654,38 +769,6 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             messageList.refresh();
         }
     }
-
-    /**
-     * 统计群消息已读人数列表
-     *
-     * @param cmdMessage 需要判断的统计的 CMD 消息
-     */
-    private boolean statisticsMember(EMMessage cmdMessage) {
-        // 判断当前 cmd 的 action 是不是统计群消息已读
-        String action = ((EMCmdMessageBody) cmdMessage.getBody()).action();
-        if (action.equals(EaseConstant.GROUP_READ_ACTION)) {
-            String conversationId = cmdMessage.getStringAttribute(EaseConstant.GROUP_READ_CONVERSATION_ID,"");
-            EMConversation groupConversation = EMClient.getInstance().chatManager().getConversation(conversationId,
-                    EMConversation.EMConversationType.GroupChat);
-            try {
-                JSONArray msgIDArray = cmdMessage.getJSONArrayAttribute(EaseConstant.GROUP_READ_MSG_ID_ARRAY);
-                for(int i=0; i<msgIDArray.length(); i++){
-                    String msgId = msgIDArray.getString(i);
-                    EMMessage message = groupConversation.getMessage(msgId, true);
-                    JSONArray memberArray = message.getJSONArrayAttribute(EaseConstant.GROUP_READ_MEMBER_ARRAY);
-                    memberArray.put(cmdMessage.getFrom());
-                    EMClient.getInstance().chatManager().updateMessage(message);
-                }
-                return true;
-            } catch (HyphenateException e) {
-                e.printStackTrace();
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-        return false;
-    }
-
 
     /**
      * handle the click event for extend menu

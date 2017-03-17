@@ -32,6 +32,9 @@
     <string name="network_unavailable">网络连接不可用，请检查网络</string>
     <string name="copy">复制</string>
     <string name="forward">转发</string>
+    <string name="recall">撤回</string>
+    <string name="msg_recall_by_self">此条消息已撤回</string>
+    <string name="msg_recall_by_user">此条消息已被 %1$s 撤回</string>
     <string name="button_logout">退出登录</string>
     <string name="button_uploadlog">上传运行日志</string>
     <string name="ok">确定</string>
@@ -308,4 +311,5 @@
     <string name="toast_updatephoto_success">更新头像成功!</string>
     <string name="toast_updatephoto_fail">更新头像失败!</string>
     <string name="is_quit_the_chat_room">正在退出聊天室……</string>
+    <string name="title_input_status">正在输入...</string>
 </resources>

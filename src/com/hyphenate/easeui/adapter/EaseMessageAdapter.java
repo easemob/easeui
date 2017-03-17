@@ -37,6 +37,7 @@ import com.hyphenate.easeui.widget.chatrow.EaseChatRowText;
 import com.hyphenate.easeui.widget.chatrow.EaseChatRowVideo;
 import com.hyphenate.easeui.widget.chatrow.EaseChatRowVoice;
 import com.hyphenate.easeui.widget.chatrow.EaseCustomChatRowProvider;
+import com.hyphenate.easeui.widget.chatrow.EaseChatRowRecall;
 
 public class EaseMessageAdapter extends BaseAdapter{
 
@@ -62,6 +63,8 @@ public class EaseMessageAdapter extends BaseAdapter{
 	private static final int MESSAGE_TYPE_RECV_FILE = 11;
 	private static final int MESSAGE_TYPE_SENT_EXPRESSION = 12;
 	private static final int MESSAGE_TYPE_RECV_EXPRESSION = 13;
+	// 撤回类型消息
+	public static final int MSG_TYPE_SYS_RECALL = 14;
 	
 	
 	public int itemTypeCount; 
@@ -173,9 +176,9 @@ public class EaseMessageAdapter extends BaseAdapter{
 	 */
 	public int getViewTypeCount() {
 	    if(customRowProvider != null && customRowProvider.getCustomChatRowTypeCount() > 0){
-	        return customRowProvider.getCustomChatRowTypeCount() + 14;
+	        return customRowProvider.getCustomChatRowTypeCount() + 15;
 	    }
-        return 14;
+        return 15;
     }
 	
 
@@ -187,9 +190,15 @@ public class EaseMessageAdapter extends BaseAdapter{
 		if (message == null) {
 			return -1;
 		}
+
+		// 判断消息类型
+		if (message.getBooleanAttribute(EaseConstant.REVOKE_FLAG, false)) {
+			// 撤回消息
+			return MSG_TYPE_SYS_RECALL;
+		}
 		
 		if(customRowProvider != null && customRowProvider.getCustomChatRowType(message) > 0){
-		    return customRowProvider.getCustomChatRowType(message) + 13;
+		    return customRowProvider.getCustomChatRowType(message) + 14;
 		}
 		
 		if (message.getType() == EMMessage.Type.TXT) {
@@ -223,32 +232,37 @@ public class EaseMessageAdapter extends BaseAdapter{
         if(customRowProvider != null && customRowProvider.getCustomChatRow(message, position, this) != null){
             return customRowProvider.getCustomChatRow(message, position, this);
         }
-        switch (message.getType()) {
-        case TXT:
-            if(message.getBooleanAttribute(EaseConstant.MESSAGE_ATTR_IS_BIG_EXPRESSION, false)){
-                chatRow = new EaseChatRowBigExpression(context, message, position, this);
-            }else{
-                chatRow = new EaseChatRowText(context, message, position, this);
-            }
-            break;
-        case LOCATION:
-            chatRow = new EaseChatRowLocation(context, message, position, this);
-            break;
-        case FILE:
-            chatRow = new EaseChatRowFile(context, message, position, this);
-            break;
-        case IMAGE:
-            chatRow = new EaseChatRowImage(context, message, position, this);
-            break;
-        case VOICE:
-            chatRow = new EaseChatRowVoice(context, message, position, this);
-            break;
-        case VIDEO:
-            chatRow = new EaseChatRowVideo(context, message, position, this);
-            break;
-        default:
-            break;
-        }
+        if(message.getBooleanAttribute(EaseConstant.REVOKE_FLAG, false)){
+			chatRow = new EaseChatRowRecall(context, message, position, this);
+		}else {
+			switch (message.getType()) {
+				case TXT:
+					if (message.getBooleanAttribute(EaseConstant.MESSAGE_ATTR_IS_BIG_EXPRESSION, false)) {
+						chatRow = new EaseChatRowBigExpression(context, message, position, this);
+					} else {
+						chatRow = new EaseChatRowText(context, message, position, this);
+					}
+					break;
+				case LOCATION:
+					chatRow = new EaseChatRowLocation(context, message, position, this);
+					break;
+				case FILE:
+					chatRow = new EaseChatRowFile(context, message, position, this);
+					break;
+				case IMAGE:
+					chatRow = new EaseChatRowImage(context, message, position, this);
+					break;
+				case VOICE:
+					chatRow = new EaseChatRowVoice(context, message, position, this);
+					break;
+				case VIDEO:
+					chatRow = new EaseChatRowVideo(context, message, position, this);
+					break;
+
+				default:
+					break;
+			}
+		}
 
         return chatRow;
     }
