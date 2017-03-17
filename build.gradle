@@ -1,8 +1,8 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion '25.0.0'
+    compileSdkVersion 25
+    buildToolsVersion '25.0.2'
 
     defaultConfig {
         minSdkVersion 11
@@ -43,7 +43,9 @@ android {
 }
 
 dependencies {
-	//release时需要把hyphenatechatsdk的依赖注释掉，sdk已经被打成jar包放在libs底下
-	compile project(':hyphenatechatsdk')
-    compile fileTree(dir: 'libs', include: '*.jar')
+    //release时需要把hyphenatechatsdk的依赖注释掉，sdk已经被打成jar包放在libs底下
+    //	compile project(':hyphenatechatsdk')
+    compile fileTree(include: '*.jar', dir: 'libs')
+    compile files('libs/hyphenatechat_3.3.0.jar')
+    compile 'com.android.support:support-v4:25.3.0'
 }
