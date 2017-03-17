@@ -13,6 +13,8 @@ import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -22,6 +24,7 @@ import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -29,6 +32,7 @@ import com.hyphenate.EMMessageListener;
 import com.hyphenate.EMValueCallBack;
 import com.hyphenate.chat.EMChatRoom;
 import com.hyphenate.chat.EMClient;
+import com.hyphenate.chat.EMCmdMessageBody;
 import com.hyphenate.chat.EMConversation;
 import com.hyphenate.chat.EMGroup;
 import com.hyphenate.chat.EMImageMessageBody;
@@ -42,6 +46,7 @@ import com.hyphenate.easeui.domain.EaseEmojicon;
 import com.hyphenate.easeui.domain.EaseUser;
 import com.hyphenate.easeui.model.EaseAtMessageHelper;
 import com.hyphenate.easeui.utils.EaseCommonUtils;
+import com.hyphenate.easeui.utils.EaseMessageUtils;
 import com.hyphenate.easeui.utils.EaseUserUtils;
 import com.hyphenate.easeui.widget.EaseAlertDialog;
 import com.hyphenate.easeui.widget.EaseAlertDialog.AlertDialogUser;
@@ -57,6 +62,8 @@ import com.hyphenate.util.PathUtil;
 
 import java.io.File;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * you can new an EaseChatFragment to use or you can inherit it to expand.
@@ -111,6 +118,14 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     private boolean isMessageListInited;
     protected MyItemClickListener extendMenuItemClickListener;
 
+    private EditText mEdsendmessage;
+    // 检测输入状态的开始时间
+    private long mOldTime;
+    // 定时器，主要用来更新对方输入状态
+    private Timer mTimer;
+    // 记录对方输入状态
+    private boolean isInput;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.ease_fragment_chat, container, false);
@@ -147,6 +162,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         registerExtendMenuItem();
         // init input menu
         inputMenu.init(null);
+        mEdsendmessage = (EditText) getView().findViewById(R.id.et_sendmessage);
+        mOldTime = 0;
         inputMenu.setChatInputMenuListener(new ChatInputMenuListener() {
 
             @Override
@@ -171,6 +188,32 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             }
         });
 
+        //输入框监听事件
+        mEdsendmessage.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // 当新增内容长度为1时采取判断增加的字符是否为@符号
+                if (conversation.getType() == EMConversation.EMConversationType.Chat) {
+                    if ((System.currentTimeMillis() - mOldTime)
+                            > EaseConstant.TIME_INPUT_STATUS) {
+                        mOldTime = System.currentTimeMillis();
+                        // 调用发送输入状态方法
+                        EaseMessageUtils.sendInputStatusMessage(toChatUsername);
+                    }
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
         swipeRefreshLayout = messageList.getSwipeRefreshLayout();
         swipeRefreshLayout.setColorSchemeResources(R.color.holo_blue_bright, R.color.holo_green_light,
                 R.color.holo_orange_light, R.color.holo_red_light);
@@ -179,6 +222,35 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
         getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
     }
+
+    /**
+     * 设置对方正在输入状态，主要是接收到CMD消息后，得知对方正在输入
+     */
+    private void setInputStatus() {
+        // 设置title为正在输入状态
+        titleBar.setTitle(getString(R.string.title_input_status));
+        if (mTimer == null) {
+            mTimer = new Timer();
+        } else {
+            mTimer.purge();
+        }
+        // 创建定时器任务
+        TimerTask task = new TimerTask() {
+            @Override public void run() {
+                // 执行定时器把当前对方输入状态设置为false
+                isInput = false;
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override public void run() {
+                        titleBar.setTitle(toChatUsername);
+                    }
+                });
+
+            }
+        };
+        // 设置定时任务
+        mTimer.schedule(task, EaseConstant.TIME_INPUT_STATUS);
+    }
+
 
     protected void setUpView() {
         titleBar.setTitle(toChatUsername);
@@ -218,6 +290,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             @Override
             public void onClick(View v) {
                 onBackPressed();
+
             }
         });
         titleBar.setRightLayoutClickListener(new OnClickListener() {
@@ -453,6 +526,9 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
     public void onBackPressed() {
         if (inputMenu.onBackPressed()) {
+            if(mTimer != null){
+                mTimer.cancel();
+            }
             getActivity().finish();
             if(chatType == EaseConstant.CHATTYPE_GROUP){
                 EaseAtMessageHelper.get().removeAtMeGroup(toChatUsername);
@@ -588,6 +664,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
             // if the message is for current conversation
             if (username.equals(toChatUsername) || message.getTo().equals(toChatUsername)) {
+                // 收到新消息就把对方正在输入状态设置为false
+                isInput = false;
                 messageList.refreshSelectLast();
                 if (message.getChatType() == EMMessage.ChatType.GroupChat){
                     List<String> disabledIds = EMClient.getInstance().pushManager().getNoPushGroups();
@@ -616,7 +694,41 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
     @Override
     public void onCmdMessageReceived(List<EMMessage> messages) {
-
+        for (int i = 0; i < messages.size(); i++) {
+            // 透传消息
+            final EMMessage cmdMessage = messages.get(i);
+            EMCmdMessageBody body = (EMCmdMessageBody) cmdMessage.getBody();
+//            // 判断是不是撤回消息的透传
+//            if (body.action().equals(EaseConstant.REVOKE_FLAG)) {
+//                // 收到透传的CMD消息后，调用撤回消息方法进行处理
+//                boolean result = EaseMessageUtils.receiveRecallMessage(cmdMessage);
+//                // 撤回消息之后，判断是否当前聊天界面，用来刷新界面
+//                if (toChatUsername.equals(cmdMessage.getFrom()) && result) {
+//                    String msgId = cmdMessage.getStringAttribute(EaseConstant.MSG_ID, null);
+//                    messageList.refresh();
+//                }
+//            }
+            // 判断消息是否是当前会话的消息，并且收到的CMD是否是输入状态的消息
+            if (toChatUsername.equals(cmdMessage.getFrom())
+                    && body.action()
+                    .equals(EaseConstant.INPUT_TYPE)
+                    && cmdMessage.getChatType() == EMMessage.ChatType.Chat
+                    && cmdMessage.getFrom().equals(toChatUsername)) {
+                // 收到输入状态新消息则把对方正在输入状态设置为true
+                isInput = true;
+                //通知ui修改状态
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        // 判断是不是对方输入状态的信息
+                        if (cmdMessage.getType() == EMMessage.Type.CMD && isInput) {
+                            setInputStatus();
+                            return;
+                        }
+                    }
+                });
+            }
+        }
     }
 
     @Override
