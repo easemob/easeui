@@ -24,9 +24,14 @@ public class EaseConstant {
     public static final String MESSAGE_ATTR_VALUE_AT_MSG_ALL = "ALL";
 
     // 置顶
-    public static final String EM_ATTR_PUSHPIN = "em_attr_pushpin";
+    public static final String CONVERSATION_TOP = "conversation_top";
     // 草稿
-    public static final String EM_ATTR_DRAFT = "em_attr_draft";
+    public static final String CONVERSATION_DRAFT = "conversation_draft";
+    // 群组消息已读 Action
+    public static final String GROUP_READ_ACTION = "group_read_action";
+    public static final String GROUP_READ_MSG_ID_ARRAY = "group_read_msg_id_array";
+    public static final String GROUP_READ_CONVERSATION_ID = "group_read_conversation_id";
+    public static final String GROUP_READ_MEMBER_ARRAY = "group_read_MEMBER_ARRAY";
 
     public static final int CHATTYPE_SINGLE = 1;
     public static final int CHATTYPE_GROUP = 2;

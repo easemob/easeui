@@ -43,7 +43,7 @@ public class EaseConversationExtUtils {
                 jsonObject = new JSONObject(ext);
             }
             // 将扩展信息设置给外层的 JSONObject 对象
-            jsonObject.put(EaseConstant.EM_ATTR_PUSHPIN, top);
+            jsonObject.put(EaseConstant.CONVERSATION_TOP, top);
             // 将扩展信息保存到 Conversation 对象的扩展中去
             conversation.setExtField(jsonObject.toString());
         } catch (JSONException e) {
@@ -67,7 +67,7 @@ public class EaseConversationExtUtils {
         try {
             // 根据扩展获取Json对象，然后获取置顶的属性，
             JSONObject jsonObject = new JSONObject(ext);
-            return jsonObject.optBoolean(EaseConstant.EM_ATTR_PUSHPIN);
+            return jsonObject.optBoolean(EaseConstant.CONVERSATION_TOP);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -92,7 +92,7 @@ public class EaseConversationExtUtils {
                 jsonObject = new JSONObject(ext);
             }
             // 将扩展信息设置给 JSONObject 对象
-            jsonObject.put(EaseConstant.EM_ATTR_DRAFT, draft);
+            jsonObject.put(EaseConstant.CONVERSATION_DRAFT, draft);
             // 将扩展信息保存到 EMConversation 对象扩展中去
             conversation.setExtField(jsonObject.toString());
         } catch (JSONException e) {
@@ -118,7 +118,7 @@ public class EaseConversationExtUtils {
                 jsonObject = new JSONObject(ext);
             }
             // 根据扩展的key获取扩展的值
-            return jsonObject.optString(EaseConstant.EM_ATTR_DRAFT);
+            return jsonObject.optString(EaseConstant.CONVERSATION_DRAFT);
         } catch (JSONException e) {
             e.printStackTrace();
         }
