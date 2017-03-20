@@ -34,6 +34,9 @@
     <string name="network_unavailable">The network connection is not available, please check the network</string>
     <string name="copy">Copy</string>
     <string name="forward">Forward</string>
+    <string name="recall">Recall</string>
+    <string name="msg_recall_by_self">This message has been recall</string>
+    <string name="msg_recall_by_user">This message has been withdrawn by %1$s</string>
     <string name="button_logout">Logout</string>
     <string name="button_uploadlog">Upload the log</string>
     <string name="ok">OK</string>
@@ -298,5 +301,6 @@
     <string name="toast_updatephoto_success">update photo success!</string>
     <string name="toast_updatephoto_fail">update photo fail!</string>
     <string name="is_quit_the_chat_room">Exiting chat room</string>
+    <string name="title_input_status">Typing...</string>
 
 </resources>
