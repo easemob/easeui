@@ -80,6 +80,13 @@ public class EaseCommonUtils {
      */
     public static String getMessageDigest(EMMessage message, Context context) {
         String digest = "";
+        if(message.getBooleanAttribute(EaseConstant.REVOKE_FLAG, false)){
+            return context.getString(R.string.recall_msg);
+        }
+        if(message.getBooleanAttribute(EaseConstant.GROUP_CHANGE, false)){
+            EMTextMessageBody txtBody = (EMTextMessageBody) message.getBody();
+            return txtBody.getMessage();
+        }
         switch (message.getType()) {
         case LOCATION:
             if (message.direct() == EMMessage.Direct.RECEIVE) {

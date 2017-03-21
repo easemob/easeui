@@ -38,6 +38,10 @@ public class EaseConstant {
     public static final String MSG_ID = "msg_id";
     // 输入状态
     public static final String INPUT_TYPE = "inputType";
+    //username
+    public static final String JOINED_USERNAME = "joined_username";
+    //群组加入或退出
+    public static final String GROUP_CHANGE = "group_change";
 
 
     /**

@@ -30,6 +30,7 @@ import com.hyphenate.easeui.utils.EaseCommonUtils;
 import com.hyphenate.easeui.widget.EaseChatMessageList.MessageListItemClickListener;
 import com.hyphenate.easeui.widget.chatrow.EaseChatRow;
 import com.hyphenate.easeui.widget.chatrow.EaseChatRowBigExpression;
+import com.hyphenate.easeui.widget.chatrow.EaseChatRowChange;
 import com.hyphenate.easeui.widget.chatrow.EaseChatRowFile;
 import com.hyphenate.easeui.widget.chatrow.EaseChatRowImage;
 import com.hyphenate.easeui.widget.chatrow.EaseChatRowLocation;
@@ -65,6 +66,8 @@ public class EaseMessageAdapter extends BaseAdapter{
 	private static final int MESSAGE_TYPE_RECV_EXPRESSION = 13;
 	// 撤回类型消息
 	public static final int MSG_TYPE_SYS_RECALL = 14;
+	//群组加入或退出
+	public static final int MSG_TYPE_SYS_CHANGE = 15;
 	
 	
 	public int itemTypeCount; 
@@ -191,16 +194,18 @@ public class EaseMessageAdapter extends BaseAdapter{
 			return -1;
 		}
 
+		if(customRowProvider != null && customRowProvider.getCustomChatRowType(message) > 0){
+		    return customRowProvider.getCustomChatRowType(message) + 14;
+		}
 		// 判断消息类型
 		if (message.getBooleanAttribute(EaseConstant.REVOKE_FLAG, false)) {
 			// 撤回消息
 			return MSG_TYPE_SYS_RECALL;
 		}
-		
-		if(customRowProvider != null && customRowProvider.getCustomChatRowType(message) > 0){
-		    return customRowProvider.getCustomChatRowType(message) + 14;
+		if(message.getBooleanAttribute(EaseConstant.GROUP_CHANGE, false)){
+			//群组加入或退出
+			return MSG_TYPE_SYS_CHANGE;
 		}
-		
 		if (message.getType() == EMMessage.Type.TXT) {
 		    if(message.getBooleanAttribute(EaseConstant.MESSAGE_ATTR_IS_BIG_EXPRESSION, false)){
 		        return message.direct() == EMMessage.Direct.RECEIVE ? MESSAGE_TYPE_RECV_EXPRESSION : MESSAGE_TYPE_SENT_EXPRESSION;
@@ -234,6 +239,8 @@ public class EaseMessageAdapter extends BaseAdapter{
         }
         if(message.getBooleanAttribute(EaseConstant.REVOKE_FLAG, false)){
 			chatRow = new EaseChatRowRecall(context, message, position, this);
+		}else if(message.getBooleanAttribute(EaseConstant.GROUP_CHANGE, false)){
+			chatRow = new EaseChatRowChange(context, message, position, this);
 		}else {
 			switch (message.getType()) {
 				case TXT:

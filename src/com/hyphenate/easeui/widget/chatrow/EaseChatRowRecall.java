@@ -13,7 +13,6 @@ import com.hyphenate.easeui.R;
  */
 public class EaseChatRowRecall extends EaseChatRow {
 
-    private TextView msgTimeView;
     private TextView contentView;
 
     public EaseChatRowRecall(Context context, EMMessage message, int position, BaseAdapter adapter) {

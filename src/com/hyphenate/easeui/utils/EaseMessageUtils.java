@@ -3,8 +3,11 @@ package com.hyphenate.easeui.utils;
 import com.hyphenate.EMCallBack;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMCmdMessageBody;
+import com.hyphenate.chat.EMConversation;
 import com.hyphenate.chat.EMMessage;
+import com.hyphenate.chat.EMTextMessageBody;
 import com.hyphenate.easeui.EaseConstant;
+import com.hyphenate.util.EMLog;
 
 /**
  * 消息处理工具类，主要做谢谢EMMessage对象的处理
@@ -70,6 +73,7 @@ public class EaseMessageUtils {
      */
     public static boolean receiveRecallMessage(EMMessage cmdMessage) {
         boolean result = false;
+        EMConversation conversation = EMClient.getInstance().chatManager().getConversation(cmdMessage.getFrom());
         // 从cmd扩展中获取要撤回消息的id
         String msgId = cmdMessage.getStringAttribute(EaseConstant.MSG_ID, null);
         if (msgId == null) {
@@ -77,14 +81,17 @@ public class EaseMessageUtils {
         }
         // 根据得到的msgId 去本地查找这条消息，如果本地已经没有这条消息了，就不用撤回
         EMMessage message = EMClient.getInstance().chatManager().getMessage(msgId);
+        EMLog.e("message", message.toString());
         if (message == null) {
             return result;
         }
 
         // 设置扩展为撤回消息类型，是为了区分消息的显示
         message.setAttribute(EaseConstant.REVOKE_FLAG, true);
+        EMClient.getInstance().chatManager().getMessage(msgId);
         // 更新消息
         result = EMClient.getInstance().chatManager().updateMessage(message);
+
         return result;
     }
 
@@ -102,4 +109,35 @@ public class EaseMessageUtils {
         // 确认无误，开始表示发送输入状态的透传
         EMClient.getInstance().chatManager().sendMessage(cmdMessage);
     }
+
+    /**
+     * 保存一条加入群组通知的消息
+     * @param groupId
+     * @param notifyContext
+     */
+    public static void saveGroupNotifyMessage(String groupId, String notifyContext){
+        // 根据groupid 和当前时间组成 msgId
+        String msgId = groupId+System.currentTimeMillis();
+
+        // 创建一条接收消息，用来保存申请信息
+        EMMessage message = EMMessage.createReceiveMessage(EMMessage.Type.TXT);
+        // 保存消息内容，用于直接显示
+        EMTextMessageBody body = new EMTextMessageBody(notifyContext);
+        message.addBody(body);
+        // 加入或退出的username
+//        message.setAttribute(MLConstants.ML_ATTR_USERNAME, username);
+//        // 设置理由
+//        message.setAttribute(MLConstants.ML_ATTR_REASON, reason);
+//        // 申请与通知类型
+//        message.setAttribute(MLConstants.ML_ATTR_TYPE, MLConstants.ML_APPLY_TYPE_USER);
+//        // 设置当前申请信息状态
+//        message.setAttribute(MLConstants.ML_ATTR_STATUS, "");
+//        // 设置消息发送方
+//        message.setFrom(MLConstants.ML_CONVERSATION_ID_APPLY);
+        // 设置msgId
+        message.setMsgId(msgId);
+        // 将消息保存到本地和内存
+        EMClient.getInstance().chatManager().saveMessage(message);
+    }
+
 }
