@@ -122,6 +122,6 @@ public class EaseShowVideoActivity extends EaseBaseActivity{
 	public void onBackPressed() {
 		finish();
 	}
- 
+
 
 }

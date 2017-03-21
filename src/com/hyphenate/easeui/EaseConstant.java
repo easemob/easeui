@@ -22,6 +22,7 @@ public class EaseConstant {
 
     public static final String MESSAGE_ATTR_AT_MSG = "em_at_list";
     public static final String MESSAGE_ATTR_VALUE_AT_MSG_ALL = "ALL";
+    public static final String MESSAGE_ATTR_BURN = "em_is_burn";
 
     // 置顶
     public static final String CONVERSATION_TOP = "conversation_top";
@@ -31,6 +32,7 @@ public class EaseConstant {
     public static final String GROUP_READ_ACTION = "group_read_action";
     public static final String GROUP_READ_MSG_ID_ARRAY = "group_read_msg_id_array";
     public static final String GROUP_READ_CONVERSATION_ID = "group_read_conversation_id";
+
     public static final String GROUP_READ_MEMBER_ARRAY = "group_read_member_array";
 
     public static final int CHATTYPE_SINGLE = 1;

@@ -755,6 +755,13 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         if(isMessageListInited) {
             messageList.refresh();
         }
+        for (EMMessage message : messages) {
+            // 阅后即焚的消息收到已读 ack 删除消息
+            if (message.getBooleanAttribute(EaseConstant.MESSAGE_ATTR_BURN, false)) {
+                conversation.removeMessage(message.getMsgId());
+                messageList.refresh();
+            }
+        }
     }
 
     @Override
@@ -791,9 +798,9 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             case ITEM_PICTURE:
                 selectPicFromLocal();
                 break;
-            case ITEM_LOCATION:
-                startActivityForResult(new Intent(getActivity(), EaseBaiduMapActivity.class), REQUEST_CODE_MAP);
-                break;
+            //case ITEM_LOCATION:
+            //    startActivityForResult(new Intent(getActivity(), EaseBaiduMapActivity.class), REQUEST_CODE_MAP);
+            //    break;
 
             default:
                 break;

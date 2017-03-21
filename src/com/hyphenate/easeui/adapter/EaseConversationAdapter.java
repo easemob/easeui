@@ -174,7 +174,7 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
         if (!TextUtils.isEmpty(draft)) {
             // 表示草稿的前缀
             msgPrefix = "[" + context.getString(R.string.hint_msg_draft) + "]";
-            Spannable spannable = new SpannableString(msgPrefix + draft);
+            Spannable spannable = EaseSmileUtils.getSmiledText(context, msgPrefix + draft);
             spannable.setSpan(
                     new ForegroundColorSpan(ContextCompat.getColor(context, R.color.holo_red_light)), 0,
                     msgPrefix.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
