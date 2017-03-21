@@ -47,6 +47,8 @@ public class EaseConstant {
     // 输入状态
     public static final String INPUT_TYPE = "inputType";
 
+    // 公告会话 id，这里默认是 admin
+    public static final String AFFICHE_CONVERSATION_ID = "admin";
 
     /**
      * 自定义一些错误码，表示一些固定的错误

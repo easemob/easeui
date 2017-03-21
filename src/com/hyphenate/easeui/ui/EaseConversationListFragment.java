@@ -26,6 +26,7 @@ import com.hyphenate.EMConversationListener;
 import com.hyphenate.EMError;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMConversation;
+import com.hyphenate.easeui.EaseConstant;
 import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.utils.EaseConversationExtUtils;
 import com.hyphenate.easeui.widget.EaseConversationList;
@@ -240,11 +241,13 @@ public class EaseConversationListFragment extends EaseBaseFragment{
         List<EMConversation> list = new ArrayList<EMConversation>();
         for (Pair<Long, EMConversation> sortItem : sortList) {
             EMConversation temp = sortItem.second;
-            if (EaseConversationExtUtils.getConversationTop(temp)) {
-                list.add(count, temp);
-                count++;
-            } else {
-                list.add(temp);
+            if (!temp.conversationId().equals(EaseConstant.AFFICHE_CONVERSATION_ID)) {
+                if (EaseConversationExtUtils.getConversationTop(temp)) {
+                    list.add(count, temp);
+                    count++;
+                } else {
+                    list.add(temp);
+                }
             }
         }
 

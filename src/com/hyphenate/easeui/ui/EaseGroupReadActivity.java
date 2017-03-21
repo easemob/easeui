@@ -45,7 +45,7 @@ public class EaseGroupReadActivity extends EaseBaseActivity {
             }
         });
 
-        listView = (ListView) findViewById(R.id.shared_list_view);
+        listView = (ListView) findViewById(R.id.list_view);
 
         List<Map<String, String>> members = new ArrayList<>();
         for (int i = 0; i < memberArray.length(); i++) {
