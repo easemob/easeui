@@ -125,8 +125,23 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
 
         if (conversation.getUnreadMsgCount() > 0) {
             // show unread message count
-            holder.unreadLabel.setText(String.valueOf(conversation.getUnreadMsgCount()));
             holder.unreadLabel.setVisibility(View.VISIBLE);
+            if (conversation.getType() == EMConversationType.GroupChat){
+                List<String> list = EMClient.getInstance().pushManager().getNoPushGroups();
+                if (list == null || !list.contains(conversation.getLastMessage().getTo())){
+                    holder.unreadLabel.setBackgroundResource(R.drawable.ease_unread_count_bg);
+                    holder.unreadLabel.setText(String.valueOf(conversation.getUnreadMsgCount()));
+                }else {
+                    holder.unreadLabel.setText(null);
+                    holder.unreadLabel.setBackgroundResource(R.drawable.ease_unread_dot);
+
+                }
+
+            }else {
+                holder.unreadLabel.setBackgroundResource(R.drawable.ease_unread_count_bg);
+                holder.unreadLabel.setText(String.valueOf(conversation.getUnreadMsgCount()));
+            }
+
         } else {
             holder.unreadLabel.setVisibility(View.INVISIBLE);
         }
