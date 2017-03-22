@@ -202,7 +202,6 @@ public class EaseMessageAdapter extends BaseAdapter{
 		// 判断消息类型
 		if (message.getBooleanAttribute(EaseConstant.REVOKE_FLAG, false)) {
 			// 撤回消息
-			Log.e("recall_1", "MSG_TYPE_SYS_RECALL"+message.toString());
 			return MSG_TYPE_SYS_RECALL;
 
 		}
@@ -242,7 +241,6 @@ public class EaseMessageAdapter extends BaseAdapter{
             return customRowProvider.getCustomChatRow(message, position, this);
         }
         if(message.getBooleanAttribute(EaseConstant.REVOKE_FLAG, false)){
-			Log.e("recall_2", "REVOKE_FLAG"+message.toString());
 			chatRow = new EaseChatRowRecall(context, message, position, this);
 		}else if(message.getBooleanAttribute(EaseConstant.GROUP_CHANGE, false)){
 			chatRow = new EaseChatRowChange(context, message, position, this);

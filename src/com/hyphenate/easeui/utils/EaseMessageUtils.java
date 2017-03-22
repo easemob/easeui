@@ -75,7 +75,18 @@ public class EaseMessageUtils {
      */
     public static boolean receiveRecallMessage(EMMessage cmdMessage) {
         boolean result = false;
-        EMConversation conversation = EMClient.getInstance().chatManager().getConversation(cmdMessage.getFrom());
+        EMConversation conversation = null;
+        if (cmdMessage.getChatType() == EMMessage.ChatType.Chat) {
+            conversation = EMClient.getInstance()
+                    .chatManager()
+                    .getConversation(cmdMessage.getFrom(), EMConversation.EMConversationType.Chat,
+                            true);
+        } else {
+            conversation = EMClient.getInstance()
+                    .chatManager()
+                    .getConversation(cmdMessage.getTo(),
+                            EMConversation.EMConversationType.GroupChat, true);
+        }
         // 从cmd扩展中获取要撤回消息的id
         String msgId = cmdMessage.getStringAttribute(EaseConstant.MSG_ID, null);
         if (msgId == null) {
@@ -83,7 +94,6 @@ public class EaseMessageUtils {
         }
         // 根据得到的msgId 去本地查找这条消息，如果本地已经没有这条消息了，就不用撤回
         EMMessage message = EMClient.getInstance().chatManager().getMessage(msgId);
-        EMLog.e("message", message.toString());
         if (message == null) {
             return result;
         }
@@ -92,7 +102,7 @@ public class EaseMessageUtils {
         message.setAttribute(EaseConstant.REVOKE_FLAG, true);
         // 更新消息
         result = EMClient.getInstance().chatManager().updateMessage(message);
-        conversation.getMessage(msgId,true);
+        conversation.getMessage(msgId, true);
 
         return result;
     }
@@ -189,16 +199,18 @@ public class EaseMessageUtils {
     /**
      * 收到阅后即焚 cmd，TODO 这个是因为 ios 如果 ack 发送失败，没法再次发送，只能通过 cmd 扩展来做
      */
-    public static void receiveBurnCMDMessage(EMMessage message){
+    public static void receiveBurnCMDMessage(EMMessage message) {
         String msgId = message.getStringAttribute(EaseConstant.MESSAGE_ATTR_BURN_MSG_ID, "");
-        EMClient.getInstance().chatManager().getConversation(message.getFrom()).removeMessage(msgId);
+        EMClient.getInstance()
+                .chatManager()
+                .getConversation(message.getFrom())
+                .removeMessage(msgId);
     }
 
-    public static void receiveBurnACKMessage(EMMessage message){
+    public static void receiveBurnACKMessage(EMMessage message) {
         EMClient.getInstance()
                 .chatManager()
                 .getConversation(message.getTo(), EMConversation.EMConversationType.Chat, true)
                 .removeMessage(message.getMsgId());
     }
-
 }

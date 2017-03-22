@@ -43,11 +43,9 @@ public class EaseChatRowRecall extends EaseChatRow {
         String messageStr = null;
         if (message.direct() == EMMessage.Direct.SEND) {
             messageStr = String.format(context.getString(R.string.msg_recall_by_self));
-            Log.e("textContent", messageStr);
         } else {
             messageStr = String.format(context.getString(R.string.msg_recall_by_user), message.getUserName());
         }
-        Log.e("textContent", messageStr + message.toString());
         contentView.setText(messageStr);
     }
 
