@@ -88,9 +88,9 @@ public class EaseMessageUtils {
 
         // 设置扩展为撤回消息类型，是为了区分消息的显示
         message.setAttribute(EaseConstant.REVOKE_FLAG, true);
-        EMClient.getInstance().chatManager().getMessage(msgId);
         // 更新消息
         result = EMClient.getInstance().chatManager().updateMessage(message);
+        conversation.getMessage(msgId,true);
 
         return result;
     }
