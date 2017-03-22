@@ -5,7 +5,9 @@ import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMCmdMessageBody;
 import com.hyphenate.chat.EMConversation;
 import com.hyphenate.chat.EMMessage;
+import com.hyphenate.chat.EMTextMessageBody;
 import com.hyphenate.easeui.EaseConstant;
+import com.hyphenate.util.EMLog;
 import com.hyphenate.exceptions.HyphenateException;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -73,6 +75,7 @@ public class EaseMessageUtils {
      */
     public static boolean receiveRecallMessage(EMMessage cmdMessage) {
         boolean result = false;
+        EMConversation conversation = EMClient.getInstance().chatManager().getConversation(cmdMessage.getFrom());
         // 从cmd扩展中获取要撤回消息的id
         String msgId = cmdMessage.getStringAttribute(EaseConstant.MSG_ID, null);
         if (msgId == null) {
@@ -80,6 +83,7 @@ public class EaseMessageUtils {
         }
         // 根据得到的msgId 去本地查找这条消息，如果本地已经没有这条消息了，就不用撤回
         EMMessage message = EMClient.getInstance().chatManager().getMessage(msgId);
+        EMLog.e("message", message.toString());
         if (message == null) {
             return result;
         }
@@ -88,6 +92,8 @@ public class EaseMessageUtils {
         message.setAttribute(EaseConstant.REVOKE_FLAG, true);
         // 更新消息
         result = EMClient.getInstance().chatManager().updateMessage(message);
+        conversation.getMessage(msgId,true);
+
         return result;
     }
 

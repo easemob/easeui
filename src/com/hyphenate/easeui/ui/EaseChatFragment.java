@@ -40,6 +40,7 @@ import com.hyphenate.chat.EMImageMessageBody;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMMessage.ChatType;
 import com.hyphenate.chat.EMTextMessageBody;
+import com.hyphenate.chat.EMVideoMessageBody;
 import com.hyphenate.easeui.EaseConstant;
 import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.controller.EaseUI;
@@ -1128,6 +1129,19 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 sendImageMessage(filePath);
             }
             break;
+            case VIDEO:
+                // send video
+                String videoPath = ((EMVideoMessageBody) forward_msg.getBody()).getLocalUrl();
+                String localThumb = ((EMVideoMessageBody) forward_msg.getBody()).getLocalThumb();
+                int duration = ((EMVideoMessageBody) forward_msg.getBody()).getDuration();
+                if (videoPath != null) {
+                    File file = new File(videoPath);
+                    if (!file.exists()) {
+                        Toast.makeText(getActivity(), R.string.foward_video, Toast.LENGTH_SHORT).show();
+                    }
+                    sendVideoMessage(videoPath, localThumb, duration);
+                }
+                break;
         default:
             break;
         }
@@ -1173,6 +1187,16 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     }
                 }
             });
+        }
+
+        @Override
+        public void onMemberJoined(String s, String s1) {
+            messageList.refresh();
+        }
+
+        @Override
+        public void onMemberExited(String s, String s1) {
+            messageList.refresh();
         }
     }
 
