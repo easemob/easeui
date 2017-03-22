@@ -179,4 +179,13 @@ public class EaseMessageUtils {
         }
         return null;
     }
+
+    /**
+     * 收到阅后即焚 cmd，TODO 这个是因为 ios 如果 ack 发送失败，没法再次发送，只能通过 cmd 扩展来做
+     */
+    public static void receiveBurnCMDMessage(EMMessage message){
+        String msgId = message.getStringAttribute(EaseConstant.MESSAGE_ATTR_BURN_MSG_ID, "");
+        EMClient.getInstance().chatManager().getConversation(message.getFrom()).removeMessage(msgId);
+    }
+
 }
