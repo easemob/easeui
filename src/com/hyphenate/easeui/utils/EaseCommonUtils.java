@@ -80,6 +80,10 @@ public class EaseCommonUtils {
      */
     public static String getMessageDigest(EMMessage message, Context context) {
         String digest = "";
+        if (message.getBooleanAttribute(EaseConstant.MESSAGE_ATTR_BURN, false)) {
+            digest = "[" + getString(context, R.string.attach_burn) + "]";
+            return digest;
+        }
         switch (message.getType()) {
         case LOCATION:
             if (message.direct() == EMMessage.Direct.RECEIVE) {
