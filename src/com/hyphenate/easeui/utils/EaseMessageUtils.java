@@ -8,6 +8,9 @@ import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMTextMessageBody;
 import com.hyphenate.easeui.EaseConstant;
 import com.hyphenate.util.EMLog;
+import com.hyphenate.exceptions.HyphenateException;
+import org.json.JSONArray;
+import org.json.JSONException;
 
 /**
  * 消息处理工具类，主要做谢谢EMMessage对象的处理
@@ -28,8 +31,7 @@ public class EaseMessageUtils {
         long msgTime = message.getMsgTime();
         // 判断当前消息的时间是否已经超过了限制时间，如果超过，则不可撤回消息
         if (currTime < msgTime || (currTime - msgTime > EaseConstant.TIME_RECALL)) {
-            callBack.onError(EaseConstant.ERROR_I_RECALL_TIME,
-                    EaseConstant.ERROR_S_RECALL_TIME);
+            callBack.onError(EaseConstant.ERROR_I_RECALL_TIME, EaseConstant.ERROR_S_RECALL_TIME);
             return;
         }
         // 获取消息 id，作为撤回消息的参数
@@ -111,33 +113,85 @@ public class EaseMessageUtils {
     }
 
     /**
-     * 保存一条加入群组通知的消息
-     * @param groupId
-     * @param notifyContext
+     * 发送一条群成员已读消息的 cmd 消息
+     *
+     * @param to 已读消息的发送者
+     * @param conversationId 消息所属会话
+     * @param msgId 已读的 msgId
      */
-    public static void saveGroupNotifyMessage(String groupId, String notifyContext){
-        // 根据groupid 和当前时间组成 msgId
-        String msgId = groupId+System.currentTimeMillis();
-
-        // 创建一条接收消息，用来保存申请信息
-        EMMessage message = EMMessage.createReceiveMessage(EMMessage.Type.TXT);
-        // 保存消息内容，用于直接显示
-        EMTextMessageBody body = new EMTextMessageBody(notifyContext);
+    public static void sendGroupReadMessage(String to, String conversationId, String msgId) {
+        EMMessage message = EMMessage.createSendMessage(EMMessage.Type.CMD);
+        EMCmdMessageBody body = new EMCmdMessageBody(EaseConstant.GROUP_READ_ACTION);
         message.addBody(body);
-        // 加入或退出的username
-//        message.setAttribute(MLConstants.ML_ATTR_USERNAME, username);
-//        // 设置理由
-//        message.setAttribute(MLConstants.ML_ATTR_REASON, reason);
-//        // 申请与通知类型
-//        message.setAttribute(MLConstants.ML_ATTR_TYPE, MLConstants.ML_APPLY_TYPE_USER);
-//        // 设置当前申请信息状态
-//        message.setAttribute(MLConstants.ML_ATTR_STATUS, "");
-//        // 设置消息发送方
-//        message.setFrom(MLConstants.ML_CONVERSATION_ID_APPLY);
-        // 设置msgId
-        message.setMsgId(msgId);
-        // 将消息保存到本地和内存
-        EMClient.getInstance().chatManager().saveMessage(message);
+        message.setTo(to);
+        message.setAttribute(EaseConstant.GROUP_READ_CONVERSATION_ID, conversationId);
+
+        JSONArray array = new JSONArray();
+        array.put(msgId);
+        message.setAttribute(EaseConstant.GROUP_READ_MSG_ID_ARRAY, array);
+
+        EMClient.getInstance().chatManager().sendMessage(message);
+    }
+
+    /**
+     * 统计群消息已读人数列表
+     *
+     * @param cmdMessage 需要判断的统计的 CMD 消息
+     */
+    public static boolean receiveGroupReadMessage(EMMessage cmdMessage) {
+        String conversationId =
+                cmdMessage.getStringAttribute(EaseConstant.GROUP_READ_CONVERSATION_ID, "");
+        EMConversation groupConversation = EMClient.getInstance()
+                .chatManager()
+                .getConversation(conversationId, EMConversation.EMConversationType.GroupChat);
+        try {
+            // 获取对方发来的已读 msgId
+            JSONArray msgIdArray =
+                    cmdMessage.getJSONArrayAttribute(EaseConstant.GROUP_READ_MSG_ID_ARRAY);
+            for (int i = 0; i < msgIdArray.length(); i++) {
+                String msgId = msgIdArray.getString(i);
+                EMMessage message = groupConversation.getMessage(msgId, true);
+                // 获取当前消息已读成员数组
+                JSONArray memberArray = getReadMembers(message);
+                if (memberArray == null) {
+                    memberArray = new JSONArray();
+                }
+                // 将新的已读成员添加到数组中，然后重新设置给消息
+                memberArray.put(cmdMessage.getFrom());
+                message.setAttribute(EaseConstant.GROUP_READ_MEMBER_ARRAY, memberArray);
+                // 设置消息 ack 为已读
+                message.setAcked(true);
+                // 更新消息
+                EMClient.getInstance().chatManager().updateMessage(message);
+            }
+            return true;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (HyphenateException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
+     * 获取当前消息有多少成员已读
+     */
+    public static JSONArray getReadMembers(EMMessage message) {
+        try {
+            JSONArray array = message.getJSONArrayAttribute(EaseConstant.GROUP_READ_MEMBER_ARRAY);
+            return array;
+        } catch (HyphenateException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * 收到阅后即焚 cmd，TODO 这个是因为 ios 如果 ack 发送失败，没法再次发送，只能通过 cmd 扩展来做
+     */
+    public static void receiveBurnCMDMessage(EMMessage message){
+        String msgId = message.getStringAttribute(EaseConstant.MESSAGE_ATTR_BURN_MSG_ID, "");
+        EMClient.getInstance().chatManager().getConversation(message.getFrom()).removeMessage(msgId);
     }
 
 }

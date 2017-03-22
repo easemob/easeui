@@ -2,6 +2,7 @@ package com.hyphenate.easeui.widget.chatrow;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.BaseAdapter;
@@ -16,14 +17,18 @@ import com.hyphenate.EMError;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMMessage.Direct;
+import com.hyphenate.easeui.EaseConstant;
 import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.adapter.EaseMessageAdapter;
+import com.hyphenate.easeui.ui.EaseGroupReadActivity;
+import com.hyphenate.easeui.utils.EaseMessageUtils;
 import com.hyphenate.easeui.utils.EaseUserUtils;
 import com.hyphenate.easeui.widget.EaseChatMessageList;
 import com.hyphenate.easeui.widget.EaseChatMessageList.MessageListItemClickListener;
 import com.hyphenate.util.DateUtils;
 
 import java.util.Date;
+import org.json.JSONArray;
 
 public abstract class EaseChatRow extends LinearLayout {
     protected static final String TAG = EaseChatRow.class.getSimpleName();
@@ -81,7 +86,7 @@ public abstract class EaseChatRow extends LinearLayout {
 
     /**
      * set property according message and postion
-     * 
+     *
      * @param message
      * @param position
      */
@@ -137,6 +142,17 @@ public abstract class EaseChatRow extends LinearLayout {
                         deliveredView.setVisibility(View.INVISIBLE);
                     }
                     ackedView.setVisibility(View.VISIBLE);
+                    if(message.getChatType()== EMMessage.ChatType.GroupChat){
+                        JSONArray memberArray = EaseMessageUtils.getReadMembers(message);
+                        ackedView.setText(memberArray.length()+" 人已读消息");
+                        ackedView.setOnClickListener(new OnClickListener() {
+                            @Override public void onClick(View v) {
+                                Intent intent = new Intent(context, EaseGroupReadActivity.class);
+                                intent.putExtra(EaseConstant.GROUP_READ_MEMBER_ARRAY, message);
+                                context.startActivity(intent);
+                            }
+                        });
+                    }
                 } else {
                     ackedView.setVisibility(View.INVISIBLE);
                 }
@@ -172,12 +188,12 @@ public abstract class EaseChatRow extends LinearLayout {
     protected void setMessageSendCallback(){
         if(messageSendCallback == null){
             messageSendCallback = new EMCallBack() {
-                
+
                 @Override
                 public void onSuccess() {
                     updateView();
                 }
-                
+
                 @Override
                 public void onProgress(final int progress, String status) {
                     activity.runOnUiThread(new Runnable() {
@@ -189,7 +205,7 @@ public abstract class EaseChatRow extends LinearLayout {
                         }
                     });
                 }
-                
+
                 @Override
                 public void onError(int code, String error) {
                     updateView(code, error);
@@ -198,19 +214,19 @@ public abstract class EaseChatRow extends LinearLayout {
         }
         message.setMessageStatusCallback(messageSendCallback);
     }
-    
+
     /**
      * set callback for receiving message
      */
     protected void setMessageReceiveCallback(){
         if(messageReceiveCallback == null){
             messageReceiveCallback = new EMCallBack() {
-                
+
                 @Override
                 public void onSuccess() {
                     updateView();
                 }
-                
+
                 @Override
                 public void onProgress(final int progress, String status) {
                     activity.runOnUiThread(new Runnable() {
@@ -221,7 +237,7 @@ public abstract class EaseChatRow extends LinearLayout {
                         }
                     });
                 }
-                
+
                 @Override
                 public void onError(int code, String error) {
                     updateView();
@@ -230,12 +246,12 @@ public abstract class EaseChatRow extends LinearLayout {
         }
         message.setMessageStatusCallback(messageReceiveCallback);
     }
-    
-    
+
+
     private void setClickListener() {
         if(bubbleLayout != null){
             bubbleLayout.setOnClickListener(new OnClickListener() {
-    
+
                 @Override
                 public void onClick(View v) {
                     if (itemClickListener != null){
@@ -246,9 +262,9 @@ public abstract class EaseChatRow extends LinearLayout {
                     }
                 }
             });
-    
+
             bubbleLayout.setOnLongClickListener(new OnLongClickListener() {
-    
+
                 @Override
                 public boolean onLongClick(View v) {
                     if (itemClickListener != null) {
@@ -273,7 +289,7 @@ public abstract class EaseChatRow extends LinearLayout {
 
         if(userAvatarView != null){
             userAvatarView.setOnClickListener(new OnClickListener() {
-    
+
                 @Override
                 public void onClick(View v) {
                     if (itemClickListener != null) {
@@ -286,7 +302,7 @@ public abstract class EaseChatRow extends LinearLayout {
                 }
             });
             userAvatarView.setOnLongClickListener(new OnLongClickListener() {
-                
+
                 @Override
                 public boolean onLongClick(View v) {
                     if(itemClickListener != null){
@@ -345,10 +361,10 @@ public abstract class EaseChatRow extends LinearLayout {
 
     /**
      * setup view
-     * 
+     *
      */
     protected abstract void onSetUpView();
-    
+
     /**
      * on bubble clicked
      */

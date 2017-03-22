@@ -13,6 +13,10 @@
  */
 package com.hyphenate.easeui.widget.chatrow;
 
+import com.hyphenate.easeui.EaseConstant;
+import com.hyphenate.easeui.adapter.EaseMessageAdapter;
+import com.hyphenate.easeui.utils.EaseACKUtil;
+import com.hyphenate.exceptions.HyphenateException;
 import java.io.File;
 
 import com.hyphenate.chat.EMClient;
@@ -76,6 +80,12 @@ public class EaseChatRowVoicePlayClickListener implements View.OnClickListener {
 		if (mediaPlayer != null) {
 			mediaPlayer.stop();
 			mediaPlayer.release();
+		}
+		// 判断的当前播放的这条语音是否是阅后即焚，并且是接收方的消息，如果是 停止播放后删除这条消息
+		if(message.getBooleanAttribute(EaseConstant.MESSAGE_ATTR_BURN, false)
+				&& message.direct() == EMMessage.Direct.RECEIVE){
+			// 听完之后，发送ACK并删除消息
+			sendACKMessage();
 		}
 		isPlaying = false;
 		playMsgId = null;
@@ -195,6 +205,31 @@ public class EaseChatRowVoicePlayClickListener implements View.OnClickListener {
 
 			}
 
+		}
+	}
+
+	/**
+	 * ACK 消息的发送，根据是否发送成功做些相应的操作，这里是把发送失败的消息id和username保存在序列化类中
+	 */
+	private void sendACKMessage() {
+		try {
+			EMClient.getInstance().chatManager().ackMessageRead(message.getFrom(), message.getMsgId());
+		} catch (HyphenateException e) {
+			e.printStackTrace();
+			// 发送ACK 失败，将ack信息保存在序列化的类中
+			EaseACKUtil.getInstance(activity).saveACKDataId(message.getMsgId(), message.getFrom());
+		} finally {
+			EMVoiceMessageBody body = (EMVoiceMessageBody) message.getBody();
+			File file = new File(body.getLocalUrl());
+			if (file.exists() && file.isFile()) {
+				file.delete();
+			};
+			EMClient.getInstance().chatManager().getConversation(message.getFrom()).removeMessage(message.getMsgId());
+			if(adapter instanceof EaseMessageAdapter){
+				((EaseMessageAdapter) adapter).refresh();
+			}else{
+				adapter.notifyDataSetChanged();
+			}
 		}
 	}
 }

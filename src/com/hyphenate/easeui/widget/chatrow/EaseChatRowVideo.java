@@ -160,7 +160,7 @@ public class EaseChatRowVideo extends EaseChatRowFile{
                 }
             }.execute();
         }
-        
+
     }
 
 }

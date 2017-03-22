@@ -13,6 +13,8 @@
  */
 package com.hyphenate.easeui.ui;
 
+import com.hyphenate.chat.EMImageMessageBody;
+import com.hyphenate.easeui.EaseConstant;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
@@ -52,6 +54,7 @@ public class EaseShowBigImageActivity extends EaseBaseActivity {
 	private String localFilePath;
 	private Bitmap bitmap;
 	private boolean isDownloaded;
+	private String msgId;
 
 	@SuppressLint("NewApi")
 	@Override
@@ -64,7 +67,7 @@ public class EaseShowBigImageActivity extends EaseBaseActivity {
 		default_res = getIntent().getIntExtra("default_image", R.drawable.ease_default_avatar);
 		Uri uri = getIntent().getParcelableExtra("uri");
 		localFilePath = getIntent().getExtras().getString("localUrl");
-		String msgId = getIntent().getExtras().getString("messageId");
+		msgId = getIntent().getExtras().getString("messageId");
 		EMLog.d(TAG, "show big msgId:" + msgId );
 
 		//show the image if it exist in local path
@@ -95,6 +98,7 @@ public class EaseShowBigImageActivity extends EaseBaseActivity {
 		image.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				removeMessage();
 				finish();
 			}
 		});
@@ -186,11 +190,45 @@ public class EaseShowBigImageActivity extends EaseBaseActivity {
 		EMLog.e(TAG, "downloadAttachement");
 		EMClient.getInstance().chatManager().downloadAttachment(msg);
 	}
+	@Override
+	protected void onDestroy() {
+		// 防止被kill，在onDestroy多加一次判断，如果还没删除，就删除掉
+		EMMessage message = EMClient.getInstance().chatManager().getMessage(msgId);
+		if(message != null){
+			removeMessage();
+		}
+		super.onDestroy();
+	}
+
+	private void removeMessage(){
+		// 关闭显示大图的界面时判断当前消息是否是要销毁的
+		EMMessage message= EMClient.getInstance().chatManager().getMessage(msgId);
+		if(message == null){
+			return;
+		}
+		if(message.getBooleanAttribute(EaseConstant.MESSAGE_ATTR_BURN, false)
+				&& message.direct() == EMMessage.Direct.RECEIVE){
+			EMImageMessageBody body = (EMImageMessageBody) message.getBody();
+			File file = new File(body.getLocalUrl());
+			if (file.exists() && file.isFile()) {
+				file.delete();
+			}
+			String path = body.getLocalUrl();
+			String thPath = path.substring(0, path.lastIndexOf("/")) + "/th" + path.substring(path.lastIndexOf("/") + 1);
+			File thFile = new File(thPath);
+			if (thFile.exists() && thFile.isFile()) {
+				thFile.delete();
+			}
+			EMClient.getInstance().chatManager().getConversation(message.getFrom()).removeMessage(msgId);
+		}
+	}
 
 	@Override
 	public void onBackPressed() {
-		if (isDownloaded)
+		if (isDownloaded){
 			setResult(RESULT_OK);
+		}
+		removeMessage();
 		finish();
 	}
 }

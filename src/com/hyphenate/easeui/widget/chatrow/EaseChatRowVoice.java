@@ -3,7 +3,9 @@ package com.hyphenate.easeui.widget.chatrow;
 import com.hyphenate.chat.EMFileMessageBody;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMVoiceMessageBody;
+import com.hyphenate.easeui.EaseConstant;
 import com.hyphenate.easeui.R;
+import com.hyphenate.easeui.adapter.EaseMessageAdapter;
 import com.hyphenate.util.EMLog;
 
 import android.content.Context;
@@ -16,6 +18,7 @@ import android.widget.TextView;
 public class EaseChatRowVoice extends EaseChatRowFile{
 
     private ImageView voiceImageView;
+    private TextView voiceHintTextView;
     private TextView voiceLengthView;
     private ImageView readStatusView;
 
@@ -32,6 +35,7 @@ public class EaseChatRowVoice extends EaseChatRowFile{
     @Override
     protected void onFindViewById() {
         voiceImageView = ((ImageView) findViewById(R.id.iv_voice));
+        voiceHintTextView = (TextView) findViewById(R.id.text_hint);
         voiceLengthView = (TextView) findViewById(R.id.tv_length);
         readStatusView = (ImageView) findViewById(R.id.iv_unread_voice);
     }
@@ -80,6 +84,20 @@ public class EaseChatRowVoice extends EaseChatRowFile{
                 progressBar.setVisibility(View.INVISIBLE);
 
             }
+            if(message.getBooleanAttribute(EaseConstant.MESSAGE_ATTR_BURN, false)
+                    && message.direct() == EMMessage.Direct.RECEIVE){
+                if(message.isListened()){
+                    voiceImageView.setVisibility(View.VISIBLE);
+                    voiceHintTextView.setVisibility(View.GONE);
+                }else{
+                    voiceHintTextView.setVisibility(View.VISIBLE);
+                    voiceHintTextView.setText(R.string.attach_burn);
+                    voiceImageView.setVisibility(View.GONE);
+                }
+            }else{
+                voiceHintTextView.setVisibility(View.GONE);
+                voiceImageView.setVisibility(View.VISIBLE);
+            }
             return;
         }
 
@@ -89,11 +107,22 @@ public class EaseChatRowVoice extends EaseChatRowFile{
 
     @Override
     protected void onUpdateView() {
-        super.onUpdateView();
+        // 这里必须进行强转一下然后调用adapter的 refresh方法，
+        if (adapter instanceof EaseMessageAdapter) {
+            ((EaseMessageAdapter) adapter).refresh();
+        } else {
+            adapter.notifyDataSetChanged();
+        }
     }
 
     @Override
     protected void onBubbleClick() {
+        if(message.getBooleanAttribute(EaseConstant.MESSAGE_ATTR_BURN, false)
+                && message.direct() == EMMessage.Direct.RECEIVE){
+            voiceImageView.setVisibility(View.VISIBLE);
+            voiceHintTextView.setVisibility(View.GONE);
+            onUpdateView();
+        }
         new EaseChatRowVoicePlayClickListener(message, voiceImageView, readStatusView, adapter, activity).onClick(bubbleLayout);
     }
     

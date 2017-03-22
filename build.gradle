@@ -8,8 +8,8 @@ android {
         minSdkVersion 11
         targetSdkVersion 22
     }
-	
-	sourceSets {
+
+    sourceSets {
         main {
             manifest.srcFile 'AndroidManifest.xml'
             java.srcDirs = ['src']
@@ -44,8 +44,8 @@ android {
 
 dependencies {
     //release时需要把hyphenatechatsdk的依赖注释掉，sdk已经被打成jar包放在libs底下
-    //	compile project(':hyphenatechatsdk')
+//    compile project(':hyphenatechatsdk')
     compile fileTree(include: '*.jar', dir: 'libs')
-    compile files('libs/hyphenatechat_3.3.0.jar')
+    //    compile files('libs/hyphenatechat_3.3.0.jar')
     compile 'com.android.support:support-v4:25.3.0'
 }
