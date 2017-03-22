@@ -3,6 +3,7 @@ package com.hyphenate.easeui.widget.chatrow;
 import com.hyphenate.easeui.EaseConstant;
 import com.hyphenate.easeui.utils.EaseACKUtil;
 import com.hyphenate.easeui.utils.EaseBlurUtil;
+import com.hyphenate.easeui.utils.EaseMessageUtils;
 import com.hyphenate.exceptions.HyphenateException;
 import java.io.File;
 
@@ -100,6 +101,11 @@ public class EaseChatRowImage extends EaseChatRowFile{
         if (message != null && message.direct() == EMMessage.Direct.RECEIVE && !message.isAcked()
                 && message.getChatType() == ChatType.Chat) {
             sendACKMessage();
+        } else if (!message.isAcked() && message.getChatType() == ChatType.GroupChat) {
+            EaseMessageUtils.sendGroupReadMessage(message.getFrom(), message.getTo(),
+                    message.getMsgId());
+            message.setAcked(true);
+            EMClient.getInstance().chatManager().updateMessage(message);
         }
         context.startActivity(intent);
     }
@@ -109,7 +115,13 @@ public class EaseChatRowImage extends EaseChatRowFile{
      */
     private void sendACKMessage() {
         try {
-            EMClient.getInstance().chatManager().ackMessageRead(message.getFrom(), message.getMsgId());
+            if(EMClient.getInstance().isConnected()){
+                EMClient.getInstance()
+                        .chatManager()
+                        .ackMessageRead(message.getFrom(), message.getMsgId());
+            }else{
+                EaseACKUtil.getInstance(context).saveACKDataId(message.getMsgId(), message.getFrom());
+            }
         } catch (HyphenateException e) {
             e.printStackTrace();
             EaseACKUtil.getInstance(context).saveACKDataId(message.getMsgId(), message.getFrom());
