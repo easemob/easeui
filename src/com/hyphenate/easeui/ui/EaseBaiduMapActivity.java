@@ -82,6 +82,7 @@ public class EaseBaiduMapActivity extends EaseBaseActivity {
     private boolean realtimeLocation;
     private String username;
     private int direct;
+    private EMMessage.ChatType chatType;
 
     private double latitude;
     private double longitude;
@@ -102,13 +103,7 @@ public class EaseBaiduMapActivity extends EaseBaseActivity {
 
                 coordinate = new Pair<>(latitude, longitude);
 
-                if (message.getChatType() == EMMessage.ChatType.Chat) {
-
-                    coordinateMap.put(message.getFrom(), coordinate);
-                } else {
-
-                    coordinateMap.put(message.getTo(), coordinate);
-                }
+                coordinateMap.put(message.getFrom(), coordinate);
 
                 Log.i("info", "latitude:" + latitude + "---" + "longitude:" + longitude);
                 mBaiduMap.clear();
@@ -123,11 +118,7 @@ public class EaseBaiduMapActivity extends EaseBaseActivity {
             if (isStop) {
 
                 if (coordinateMap != null) {
-                    if (message.getChatType() == EMMessage.ChatType.Chat) {
-                        coordinateMap.remove(message.getFrom());
-                    } else {
-                        coordinateMap.remove(message.getTo());
-                    }
+                    coordinateMap.remove(message.getFrom());
                     mBaiduMap.clear();
 
                     showMaps(coordinateMap);
@@ -159,6 +150,7 @@ public class EaseBaiduMapActivity extends EaseBaseActivity {
         if (realtimeLocation) {
             direct = getIntent().getExtras().getInt("direct");
             username = getIntent().getExtras().getString("username");
+            chatType = (EMMessage.ChatType) getIntent().getExtras().get("chattype");
         }
 
         //initialize SDK with context, should call this before setContentView
@@ -359,6 +351,7 @@ public class EaseBaiduMapActivity extends EaseBaseActivity {
             EMCmdMessageBody body = new EMCmdMessageBody("shareLocation");
             message1.addBody(body);
             message1.setAttribute("isStop", true);
+            message1.setChatType(chatType);
             message1.setTo(username);
             EaseChatFragment chatFragment = new EaseChatFragment();
             chatFragment.sendMessage(message1);
@@ -372,6 +365,7 @@ public class EaseBaiduMapActivity extends EaseBaseActivity {
         message1.addBody(body);
         message1.setAttribute("latitude", String.valueOf(location.getLatitude()));
         message1.setAttribute("longitude", String.valueOf(location.getLongitude()));
+        message1.setChatType(chatType);
         message1.setTo(username);
         EaseChatFragment chatFragment = new EaseChatFragment();
         chatFragment.sendMessage(message1);
