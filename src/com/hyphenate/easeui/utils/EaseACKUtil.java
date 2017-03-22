@@ -1,6 +1,9 @@
 package com.hyphenate.easeui.utils;
 
 import com.hyphenate.chat.EMClient;
+import com.hyphenate.chat.EMCmdMessageBody;
+import com.hyphenate.chat.EMMessage;
+import com.hyphenate.easeui.EaseConstant;
 import com.hyphenate.exceptions.HyphenateException;
 import java.io.File;
 import java.io.FileInputStream;
@@ -159,14 +162,16 @@ public class EaseACKUtil {
         Iterator iterator = set.iterator();
         while (iterator.hasNext()) {
             Map.Entry<String, String> mapEntry = (Entry<String, String>) iterator.next();
-            try {
-                EMClient.getInstance()
-                        .chatManager()
-                        .ackMessageRead(mapEntry.getValue(), mapEntry.getKey());
-                iterator.remove();
-            } catch (HyphenateException e) {
-                e.printStackTrace();
-            }
+            //EMClient.getInstance()
+            //        .chatManager()
+            //        .ackMessageRead(mapEntry.getValue(), mapEntry.getKey());
+            EMMessage message = EMMessage.createSendMessage(EMMessage.Type.CMD);
+            EMCmdMessageBody body = new EMCmdMessageBody(EaseConstant.MESSAGE_ATTR_BURN_ACTION);
+            message.addBody(body);
+            message.setTo(mapEntry.getValue());
+            message.setAttribute(EaseConstant.MESSAGE_ATTR_BURN_MSG_ID, mapEntry.getKey());
+            EMClient.getInstance().chatManager().sendMessage(message);
+            iterator.remove();
         }
         ackData.setACKMap(ackMap);
         saveDataToDisk();

@@ -188,4 +188,11 @@ public class EaseMessageUtils {
         EMClient.getInstance().chatManager().getConversation(message.getFrom()).removeMessage(msgId);
     }
 
+    public static void receiveBurnACKMessage(EMMessage message){
+        EMClient.getInstance()
+                .chatManager()
+                .getConversation(message.getTo(), EMConversation.EMConversationType.Chat, true)
+                .removeMessage(message.getMsgId());
+    }
+
 }

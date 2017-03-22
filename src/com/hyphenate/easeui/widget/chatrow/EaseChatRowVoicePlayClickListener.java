@@ -16,6 +16,7 @@ package com.hyphenate.easeui.widget.chatrow;
 import com.hyphenate.easeui.EaseConstant;
 import com.hyphenate.easeui.adapter.EaseMessageAdapter;
 import com.hyphenate.easeui.utils.EaseACKUtil;
+import com.hyphenate.easeui.utils.EaseMessageUtils;
 import com.hyphenate.exceptions.HyphenateException;
 import java.io.File;
 
@@ -132,9 +133,14 @@ public class EaseChatRowVoicePlayClickListener implements View.OnClickListener {
 			// 如果是接收的消息
 			if (message.direct() == EMMessage.Direct.RECEIVE) {
 			    if (!message.isAcked() && chatType == ChatType.Chat) {
-	                    // 告知对方已读这条消息
-			            EMClient.getInstance().chatManager().ackMessageRead(message.getFrom(), message.getMsgId());
-			    }
+	                // 告知对方已读这条消息
+					EMClient.getInstance().chatManager().ackMessageRead(message.getFrom(), message.getMsgId());
+			    } else if (!message.isAcked() && message.getChatType() == ChatType.GroupChat) {
+					EaseMessageUtils.sendGroupReadMessage(message.getFrom(), message.getTo(),
+							message.getMsgId());
+					message.setAcked(true);
+					EMClient.getInstance().chatManager().updateMessage(message);
+				}
 				if (!message.isListened() && iv_read_status != null && iv_read_status.getVisibility() == View.VISIBLE) {
 					// 隐藏自己未播放这条语音消息的标志
 					iv_read_status.setVisibility(View.INVISIBLE);
@@ -213,7 +219,13 @@ public class EaseChatRowVoicePlayClickListener implements View.OnClickListener {
 	 */
 	private void sendACKMessage() {
 		try {
-			EMClient.getInstance().chatManager().ackMessageRead(message.getFrom(), message.getMsgId());
+			if(EMClient.getInstance().isConnected()){
+				EMClient.getInstance()
+						.chatManager()
+						.ackMessageRead(message.getFrom(), message.getMsgId());
+			}else{
+				EaseACKUtil.getInstance(activity).saveACKDataId(message.getMsgId(), message.getFrom());
+			}
 		} catch (HyphenateException e) {
 			e.printStackTrace();
 			// 发送ACK 失败，将ack信息保存在序列化的类中

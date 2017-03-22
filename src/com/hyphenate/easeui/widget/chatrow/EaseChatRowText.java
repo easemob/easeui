@@ -136,9 +136,13 @@ public class EaseChatRowText extends EaseChatRow {
      */
     private void sendACKMessage() {
         try {
-            EMClient.getInstance()
-                    .chatManager()
-                    .ackMessageRead(message.getFrom(), message.getMsgId());
+            if(EMClient.getInstance().isConnected()){
+                EMClient.getInstance()
+                        .chatManager()
+                        .ackMessageRead(message.getFrom(), message.getMsgId());
+            }else{
+                EaseACKUtil.getInstance(context).saveACKDataId(message.getMsgId(), message.getFrom());
+            }
         } catch (HyphenateException e) {
             e.printStackTrace();
             EaseACKUtil.getInstance(context).saveACKDataId(message.getMsgId(), message.getFrom());
