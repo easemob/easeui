@@ -17,6 +17,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -30,6 +31,7 @@ import com.hyphenate.easeui.utils.EaseCommonUtils;
 import com.hyphenate.easeui.widget.EaseChatMessageList.MessageListItemClickListener;
 import com.hyphenate.easeui.widget.chatrow.EaseChatRow;
 import com.hyphenate.easeui.widget.chatrow.EaseChatRowBigExpression;
+import com.hyphenate.easeui.widget.chatrow.EaseChatRowChange;
 import com.hyphenate.easeui.widget.chatrow.EaseChatRowFile;
 import com.hyphenate.easeui.widget.chatrow.EaseChatRowImage;
 import com.hyphenate.easeui.widget.chatrow.EaseChatRowLocation;
@@ -38,6 +40,7 @@ import com.hyphenate.easeui.widget.chatrow.EaseChatRowVideo;
 import com.hyphenate.easeui.widget.chatrow.EaseChatRowVoice;
 import com.hyphenate.easeui.widget.chatrow.EaseCustomChatRowProvider;
 import com.hyphenate.easeui.widget.chatrow.EaseChatRowRecall;
+import com.hyphenate.util.EMLog;
 
 public class EaseMessageAdapter extends BaseAdapter{
 
@@ -65,6 +68,8 @@ public class EaseMessageAdapter extends BaseAdapter{
 	private static final int MESSAGE_TYPE_RECV_EXPRESSION = 13;
 	// 撤回类型消息
 	public static final int MSG_TYPE_SYS_RECALL = 14;
+	//群组加入或退出
+	public static final int MSG_TYPE_SYS_CHANGE = 15;
 	
 	
 	public int itemTypeCount; 
@@ -176,9 +181,9 @@ public class EaseMessageAdapter extends BaseAdapter{
 	 */
 	public int getViewTypeCount() {
 	    if(customRowProvider != null && customRowProvider.getCustomChatRowTypeCount() > 0){
-	        return customRowProvider.getCustomChatRowTypeCount() + 15;
+	        return customRowProvider.getCustomChatRowTypeCount() + 16;
 	    }
-        return 15;
+        return 16;
     }
 	
 
@@ -191,16 +196,20 @@ public class EaseMessageAdapter extends BaseAdapter{
 			return -1;
 		}
 
+		if(customRowProvider != null && customRowProvider.getCustomChatRowType(message) > 0){
+		    return customRowProvider.getCustomChatRowType(message) + 15;
+		}
 		// 判断消息类型
 		if (message.getBooleanAttribute(EaseConstant.REVOKE_FLAG, false)) {
 			// 撤回消息
+			Log.e("recall_1", "MSG_TYPE_SYS_RECALL"+message.toString());
 			return MSG_TYPE_SYS_RECALL;
+
 		}
-		
-		if(customRowProvider != null && customRowProvider.getCustomChatRowType(message) > 0){
-		    return customRowProvider.getCustomChatRowType(message) + 14;
+		if(message.getBooleanAttribute(EaseConstant.GROUP_CHANGE, false)){
+			//群组加入或退出
+			return MSG_TYPE_SYS_CHANGE;
 		}
-		
 		if (message.getType() == EMMessage.Type.TXT) {
 		    if(message.getBooleanAttribute(EaseConstant.MESSAGE_ATTR_IS_BIG_EXPRESSION, false)){
 		        return message.direct() == EMMessage.Direct.RECEIVE ? MESSAGE_TYPE_RECV_EXPRESSION : MESSAGE_TYPE_SENT_EXPRESSION;
@@ -233,7 +242,10 @@ public class EaseMessageAdapter extends BaseAdapter{
             return customRowProvider.getCustomChatRow(message, position, this);
         }
         if(message.getBooleanAttribute(EaseConstant.REVOKE_FLAG, false)){
+			Log.e("recall_2", "REVOKE_FLAG"+message.toString());
 			chatRow = new EaseChatRowRecall(context, message, position, this);
+		}else if(message.getBooleanAttribute(EaseConstant.GROUP_CHANGE, false)){
+			chatRow = new EaseChatRowChange(context, message, position, this);
 		}else {
 			switch (message.getType()) {
 				case TXT:
@@ -271,13 +283,19 @@ public class EaseMessageAdapter extends BaseAdapter{
 	@SuppressLint("NewApi")
 	public View getView(final int position, View convertView, ViewGroup parent) {
 		EMMessage message = getItem(position);
+
 		if(convertView == null){
 			convertView = createChatRow(context, message, position);
 		}
 
-		//refresh ui with messages
-		((EaseChatRow)convertView).setUpView(message, position, itemClickListener);
-		
+		if(message.getBooleanAttribute(EaseConstant.REVOKE_FLAG, false)
+				&& !(convertView instanceof EaseChatRowRecall)){
+			convertView = createChatRow(context, message, position);
+			((EaseChatRowRecall) convertView).setUpView(message, position, itemClickListener);
+		} else {
+			//refresh ui with messages
+			((EaseChatRow) convertView).setUpView(message, position, itemClickListener);
+		}
 		return convertView;
 	}
 

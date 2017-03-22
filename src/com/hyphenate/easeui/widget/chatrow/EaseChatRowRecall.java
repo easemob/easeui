@@ -2,6 +2,7 @@ package com.hyphenate.easeui.widget.chatrow;
 
 
 import android.content.Context;
+import android.util.Log;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
@@ -13,7 +14,6 @@ import com.hyphenate.easeui.R;
  */
 public class EaseChatRowRecall extends EaseChatRow {
 
-    private TextView msgTimeView;
     private TextView contentView;
 
     public EaseChatRowRecall(Context context, EMMessage message, int position, BaseAdapter adapter) {
@@ -43,9 +43,11 @@ public class EaseChatRowRecall extends EaseChatRow {
         String messageStr = null;
         if (message.direct() == EMMessage.Direct.SEND) {
             messageStr = String.format(context.getString(R.string.msg_recall_by_self));
+            Log.e("textContent", messageStr);
         } else {
             messageStr = String.format(context.getString(R.string.msg_recall_by_user), message.getUserName());
         }
+        Log.e("textContent", messageStr + message.toString());
         contentView.setText(messageStr);
     }
 
