@@ -8,6 +8,7 @@ import com.hyphenate.easeui.EaseConstant;
 import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.ui.EaseBaiduMapActivity;
 import com.hyphenate.easeui.utils.EaseACKUtil;
+import com.hyphenate.easeui.utils.EaseMessageUtils;
 import com.hyphenate.exceptions.HyphenateException;
 import com.hyphenate.util.LatLng;
 
@@ -78,6 +79,11 @@ public class EaseChatRowLocation extends EaseChatRow{
                 } catch (HyphenateException e) {
                     e.printStackTrace();
                 }
+            } else if (!message.isAcked() && message.getChatType() == ChatType.GroupChat) {
+                EaseMessageUtils.sendGroupReadMessage(message.getFrom(), message.getTo(),
+                        message.getMsgId());
+                message.setAcked(true);
+                EMClient.getInstance().chatManager().updateMessage(message);
             }
         }
     }
@@ -123,9 +129,13 @@ public class EaseChatRowLocation extends EaseChatRow{
      */
     private void sendACKMessage() {
         try {
-            EMClient.getInstance()
-                    .chatManager()
-                    .ackMessageRead(message.getFrom(), message.getMsgId());
+            if(EMClient.getInstance().isConnected()){
+                EMClient.getInstance()
+                        .chatManager()
+                        .ackMessageRead(message.getFrom(), message.getMsgId());
+            }else{
+                EaseACKUtil.getInstance(context).saveACKDataId(message.getMsgId(), message.getFrom());
+            }
         } catch (HyphenateException e) {
             e.printStackTrace();
             EaseACKUtil.getInstance(context).saveACKDataId(message.getMsgId(), message.getFrom());

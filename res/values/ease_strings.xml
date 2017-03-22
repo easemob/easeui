@@ -52,6 +52,7 @@
     <string name="location_message">The location information</string>
     <string name="recording_video">Record video</string>
     <string name="location_prefix">[my location]</string>
+    <string name="recall_msg">[recall message]</string>
     <string name="voice">Voice</string>
     <string name="picture">[Picture]</string>
     <string name="video">[Video]</string>
@@ -308,5 +309,6 @@
     <string name="toast_updatephoto_fail">update photo fail!</string>
     <string name="is_quit_the_chat_room">Exiting chat room</string>
     <string name="title_input_status">Typing...</string>
+    <string name="foward_video">The video file does not exist,can not be forwarded</string>
 
 </resources>
