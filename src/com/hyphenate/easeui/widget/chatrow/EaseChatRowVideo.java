@@ -17,6 +17,7 @@ import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.model.EaseImageCache;
 import com.hyphenate.easeui.ui.EaseShowVideoActivity;
 import com.hyphenate.easeui.utils.EaseCommonUtils;
+import com.hyphenate.easeui.utils.EaseMessageUtils;
 import com.hyphenate.util.DateUtils;
 import com.hyphenate.util.EMLog;
 import com.hyphenate.util.ImageUtils;
@@ -109,6 +110,11 @@ public class EaseChatRowVideo extends EaseChatRowFile{
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        } else if (!message.isAcked() && message.getChatType() == ChatType.GroupChat) {
+            EaseMessageUtils.sendGroupReadMessage(message.getFrom(), message.getTo(),
+                    message.getMsgId());
+            message.setAcked(true);
+            EMClient.getInstance().chatManager().updateMessage(message);
         }
         activity.startActivity(intent);
 	}
@@ -160,7 +166,7 @@ public class EaseChatRowVideo extends EaseChatRowFile{
                 }
             }.execute();
         }
-        
+
     }
 
 }

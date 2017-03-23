@@ -22,11 +22,17 @@
     <string name="delete_message">Delete message</string>
     <string name="delete_conversation_messages">Delete conversation and messages</string>
     <string name="delete_conversation">Delete conversation</string>
+
+    <string name="message_details">Message details</string>
+    <string name="attach_burn">Read Burn</string>
+    <string name="attach_burn_cancel">Cancel Read Burn</string>
     <string name="copy_message">Copy message</string>
     <string name="delete_voice">Delete voice</string>
     <string name="delete_video">Delete video</string>
     <string name="delete">Delete</string>
     <string name="resend">Resend</string>
+    <string name="send_location">send location</string>
+    <string name="share_real_time_location">share real-time location</string>
     <string name="confirm_resend">Confirm to resend？</string>
     <string name="connect_failuer_toast">Please check the network or try again later</string>
     <string name="network_unavailable">The network connection is not available, please check the network</string>
@@ -46,6 +52,7 @@
     <string name="location_message">The location information</string>
     <string name="recording_video">Record video</string>
     <string name="location_prefix">[my location]</string>
+    <string name="recall_msg">[recall message]</string>
     <string name="voice">Voice</string>
     <string name="picture">[Picture]</string>
     <string name="video">[Video]</string>
@@ -256,13 +263,15 @@
     <string name="search_new">Search</string>
     <string name="were_mentioned">You were montioned</string>
     <string name="all_members">All members</string>
-    
+
     <string name="Delete_the_contact">Delete the contact</string>
     <string name="Move_into_the_blacklist_new">Move into the blacklist</string>
     <string name="Change_the_group_name">Change group name</string>
     <string name="dismiss_group">Dismiss group</string>
     <string name="add_public_group_chat">Add public group</string>
     <string name="gorup_not_found">Can not find this group</string>
+
+    <string name="hint_msg_draft">Draft</string>
     <string name= "no_more_messages">no more messages</string>
     <string name="join_public_group">Join public group</string>
     <string name="chatroom_allow_owner_leave">Allow chatroom owner leave</string>
@@ -300,5 +309,6 @@
     <string name="toast_updatephoto_fail">update photo fail!</string>
     <string name="is_quit_the_chat_room">Exiting chat room</string>
     <string name="title_input_status">Typing...</string>
+    <string name="foward_video">The video file does not exist,can not be forwarded</string>
 
 </resources>

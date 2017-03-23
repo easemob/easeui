@@ -14,6 +14,7 @@ import com.hyphenate.chat.EMMessage.ChatType;
 import com.hyphenate.chat.EMNormalFileMessageBody;
 import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.ui.EaseShowNormalFileActivity;
+import com.hyphenate.easeui.utils.EaseMessageUtils;
 import com.hyphenate.exceptions.HyphenateException;
 import com.hyphenate.util.FileUtils;
 import com.hyphenate.util.TextFormater;
@@ -129,6 +130,11 @@ public class EaseChatRowFile extends EaseChatRow{
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
+        } else if (!message.isAcked() && message.getChatType() == ChatType.GroupChat) {
+            EaseMessageUtils.sendGroupReadMessage(message.getFrom(), message.getTo(),
+                    message.getMsgId());
+            message.setAcked(true);
+            EMClient.getInstance().chatManager().updateMessage(message);
         }
         
     }
