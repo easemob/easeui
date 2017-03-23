@@ -538,18 +538,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     }
 
     public void onBackPressed() {
-        /**
-         * 判断聊天输入框内容是否为空，不为空就保存输入框内容到{@link EMConversation}的扩展中
-         * 调用{@link EaseConversationExtUtils#setConversationDraft(EMConversation, String)}方法
-         */
-        String draft = inputView.getText().toString().trim();
-        if (!TextUtils.isEmpty(draft)) {
-            // 将输入框的内容保存为草稿
-            EaseConversationExtUtils.setConversationDraft(conversation, draft);
-        } else {
-            // 清空会话对象扩展中保存的草稿
-            EaseConversationExtUtils.setConversationDraft(conversation, "");
-        }
+        saveDraft();
         if (inputMenu.onBackPressed()) {
             if(mTimer != null){
                 mTimer.cancel();
@@ -562,6 +551,24 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             if (chatType == EaseConstant.CHATTYPE_CHATROOM) {
             	EMClient.getInstance().chatroomManager().leaveChatRoom(toChatUsername);
             }
+        }
+    }
+
+    /**
+     * 保存草稿
+     */
+    public void saveDraft() {
+        /**
+         * 判断聊天输入框内容是否为空，不为空就保存输入框内容到{@link EMConversation}的扩展中
+         * 调用{@link EaseConversationExtUtils#setConversationDraft(EMConversation, String)}方法
+         */
+        String draft = inputView.getText().toString().trim();
+        if (!TextUtils.isEmpty(draft)) {
+            // 将输入框的内容保存为草稿
+            EaseConversationExtUtils.setConversationDraft(conversation, draft);
+        } else {
+            // 清空会话对象扩展中保存的草稿
+            EaseConversationExtUtils.setConversationDraft(conversation, "");
         }
     }
 
