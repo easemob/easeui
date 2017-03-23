@@ -320,4 +320,5 @@
     <string name="title_input_status">正在输入...</string>
     <string name="foward_video">视频文件不存在，不能转发</string>
 
+    <string name="quiting_the_chat_room">正在退出聊天室……</string>
 </resources>

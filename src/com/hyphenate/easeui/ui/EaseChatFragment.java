@@ -709,6 +709,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 }else {
                     EaseUI.getInstance().getNotifier().vibrateAndPlayTone(message);
                 }
+                conversation.markMessageAsRead(message.getMsgId());
             } else {
                 if (message.getChatType() == EMMessage.ChatType.GroupChat){
                     List<String> disabledIds = EMClient.getInstance().pushManager().getNoPushGroups();
@@ -1066,7 +1067,9 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             @Override
             public void onResult(boolean confirmed, Bundle bundle) {
                 if(confirmed){
-                    EMClient.getInstance().chatManager().deleteConversation(toChatUsername, true);
+                    if (conversation != null) {
+                        conversation.clearAllMessages();
+                    }
                     messageList.refresh();
                 }
             }
@@ -1232,7 +1235,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             getActivity().runOnUiThread(new Runnable() {
                 public void run() {
                     if (roomId.equals(toChatUsername)) {
-                        Toast.makeText(getActivity(), R.string.is_quit_the_chat_room, Toast.LENGTH_LONG).show();
+                        Toast.makeText(getActivity(), R.string.quiting_the_chat_room, Toast.LENGTH_LONG).show();
                         Activity activity = getActivity();
                         if (activity != null && !activity.isFinishing()) {
                             activity.finish();

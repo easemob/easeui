@@ -310,5 +310,6 @@
     <string name="is_quit_the_chat_room">Exiting chat room</string>
     <string name="title_input_status">Typing...</string>
     <string name="foward_video">The video file does not exist,can not be forwarded</string>
+    <string name="quiting_the_chat_room">Exiting chat room</string>
 
 </resources>
