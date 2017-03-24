@@ -714,15 +714,18 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 }
                 conversation.markMessageAsRead(message.getMsgId());
             } else {
-                if (message.getChatType() == EMMessage.ChatType.GroupChat){
-                    List<String> disabledIds = EMClient.getInstance().pushManager().getNoPushGroups();
-                    if (disabledIds==null || !disabledIds.contains(message.getTo())){
+                // 如果是公告消息，就不发送通知栏提醒
+                if(!message.getFrom().equals(EaseConstant.AFFICHE_CONVERSATION_ID)){
+                    if (message.getChatType() == EMMessage.ChatType.GroupChat){
+                        List<String> disabledIds = EMClient.getInstance().pushManager().getNoPushGroups();
+                        if (disabledIds==null || !disabledIds.contains(message.getTo())){
 
+                            EaseUI.getInstance().getNotifier().onNewMsg(message);
+                        }
+
+                    }else {
                         EaseUI.getInstance().getNotifier().onNewMsg(message);
                     }
-
-                }else {
-                    EaseUI.getInstance().getNotifier().onNewMsg(message);
                 }
             }
         }
