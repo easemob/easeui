@@ -48,4 +48,5 @@ dependencies {
     compile fileTree(include: '*.jar', dir: 'libs')
     //    compile files('libs/hyphenatechat_3.3.0.jar')
     compile 'com.android.support:support-v4:25.3.0'
+
 }
