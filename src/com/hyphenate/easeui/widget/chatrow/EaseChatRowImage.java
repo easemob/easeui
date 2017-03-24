@@ -6,6 +6,7 @@ import com.hyphenate.easeui.utils.EaseACKUtil;
 import com.hyphenate.easeui.utils.EaseBlurUtil;
 import com.hyphenate.easeui.utils.EaseMessageUtils;
 import com.hyphenate.exceptions.HyphenateException;
+import com.hyphenate.util.NetUtils;
 import java.io.File;
 
 import com.hyphenate.chat.EMClient;
@@ -86,7 +87,7 @@ public class EaseChatRowImage extends EaseChatRowFile{
 
     @Override
     protected void onBubbleClick() {
-        if (EMClient.getInstance().isConnected()) {
+        if (EMClient.getInstance().isConnected() && NetUtils.hasNetwork(context)) {
             Intent intent = new Intent(context, EaseShowBigImageActivity.class);
             File file = new File(imgBody.getLocalUrl());
             if (file.exists()) {
