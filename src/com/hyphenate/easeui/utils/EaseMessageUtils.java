@@ -203,7 +203,7 @@ public class EaseMessageUtils {
         String msgId = message.getStringAttribute(EaseConstant.MESSAGE_ATTR_BURN_MSG_ID, "");
         EMClient.getInstance()
                 .chatManager()
-                .getConversation(message.getFrom())
+                .getConversation(message.getFrom(), EMConversation.EMConversationType.Chat, true)
                 .removeMessage(msgId);
     }
 
