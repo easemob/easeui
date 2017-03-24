@@ -6,6 +6,7 @@ import com.hyphenate.easeui.utils.EaseACKUtil;
 import com.hyphenate.easeui.utils.EaseBlurUtil;
 import com.hyphenate.easeui.utils.EaseMessageUtils;
 import com.hyphenate.exceptions.HyphenateException;
+import com.hyphenate.util.NetUtils;
 import java.io.File;
 
 import com.hyphenate.chat.EMClient;
@@ -49,7 +50,7 @@ public class EaseChatRowImage extends EaseChatRowFile{
         imageView = (ImageView) findViewById(R.id.image);
     }
 
-    
+
     @Override
     protected void onSetUpView() {
         imgBody = (EMImageMessageBody) message.getBody();
@@ -72,47 +73,48 @@ public class EaseChatRowImage extends EaseChatRowFile{
             }
             return;
         }
-        
+
         String filePath = imgBody.getLocalUrl();
         String thumbPath = EaseImageUtils.getThumbnailImagePath(imgBody.getLocalUrl());
         showImageView(thumbPath, imageView, filePath, message);
         handleSendMessage();
     }
-    
+
     @Override
     protected void onUpdateView() {
         super.onUpdateView();
     }
-    
+
     @Override
     protected void onBubbleClick() {
-        if (!EMClient.getInstance().isConnected()) {
+        if (EMClient.getInstance().isConnected() && NetUtils.hasNetwork(context)) {
+            Intent intent = new Intent(context, EaseShowBigImageActivity.class);
+            File file = new File(imgBody.getLocalUrl());
+            if (file.exists()) {
+                Uri uri = Uri.fromFile(file);
+                intent.putExtra("uri", uri);
+            } else {
+                // The local full size pic does not exist yet.
+                // ShowBigImage needs to download it from the server
+                // first
+                String msgId = message.getMsgId();
+                intent.putExtra("messageId", msgId);
+                intent.putExtra("localUrl", imgBody.getLocalUrl());
+            }
+            if (message != null
+                    && message.direct() == EMMessage.Direct.RECEIVE
+                    && !message.isAcked()
+                    && message.getChatType() == ChatType.Chat) {
+                sendACKMessage();
+            } else if (!message.isAcked() && message.getChatType() == ChatType.GroupChat) {
+                EaseMessageUtils.sendGroupReadMessage(message.getFrom(), message.getTo(), message.getMsgId());
+                message.setAcked(true);
+                EMClient.getInstance().chatManager().updateMessage(message);
+            }
+            context.startActivity(intent);
+        }else{
             Toast.makeText(context, "未连接到服务器，稍后查看", Toast.LENGTH_SHORT).show();
-            return;
         }
-        Intent intent = new Intent(context, EaseShowBigImageActivity.class);
-        File file = new File(imgBody.getLocalUrl());
-        if (file.exists()) {
-            Uri uri = Uri.fromFile(file);
-            intent.putExtra("uri", uri);
-        } else {
-            // The local full size pic does not exist yet.
-            // ShowBigImage needs to download it from the server
-            // first
-            String msgId = message.getMsgId();
-            intent.putExtra("messageId", msgId);
-            intent.putExtra("localUrl", imgBody.getLocalUrl());
-        }
-        if (message != null && message.direct() == EMMessage.Direct.RECEIVE && !message.isAcked()
-                && message.getChatType() == ChatType.Chat) {
-            sendACKMessage();
-        } else if (!message.isAcked() && message.getChatType() == ChatType.GroupChat) {
-            EaseMessageUtils.sendGroupReadMessage(message.getFrom(), message.getTo(),
-                    message.getMsgId());
-            message.setAcked(true);
-            EMClient.getInstance().chatManager().updateMessage(message);
-        }
-        context.startActivity(intent);
     }
 
     /**
@@ -135,7 +137,7 @@ public class EaseChatRowImage extends EaseChatRowFile{
 
     /**
      * load image into image view
-     * 
+     *
      * @return the image exists or not
      */
     private boolean showImageView(final String thumbernailPath, final ImageView iv, final String localFullSizePath,final EMMessage message) {
