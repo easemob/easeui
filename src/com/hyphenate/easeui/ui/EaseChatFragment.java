@@ -705,10 +705,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 if (message.getChatType() == EMMessage.ChatType.GroupChat){
                     List<String> disabledIds = EMClient.getInstance().pushManager().getNoPushGroups();
                     if (disabledIds==null || !disabledIds.contains(message.getTo())){
-
                         EaseUI.getInstance().getNotifier().vibrateAndPlayTone(message);
                     }
-
                 }else {
                     EaseUI.getInstance().getNotifier().vibrateAndPlayTone(message);
                 }
