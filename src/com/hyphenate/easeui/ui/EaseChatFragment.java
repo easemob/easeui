@@ -318,12 +318,13 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             forwardMessage(forward_msg_id);
         }
 
-        // 获取输入框，
-        inputView = (EditText) getView().findViewById(R.id.et_sendmessage);
-        // 判断是否有草稿
-        String draft = EaseConversationExtUtils.getConversationDraft(conversation);
-        if (!TextUtils.isEmpty(draft)) {
-            inputView.setText(draft);
+        if (chatType != EaseConstant.CHATTYPE_CHATROOM) {
+            inputView = (EditText) getView().findViewById(R.id.et_sendmessage);
+            // 判断是否有草稿
+            String draft = EaseConversationExtUtils.getConversationDraft(conversation);
+            if (!TextUtils.isEmpty(draft)) {
+                inputView.setText(draft);
+            }
         }
     }
 
@@ -558,17 +559,19 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
      * 保存草稿
      */
     public void saveDraft() {
-        /**
-         * 判断聊天输入框内容是否为空，不为空就保存输入框内容到{@link EMConversation}的扩展中
-         * 调用{@link EaseConversationExtUtils#setConversationDraft(EMConversation, String)}方法
-         */
-        String draft = inputView.getText().toString().trim();
-        if (!TextUtils.isEmpty(draft)) {
-            // 将输入框的内容保存为草稿
-            EaseConversationExtUtils.setConversationDraft(conversation, draft);
-        } else {
-            // 清空会话对象扩展中保存的草稿
-            EaseConversationExtUtils.setConversationDraft(conversation, "");
+        if (chatType != EaseConstant.CHATTYPE_CHATROOM) {
+            /**
+             * 判断聊天输入框内容是否为空，不为空就保存输入框内容到{@link EMConversation}的扩展中
+             * 调用{@link EaseConversationExtUtils#setConversationDraft(EMConversation, String)}方法
+             */
+            String draft = inputView.getText().toString().trim();
+            if (!TextUtils.isEmpty(draft)) {
+                // 将输入框的内容保存为草稿
+                EaseConversationExtUtils.setConversationDraft(conversation, draft);
+            } else {
+                // 清空会话对象扩展中保存的草稿
+                EaseConversationExtUtils.setConversationDraft(conversation, "");
+            }
         }
     }
 

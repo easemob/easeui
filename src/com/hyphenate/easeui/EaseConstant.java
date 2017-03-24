@@ -65,8 +65,8 @@ public class EaseConstant {
     public static final int ERROR_I_RECALL_TIME = 5001;
     // 撤回消息错误文字描述
     public static final String ERROR_S_RECALL_TIME = "max_time";
-    // 消息允许撤回时间 3 分钟
-    public static final int TIME_RECALL = 300000;
+    // 消息允许撤回时间 2 分钟
+    public static final int TIME_RECALL = 120000;
     // 输入状态检测时间
     public static final int TIME_INPUT_STATUS = 4000;
 }
