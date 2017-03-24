@@ -1,5 +1,6 @@
 package com.hyphenate.easeui.widget.chatrow;
 
+import android.widget.Toast;
 import com.hyphenate.easeui.EaseConstant;
 import com.hyphenate.easeui.utils.EaseACKUtil;
 import com.hyphenate.easeui.utils.EaseBlurUtil;
@@ -85,6 +86,10 @@ public class EaseChatRowImage extends EaseChatRowFile{
     
     @Override
     protected void onBubbleClick() {
+        if (!EMClient.getInstance().isConnected()) {
+            Toast.makeText(context, "未连接到服务器，稍后查看", Toast.LENGTH_SHORT).show();
+            return;
+        }
         Intent intent = new Intent(context, EaseShowBigImageActivity.class);
         File file = new File(imgBody.getLocalUrl());
         if (file.exists()) {
