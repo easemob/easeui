@@ -25,7 +25,8 @@
         android:hint="@string/search"
         android:layout_marginLeft="4dp"
         android:layout_marginRight="4dp"
-        android:singleLine="true"/>
+        android:singleLine="true"
+        android:imeOptions="actionSearch"/>
 
     <ImageButton
         android:id="@+id/search_clear"

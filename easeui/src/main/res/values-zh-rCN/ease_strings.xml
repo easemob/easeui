@@ -160,7 +160,8 @@
     <string name="Move_into_blacklist_success">移入黑名单成功</string>
     <string name="Move_into_blacklist_failure">移入黑名单失败</string>
     <string name="you_are_group">你被群创建者从此群中移除</string>
-    <string name="the_current_group">当前群聊已被群创建者解散</string>
+    <string name="the_current_group_destroyed">当前群聊已被群创建者解散</string>
+    <string name="the_current_chat_room_destroyed">当前聊天室已被创建者解散</string>
     <string name="Cant_chat_with_yourself">不能和自己聊天</string>
     <string name="deleting">正在删除……</string>
     <string name="Delete_failed">删除失败:</string>
@@ -233,7 +234,6 @@
     <string name="Version_number_is_wrong">版本号错误</string>
     <string name="Are_connected_to_each_other">正在连接对方……</string>
     <string name="Is_not_yet_connected_to_the_server">尚未连接至服务器</string>
-    <string name="have_connected_with">已经和对方建立连接，等待对方接受……</string>
     <string name="In_the_call">通话中……</string>
     <string name="The_other_party_refused_to_accept">对方拒绝接受！……</string>
     <string name="Connection_failure">连接建立失败！……</string>
@@ -306,4 +306,5 @@
     <string name="toast_updatenick_fail">更新昵称失败!</string>
     <string name="toast_updatephoto_success">更新头像成功!</string>
     <string name="toast_updatephoto_fail">更新头像失败!</string>
+    <string name="quiting_the_chat_room">正在退出聊天室……</string>
 </resources>

@@ -155,7 +155,8 @@
     <string name="Move_into_blacklist_success">Move into blacklist success</string>
     <string name="Move_into_blacklist_failure">Move into blacklist failure</string>
     <string name="you_are_group">You have been kicked off from the group</string>
-    <string name="the_current_group">The current group has been dismissed</string>
+    <string name="the_current_group_destroyed">The current group has been dismissed</string>
+    <string name="the_current_chat_room_destroyed">The current chat room has been dismissed</string>
     <string name="Cant_chat_with_yourself">cannot chat with yourself</string>
     <string name="deleting">Deleting..</string>
     <string name="Delete_failed">Failed to delete</string>
@@ -228,7 +229,6 @@
     <string name="Version_number_is_wrong">Version number is wrong</string>
     <string name="Are_connected_to_each_other">Connecting to peer..</string>
     <string name="Is_not_yet_connected_to_the_server">Not connect to server</string>
-    <string name="have_connected_with">Connected to the peer and waiting for the peer to accept</string>
     <string name="In_the_call">In the call..</string>
     <string name="The_other_party_refused_to_accept">The call was refused</string>
     <string name="Connection_failure">Connection failed!</string>
@@ -295,4 +295,6 @@
     <string name="toast_updatenick_fail">update nickname fail!</string>
     <string name="toast_updatephoto_success">update photo success!</string>
     <string name="toast_updatephoto_fail">update photo fail!</string>
+    <string name="quiting_the_chat_room">Exiting chat room</string>
+
 </resources>
