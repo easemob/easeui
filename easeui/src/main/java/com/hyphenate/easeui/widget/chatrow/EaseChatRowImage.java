@@ -1,7 +1,15 @@
 package com.hyphenate.easeui.widget.chatrow;
 
-import java.io.File;
-
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.support.v4.os.AsyncTaskCompat;
+import android.view.View;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.TextView;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMFileMessageBody;
 import com.hyphenate.chat.EMImageMessageBody;
@@ -10,18 +18,8 @@ import com.hyphenate.chat.EMMessage.ChatType;
 import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.model.EaseImageCache;
 import com.hyphenate.easeui.ui.EaseShowBigImageActivity;
-import com.hyphenate.easeui.utils.EaseCommonUtils;
 import com.hyphenate.easeui.utils.EaseImageUtils;
-
-import android.content.Context;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.net.Uri;
-import android.os.AsyncTask;
-import android.view.View;
-import android.widget.BaseAdapter;
-import android.widget.ImageView;
-import android.widget.TextView;
+import java.io.File;
 
 public class EaseChatRowImage extends EaseChatRowFile{
 
@@ -52,6 +50,7 @@ public class EaseChatRowImage extends EaseChatRowFile{
             if (imgBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.DOWNLOADING ||
                     imgBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.PENDING) {
                 imageView.setImageResource(R.drawable.ease_default_image);
+                //set the receive message callback
                 setMessageReceiveCallback();
             } else {
                 progressBar.setVisibility(View.GONE);
@@ -62,14 +61,14 @@ public class EaseChatRowImage extends EaseChatRowFile{
                 	// to make it compatible with thumbnail received in previous version
                     thumbPath = EaseImageUtils.getThumbnailImagePath(imgBody.getLocalUrl());
                 }
-                showImageView(thumbPath, imageView, imgBody.getLocalUrl(), message);
+                showImageView(thumbPath, imgBody.getLocalUrl(), message);
             }
             return;
         }
         
         String filePath = imgBody.getLocalUrl();
         String thumbPath = EaseImageUtils.getThumbnailImagePath(imgBody.getLocalUrl());
-        showImageView(thumbPath, imageView, filePath, message);
+        showImageView(thumbPath, filePath, message);
         handleSendMessage();
     }
     
@@ -80,6 +79,18 @@ public class EaseChatRowImage extends EaseChatRowFile{
     
     @Override
     protected void onBubbleClick() {
+        if (imgBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.DOWNLOADING ||
+                imgBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.PENDING) {
+            //thumbnail image downloading
+            return;
+        } else if(imgBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.FAILED){
+            progressBar.setVisibility(View.VISIBLE);
+            percentageView.setVisibility(View.VISIBLE);
+            // retry download with click event of user
+            EMClient.getInstance().chatManager().downloadThumbnail(message);
+        }
+
+
         Intent intent = new Intent(context, EaseShowBigImageActivity.class);
         File file = new File(imgBody.getLocalUrl());
         if (file.exists()) {
@@ -103,24 +114,19 @@ public class EaseChatRowImage extends EaseChatRowFile{
         }
         context.startActivity(intent);
     }
-    
+
     /**
      * load image into image view
      * 
-     * @param thumbernailPath
-     * @param iv
-     * @param position
-     * @return the image exists or not
      */
-    private boolean showImageView(final String thumbernailPath, final ImageView iv, final String localFullSizePath,final EMMessage message) {
+    private void showImageView(final String thumbernailPath, final String localFullSizePath,final EMMessage message) {
         // first check if the thumbnail image already loaded into cache
         Bitmap bitmap = EaseImageCache.getInstance().get(thumbernailPath);
         if (bitmap != null) {
             // thumbnail image is already loaded, reuse the drawable
-            iv.setImageBitmap(bitmap);
-            return true;
+            imageView.setImageBitmap(bitmap);
         } else {
-            new AsyncTask<Object, Void, Bitmap>() {
+            AsyncTaskCompat.executeParallel( new AsyncTask<Object, Void, Bitmap>() {
 
                 @Override
                 protected Bitmap doInBackground(Object... args) {
@@ -145,26 +151,11 @@ public class EaseChatRowImage extends EaseChatRowFile{
 
                 protected void onPostExecute(Bitmap image) {
                     if (image != null) {
-                        iv.setImageBitmap(image);
+                        imageView.setImageBitmap(image);
                         EaseImageCache.getInstance().put(thumbernailPath, image);
-                    } else {
-                        if (message.status() == EMMessage.Status.FAIL) {
-                            if (EaseCommonUtils.isNetWorkConnected(activity)) {
-                                new Thread(new Runnable() {
-
-                                    @Override
-                                    public void run() {
-                                        EMClient.getInstance().chatManager().downloadThumbnail(message);
-                                    }
-                                }).start();
-                            }
-                        }
-
                     }
                 }
-            }.execute();
-
-            return true;
+            });
         }
     }
 
