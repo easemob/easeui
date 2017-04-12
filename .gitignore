@@ -1,6 +1,5 @@
 # built application files
-*.apk
-*.ap_
+#*.apk
 
 # files for the dex VM
 *.dex
@@ -12,8 +11,9 @@
 *bin/
 *gen/
 #*/assets/
-*/libs/easemobchat_2.0.0.jar
 
+# Local configuration file (sdk path, etc)
+local.properties
 
 # Local configuration file (sdk path, etc)
 local.properties
@@ -27,6 +27,6 @@ local.properties
 *build/
 .gradle
 .idea/
-*iml
+*.iml
 
 #*.properties
