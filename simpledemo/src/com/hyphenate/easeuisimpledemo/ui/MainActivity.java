@@ -53,7 +53,7 @@ public class MainActivity extends EaseBaseActivity{
             
             @Override
             public void onListItemClicked(EMConversation conversation) {
-                startActivity(new Intent(MainActivity.this, ChatActivity.class).putExtra(EaseConstant.EXTRA_USER_ID, conversation.getUserName()));
+                startActivity(new Intent(MainActivity.this, ChatActivity.class).putExtra(EaseConstant.EXTRA_USER_ID, conversation.conversationId()));
             }
         });
         contactListFragment.setContactListItemClickListener(new EaseContactListItemClickListener() {
