@@ -1,8 +1,8 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 24
-    buildToolsVersion '25.0.0'
+    compileSdkVersion 25
+    buildToolsVersion '25.0.3'
 
     defaultConfig {
         minSdkVersion 11
@@ -22,13 +22,14 @@ android {
 
 dependencies {
     //release时需要把hyphenatechatsdk的依赖注释掉，sdk已经被打成jar包放在libs底下
-    compile project(':hyphenatechatsdk')
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    //    compile project(':hyphenatechatsdk')
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.github.bumptech.glide:glide:3.7.0'
-
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-//    compile 'com.android.support:appcompat-v7:24.2.1'
+    //    compile 'com.android.support:appcompat-v7:24.2.1'
     testCompile 'junit:junit:4.12'
+    // EaseUI 使用了 V4包中的一些类，需要加上 V4的扩展库
+    compile 'com.android.support:support-v4:25.3.0'
 }
