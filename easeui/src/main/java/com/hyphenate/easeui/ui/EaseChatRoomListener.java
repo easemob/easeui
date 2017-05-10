@@ -56,7 +56,7 @@ public abstract class EaseChatRoomListener implements EMChatRoomChangeListener {
     }
 
     @Override
-    public void onAnnouncementChanged(String chatroomId, String announcement) {
+    public void onAnnouncementChanged(final String chatroomId, final String announcement) {
 
     }
 }

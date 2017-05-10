@@ -82,17 +82,17 @@ public abstract class EaseGroupListener implements EMGroupChangeListener{
     }
 
     @Override
-    public void onAnnouncementChanged(String groupId, String announcement) {
+    public void onAnnouncementChanged(final String groupId, final String announcement) {
 
     }
 
     @Override
-    public void onSharedFileAdded(String groupId, EMMucSharedFile shareFile) {
+    public void onSharedFileAdded(final String groupId, final EMMucSharedFile shareFile) {
 
     }
 
     @Override
-    public void onSharedFileDeleted(String groupId, String fileId) {
+    public void onSharedFileDeleted(final String groupId, final String fileId) {
 
     }
 }
