@@ -1,6 +1,7 @@
 package com.hyphenate.easeui.ui;
 
 import com.hyphenate.EMGroupChangeListener;
+import com.hyphenate.chat.EMMucSharedFile;
 
 import java.util.List;
 
@@ -69,12 +70,29 @@ public abstract class EaseGroupListener implements EMGroupChangeListener{
     public void onOwnerChanged(String groupId, String newOwner, String oldOwner) {
 
     }
+
     @Override
     public void onMemberJoined(final String groupId,  final String member){
         
     }
+
     @Override
     public void onMemberExited(final String groupId, final String member) {
         
+    }
+
+    @Override
+    public void onAnnouncementChanged(String groupId, String announcement) {
+
+    }
+
+    @Override
+    public void onSharedFileAdded(String groupId, EMMucSharedFile shareFile) {
+
+    }
+
+    @Override
+    public void onSharedFileDeleted(String groupId, String fileId) {
+
     }
 }
