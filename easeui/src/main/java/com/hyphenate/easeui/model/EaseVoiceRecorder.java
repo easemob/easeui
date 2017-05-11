@@ -51,8 +51,8 @@ public class EaseVoiceRecorder {
             recorder.setAudioChannels(1); // MONO
             recorder.setAudioSamplingRate(8000); // 8000Hz
             recorder.setAudioEncodingBitRate(64); // seems if change this to
-                                                    // 128, still got same file
-                                                    // size.
+            // 128, still got same file
+            // size.
             // one easy way is to use temp file
             // file = File.createTempFile(PREFIX + userId, EXTENSION,
             // User.getVoicePath());
@@ -67,16 +67,13 @@ public class EaseVoiceRecorder {
             EMLog.e("voice", "prepare() failed");
         }
         new Thread(new Runnable() {
-            @Override
-            public void run() {
+            @Override public void run() {
                 try {
                     while (isRecording) {
                         android.os.Message msg = new android.os.Message();
-                        try{
+                        try {
                             msg.what = recorder.getMaxAmplitude() * 13 / 0x7FFF;
                         } catch (IllegalStateException e) {
-                            e.printStackTrace();
-                        } catch (RuntimeException e) {
                             e.printStackTrace();
                         }
                         handler.sendMessage(msg);
@@ -97,7 +94,7 @@ public class EaseVoiceRecorder {
 
     /**
      * stop the recoding
-     * 
+     *
      * @return seconds of the voice recorded
      */
 
@@ -111,19 +108,20 @@ public class EaseVoiceRecorder {
                     file.delete();
                 }
             } catch (IllegalStateException e) {
-            } catch (RuntimeException e){}
+            } catch (RuntimeException e) {
+            }
             isRecording = false;
         }
     }
 
     public int stopRecoding() {
-        if(recorder != null){
+        if (recorder != null) {
             isRecording = false;
             recorder.stop();
             recorder.release();
             recorder = null;
-            
-            if(file == null || !file.exists() || !file.isFile()){
+
+            if (file == null || !file.exists() || !file.isFile()) {
                 return EMError.FILE_INVALID;
             }
             if (file.length() == 0) {
@@ -154,11 +152,10 @@ public class EaseVoiceRecorder {
         return isRecording;
     }
 
-    
     public String getVoiceFilePath() {
         return voiceFilePath;
     }
-    
+
     public String getVoiceFileName() {
         return voiceFileName;
     }
