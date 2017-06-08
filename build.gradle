@@ -51,5 +51,5 @@ dependencies {
     //    compile files('libs/hyphenatechat_3.3.0.jar')
     compile 'com.android.support:support-v4:25.3.0'
     compile files('libs/HwPush_SDK_V2705_nomap.jar')
-    compile project(':hyphenate-sdk-custom-dns')
+    compile files('libs/hyphenatechat_3.3.1.jar')
 }
