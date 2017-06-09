@@ -4,8 +4,11 @@ import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMLocationMessageBody;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMMessage.ChatType;
+import com.hyphenate.easeui.EaseConstant;
 import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.ui.EaseBaiduMapActivity;
+import com.hyphenate.easeui.utils.EaseACKUtil;
+import com.hyphenate.easeui.utils.EaseMessageUtils;
 import com.hyphenate.exceptions.HyphenateException;
 import com.hyphenate.util.LatLng;
 
@@ -39,7 +42,11 @@ public class EaseChatRowLocation extends EaseChatRow{
     @Override
     protected void onSetUpView() {
 		locBody = (EMLocationMessageBody) message.getBody();
-		locationView.setText(locBody.getAddress());
+        if (message.getBooleanAttribute(EaseConstant.MESSAGE_ATTR_BURN, false)) {
+            locationView.setText(R.string.attach_burn);
+        }else{
+            locationView.setText(locBody.getAddress());
+        }
 
 		// handle sending message
 		if (message.direct() == EMMessage.Direct.SEND) {
@@ -65,12 +72,18 @@ public class EaseChatRowLocation extends EaseChatRow{
                break;
             }
         }else{
-            if(!message.isAcked() && message.getChatType() == ChatType.Chat){
+            if(!message.isAcked() && message.getChatType() == ChatType.Chat
+                    && !message.getBooleanAttribute(EaseConstant.MESSAGE_ATTR_BURN, false)){
                 try {
                     EMClient.getInstance().chatManager().ackMessageRead(message.getFrom(), message.getMsgId());
                 } catch (HyphenateException e) {
                     e.printStackTrace();
                 }
+            } else if (!message.isAcked() && message.getChatType() == ChatType.GroupChat) {
+                EaseMessageUtils.sendGroupReadMessage(message.getFrom(), message.getTo(),
+                        message.getMsgId());
+                message.setAcked(true);
+                EMClient.getInstance().chatManager().updateMessage(message);
             }
         }
     }
@@ -82,6 +95,7 @@ public class EaseChatRowLocation extends EaseChatRow{
     
     @Override
     protected void onBubbleClick() {
+        sendACKMessage();
         Intent intent = new Intent(context, EaseBaiduMapActivity.class);
         intent.putExtra("latitude", locBody.getLatitude());
         intent.putExtra("longitude", locBody.getLongitude());
@@ -108,5 +122,30 @@ public class EaseChatRowLocation extends EaseChatRow{
 		   
 		}
 	}
+
+
+    /**
+     * ACK 消息的发送，根据是否发送成功做些相应的操作，这里是把发送失败的消息id和username保存在序列化类中
+     */
+    private void sendACKMessage() {
+        try {
+            if(EMClient.getInstance().isConnected()){
+                EMClient.getInstance()
+                        .chatManager()
+                        .ackMessageRead(message.getFrom(), message.getMsgId());
+            }else{
+                EaseACKUtil.getInstance(context).saveACKDataId(message.getMsgId(), message.getFrom());
+            }
+        } catch (HyphenateException e) {
+            e.printStackTrace();
+            EaseACKUtil.getInstance(context).saveACKDataId(message.getMsgId(), message.getFrom());
+        } finally {
+            EMClient.getInstance()
+                    .chatManager()
+                    .getConversation(message.getFrom())
+                    .removeMessage(message.getMsgId());
+            onUpdateView();
+        }
+    }
 
 }

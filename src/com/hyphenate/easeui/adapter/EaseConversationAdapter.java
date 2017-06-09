@@ -1,7 +1,11 @@
 package com.hyphenate.easeui.adapter;
 
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.TextUtils;
+import android.text.style.ForegroundColorSpan;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +27,7 @@ import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.domain.EaseUser;
 import com.hyphenate.easeui.model.EaseAtMessageHelper;
 import com.hyphenate.easeui.utils.EaseCommonUtils;
+import com.hyphenate.easeui.utils.EaseConversationExtUtils;
 import com.hyphenate.easeui.utils.EaseSmileUtils;
 import com.hyphenate.easeui.utils.EaseUserUtils;
 import com.hyphenate.easeui.widget.EaseConversationList.EaseConversationListHelper;
@@ -38,11 +43,14 @@ import java.util.List;
  */
 public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
     private static final String TAG = "ChatAllHistoryAdapter";
+
+    private Context context;
+
     private List<EMConversation> conversationList;
     private List<EMConversation> copyConversationList;
     private ConversationFilter conversationFilter;
     private boolean notiyfyByFilter;
-    
+
     protected int primaryColor;
     protected int secondaryColor;
     protected int timeColor;
@@ -53,6 +61,7 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
     public EaseConversationAdapter(Context context, int resource,
                                    List<EMConversation> objects) {
         super(context, resource, objects);
+        this.context = context;
         conversationList = objects;
         copyConversationList = new ArrayList<EMConversation>();
         copyConversationList.addAll(objects);
@@ -84,6 +93,7 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
         ViewHolder holder = (ViewHolder) convertView.getTag();
         if (holder == null) {
             holder = new ViewHolder();
+            holder.topView = convertView.findViewById(R.id.top_view);
             holder.name = (TextView) convertView.findViewById(R.id.name);
             holder.unreadLabel = (TextView) convertView.findViewById(R.id.unread_msg_number);
             holder.message = (TextView) convertView.findViewById(R.id.message);
@@ -96,11 +106,17 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
         }
         holder.list_itease_layout.setBackgroundResource(R.drawable.ease_mm_listitem);
 
+
         // get conversation
         EMConversation conversation = getItem(position);
+        if(EaseConversationExtUtils.getConversationTop(conversation)){
+            holder.topView.setVisibility(View.VISIBLE);
+        }else{
+            holder.topView.setVisibility(View.GONE);
+        }
         // get username or group id
         String username = conversation.conversationId();
-        
+
         if (conversation.getType() == EMConversationType.GroupChat) {
             String groupId = conversation.conversationId();
             if(EaseAtMessageHelper.get().hasAtMeMsg(groupId)){
@@ -125,8 +141,23 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
 
         if (conversation.getUnreadMsgCount() > 0) {
             // show unread message count
-            holder.unreadLabel.setText(String.valueOf(conversation.getUnreadMsgCount()));
             holder.unreadLabel.setVisibility(View.VISIBLE);
+            if (conversation.getType() == EMConversationType.GroupChat){
+                List<String> list = EMClient.getInstance().pushManager().getNoPushGroups();
+                if (list == null || !list.contains(conversation.getLastMessage().getTo())){
+                    holder.unreadLabel.setBackgroundResource(R.drawable.ease_unread_count_bg);
+                    holder.unreadLabel.setText(String.valueOf(conversation.getUnreadMsgCount()));
+                }else {
+                    holder.unreadLabel.setText(null);
+                    holder.unreadLabel.setBackgroundResource(R.drawable.ease_unread_dot);
+
+                }
+
+            }else {
+                holder.unreadLabel.setBackgroundResource(R.drawable.ease_unread_count_bg);
+                holder.unreadLabel.setText(String.valueOf(conversation.getUnreadMsgCount()));
+            }
+
         } else {
             holder.unreadLabel.setVisibility(View.INVISIBLE);
         }
@@ -150,7 +181,21 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
                 holder.msgState.setVisibility(View.GONE);
             }
         }
-        
+
+
+        // 判断是否有草稿，
+        String msgPrefix = "";
+        String draft = EaseConversationExtUtils.getConversationDraft(conversation);
+        if (!TextUtils.isEmpty(draft)) {
+            // 表示草稿的前缀
+            msgPrefix = "[" + context.getString(R.string.hint_msg_draft) + "]";
+            Spannable spannable = EaseSmileUtils.getSmiledText(context, msgPrefix + draft);
+            spannable.setSpan(
+                    new ForegroundColorSpan(ContextCompat.getColor(context, R.color.holo_red_light)), 0,
+                    msgPrefix.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            holder.message.setText(spannable);
+        }
+
         //set property
         holder.name.setTextColor(primaryColor);
         holder.message.setTextColor(secondaryColor);
@@ -164,7 +209,7 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
 
         return convertView;
     }
-    
+
     @Override
     public void notifyDataSetChanged() {
         super.notifyDataSetChanged();
@@ -174,7 +219,7 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
             notiyfyByFilter = false;
         }
     }
-    
+
     @Override
     public Filter getFilter() {
         if (conversationFilter == null) {
@@ -182,7 +227,7 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
         }
         return conversationFilter;
     }
-    
+
 
     public void setPrimaryColor(int primaryColor) {
         this.primaryColor = primaryColor;
@@ -234,7 +279,7 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
                 for (int i = 0; i < count; i++) {
                     final EMConversation value = mOriginalValues.get(i);
                     String username = value.conversationId();
-                    
+
                     EMGroup group = EMClient.getInstance().groupManager().getGroup(username);
                     if(group != null){
                         username = group.getGroupName();
@@ -288,8 +333,9 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
     public void setCvsListHelper(EaseConversationListHelper cvsListHelper){
         this.cvsListHelper = cvsListHelper;
     }
-    
+
     private static class ViewHolder {
+        View topView;
         /** who you chat with */
         TextView name;
         /** unread message count */

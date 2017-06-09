@@ -22,10 +22,15 @@
     <string name="delete_message">删除消息</string>
     <string name="delete_conversation_messages">删除会话和消息</string>
     <string name="delete_conversation">删除会话</string>
+    <string name="message_details">消息详情</string>
+    <string name="attach_burn">阅后即焚</string>
+    <string name="attach_burn_cancel">取消阅后即焚</string>
     <string name="copy_message">复制消息</string>
     <string name="delete_voice">删除语音</string>
     <string name="delete_video">删除视频</string>
     <string name="delete">删除</string>
+    <string name="send_location">发送位置</string>
+    <string name="share_real_time_location">共享实时位置</string>
     <string name="resend">重发</string>
     <string name="confirm_resend">确认重发该信息？</string>
     <string name="connect_failuer_toast">请检查网络或稍候重试</string>
@@ -49,6 +54,7 @@
     <string name="picture">[图片]</string>
     <string name="video">[视频]</string>
     <string name="file">[文件]</string>
+    <string name="recall_msg">[撤回消息]</string>
     <string name="voice_prefix">[语音]</string>
     <string name="voice_call">[语音通话]</string>
     <string name="video_call">[视频通话]</string>
@@ -274,7 +280,8 @@
     <string name="update_contact_list_failed">更新联系人列表失败</string>
     <string name="update_black_list_failed">更新黑名单失败</string>
     <string name="update_groups_failed">更新群聊失败</string>
-    
+
+    <string name="hint_msg_draft">草稿</string>
     <string name= "no_more_messages">没有更多的消息了</string>
     <string name="gorup_not_found">找不到这个群组</string>
     <string name= "chatroom_allow_owner_leave"> 允许聊天室群主离开</string>
@@ -311,4 +318,7 @@
     <string name="toast_updatephoto_fail">更新头像失败!</string>
     <string name="is_quit_the_chat_room">正在退出聊天室……</string>
     <string name="title_input_status">正在输入...</string>
+    <string name="foward_video">视频文件不存在，不能转发</string>
+
+    <string name="quiting_the_chat_room">正在退出聊天室……</string>
 </resources>
