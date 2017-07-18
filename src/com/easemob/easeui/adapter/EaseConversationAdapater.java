@@ -263,6 +263,11 @@ public class EaseConversationAdapater extends ArrayAdapter<EMConversation> {
 				results.values = copyConversationList;
 				results.count = copyConversationList.size();
 			} else {
+				
+				if (copyConversationList.size() > mOriginalValues.size()) {
+                    			mOriginalValues = copyConversationList;
+                		}
+				
 				String prefixString = prefix.toString();
 				final int count = mOriginalValues.size();
 				final ArrayList<EMConversation> newValues = new ArrayList<EMConversation>();
