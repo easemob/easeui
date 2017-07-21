@@ -186,6 +186,10 @@ public class EaseContactAdapter extends ArrayAdapter<EaseUser> implements Sectio
                 results.values = copyUserList;
                 results.count = copyUserList.size();
             }else{
+
+                if (copyUserList.size() > mOriginalList.size()) {
+                    mOriginalList = copyUserList;
+                }
                 String prefixString = prefix.toString();
                 final int count = mOriginalList.size();
                 final ArrayList<EaseUser> newValues = new ArrayList<EaseUser>();
