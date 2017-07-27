@@ -17,6 +17,8 @@ import com.hyphenate.easeui.model.styles.EaseMessageListItemStyle;
 import com.hyphenate.easeui.utils.EaseCommonUtils;
 import com.hyphenate.easeui.widget.chatrow.EaseCustomChatRowProvider;
 
+import java.util.List;
+
 public class EaseChatMessageList extends RelativeLayout{
 
     protected static final String TAG = "EaseChatMessageList";
@@ -58,12 +60,12 @@ public class EaseChatMessageList extends RelativeLayout{
      * @param chatType
      * @param customChatRowProvider
      */
-    public void init(String toChatUsername, int chatType, EaseCustomChatRowProvider customChatRowProvider) {
+    public void init(String toChatUsername, int chatType, EaseCustomChatRowProvider customChatRowProvider, boolean roaming) {
         this.chatType = chatType;
         this.toChatUsername = toChatUsername;
         
         conversation = EMClient.getInstance().chatManager().getConversation(toChatUsername, EaseCommonUtils.getConversationType(chatType), true);
-        messageAdapter = new EaseMessageAdapter(context, toChatUsername, chatType, listView);
+        messageAdapter = new EaseMessageAdapter(context, toChatUsername, chatType, listView, roaming);
         messageAdapter.setItemStyle(itemStyle);
         messageAdapter.setCustomChatRowProvider(customChatRowProvider);
         // set message adapter
@@ -110,6 +112,16 @@ public class EaseChatMessageList extends RelativeLayout{
     public void refreshSeekTo(int position){
         if (messageAdapter != null) {
             messageAdapter.refreshSeekTo(position);
+        }
+    }
+
+    /**
+     * update roaming message list
+     * @param msgList
+     */
+    public void updateRoamingMessages(List<EMMessage> msgList) {
+        if (messageAdapter != null) {
+            messageAdapter.updateRoamingMessages(msgList);
         }
     }
     

@@ -30,14 +30,15 @@ import com.hyphenate.EMValueCallBack;
 import com.hyphenate.chat.EMChatRoom;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMConversation;
+import com.hyphenate.chat.EMCursorResult;
 import com.hyphenate.chat.EMGroup;
 import com.hyphenate.chat.EMImageMessageBody;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMMessage.ChatType;
 import com.hyphenate.chat.EMTextMessageBody;
 import com.hyphenate.easeui.EaseConstant;
-import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.EaseUI;
+import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.domain.EaseEmojicon;
 import com.hyphenate.easeui.domain.EaseUser;
 import com.hyphenate.easeui.model.EaseAtMessageHelper;
@@ -52,11 +53,16 @@ import com.hyphenate.easeui.widget.EaseChatMessageList;
 import com.hyphenate.easeui.widget.EaseVoiceRecorderView;
 import com.hyphenate.easeui.widget.EaseVoiceRecorderView.EaseVoiceRecorderCallback;
 import com.hyphenate.easeui.widget.chatrow.EaseCustomChatRowProvider;
+import com.hyphenate.exceptions.HyphenateException;
 import com.hyphenate.util.EMLog;
 import com.hyphenate.util.PathUtil;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * you can new an EaseChatFragment to use or you can inherit it to expand.
@@ -110,9 +116,18 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     protected int[] itemIds = { ITEM_TAKE_PICTURE, ITEM_PICTURE, ITEM_LOCATION };
     private boolean isMessageListInited;
     protected MyItemClickListener extendMenuItemClickListener;
+    protected boolean isRoaming = false;
+    protected List<EMMessage> roamingMessageList = Collections.synchronizedList(new ArrayList<EMMessage>());
+    protected String roamingCursor = "";
+    private ExecutorService fetchQueue;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.ease_fragment_chat, container, false);
+    }
+
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState, boolean roaming) {
+        isRoaming = roaming;
         return inflater.inflate(R.layout.ease_fragment_chat, container, false);
     }
 
@@ -179,6 +194,11 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         inputManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
         getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
+        if (isRoaming) {
+            fetchQueue = Executors.newSingleThreadExecutor();
+            inputMenu.setVisibility(View.GONE);
+        }
     }
 
     protected void setUpView() {
@@ -257,21 +277,39 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         conversation.markAllMessagesAsRead();
         // the number of messages loaded into conversation is getChatOptions().getNumberOfMessagesLoaded
         // you can change this number
-        final List<EMMessage> msgs = conversation.getAllMessages();
-        int msgCount = msgs != null ? msgs.size() : 0;
-        if (msgCount < conversation.getAllMsgCount() && msgCount < pagesize) {
-            String msgId = null;
-            if (msgs != null && msgs.size() > 0) {
-                msgId = msgs.get(0).getMsgId();
+        if (!isRoaming) {
+            final List<EMMessage> msgs = conversation.getAllMessages();
+            int msgCount = msgs != null ? msgs.size() : 0;
+            if (msgCount < conversation.getAllMsgCount() && msgCount < pagesize) {
+                String msgId = null;
+                if (msgs != null && msgs.size() > 0) {
+                    msgId = msgs.get(0).getMsgId();
+                }
+                conversation.loadMoreMsgFromDB(msgId, pagesize - msgCount);
             }
-            conversation.loadMoreMsgFromDB(msgId, pagesize - msgCount);
+        } else {
+
+            fetchQueue.execute(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        EMCursorResult<EMMessage> cursorResult = EMClient.getInstance().chatManager().fetchHistoryMessages(
+                                toChatUsername, EaseCommonUtils.getConversationType(chatType), pagesize, roamingCursor);
+                        roamingMessageList = cursorResult.getData();
+                        roamingCursor = cursorResult.getCursor();
+                        messageList.updateRoamingMessages(roamingMessageList);
+                        messageList.refreshSeekTo(roamingMessageList.size() - 1);
+                    } catch (HyphenateException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
         }
-        
     }
     
     protected void onMessageListInit(){
         messageList.init(toChatUsername, chatType, chatFragmentHelper != null ? 
-                chatFragmentHelper.onSetCustomChatRowProvider() : null);
+                chatFragmentHelper.onSetCustomChatRowProvider() : null, isRoaming);
         setListItemClickListener();
         
         messageList.getListView().setOnTouchListener(new OnTouchListener() {
@@ -345,40 +383,79 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
                     @Override
                     public void run() {
-                        if (listView.getFirstVisiblePosition() == 0 && !isloading && haveMoreData) {
-                            List<EMMessage> messages;
-                            try {
-                                if (chatType == EaseConstant.CHATTYPE_SINGLE) {
-                                    messages = conversation.loadMoreMsgFromDB(messageList.getItem(0).getMsgId(),
-                                            pagesize);
-                                } else {
-                                    messages = conversation.loadMoreMsgFromDB(messageList.getItem(0).getMsgId(),
-                                            pagesize);
-                                }
-                            } catch (Exception e1) {
-                                swipeRefreshLayout.setRefreshing(false);
-                                return;
-                            }
-                            if (messages.size() > 0) {
-                                messageList.refreshSeekTo(messages.size() - 1);
-                                if (messages.size() != pagesize) {
-                                    haveMoreData = false;
-                                }
-                            } else {
-                                haveMoreData = false;
-                            }
-
-                            isloading = false;
-
+                        if (!isRoaming) {
+                            loadMoreLocalMessage();
                         } else {
-                            Toast.makeText(getActivity(), getResources().getString(R.string.no_more_messages),
-                                    Toast.LENGTH_SHORT).show();
+                            loadMoreRoamingMessages();
                         }
-                        swipeRefreshLayout.setRefreshing(false);
                     }
                 }, 600);
             }
         });
+    }
+
+    private void loadMoreLocalMessage() {
+        if (listView.getFirstVisiblePosition() == 0 && !isloading && haveMoreData) {
+            List<EMMessage> messages;
+            try {
+                messages = conversation.loadMoreMsgFromDB(messageList.getItem(0).getMsgId(),
+                        pagesize);
+            } catch (Exception e1) {
+                swipeRefreshLayout.setRefreshing(false);
+                return;
+            }
+            if (messages.size() > 0) {
+                messageList.refreshSeekTo(messages.size() - 1);
+                if (messages.size() != pagesize) {
+                    haveMoreData = false;
+                }
+            } else {
+                haveMoreData = false;
+            }
+
+            isloading = false;
+        } else {
+            Toast.makeText(getActivity(), getResources().getString(R.string.no_more_messages),
+                    Toast.LENGTH_SHORT).show();
+        }
+        swipeRefreshLayout.setRefreshing(false);
+    }
+
+    private void loadMoreRoamingMessages() {
+        if (!haveMoreData) {
+            Toast.makeText(getActivity(), getResources().getString(R.string.no_more_messages),
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (fetchQueue != null) {
+            fetchQueue.execute(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        EMCursorResult<EMMessage> cursorResult = EMClient.getInstance().chatManager().fetchHistoryMessages(
+                                toChatUsername, EaseCommonUtils.getConversationType(chatType), pagesize, roamingCursor);
+                        roamingMessageList.addAll(0, cursorResult.getData());
+                        roamingCursor = cursorResult.getCursor();
+                        if (roamingCursor.isEmpty()) {
+                            haveMoreData = false;
+                        }
+                        messageList.updateRoamingMessages(roamingMessageList);
+                        if (cursorResult.getData().size() > 0) {
+                            messageList.refreshSeekTo(cursorResult.getData().size() - 1);
+                        }
+                    } catch (HyphenateException e) {
+                        e.printStackTrace();
+                    } finally {
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                swipeRefreshLayout.setRefreshing(false);
+                            }
+                        });
+                    }
+                }
+            });
+        }
     }
 
     @Override
@@ -417,7 +494,9 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             messageList.refresh();
         EaseUI.getInstance().pushActivity(getActivity());
         // register the event listener when enter the foreground
-        EMClient.getInstance().chatManager().addMessageListener(this);
+        if (!isRoaming) {
+            EMClient.getInstance().chatManager().addMessageListener(this);
+        }
         
         if(chatType == EaseConstant.CHATTYPE_GROUP){
             EaseAtMessageHelper.get().removeAtMeGroup(toChatUsername);
@@ -429,7 +508,9 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         super.onStop();
         // unregister this event listener when this activity enters the
         // background
-        EMClient.getInstance().chatManager().removeMessageListener(this);
+        if (!isRoaming) {
+            EMClient.getInstance().chatManager().removeMessageListener(this);
+        }
 
         // remove activity from foreground activity list
         EaseUI.getInstance().popActivity(getActivity());
