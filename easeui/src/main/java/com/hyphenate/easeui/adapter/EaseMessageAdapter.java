@@ -119,7 +119,7 @@ public class EaseMessageAdapter extends BaseAdapter{
 				}
 				break;
 			case HANDLER_MESSAGE_SELECT_LAST:
-				if (messages.length > 0) {
+				if (messages != null && messages.length > 0) {
 					listView.setSelection(messages.length - 1);
 				}
                 break;

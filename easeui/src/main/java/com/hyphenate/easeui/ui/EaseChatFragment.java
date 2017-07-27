@@ -297,7 +297,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         roamingMessageList = cursorResult.getData();
                         roamingCursor = cursorResult.getCursor();
                         messageList.updateRoamingMessages(roamingMessageList);
-                        messageList.refreshSeekTo(roamingMessageList.size() - 1);
+                        messageList.refreshSelectLast();
                     } catch (HyphenateException e) {
                         e.printStackTrace();
                     }
@@ -710,8 +710,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             messageList.refresh();
         }
     }
-    
-    
+
     /**
      * handle the click event for extend menu
      *
