@@ -198,6 +198,8 @@ public abstract class EaseChatRow extends LinearLayout {
                 
                 @Override
                 public void onSuccess() {
+//                    EMConversation conversation = EMClient.getInstance().chatManager().getConversation(message.getTo());
+//                    conversation.removeMessage(message.getMsgId());
                     updateView();
                 }
                 

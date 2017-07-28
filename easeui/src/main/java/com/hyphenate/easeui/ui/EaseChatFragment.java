@@ -97,8 +97,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     protected int pagesize = 20;
     protected GroupListener groupListener;
     protected ChatRoomListener chatRoomListener;
-
     protected EMMessage contextMenuMessage;
+//    protected EaseConversationListFragment conlistfrag;
     
     static final int ITEM_TAKE_PICTURE = 1;
     static final int ITEM_PICTURE = 2;
@@ -618,6 +618,13 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     }
 
     @Override
+    public void onMessageRecalled(List<EMMessage> messages) {
+        if(isMessageListInited) {
+            messageList.refresh();
+        }
+    }
+
+    @Override
     public void onMessageChanged(EMMessage emMessage, Object change) {
         if(isMessageListInited) {
             messageList.refresh();
@@ -1053,6 +1060,11 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     }
                 }
             });
+        }
+
+        @Override
+        public void onAnnouncementChanged(String chatRoomId, String announcement) {
+
         }
 
         @Override
