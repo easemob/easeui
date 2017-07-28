@@ -98,7 +98,6 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     protected GroupListener groupListener;
     protected ChatRoomListener chatRoomListener;
     protected EMMessage contextMenuMessage;
-//    protected EaseConversationListFragment conlistfrag;
     
     static final int ITEM_TAKE_PICTURE = 1;
     static final int ITEM_PICTURE = 2;
