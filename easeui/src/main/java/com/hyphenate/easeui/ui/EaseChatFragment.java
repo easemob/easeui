@@ -30,7 +30,6 @@ import com.hyphenate.EMValueCallBack;
 import com.hyphenate.chat.EMChatRoom;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMConversation;
-import com.hyphenate.chat.EMCursorResult;
 import com.hyphenate.chat.EMGroup;
 import com.hyphenate.chat.EMImageMessageBody;
 import com.hyphenate.chat.EMMessage;
@@ -58,8 +57,6 @@ import com.hyphenate.util.EMLog;
 import com.hyphenate.util.PathUtil;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -116,8 +113,6 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     private boolean isMessageListInited;
     protected MyItemClickListener extendMenuItemClickListener;
     protected boolean isRoaming = false;
-    protected List<EMMessage> roamingMessageList = Collections.synchronizedList(new ArrayList<EMMessage>());
-    protected String roamingCursor = "";
     private ExecutorService fetchQueue;
 
     @Override
@@ -196,7 +191,6 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
         if (isRoaming) {
             fetchQueue = Executors.newSingleThreadExecutor();
-            inputMenu.setVisibility(View.GONE);
         }
     }
 
@@ -276,6 +270,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         conversation.markAllMessagesAsRead();
         // the number of messages loaded into conversation is getChatOptions().getNumberOfMessagesLoaded
         // you can change this number
+
         if (!isRoaming) {
             final List<EMMessage> msgs = conversation.getAllMessages();
             int msgCount = msgs != null ? msgs.size() : 0;
@@ -287,17 +282,22 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 conversation.loadMoreMsgFromDB(msgId, pagesize - msgCount);
             }
         } else {
-
             fetchQueue.execute(new Runnable() {
                 @Override
                 public void run() {
                     try {
-                        EMCursorResult<EMMessage> cursorResult = EMClient.getInstance().chatManager().fetchHistoryMessages(
-                                toChatUsername, EaseCommonUtils.getConversationType(chatType), pagesize, roamingCursor);
-                        roamingMessageList = cursorResult.getData();
-                        roamingCursor = cursorResult.getCursor();
-                        messageList.updateRoamingMessages(roamingMessageList);
-                        messageList.refreshSeekTo(roamingMessageList.size() - 1);
+                        EMClient.getInstance().chatManager().fetchHistoryMessages(
+                                toChatUsername, EaseCommonUtils.getConversationType(chatType), pagesize, "");
+                        final List<EMMessage> msgs = conversation.getAllMessages();
+                        int msgCount = msgs != null ? msgs.size() : 0;
+                        if (msgCount < conversation.getAllMsgCount() && msgCount < pagesize) {
+                            String msgId = null;
+                            if (msgs != null && msgs.size() > 0) {
+                                msgId = msgs.get(0).getMsgId();
+                            }
+                            conversation.loadMoreMsgFromDB(msgId, pagesize - msgCount);
+                        }
+                        messageList.refreshSelectLast();
                     } catch (HyphenateException e) {
                         e.printStackTrace();
                     }
@@ -308,7 +308,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     
     protected void onMessageListInit(){
         messageList.init(toChatUsername, chatType, chatFragmentHelper != null ? 
-                chatFragmentHelper.onSetCustomChatRowProvider() : null, isRoaming);
+                chatFragmentHelper.onSetCustomChatRowProvider() : null);
         setListItemClickListener();
         
         messageList.getListView().setOnTouchListener(new OnTouchListener() {
@@ -424,6 +424,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         if (!haveMoreData) {
             Toast.makeText(getActivity(), getResources().getString(R.string.no_more_messages),
                     Toast.LENGTH_SHORT).show();
+            swipeRefreshLayout.setRefreshing(false);
             return;
         }
         if (fetchQueue != null) {
@@ -431,26 +432,22 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 @Override
                 public void run() {
                     try {
-                        EMCursorResult<EMMessage> cursorResult = EMClient.getInstance().chatManager().fetchHistoryMessages(
-                                toChatUsername, EaseCommonUtils.getConversationType(chatType), pagesize, roamingCursor);
-                        roamingMessageList.addAll(0, cursorResult.getData());
-                        roamingCursor = cursorResult.getCursor();
-                        if (roamingCursor.isEmpty()) {
-                            haveMoreData = false;
-                        }
-                        messageList.updateRoamingMessages(roamingMessageList);
-                        if (cursorResult.getData().size() > 0) {
-                            messageList.refreshSeekTo(cursorResult.getData().size() - 1);
-                        }
+                        List<EMMessage> messages = conversation.getAllMessages();
+                        EMClient.getInstance().chatManager().fetchHistoryMessages(
+                                toChatUsername, EaseCommonUtils.getConversationType(chatType), pagesize,
+                                (messages != null && messages.size() > 0) ? messages.get(0).getMsgId() : "");
                     } catch (HyphenateException e) {
                         e.printStackTrace();
                     } finally {
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                swipeRefreshLayout.setRefreshing(false);
-                            }
-                        });
+                        Activity activity = getActivity();
+                        if (activity != null) {
+                            activity.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    loadMoreLocalMessage();
+                                }
+                            });
+                        }
                     }
                 }
             });
@@ -493,10 +490,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             messageList.refresh();
         EaseUI.getInstance().pushActivity(getActivity());
         // register the event listener when enter the foreground
-        if (!isRoaming) {
-            EMClient.getInstance().chatManager().addMessageListener(this);
-        }
-        
+        EMClient.getInstance().chatManager().addMessageListener(this);
+
         if(chatType == EaseConstant.CHATTYPE_GROUP){
             EaseAtMessageHelper.get().removeAtMeGroup(toChatUsername);
         }
@@ -507,9 +502,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         super.onStop();
         // unregister this event listener when this activity enters the
         // background
-        if (!isRoaming) {
-            EMClient.getInstance().chatManager().removeMessageListener(this);
-        }
+        EMClient.getInstance().chatManager().removeMessageListener(this);
 
         // remove activity from foreground activity list
         EaseUI.getInstance().popActivity(getActivity());
@@ -710,8 +703,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             messageList.refresh();
         }
     }
-    
-    
+
     /**
      * handle the click event for extend menu
      *
