@@ -39,8 +39,6 @@ import com.hyphenate.easeui.widget.chatrow.EaseChatRowVideo;
 import com.hyphenate.easeui.widget.chatrow.EaseChatRowVoice;
 import com.hyphenate.easeui.widget.chatrow.EaseCustomChatRowProvider;
 
-import java.util.List;
-
 public class EaseMessageAdapter extends BaseAdapter{
 
 	private final static String TAG = "msg";
@@ -50,7 +48,6 @@ public class EaseMessageAdapter extends BaseAdapter{
 	private static final int HANDLER_MESSAGE_REFRESH_LIST = 0;
 	private static final int HANDLER_MESSAGE_SELECT_LAST = 1;
     private static final int HANDLER_MESSAGE_SEEK_TO = 2;
-	private static final int HANDLER_MESSAGE_UPDATE_DATA = 3;
 
 	private static final int MESSAGE_TYPE_RECV_TXT = 0;
 	private static final int MESSAGE_TYPE_SENT_TXT = 1;
@@ -86,7 +83,6 @@ public class EaseMessageAdapter extends BaseAdapter{
 
     private ListView listView;
 	private EaseMessageListItemStyle itemStyle;
-	private boolean isRoaming = false;
 
 	public EaseMessageAdapter(Context context, String username, int chatType, ListView listView) {
 		this.context = context;
@@ -95,13 +91,8 @@ public class EaseMessageAdapter extends BaseAdapter{
 		this.conversation = EMClient.getInstance().chatManager().getConversation(username, EaseCommonUtils.getConversationType(chatType), true);
 	}
 
-	public EaseMessageAdapter(Context context, String username, int chatType, ListView listView, boolean roaming) {
-		this(context, username, chatType, listView);
-		this.isRoaming = roaming;
-	}
-
 	Handler handler = new Handler() {
-		private void refreshFromLocalList() {
+		private void refreshList() {
 			// you should not call getAllMessages() in UI thread
 			// otherwise there is problem when refreshing UI and there is new message arrive
 			java.util.List<EMMessage> var = conversation.getAllMessages();
@@ -114,27 +105,17 @@ public class EaseMessageAdapter extends BaseAdapter{
 		public void handleMessage(android.os.Message message) {
 			switch (message.what) {
 			case HANDLER_MESSAGE_REFRESH_LIST:
-				if (!isRoaming) {
-					refreshFromLocalList();
-				}
+				refreshList();
 				break;
 			case HANDLER_MESSAGE_SELECT_LAST:
-				if (messages != null && messages.length > 0) {
-					listView.setSelection(messages.length - 1);
-				}
+                if (messages != null && messages.length > 0) {
+	                listView.setSelection(messages.length - 1);
+                }
                 break;
             case HANDLER_MESSAGE_SEEK_TO:
 	            int position = message.arg1;
 	            listView.setSelection(position);
                 break;
-			case HANDLER_MESSAGE_UPDATE_DATA:
-				if (isRoaming) {
-					if (message.obj != null && message.obj instanceof List) {
-						List<EMMessage> msgList = (List<EMMessage>) message.obj;
-						messages = msgList.toArray(new EMMessage[msgList.size()]);
-						notifyDataSetChanged();
-					}
-				}
 			default:
 				break;
 			}
@@ -166,12 +147,6 @@ public class EaseMessageAdapter extends BaseAdapter{
     public void refreshSeekTo(int position) {
 	    handler.sendMessage(handler.obtainMessage(HANDLER_MESSAGE_REFRESH_LIST));
     }
-
-	public void updateRoamingMessages(List<EMMessage> msgList) {
-		android.os.Message msg = handler.obtainMessage(HANDLER_MESSAGE_UPDATE_DATA);
-		msg.obj = msgList;
-		handler.sendMessage(msg);
-	}
 
 	public EMMessage getItem(int position) {
 		if (messages != null && position < messages.length) {
