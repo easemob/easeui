@@ -1061,10 +1061,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             });
         }
 
-        @Override
-        public void onAnnouncementChanged(String chatRoomId, String announcement) {
 
-        }
 
         @Override
         public void onMemberJoined(final String roomId, final String participant) {
