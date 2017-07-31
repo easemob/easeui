@@ -397,7 +397,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         if (listView.getFirstVisiblePosition() == 0 && !isloading && haveMoreData) {
             List<EMMessage> messages;
             try {
-                messages = conversation.loadMoreMsgFromDB(messageList.getItem(0).getMsgId(),
+                messages = conversation.loadMoreMsgFromDB(conversation.getAllMessages().size() == 0 ? "" : conversation.getAllMessages().get(0).getMsgId(),
                         pagesize);
             } catch (Exception e1) {
                 swipeRefreshLayout.setRefreshing(false);
@@ -983,6 +983,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         conversation.clearAllMessages();
                     }
                     messageList.refresh();
+                    haveMoreData = true;
                 }
             }
         }, true).show();
