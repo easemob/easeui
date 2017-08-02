@@ -44,4 +44,7 @@
 	<color name="holo_red_light">#ffff4444</color>
 	<color name="emojicon_tab_selected">#D9D9D9</color>
     <color name="emojicon_tab_nomal">#ffffff</color>
+    <color name="recall_black">#61212121</color>
+    <color name="recall_black_38">#89ffffff</color>
+    <color name="recall_white_54">#89ffffff</color>
 </resources>
