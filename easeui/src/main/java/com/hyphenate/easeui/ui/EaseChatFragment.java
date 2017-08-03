@@ -557,7 +557,6 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         } else {
                             titleBar.setTitle(toChatUsername);
                         }
-                        addChatRoomChangeListenr();
                         onConversationInit();
                         onMessageListInit();
                     }
@@ -575,74 +574,6 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     }
                 });
                 getActivity().finish();
-            }
-        });
-    }
-
-    protected void addChatRoomChangeListenr() {
-        /*
-        chatRoomChangeListener = new EMChatRoomChangeListener() {
-
-            @Override
-            public void onChatRoomDestroyed(String roomId, String roomName) {
-                if (roomId.equals(toChatUsername)) {
-                    showChatroomToast(" room : " + roomId + " with room name : " + roomName + " was destroyed");
-                    getActivity().finish();
-                }
-            }
-
-            @Override
-            public void onMemberJoined(String roomId, String participant) {
-                showChatroomToast("member : " + participant + " join the room : " + roomId);
-            }
-
-            @Override
-            public void onMemberExited(String roomId, String roomName, String participant) {
-                showChatroomToast("member : " + participant + " leave the room : " + roomId + " room name : " + roomName);
-            }
-
-            @Override
-            public void onRemovedFromChatRoom(String roomId, String roomName, String participant) {
-                if (roomId.equals(toChatUsername)) {
-                    String curUser = EMClient.getInstance().getCurrentUser();
-                    if (curUser.equals(participant)) {
-                    	EMClient.getInstance().chatroomManager().leaveChatRoom(toChatUsername);
-                        getActivity().finish();
-                    }else{
-                        showChatroomToast("member : " + participant + " was kicked from the room : " + roomId + " room name : " + roomName);
-                    }
-                }
-            }
-
-
-            // ============================= group_reform new add api begin
-            @Override
-            public void onMuteListAdded(String chatRoomId, Map<String, Long> mutes) {}
-
-            @Override
-            public void onMuteListRemoved(String chatRoomId, List<String> mutes) {}
-
-            @Override
-            public void onAdminAdded(String chatRoomId, String admin) {}
-
-            @Override
-            public void onAdminRemoved(String chatRoomId, String admin) {}
-
-            @Override
-            public void onOwnerChanged(String chatRoomId, String newOwner, String oldOwner) {}
-
-            // ============================= group_reform new add api end
-
-        };
-        
-        EMClient.getInstance().chatroomManager().addChatRoomChangeListener(chatRoomChangeListener);
-        */
-    }
-    
-    protected void showChatroomToast(final String toastContent){
-        getActivity().runOnUiThread(new Runnable() {
-            public void run() {
-                Toast.makeText(getActivity(), toastContent, Toast.LENGTH_SHORT).show();
             }
         });
     }
