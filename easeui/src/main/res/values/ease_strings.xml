@@ -117,6 +117,7 @@
     <string name="agree">Agree</string>
     <string name="Group_chat">Group chat</string>
     <string name="chat_room">Chat room</string>
+    <string name="voice_and_video_conference">Voice and video conference</string>
     <string name="not_download">Did not download:</string>
     <string name="is_down_please_wait">Downloading video, please wait a moment</string>
     <string name="Exit_the_group_chat">Exit the group</string>
