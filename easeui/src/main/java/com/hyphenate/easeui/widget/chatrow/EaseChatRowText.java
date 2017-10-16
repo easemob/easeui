@@ -1,19 +1,16 @@
 package com.hyphenate.easeui.widget.chatrow;
 
-import com.hyphenate.chat.EMClient;
-import com.hyphenate.chat.EMMessage;
-import com.hyphenate.chat.EMMessage.ChatType;
-import com.hyphenate.chat.EMTextMessageBody;
-import com.hyphenate.easeui.R;
-import com.hyphenate.easeui.utils.EaseSmileUtils;
-import com.hyphenate.exceptions.HyphenateException;
-
 import android.content.Context;
 import android.text.Spannable;
 import android.view.View;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 import android.widget.TextView.BufferType;
+
+import com.hyphenate.chat.EMMessage;
+import com.hyphenate.chat.EMTextMessageBody;
+import com.hyphenate.easeui.R;
+import com.hyphenate.easeui.utils.EaseSmileUtils;
 
 public class EaseChatRowText extends EaseChatRow{
 
@@ -40,47 +37,24 @@ public class EaseChatRowText extends EaseChatRow{
         Spannable span = EaseSmileUtils.getSmiledText(context, txtBody.getMessage());
         // 设置内容
         contentView.setText(span, BufferType.SPANNABLE);
-
-        handleTextMessage();
-    }
-
-    protected void handleTextMessage() {
-        if (message.direct() == EMMessage.Direct.SEND) {
-            setMessageSendCallback();
-            switch (message.status()) {
-            case CREATE: 
-                progressBar.setVisibility(View.GONE);
-                statusView.setVisibility(View.VISIBLE);
-                break;
-            case SUCCESS:
-                progressBar.setVisibility(View.GONE);
-                statusView.setVisibility(View.GONE);
-                break;
-            case FAIL:
-                progressBar.setVisibility(View.GONE);
-                statusView.setVisibility(View.VISIBLE);
-                break;
-            case INPROGRESS:
-                progressBar.setVisibility(View.VISIBLE);
-                statusView.setVisibility(View.GONE);
-                break;
-            default:
-               break;
-            }
-        }else{
-            if(!message.isAcked() && message.getChatType() == ChatType.Chat){
-                try {
-                    EMClient.getInstance().chatManager().ackMessageRead(message.getFrom(), message.getMsgId());
-                } catch (HyphenateException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
     }
 
     @Override
-    protected void onUpdateView() {
-        adapter.notifyDataSetChanged();
+    protected void onViewUpdate(EMMessage msg) {
+        switch (msg.status()) {
+            case CREATE:
+                onMessageCreate();
+                break;
+            case SUCCESS:
+                onMessageSuccess();
+                break;
+            case FAIL:
+                onMessageError();
+                break;
+            case INPROGRESS:
+                onMessageInProgress();
+                break;
+        }
     }
 
     @Override
@@ -89,6 +63,23 @@ public class EaseChatRowText extends EaseChatRow{
         
     }
 
+    public void onMessageCreate() {
+        progressBar.setVisibility(View.VISIBLE);
+        statusView.setVisibility(View.GONE);
+    }
 
+    public void onMessageSuccess() {
+        progressBar.setVisibility(View.GONE);
+        statusView.setVisibility(View.GONE);
+    }
 
+    public void onMessageError() {
+        progressBar.setVisibility(View.GONE);
+        statusView.setVisibility(View.VISIBLE);
+    }
+
+    public void onMessageInProgress() {
+        progressBar.setVisibility(View.VISIBLE);
+        statusView.setVisibility(View.GONE);
+    }
 }

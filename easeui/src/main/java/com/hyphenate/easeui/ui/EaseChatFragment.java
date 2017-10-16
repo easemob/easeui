@@ -773,8 +773,9 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         }else if(chatType == EaseConstant.CHATTYPE_CHATROOM){
             message.setChatType(ChatType.ChatRoom);
         }
-        //send message
-        EMClient.getInstance().chatManager().sendMessage(message);
+        //Add to conversation
+//        EMClient.getInstance().chatManager().addToConversation(message);
+        EMClient.getInstance().chatManager().saveMessage(message);
         //refresh ui
         if(isMessageListInited) {
             messageList.refreshSelectLast();

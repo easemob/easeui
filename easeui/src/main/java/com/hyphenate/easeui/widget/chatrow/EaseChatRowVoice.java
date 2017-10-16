@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 public class EaseChatRowVoice extends EaseChatRowFile{
+    private static final String TAG = "EaseChatRowVoice";
 
     private ImageView voiceImageView;
     private TextView voiceLengthView;
@@ -75,7 +76,7 @@ public class EaseChatRowVoice extends EaseChatRowFile{
             if (voiceBody.downloadStatus() == EMFileMessageBody.EMDownloadStatus.DOWNLOADING ||
                     voiceBody.downloadStatus() == EMFileMessageBody.EMDownloadStatus.PENDING) {
                 progressBar.setVisibility(View.VISIBLE);
-                setMessageReceiveCallback();
+//                setMessageReceiveCallback();
             } else {
                 progressBar.setVisibility(View.INVISIBLE);
 
@@ -84,12 +85,7 @@ public class EaseChatRowVoice extends EaseChatRowFile{
         }
 
         // until here, handle sending voice message
-        handleSendMessage();
-    }
-
-    @Override
-    protected void onUpdateView() {
-        super.onUpdateView();
+//        handleSendMessage();
     }
 
     @Override

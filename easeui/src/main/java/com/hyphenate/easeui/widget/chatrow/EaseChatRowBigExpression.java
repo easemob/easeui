@@ -54,7 +54,5 @@ public class EaseChatRowBigExpression extends EaseChatRowText{
                 imageView.setImageResource(R.drawable.ease_default_expression);
             }
         }
-        
-        handleTextMessage();
     }
 }

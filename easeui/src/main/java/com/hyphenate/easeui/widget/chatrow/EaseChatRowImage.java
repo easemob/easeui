@@ -47,36 +47,14 @@ public class EaseChatRowImage extends EaseChatRowFile{
         imgBody = (EMImageMessageBody) message.getBody();
         // received messages
         if (message.direct() == EMMessage.Direct.RECEIVE) {
-            if (imgBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.DOWNLOADING ||
-                    imgBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.PENDING) {
-                imageView.setImageResource(R.drawable.ease_default_image);
-                //set the receive message callback
-                setMessageReceiveCallback();
-            } else {
-                progressBar.setVisibility(View.GONE);
-                percentageView.setVisibility(View.GONE);
-                imageView.setImageResource(R.drawable.ease_default_image);
-                String thumbPath = imgBody.thumbnailLocalPath();
-                if (!new File(thumbPath).exists()) {
-                	// to make it compatible with thumbnail received in previous version
-                    thumbPath = EaseImageUtils.getThumbnailImagePath(imgBody.getLocalUrl());
-                }
-                showImageView(thumbPath, imgBody.getLocalUrl(), message);
-            }
             return;
         }
-        
+
         String filePath = imgBody.getLocalUrl();
         String thumbPath = EaseImageUtils.getThumbnailImagePath(imgBody.getLocalUrl());
         showImageView(thumbPath, filePath, message);
-        handleSendMessage();
     }
-    
-    @Override
-    protected void onUpdateView() {
-        super.onUpdateView();
-    }
-    
+
     @Override
     protected void onBubbleClick() {
         if (imgBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.DOWNLOADING ||
@@ -113,6 +91,30 @@ public class EaseChatRowImage extends EaseChatRowFile{
             }
         }
         context.startActivity(intent);
+    }
+
+    @Override
+    protected void onViewUpdate(EMMessage msg) {
+        if (msg.direct() == EMMessage.Direct.SEND) {
+            super.onViewUpdate(msg);
+            return;
+        }
+
+        // received messages
+        if (imgBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.DOWNLOADING ||
+                imgBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.PENDING) {
+            imageView.setImageResource(R.drawable.ease_default_image);
+        } else {
+            progressBar.setVisibility(View.GONE);
+            percentageView.setVisibility(View.GONE);
+            imageView.setImageResource(R.drawable.ease_default_image);
+            String thumbPath = imgBody.thumbnailLocalPath();
+            if (!new File(thumbPath).exists()) {
+                // to make it compatible with thumbnail received in previous version
+                thumbPath = EaseImageUtils.getThumbnailImagePath(imgBody.getLocalUrl());
+            }
+            showImageView(thumbPath, imgBody.getLocalUrl(), message);
+        }
     }
 
     /**
