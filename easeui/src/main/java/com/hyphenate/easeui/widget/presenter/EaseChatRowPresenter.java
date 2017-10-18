@@ -15,13 +15,24 @@ import com.hyphenate.easeui.widget.chatrow.EaseChatRow;
  * Created by zhangsong on 17-10-12.
  */
 
-public abstract class EaseChatRowPresenter {
-
+public abstract class EaseChatRowPresenter implements EaseChatRow.EaseChatRowActionCallback{
     private EaseChatRow chatRow;
 
     private Context context;
     private EMMessage message;
     private int position;
+
+    @Override
+    public boolean onResendClick(EMMessage message) {
+        message.setStatus(EMMessage.Status.CREATE);
+        handleSendMessage(message);
+        return true;
+    }
+
+    @Override
+    public boolean onBubbleClick(EMMessage message) {
+        return false;
+    }
 
     public EaseChatRow createChatRow(Context cxt, EMMessage message, int position, BaseAdapter adapter) {
         this.context = cxt;
@@ -35,7 +46,7 @@ public abstract class EaseChatRowPresenter {
         this.message = msg;
         this.position = position;
 
-        chatRow.setUpView(message, position, itemClickListener, itemStyle);
+        chatRow.setUpView(message, position, itemClickListener, this, itemStyle);
 
         handleMessage();
     }

@@ -27,6 +27,12 @@ import com.hyphenate.util.DateUtils;
 import java.util.Date;
 
 public abstract class EaseChatRow extends LinearLayout {
+    public interface EaseChatRowActionCallback {
+        boolean onResendClick(EMMessage message);
+
+        boolean onBubbleClick(EMMessage message);
+    }
+
     protected static final String TAG = EaseChatRow.class.getSimpleName();
 
     protected LayoutInflater inflater;
@@ -50,6 +56,8 @@ public abstract class EaseChatRow extends LinearLayout {
 
     protected MessageListItemClickListener itemClickListener;
     protected EaseMessageListItemStyle itemStyle;
+
+    private EaseChatRowActionCallback itemActionCallback;
 
     public EaseChatRow(Context context, EMMessage message, int position, BaseAdapter adapter) {
         super(context);
@@ -95,10 +103,12 @@ public abstract class EaseChatRow extends LinearLayout {
      */
     public void setUpView(EMMessage message, int position,
             EaseChatMessageList.MessageListItemClickListener itemClickListener,
+                          EaseChatRowActionCallback itemActionCallback,
                           EaseMessageListItemStyle itemStyle) {
         this.message = message;
         this.position = position;
         this.itemClickListener = itemClickListener;
+        this.itemActionCallback = itemActionCallback;
         this.itemStyle = itemStyle;
 
         setUpBaseView();
@@ -199,11 +209,14 @@ public abstract class EaseChatRow extends LinearLayout {
     
                 @Override
                 public void onClick(View v) {
+                    if (onBubbleClick()) {
+                        return;
+                    }
+                    if (itemActionCallback != null && itemActionCallback.onBubbleClick(message)) {
+                        return;
+                    }
                     if (itemClickListener != null){
-                        if(!itemClickListener.onBubbleClick(message)){
-                        	// if listener return false, we call default handling
-                            onBubbleClick();
-                        }
+                        itemClickListener.onBubbleClick(message);
                     }
                 }
             });
@@ -225,6 +238,9 @@ public abstract class EaseChatRow extends LinearLayout {
 
                 @Override
                 public void onClick(View v) {
+                    if (itemActionCallback != null && itemActionCallback.onResendClick(message)) {
+                        return;
+                    }
                     if (itemClickListener != null) {
                         itemClickListener.onResendClick(message);
                     }
@@ -264,6 +280,13 @@ public abstract class EaseChatRow extends LinearLayout {
         }
     }
 
+    /**
+     * on bubble clicked
+     */
+    protected boolean onBubbleClick() {
+        return false;
+    }
+
     protected abstract void onInflateView();
 
     /**
@@ -281,9 +304,4 @@ public abstract class EaseChatRow extends LinearLayout {
      * 
      */
     protected abstract void onSetUpView();
-    
-    /**
-     * on bubble clicked
-     */
-    protected abstract void onBubbleClick();
 }

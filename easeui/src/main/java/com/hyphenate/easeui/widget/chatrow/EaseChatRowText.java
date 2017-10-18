@@ -57,28 +57,22 @@ public class EaseChatRowText extends EaseChatRow{
         }
     }
 
-    @Override
-    protected void onBubbleClick() {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void onMessageCreate() {
+    private void onMessageCreate() {
         progressBar.setVisibility(View.VISIBLE);
         statusView.setVisibility(View.GONE);
     }
 
-    public void onMessageSuccess() {
+    private void onMessageSuccess() {
         progressBar.setVisibility(View.GONE);
         statusView.setVisibility(View.GONE);
     }
 
-    public void onMessageError() {
+    private void onMessageError() {
         progressBar.setVisibility(View.GONE);
         statusView.setVisibility(View.VISIBLE);
     }
 
-    public void onMessageInProgress() {
+    private void onMessageInProgress() {
         progressBar.setVisibility(View.VISIBLE);
         statusView.setVisibility(View.GONE);
     }

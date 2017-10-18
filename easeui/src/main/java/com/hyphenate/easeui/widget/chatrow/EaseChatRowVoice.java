@@ -1,17 +1,17 @@
 package com.hyphenate.easeui.widget.chatrow;
 
-import com.hyphenate.chat.EMFileMessageBody;
-import com.hyphenate.chat.EMMessage;
-import com.hyphenate.chat.EMVoiceMessageBody;
-import com.hyphenate.easeui.R;
-import com.hyphenate.util.EMLog;
-
 import android.content.Context;
 import android.graphics.drawable.AnimationDrawable;
 import android.view.View;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.hyphenate.chat.EMFileMessageBody;
+import com.hyphenate.chat.EMMessage;
+import com.hyphenate.chat.EMVoiceMessageBody;
+import com.hyphenate.easeui.R;
+import com.hyphenate.util.EMLog;
 
 public class EaseChatRowVoice extends EaseChatRowFile{
     private static final String TAG = "EaseChatRowVoice";
@@ -76,21 +76,18 @@ public class EaseChatRowVoice extends EaseChatRowFile{
             if (voiceBody.downloadStatus() == EMFileMessageBody.EMDownloadStatus.DOWNLOADING ||
                     voiceBody.downloadStatus() == EMFileMessageBody.EMDownloadStatus.PENDING) {
                 progressBar.setVisibility(View.VISIBLE);
-//                setMessageReceiveCallback();
             } else {
                 progressBar.setVisibility(View.INVISIBLE);
 
             }
             return;
         }
-
-        // until here, handle sending voice message
-//        handleSendMessage();
     }
 
     @Override
-    protected void onBubbleClick() {
+    protected boolean onBubbleClick() {
         new EaseChatRowVoicePlayClickListener(message, voiceImageView, readStatusView, adapter, activity).onClick(bubbleLayout);
+        return true;
     }
     
     @Override

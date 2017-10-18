@@ -1,22 +1,15 @@
 package com.hyphenate.easeui.widget.chatrow;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.util.Log;
 import android.view.View;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMMessage;
-import com.hyphenate.chat.EMMessage.ChatType;
 import com.hyphenate.chat.EMNormalFileMessageBody;
 import com.hyphenate.easeui.R;
-import com.hyphenate.easeui.ui.EaseShowNormalFileActivity;
-import com.hyphenate.exceptions.HyphenateException;
 import com.hyphenate.util.EMLog;
-import com.hyphenate.util.FileUtils;
 import com.hyphenate.util.TextFormater;
 
 import java.io.File;
@@ -67,28 +60,6 @@ public class EaseChatRowFile extends EaseChatRow{
 	}
 
     @Override
-    protected void onBubbleClick() {
-        String filePath = fileMessageBody.getLocalUrl();
-        File file = new File(filePath);
-        if (file.exists()) {
-            // open files if it exist
-            FileUtils.openFile(file, (Activity) context);
-        } else {
-            // download the file
-            context.startActivity(new Intent(context, EaseShowNormalFileActivity.class).putExtra("msg", message));
-        }
-        if (message.direct() == EMMessage.Direct.RECEIVE && !message.isAcked() && message.getChatType() == ChatType.Chat) {
-            try {
-                EMClient.getInstance().chatManager().ackMessageRead(message.getFrom(), message.getMsgId());
-            } catch (HyphenateException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
-        
-    }
-
-    @Override
     protected void onViewUpdate(EMMessage msg) {
         EMLog.i(TAG, "msg id: " + msg.getMsgId());
         switch (msg.status()) {
@@ -99,40 +70,36 @@ public class EaseChatRowFile extends EaseChatRow{
                 onMessageSuccess();
                 break;
             case FAIL:
-                onMessageError(0, "");
+                onMessageError();
                 break;
             case INPROGRESS:
-                onMessageInProgress(0, "");
+                onMessageInProgress();
                 break;
         }
     }
 
-    protected void onMessageCreate() {
-        Log.i(TAG, "onMessageCreate: ");
+    private void onMessageCreate() {
         progressBar.setVisibility(View.VISIBLE);
         if (percentageView != null)
             percentageView.setVisibility(View.INVISIBLE);
         statusView.setVisibility(View.INVISIBLE);
     }
 
-    protected void onMessageSuccess() {
-        Log.i(TAG, "onMessageSuccess: ");
+    private void onMessageSuccess() {
         progressBar.setVisibility(View.INVISIBLE);
         if (percentageView != null)
             percentageView.setVisibility(View.INVISIBLE);
         statusView.setVisibility(View.INVISIBLE);
     }
 
-    protected void onMessageError(int code, String error) {
-        Log.i(TAG, "onMessageError: ");
+    private void onMessageError() {
         progressBar.setVisibility(View.INVISIBLE);
         if (percentageView != null)
             percentageView.setVisibility(View.INVISIBLE);
         statusView.setVisibility(View.VISIBLE);
     }
 
-    protected void onMessageInProgress(int progress, String status) {
-        Log.i(TAG, "onMessageInProgress: " + message.progress());
+    private void onMessageInProgress() {
         progressBar.setVisibility(View.VISIBLE);
         if (percentageView != null) {
             percentageView.setVisibility(View.VISIBLE);

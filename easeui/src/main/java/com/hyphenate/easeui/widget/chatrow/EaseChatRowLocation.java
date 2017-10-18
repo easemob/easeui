@@ -40,15 +40,6 @@ public class EaseChatRowLocation extends EaseChatRow{
     }
 
     @Override
-    protected void onBubbleClick() {
-        Intent intent = new Intent(context, EaseBaiduMapActivity.class);
-        intent.putExtra("latitude", locBody.getLatitude());
-        intent.putExtra("longitude", locBody.getLongitude());
-        intent.putExtra("address", locBody.getAddress());
-        activity.startActivity(intent);
-    }
-
-    @Override
     protected void onViewUpdate(EMMessage msg) {
         switch (msg.status()) {
             case CREATE:
@@ -66,22 +57,22 @@ public class EaseChatRowLocation extends EaseChatRow{
         }
     }
 
-    protected void onMessageCreate() {
+    private void onMessageCreate() {
         progressBar.setVisibility(View.VISIBLE);
         statusView.setVisibility(View.GONE);
     }
 
-    protected void onMessageSuccess() {
+    private void onMessageSuccess() {
         progressBar.setVisibility(View.GONE);
         statusView.setVisibility(View.GONE);
     }
 
-    protected void onMessageError() {
+    private void onMessageError() {
         progressBar.setVisibility(View.GONE);
         statusView.setVisibility(View.VISIBLE);
     }
 
-    protected void onMessageInProgress() {
+    private void onMessageInProgress() {
         progressBar.setVisibility(View.VISIBLE);
         statusView.setVisibility(View.GONE);
     }

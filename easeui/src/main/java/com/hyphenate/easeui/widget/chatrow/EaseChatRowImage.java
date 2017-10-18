@@ -45,6 +45,7 @@ public class EaseChatRowImage extends EaseChatRowFile{
     @Override
     protected void onSetUpView() {
         imgBody = (EMImageMessageBody) message.getBody();
+
         // received messages
         if (message.direct() == EMMessage.Direct.RECEIVE) {
             return;
@@ -53,44 +54,6 @@ public class EaseChatRowImage extends EaseChatRowFile{
         String filePath = imgBody.getLocalUrl();
         String thumbPath = EaseImageUtils.getThumbnailImagePath(imgBody.getLocalUrl());
         showImageView(thumbPath, filePath, message);
-    }
-
-    @Override
-    protected void onBubbleClick() {
-        if (imgBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.DOWNLOADING ||
-                imgBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.PENDING) {
-            //thumbnail image downloading
-            return;
-        } else if(imgBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.FAILED){
-            progressBar.setVisibility(View.VISIBLE);
-            percentageView.setVisibility(View.VISIBLE);
-            // retry download with click event of user
-            EMClient.getInstance().chatManager().downloadThumbnail(message);
-        }
-
-
-        Intent intent = new Intent(context, EaseShowBigImageActivity.class);
-        File file = new File(imgBody.getLocalUrl());
-        if (file.exists()) {
-            Uri uri = Uri.fromFile(file);
-            intent.putExtra("uri", uri);
-        } else {
-            // The local full size pic does not exist yet.
-            // ShowBigImage needs to download it from the server
-            // first
-            String msgId = message.getMsgId();
-            intent.putExtra("messageId", msgId);
-            intent.putExtra("localUrl", imgBody.getLocalUrl());
-        }
-        if (message != null && message.direct() == EMMessage.Direct.RECEIVE && !message.isAcked()
-                && message.getChatType() == ChatType.Chat) {
-            try {
-                EMClient.getInstance().chatManager().ackMessageRead(message.getFrom(), message.getMsgId());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        context.startActivity(intent);
     }
 
     @Override
@@ -104,6 +67,9 @@ public class EaseChatRowImage extends EaseChatRowFile{
         if (imgBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.DOWNLOADING ||
                 imgBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.PENDING) {
             imageView.setImageResource(R.drawable.ease_default_image);
+        } else if(imgBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.FAILED){
+            progressBar.setVisibility(View.VISIBLE);
+            percentageView.setVisibility(View.VISIBLE);
         } else {
             progressBar.setVisibility(View.GONE);
             percentageView.setVisibility(View.GONE);
