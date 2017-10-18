@@ -17,7 +17,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -30,7 +29,6 @@ import com.hyphenate.easeui.EaseConstant;
 import com.hyphenate.easeui.model.styles.EaseMessageListItemStyle;
 import com.hyphenate.easeui.utils.EaseCommonUtils;
 import com.hyphenate.easeui.widget.EaseChatMessageList.MessageListItemClickListener;
-import com.hyphenate.easeui.widget.chatrow.EaseChatRow;
 import com.hyphenate.easeui.widget.chatrow.EaseCustomChatRowProvider;
 import com.hyphenate.easeui.widget.presenter.EaseChatBigExpressionPresenter;
 import com.hyphenate.easeui.widget.presenter.EaseChatFilePresenter;
@@ -220,7 +218,6 @@ public class EaseMessageAdapter extends BaseAdapter{
 
 	protected EaseChatRowPresenter createChatRowPresenter(EMMessage message, int position) {
         if(customRowProvider != null && customRowProvider.getCustomChatRow(message, position, this) != null){
-			Log.i(TAG, "createChatRowPresenter: ");
 			return customRowProvider.getCustomChatRow(message, position, this);
         }
 
@@ -263,13 +260,13 @@ public class EaseMessageAdapter extends BaseAdapter{
 
 		EaseChatRowPresenter presenter = null;
 
-//		if (convertView == null) {
+		if (convertView == null) {
 			presenter = createChatRowPresenter(message, position);
 			convertView = presenter.createChatRow(context, message, position, this);
-//			convertView.setTag(presenter);
-//		} else {
-//			presenter = (EaseChatRowPresenter) convertView.getTag();
-//		}
+			convertView.setTag(presenter);
+		} else {
+			presenter = (EaseChatRowPresenter) convertView.getTag();
+		}
 
 		presenter.setup(message, position, itemClickListener, itemStyle);
 

@@ -61,7 +61,6 @@ public class EaseChatRowFile extends EaseChatRow{
 
     @Override
     protected void onViewUpdate(EMMessage msg) {
-        EMLog.i(TAG, "msg id: " + msg.getMsgId());
         switch (msg.status()) {
             case CREATE:
                 onMessageCreate();
