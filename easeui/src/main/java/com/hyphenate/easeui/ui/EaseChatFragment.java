@@ -342,19 +342,6 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             }
             
             @Override
-            public void onResendClick(final EMMessage message) {
-                new EaseAlertDialog(getActivity(), R.string.resend, R.string.confirm_resend, null, new AlertDialogUser() {
-                    @Override
-                    public void onResult(boolean confirmed, Bundle bundle) {
-                        if (!confirmed) {
-                            return;
-                        }
-                        resendMessage(message);
-                    }
-                }, true).show();
-            }
-            
-            @Override
             public void onBubbleLongClick(EMMessage message) {
                 contextMenuMessage = message;
                 if(chatFragmentHelper != null){
@@ -780,14 +767,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             messageList.refreshSelectLast();
         }
     }
-    
-    
-    public void resendMessage(EMMessage message){
-        message.setStatus(EMMessage.Status.CREATE);
-        EMClient.getInstance().chatManager().sendMessage(message);
-        messageList.refresh();
-    }
-    
+
+
     //===================================================================================
     
 

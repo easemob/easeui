@@ -28,7 +28,7 @@ public class EaseChatFilePresenter extends EaseChatRowPresenter {
     }
 
     @Override
-    public boolean onBubbleClick(EMMessage message) {
+    public void onBubbleClick(EMMessage message) {
         EMNormalFileMessageBody fileMessageBody = (EMNormalFileMessageBody) message.getBody();
         String filePath = fileMessageBody.getLocalUrl();
         File file = new File(filePath);
@@ -47,6 +47,5 @@ public class EaseChatFilePresenter extends EaseChatRowPresenter {
                 e.printStackTrace();
             }
         }
-        return true;
     }
 }

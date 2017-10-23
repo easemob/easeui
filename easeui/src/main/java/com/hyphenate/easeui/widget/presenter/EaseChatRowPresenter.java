@@ -1,13 +1,16 @@
 package com.hyphenate.easeui.widget.presenter;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.util.Log;
 import android.widget.BaseAdapter;
 
 import com.hyphenate.EMCallBack;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMMessage;
+import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.model.styles.EaseMessageListItemStyle;
+import com.hyphenate.easeui.widget.EaseAlertDialog;
 import com.hyphenate.easeui.widget.EaseChatMessageList;
 import com.hyphenate.easeui.widget.chatrow.EaseChatRow;
 
@@ -15,27 +18,39 @@ import com.hyphenate.easeui.widget.chatrow.EaseChatRow;
  * Created by zhangsong on 17-10-12.
  */
 
-public abstract class EaseChatRowPresenter implements EaseChatRow.EaseChatRowActionCallback{
+public abstract class EaseChatRowPresenter implements EaseChatRow.EaseChatRowActionCallback {
     private EaseChatRow chatRow;
 
     private Context context;
+    private BaseAdapter adapter;
     private EMMessage message;
     private int position;
 
     @Override
-    public boolean onResendClick(EMMessage message) {
-        message.setStatus(EMMessage.Status.CREATE);
-        handleSendMessage(message);
-        return true;
+    public void onResendClick(final EMMessage message) {
+        new EaseAlertDialog(getContext(), R.string.resend, R.string.confirm_resend, null, new EaseAlertDialog.AlertDialogUser() {
+            @Override
+            public void onResult(boolean confirmed, Bundle bundle) {
+                if (!confirmed) {
+                    return;
+                }
+                message.setStatus(EMMessage.Status.CREATE);
+                handleSendMessage(message);
+            }
+        }, true).show();
     }
 
     @Override
-    public boolean onBubbleClick(EMMessage message) {
-        return false;
+    public void onBubbleClick(EMMessage message) {
+    }
+
+    @Override
+    public void onDetachedFromWindow() {
     }
 
     public EaseChatRow createChatRow(Context cxt, EMMessage message, int position, BaseAdapter adapter) {
         this.context = cxt;
+        this.adapter = adapter;
         chatRow = onCreateChatRow(cxt, message, position, adapter);
         return chatRow;
     }
@@ -99,6 +114,10 @@ public abstract class EaseChatRowPresenter implements EaseChatRow.EaseChatRowAct
 
     protected Context getContext() {
         return context;
+    }
+
+    protected BaseAdapter getAdapter() {
+        return adapter;
     }
 
     protected EMMessage getMessage() {

@@ -52,7 +52,7 @@ public class EaseChatImagePresenter extends EaseChatFilePresenter {
     }
 
     @Override
-    public boolean onBubbleClick(EMMessage message) {
+    public void onBubbleClick(EMMessage message) {
         EMImageMessageBody imgBody = (EMImageMessageBody) message.getBody();
         if(imgBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.FAILED){
             getChatRow().updateView(message);
@@ -82,6 +82,5 @@ public class EaseChatImagePresenter extends EaseChatFilePresenter {
             }
         }
         getContext().startActivity(intent);
-        return true;
     }
 }

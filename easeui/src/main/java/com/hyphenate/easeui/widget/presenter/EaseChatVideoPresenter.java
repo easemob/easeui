@@ -25,7 +25,7 @@ public class EaseChatVideoPresenter extends EaseChatFilePresenter {
     }
 
     @Override
-    public boolean onBubbleClick(EMMessage message) {
+    public void onBubbleClick(EMMessage message) {
         EMLog.d(TAG, "video view is on click");
         Intent intent = new Intent(getContext(), EaseShowVideoActivity.class);
         intent.putExtra("msg", message);
@@ -38,6 +38,5 @@ public class EaseChatVideoPresenter extends EaseChatFilePresenter {
             }
         }
         getContext().startActivity(intent);
-        return true;
     }
 }

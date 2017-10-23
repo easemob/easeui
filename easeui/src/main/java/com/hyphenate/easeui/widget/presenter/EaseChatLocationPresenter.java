@@ -34,13 +34,12 @@ public class EaseChatLocationPresenter extends EaseChatRowPresenter {
     }
 
     @Override
-    public boolean onBubbleClick(EMMessage message) {
+    public void onBubbleClick(EMMessage message) {
         EMLocationMessageBody locBody = (EMLocationMessageBody) message.getBody();
         Intent intent = new Intent(getContext(), EaseBaiduMapActivity.class);
         intent.putExtra("latitude", locBody.getLatitude());
         intent.putExtra("longitude", locBody.getLongitude());
         intent.putExtra("address", locBody.getAddress());
         getContext().startActivity(intent);
-        return true;
     }
 }
