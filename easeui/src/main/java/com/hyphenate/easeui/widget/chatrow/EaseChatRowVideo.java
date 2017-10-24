@@ -25,14 +25,15 @@ import com.hyphenate.util.TextFormater;
 import java.io.File;
 
 public class EaseChatRowVideo extends EaseChatRowFile{
+    private static final String TAG = "EaseChatRowVideo";
 
-	private ImageView imageView;
+    private ImageView imageView;
     private TextView sizeView;
     private TextView timeLengthView;
 
     public EaseChatRowVideo(Context context, EMMessage message, int position, BaseAdapter adapter) {
-		super(context, message, position, adapter);
-	}
+        super(context, message, position, adapter);
+    }
 
 	@Override
 	protected void onInflateView() {
@@ -80,7 +81,6 @@ public class EaseChatRowVideo extends EaseChatRowFile{
             if (videoBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.DOWNLOADING ||
                     videoBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.PENDING) {
                 imageView.setImageResource(R.drawable.ease_default_image);
-                setMessageReceiveCallback();
             } else {
                 // System.err.println("!!!! not back receive, show image directly");
                 imageView.setImageResource(R.drawable.ease_default_image);
@@ -92,27 +92,8 @@ public class EaseChatRowVideo extends EaseChatRowFile{
 
             return;
         }
-        //handle sending message
-        handleSendMessage();
 	}
-	
-	@Override
-	protected void onBubbleClick() {
-	    EMVideoMessageBody videoBody = (EMVideoMessageBody) message.getBody();
-        EMLog.d(TAG, "video view is on click");
-        Intent intent = new Intent(context, EaseShowVideoActivity.class);
-        intent.putExtra("msg", message);
-        if (message != null && message.direct() == EMMessage.Direct.RECEIVE && !message.isAcked()
-                && message.getChatType() == ChatType.Chat) {
-            try {
-                EMClient.getInstance().chatManager().ackMessageRead(message.getFrom(), message.getMsgId());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        activity.startActivity(intent);
-	}
-	
+
 	/**
      * show video thumbnails
      * 

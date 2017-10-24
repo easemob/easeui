@@ -29,15 +29,15 @@ import com.hyphenate.easeui.EaseConstant;
 import com.hyphenate.easeui.model.styles.EaseMessageListItemStyle;
 import com.hyphenate.easeui.utils.EaseCommonUtils;
 import com.hyphenate.easeui.widget.EaseChatMessageList.MessageListItemClickListener;
-import com.hyphenate.easeui.widget.chatrow.EaseChatRow;
-import com.hyphenate.easeui.widget.chatrow.EaseChatRowBigExpression;
-import com.hyphenate.easeui.widget.chatrow.EaseChatRowFile;
-import com.hyphenate.easeui.widget.chatrow.EaseChatRowImage;
-import com.hyphenate.easeui.widget.chatrow.EaseChatRowLocation;
-import com.hyphenate.easeui.widget.chatrow.EaseChatRowText;
-import com.hyphenate.easeui.widget.chatrow.EaseChatRowVideo;
-import com.hyphenate.easeui.widget.chatrow.EaseChatRowVoice;
 import com.hyphenate.easeui.widget.chatrow.EaseCustomChatRowProvider;
+import com.hyphenate.easeui.widget.presenter.EaseChatBigExpressionPresenter;
+import com.hyphenate.easeui.widget.presenter.EaseChatFilePresenter;
+import com.hyphenate.easeui.widget.presenter.EaseChatImagePresenter;
+import com.hyphenate.easeui.widget.presenter.EaseChatLocationPresenter;
+import com.hyphenate.easeui.widget.presenter.EaseChatRowPresenter;
+import com.hyphenate.easeui.widget.presenter.EaseChatTextPresenter;
+import com.hyphenate.easeui.widget.presenter.EaseChatVideoPresenter;
+import com.hyphenate.easeui.widget.presenter.EaseChatVoicePresenter;
 
 public class EaseMessageAdapter extends BaseAdapter{
 
@@ -215,53 +215,61 @@ public class EaseMessageAdapter extends BaseAdapter{
 
 		return -1;// invalid
 	}
-	
-	protected EaseChatRow createChatRow(Context context, EMMessage message, int position) {
-        EaseChatRow chatRow = null;
+
+	protected EaseChatRowPresenter createChatRowPresenter(EMMessage message, int position) {
         if(customRowProvider != null && customRowProvider.getCustomChatRow(message, position, this) != null){
-            return customRowProvider.getCustomChatRow(message, position, this);
+			return customRowProvider.getCustomChatRow(message, position, this);
         }
+
+        EaseChatRowPresenter presenter = null;
+
         switch (message.getType()) {
         case TXT:
             if(message.getBooleanAttribute(EaseConstant.MESSAGE_ATTR_IS_BIG_EXPRESSION, false)){
-                chatRow = new EaseChatRowBigExpression(context, message, position, this);
+				presenter = new EaseChatBigExpressionPresenter();
             }else{
-                chatRow = new EaseChatRowText(context, message, position, this);
+				presenter = new EaseChatTextPresenter();
             }
             break;
         case LOCATION:
-            chatRow = new EaseChatRowLocation(context, message, position, this);
+        	presenter = new EaseChatLocationPresenter();
             break;
         case FILE:
-            chatRow = new EaseChatRowFile(context, message, position, this);
+        	presenter = new EaseChatFilePresenter();
             break;
         case IMAGE:
-            chatRow = new EaseChatRowImage(context, message, position, this);
+        	presenter = new EaseChatImagePresenter();
             break;
         case VOICE:
-            chatRow = new EaseChatRowVoice(context, message, position, this);
+        	presenter = new EaseChatVoicePresenter();
             break;
         case VIDEO:
-            chatRow = new EaseChatRowVideo(context, message, position, this);
+        	presenter = new EaseChatVideoPresenter();
             break;
         default:
             break;
         }
 
-        return chatRow;
+        return presenter;
     }
     
 
 	@SuppressLint("NewApi")
 	public View getView(final int position, View convertView, ViewGroup parent) {
 		EMMessage message = getItem(position);
-		if(convertView == null){
-			convertView = createChatRow(context, message, position);
+
+		EaseChatRowPresenter presenter = null;
+
+		if (convertView == null) {
+			presenter = createChatRowPresenter(message, position);
+			convertView = presenter.createChatRow(context, message, position, this);
+			convertView.setTag(presenter);
+		} else {
+			presenter = (EaseChatRowPresenter) convertView.getTag();
 		}
 
-		//refresh ui with messages
-		((EaseChatRow)convertView).setUpView(message, position, itemClickListener, itemStyle);
-		
+		presenter.setup(message, position, itemClickListener, itemStyle);
+
 		return convertView;
 	}
 

@@ -9,10 +9,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.hyphenate.EMCallBack;
-import com.hyphenate.EMError;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMMessage.Direct;
@@ -30,6 +27,14 @@ import com.hyphenate.util.DateUtils;
 import java.util.Date;
 
 public abstract class EaseChatRow extends LinearLayout {
+    public interface EaseChatRowActionCallback {
+        void onResendClick(EMMessage message);
+
+        void onBubbleClick(EMMessage message);
+
+        void onDetachedFromWindow();
+    }
+
     protected static final String TAG = EaseChatRow.class.getSimpleName();
 
     protected LayoutInflater inflater;
@@ -51,22 +56,36 @@ public abstract class EaseChatRow extends LinearLayout {
     protected TextView ackedView;
     protected TextView deliveredView;
 
-    protected EMCallBack messageSendCallback;
-    protected EMCallBack messageReceiveCallback;
-
     protected MessageListItemClickListener itemClickListener;
     protected EaseMessageListItemStyle itemStyle;
+
+    private EaseChatRowActionCallback itemActionCallback;
 
     public EaseChatRow(Context context, EMMessage message, int position, BaseAdapter adapter) {
         super(context);
         this.context = context;
-        this.activity = (Activity) context;
         this.message = message;
         this.position = position;
         this.adapter = adapter;
+        this.activity = (Activity) context;
         inflater = LayoutInflater.from(context);
 
         initView();
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        itemActionCallback.onDetachedFromWindow();
+        super.onDetachedFromWindow();
+    }
+
+    public void updateView(final EMMessage msg) {
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                onViewUpdate(msg);
+            }
+        });
     }
 
     private void initView() {
@@ -92,10 +111,12 @@ public abstract class EaseChatRow extends LinearLayout {
      */
     public void setUpView(EMMessage message, int position,
             EaseChatMessageList.MessageListItemClickListener itemClickListener,
+                          EaseChatRowActionCallback itemActionCallback,
                           EaseMessageListItemStyle itemStyle) {
         this.message = message;
         this.position = position;
         this.itemClickListener = itemClickListener;
+        this.itemActionCallback = itemActionCallback;
         this.itemStyle = itemStyle;
 
         setUpBaseView();
@@ -190,83 +211,17 @@ public abstract class EaseChatRow extends LinearLayout {
 
     }
 
-    /**
-     * set callback for sending message
-     */
-    protected void setMessageSendCallback(){
-        if(messageSendCallback == null){
-            messageSendCallback = new EMCallBack() {
-                
-                @Override
-                public void onSuccess() {
-                    updateView();
-                }
-                
-                @Override
-                public void onProgress(final int progress, String status) {
-                    activity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if(percentageView != null)
-                                percentageView.setText(progress + "%");
-
-                        }
-                    });
-                }
-                
-                @Override
-                public void onError(int code, String error) {
-                    updateView(code, error);
-                }
-            };
-        }
-        message.setMessageStatusCallback(messageSendCallback);
-    }
-    
-    /**
-     * set callback for receiving message
-     */
-    protected void setMessageReceiveCallback(){
-        if(messageReceiveCallback == null){
-            messageReceiveCallback = new EMCallBack() {
-                
-                @Override
-                public void onSuccess() {
-                    updateView();
-                }
-                
-                @Override
-                public void onProgress(final int progress, String status) {
-                    activity.runOnUiThread(new Runnable() {
-                        public void run() {
-                            if(percentageView != null){
-                                percentageView.setText(progress + "%");
-                            }
-                        }
-                    });
-                }
-                
-                @Override
-                public void onError(int code, String error) {
-                    updateView();
-                }
-            };
-        }
-        message.setMessageStatusCallback(messageReceiveCallback);
-    }
-    
-    
     private void setClickListener() {
         if(bubbleLayout != null){
             bubbleLayout.setOnClickListener(new OnClickListener() {
     
                 @Override
                 public void onClick(View v) {
-                    if (itemClickListener != null){
-                        if(!itemClickListener.onBubbleClick(message)){
-                        	// if listener return false, we call default handling
-                            onBubbleClick();
-                        }
+                    if (itemClickListener != null && itemClickListener.onBubbleClick(message)){
+                        return;
+                    }
+                    if (itemActionCallback != null) {
+                        itemActionCallback.onBubbleClick(message);
                     }
                 }
             });
@@ -288,8 +243,8 @@ public abstract class EaseChatRow extends LinearLayout {
 
                 @Override
                 public void onClick(View v) {
-                    if (itemClickListener != null) {
-                        itemClickListener.onResendClick(message);
+                    if (itemActionCallback != null) {
+                        itemActionCallback.onResendClick(message);
                     }
                 }
             });
@@ -327,34 +282,6 @@ public abstract class EaseChatRow extends LinearLayout {
         }
     }
 
-
-    protected void updateView() {
-        activity.runOnUiThread(new Runnable() {
-            public void run() {
-                if (message.status() == EMMessage.Status.FAIL) {
-                    Toast.makeText(activity,activity.getString(R.string.send_fail) + activity.getString(R.string.connect_failuer_toast), Toast.LENGTH_SHORT).show();
-                }
-
-                onUpdateView();
-            }
-        });
-    }
-
-    protected void updateView(final int errorCode, final String desc) {
-        activity.runOnUiThread(new Runnable() {
-            public void run() {
-                if (errorCode == EMError.MESSAGE_INCLUDE_ILLEGAL_CONTENT) {
-                    Toast.makeText(activity,activity.getString(R.string.send_fail) + activity.getString(R.string.error_send_invalid_content), Toast.LENGTH_SHORT).show();
-                } else if (errorCode == EMError.GROUP_NOT_JOINED) {
-                    Toast.makeText(activity,activity.getString(R.string.send_fail) + activity.getString(R.string.error_send_not_in_the_group), Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(activity,activity.getString(R.string.send_fail) + activity.getString(R.string.connect_failuer_toast), Toast.LENGTH_SHORT).show();
-                }
-                onUpdateView();
-            }
-        });
-    }
-
     protected abstract void onInflateView();
 
     /**
@@ -363,19 +290,13 @@ public abstract class EaseChatRow extends LinearLayout {
     protected abstract void onFindViewById();
 
     /**
-     * refresh list view when message status change
+     * refresh view when message status change
      */
-    protected abstract void onUpdateView();
+    protected abstract void onViewUpdate(EMMessage msg);
 
     /**
      * setup view
      * 
      */
     protected abstract void onSetUpView();
-    
-    /**
-     * on bubble clicked
-     */
-    protected abstract void onBubbleClick();
-
 }
