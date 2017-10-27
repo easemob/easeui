@@ -67,7 +67,10 @@ public final class EaseUI {
     public void popActivity(Activity activity){
         activityList.remove(activity);
     }
-    
+
+    public Activity getTopActivity(){
+        return activityList.get(0);
+    }
     
     private EaseUI(){}
     
