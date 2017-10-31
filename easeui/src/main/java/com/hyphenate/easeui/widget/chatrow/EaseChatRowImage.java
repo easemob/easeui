@@ -64,22 +64,44 @@ public class EaseChatRowImage extends EaseChatRowFile{
         }
 
         // received messages
-        if (imgBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.DOWNLOADING ||
-                imgBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.PENDING) {
-            imageView.setImageResource(R.drawable.ease_default_image);
-        } else if(imgBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.FAILED){
-            progressBar.setVisibility(View.VISIBLE);
-            percentageView.setVisibility(View.VISIBLE);
-        } else {
-            progressBar.setVisibility(View.GONE);
-            percentageView.setVisibility(View.GONE);
-            imageView.setImageResource(R.drawable.ease_default_image);
-            String thumbPath = imgBody.thumbnailLocalPath();
-            if (!new File(thumbPath).exists()) {
-                // to make it compatible with thumbnail received in previous version
-                thumbPath = EaseImageUtils.getThumbnailImagePath(imgBody.getLocalUrl());
+        if(EMClient.getInstance().getOptions().getAutodownloadThumbnail()){
+            if (imgBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.DOWNLOADING ||
+                    imgBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.PENDING) {
+                imageView.setImageResource(R.drawable.ease_default_image);
+            } else if(imgBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.FAILED){
+                progressBar.setVisibility(View.VISIBLE);
+                percentageView.setVisibility(View.VISIBLE);
+            } else {
+                progressBar.setVisibility(View.GONE);
+                percentageView.setVisibility(View.GONE);
+                imageView.setImageResource(R.drawable.ease_default_image);
+                String thumbPath = imgBody.thumbnailLocalPath();
+                if (!new File(thumbPath).exists()) {
+                    // to make it compatible with thumbnail received in previous version
+                    thumbPath = EaseImageUtils.getThumbnailImagePath(imgBody.getLocalUrl());
+                }
+                showImageView(thumbPath, imgBody.getLocalUrl(), message);
             }
-            showImageView(thumbPath, imgBody.getLocalUrl(), message);
+        }else{
+            if (imgBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.DOWNLOADING ||
+                    imgBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.PENDING) {
+                progressBar.setVisibility(View.INVISIBLE);
+                percentageView.setVisibility(View.INVISIBLE);
+                imageView.setImageResource(R.drawable.ease_default_image);
+            } else if(imgBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.FAILED){
+                progressBar.setVisibility(View.VISIBLE);
+                percentageView.setVisibility(View.VISIBLE);
+            } else {
+                progressBar.setVisibility(View.GONE);
+                percentageView.setVisibility(View.GONE);
+                imageView.setImageResource(R.drawable.ease_default_image);
+                String thumbPath = imgBody.thumbnailLocalPath();
+                if (!new File(thumbPath).exists()) {
+                    // to make it compatible with thumbnail received in previous version
+                    thumbPath = EaseImageUtils.getThumbnailImagePath(imgBody.getLocalUrl());
+                }
+                showImageView(thumbPath, imgBody.getLocalUrl(), message);
+            }
         }
     }
 

@@ -7,6 +7,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMFileMessageBody;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMVoiceMessageBody;
@@ -63,12 +64,22 @@ public class EaseChatRowVoice extends EaseChatRowFile {
                 readStatusView.setVisibility(View.VISIBLE);
             }
             EMLog.d(TAG, "it is receive msg");
-            if (voiceBody.downloadStatus() == EMFileMessageBody.EMDownloadStatus.DOWNLOADING ||
-                    voiceBody.downloadStatus() == EMFileMessageBody.EMDownloadStatus.PENDING) {
-                progressBar.setVisibility(View.VISIBLE);
-            } else {
-                progressBar.setVisibility(View.INVISIBLE);
+            if(EMClient.getInstance().getOptions().getAutodownloadThumbnail()){
+                if (voiceBody.downloadStatus() == EMFileMessageBody.EMDownloadStatus.DOWNLOADING ||
+                        voiceBody.downloadStatus() == EMFileMessageBody.EMDownloadStatus.PENDING) {
+                    progressBar.setVisibility(View.VISIBLE);
+                } else {
+                    progressBar.setVisibility(View.INVISIBLE);
+                }
+            }else {
+                if (voiceBody.downloadStatus() == EMFileMessageBody.EMDownloadStatus.DOWNLOADING ||
+                        voiceBody.downloadStatus() == EMFileMessageBody.EMDownloadStatus.PENDING) {
+                    progressBar.setVisibility(View.INVISIBLE);
+                } else {
+                    progressBar.setVisibility(View.INVISIBLE);
+                }
             }
+
             // To avoid the item is recycled by listview and slide to this item again but the animation is stopped.
             EaseChatRowVoicePlayer voicePlayer = EaseChatRowVoicePlayer.getInstance(getContext());
             if (voicePlayer.isPlaying() && message.getMsgId().equals(voicePlayer.getCurrentPlayingId())) {
