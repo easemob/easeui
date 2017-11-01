@@ -151,22 +151,25 @@ public abstract class EaseChatRow extends LinearLayout {
                 EaseUserUtils.setUserNick(message.getFrom(), usernickView);
             }
         }
-        if(deliveredView != null){
-            if (message.isDelivered()) {
-                deliveredView.setVisibility(View.VISIBLE);
-            } else {
-                deliveredView.setVisibility(View.INVISIBLE);
-            }
-        }
-        
-        if(ackedView != null){
-            if (message.isAcked()) {
-                if (deliveredView != null) {
+        if (EMClient.getInstance().getOptions().getRequireDeliveryAck()) {
+            if(deliveredView != null){
+                if (message.isDelivered()) {
+                    deliveredView.setVisibility(View.VISIBLE);
+                } else {
                     deliveredView.setVisibility(View.INVISIBLE);
                 }
-                ackedView.setVisibility(View.VISIBLE);
-            } else {
-                ackedView.setVisibility(View.INVISIBLE);
+            }
+        }
+        if (EMClient.getInstance().getOptions().getRequireAck()) {
+            if (ackedView != null) {
+                if (message.isAcked()) {
+                    if (deliveredView != null) {
+                        deliveredView.setVisibility(View.INVISIBLE);
+                    }
+                    ackedView.setVisibility(View.VISIBLE);
+                } else {
+                    ackedView.setVisibility(View.INVISIBLE);
+                }
             }
         }
 
