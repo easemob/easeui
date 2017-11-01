@@ -89,7 +89,6 @@ public class EaseChatRowVideo extends EaseChatRowFile{
                 }
 
             }
-
             return;
         }
 	}
