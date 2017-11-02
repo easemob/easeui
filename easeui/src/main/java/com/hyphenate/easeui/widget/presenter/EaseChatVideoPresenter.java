@@ -29,35 +29,27 @@ public class EaseChatVideoPresenter extends EaseChatFilePresenter {
     public void onBubbleClick(EMMessage message) {
         EMVideoMessageBody videoBody = (EMVideoMessageBody) message.getBody();
         EMLog.d(TAG, "video view is on click");
-        if(EMClient.getInstance().getOptions().getAutodownloadThumbnail()){
-            Intent intent = new Intent(getContext(), EaseShowVideoActivity.class);
-            intent.putExtra("msg", message);
-            if (message != null && message.direct() == EMMessage.Direct.RECEIVE && !message.isAcked()
-                    && message.getChatType() == EMMessage.ChatType.Chat) {
-                try {
-                    EMClient.getInstance().chatManager().ackMessageRead(message.getFrom(), message.getMsgId());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-            getContext().startActivity(intent);
+        if(EMClient.getInstance().getOptions().getAutodownloadThumbnail()) {
+
         }else{
-            if(videoBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.DOWNLOADING || videoBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.PENDING){
+            if(videoBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.DOWNLOADING ||
+                    videoBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.PENDING ||
+                        videoBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.FAILED){
                 // retry download with click event of user
                 EMClient.getInstance().chatManager().downloadThumbnail(message);
                 return;
             }
-            Intent intent = new Intent(getContext(), EaseShowVideoActivity.class);
-            intent.putExtra("msg", message);
-            if (message != null && message.direct() == EMMessage.Direct.RECEIVE && !message.isAcked()
-                    && message.getChatType() == EMMessage.ChatType.Chat) {
-                try {
-                    EMClient.getInstance().chatManager().ackMessageRead(message.getFrom(), message.getMsgId());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-            getContext().startActivity(intent);
         }
+        Intent intent = new Intent(getContext(), EaseShowVideoActivity.class);
+        intent.putExtra("msg", message);
+        if (message != null && message.direct() == EMMessage.Direct.RECEIVE && !message.isAcked()
+                && message.getChatType() == EMMessage.ChatType.Chat) {
+            try {
+                EMClient.getInstance().chatManager().ackMessageRead(message.getFrom(), message.getMsgId());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        getContext().startActivity(intent);
     }
 }

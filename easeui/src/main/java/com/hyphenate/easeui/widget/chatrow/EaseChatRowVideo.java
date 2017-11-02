@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
+import android.view.View;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -87,11 +88,25 @@ public class EaseChatRowVideo extends EaseChatRowFile{
                 if (localThumb != null) {
                     showVideoThumbView(localThumb, imageView, videoBody.getThumbnailUrl(), message);
                 }
-
             }
             return;
+        }else{
+            if (videoBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.DOWNLOADING ||
+                    videoBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.PENDING ||
+                        videoBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.FAILED) {
+                progressBar.setVisibility(View.INVISIBLE);
+                percentageView.setVisibility(View.INVISIBLE);
+                imageView.setImageResource(R.drawable.ease_default_image);
+            } else {
+                progressBar.setVisibility(View.GONE);
+                percentageView.setVisibility(View.GONE);
+                imageView.setImageResource(R.drawable.ease_default_image);
+                showVideoThumbView(localThumb, imageView, videoBody.getThumbnailUrl(), message);
+            }
         }
 	}
+
+
 
 	/**
      * show video thumbnails
@@ -109,8 +124,8 @@ public class EaseChatRowVideo extends EaseChatRowFile{
         if (bitmap != null) {
             // thumbnail image is already loaded, reuse the drawable
             iv.setImageBitmap(bitmap);
-
         } else {
+            imageView.setImageResource(R.drawable.ease_default_image);
             new AsyncTask<Void, Void, Bitmap>() {
 
                 @Override
