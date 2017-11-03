@@ -7,6 +7,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMFileMessageBody;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMVoiceMessageBody;
@@ -65,7 +66,12 @@ public class EaseChatRowVoice extends EaseChatRowFile {
             EMLog.d(TAG, "it is receive msg");
             if (voiceBody.downloadStatus() == EMFileMessageBody.EMDownloadStatus.DOWNLOADING ||
                     voiceBody.downloadStatus() == EMFileMessageBody.EMDownloadStatus.PENDING) {
-                progressBar.setVisibility(View.VISIBLE);
+                if(EMClient.getInstance().getOptions().getAutodownloadThumbnail()){
+                    progressBar.setVisibility(View.VISIBLE);
+                }else{
+                    progressBar.setVisibility(View.INVISIBLE);
+                }
+
             } else {
                 progressBar.setVisibility(View.INVISIBLE);
             }
@@ -87,7 +93,7 @@ public class EaseChatRowVoice extends EaseChatRowFile {
         EMVoiceMessageBody voiceBody = (EMVoiceMessageBody) msg.getBody();
         if (voiceBody.downloadStatus() == EMFileMessageBody.EMDownloadStatus.DOWNLOADING ||
                 voiceBody.downloadStatus() == EMFileMessageBody.EMDownloadStatus.PENDING) {
-            progressBar.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.VISIBLE);
         } else {
             progressBar.setVisibility(View.INVISIBLE);
         }

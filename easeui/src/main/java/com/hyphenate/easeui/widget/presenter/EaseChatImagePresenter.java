@@ -54,12 +54,22 @@ public class EaseChatImagePresenter extends EaseChatFilePresenter {
     @Override
     public void onBubbleClick(EMMessage message) {
         EMImageMessageBody imgBody = (EMImageMessageBody) message.getBody();
-        if(imgBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.FAILED){
-            getChatRow().updateView(message);
-            // retry download with click event of user
-            EMClient.getInstance().chatManager().downloadThumbnail(message);
+        if(EMClient.getInstance().getOptions().getAutodownloadThumbnail()){
+            if(imgBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.FAILED){
+                getChatRow().updateView(message);
+                // retry download with click event of user
+                EMClient.getInstance().chatManager().downloadThumbnail(message);
+            }
+        } else{
+            if(imgBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.DOWNLOADING ||
+                    imgBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.PENDING ||
+                       imgBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.FAILED){
+                // retry download with click event of user
+                EMClient.getInstance().chatManager().downloadThumbnail(message);
+                getChatRow().updateView(message);
+                return;
+            }
         }
-
         Intent intent = new Intent(getContext(), EaseShowBigImageActivity.class);
         File file = new File(imgBody.getLocalUrl());
         if (file.exists()) {

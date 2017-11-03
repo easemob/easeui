@@ -59,17 +59,48 @@ public class EaseChatRowImage extends EaseChatRowFile{
     @Override
     protected void onViewUpdate(EMMessage msg) {
         if (msg.direct() == EMMessage.Direct.SEND) {
-            super.onViewUpdate(msg);
+            if(EMClient.getInstance().getOptions().getAutodownloadThumbnail()){
+                super.onViewUpdate(msg);
+            }else{
+                if (imgBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.DOWNLOADING ||
+                        imgBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.PENDING ||
+                            imgBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.FAILED) {
+                    progressBar.setVisibility(View.INVISIBLE);
+                    percentageView.setVisibility(View.INVISIBLE);
+                    imageView.setImageResource(R.drawable.ease_default_image);
+                } else {
+                    progressBar.setVisibility(View.GONE);
+                    percentageView.setVisibility(View.GONE);
+                    imageView.setImageResource(R.drawable.ease_default_image);
+                    String thumbPath = imgBody.thumbnailLocalPath();
+                    if (!new File(thumbPath).exists()) {
+                        // to make it compatible with thumbnail received in previous version
+                        thumbPath = EaseImageUtils.getThumbnailImagePath(imgBody.getLocalUrl());
+                    }
+                    showImageView(thumbPath, imgBody.getLocalUrl(), message);
+                }
+            }
             return;
         }
 
         // received messages
         if (imgBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.DOWNLOADING ||
                 imgBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.PENDING) {
-            imageView.setImageResource(R.drawable.ease_default_image);
+            if(EMClient.getInstance().getOptions().getAutodownloadThumbnail()){
+                imageView.setImageResource(R.drawable.ease_default_image);
+            }else {
+                progressBar.setVisibility(View.INVISIBLE);
+                percentageView.setVisibility(View.INVISIBLE);
+                imageView.setImageResource(R.drawable.ease_default_image);
+            }
         } else if(imgBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.FAILED){
-            progressBar.setVisibility(View.VISIBLE);
-            percentageView.setVisibility(View.VISIBLE);
+            if(EMClient.getInstance().getOptions().getAutodownloadThumbnail()){
+                progressBar.setVisibility(View.VISIBLE);
+                percentageView.setVisibility(View.VISIBLE);
+            }else {
+                progressBar.setVisibility(View.INVISIBLE);
+                percentageView.setVisibility(View.INVISIBLE);
+            }
         } else {
             progressBar.setVisibility(View.GONE);
             percentageView.setVisibility(View.GONE);
@@ -88,12 +119,14 @@ public class EaseChatRowImage extends EaseChatRowFile{
      * 
      */
     private void showImageView(final String thumbernailPath, final String localFullSizePath,final EMMessage message) {
-        // first check if the thumbnail image already loaded into cache
+        // first check if the thumbnail image already loaded into cache s
         Bitmap bitmap = EaseImageCache.getInstance().get(thumbernailPath);
+
         if (bitmap != null) {
             // thumbnail image is already loaded, reuse the drawable
             imageView.setImageBitmap(bitmap);
         } else {
+            imageView.setImageResource(R.drawable.ease_default_image);
             AsyncTaskCompat.executeParallel( new AsyncTask<Object, Void, Bitmap>() {
 
                 @Override
