@@ -75,11 +75,12 @@ public class EaseChatRowVoice extends EaseChatRowFile {
             } else {
                 progressBar.setVisibility(View.INVISIBLE);
             }
-            // To avoid the item is recycled by listview and slide to this item again but the animation is stopped.
-            EaseChatRowVoicePlayer voicePlayer = EaseChatRowVoicePlayer.getInstance(getContext());
-            if (voicePlayer.isPlaying() && message.getMsgId().equals(voicePlayer.getCurrentPlayingId())) {
-                startVoicePlayAnimation();
-            }
+        }
+
+        // To avoid the item is recycled by listview and slide to this item again but the animation is stopped.
+        EaseChatRowVoicePlayer voicePlayer = EaseChatRowVoicePlayer.getInstance(getContext());
+        if (voicePlayer.isPlaying() && message.getMsgId().equals(voicePlayer.getCurrentPlayingId())) {
+            startVoicePlayAnimation();
         }
     }
 
