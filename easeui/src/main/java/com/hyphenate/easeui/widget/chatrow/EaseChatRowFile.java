@@ -81,21 +81,24 @@ public class EaseChatRowFile extends EaseChatRow{
         progressBar.setVisibility(View.VISIBLE);
         if (percentageView != null)
             percentageView.setVisibility(View.INVISIBLE);
-        statusView.setVisibility(View.INVISIBLE);
+        if (statusView != null)
+            statusView.setVisibility(View.INVISIBLE);
     }
 
     private void onMessageSuccess() {
         progressBar.setVisibility(View.INVISIBLE);
         if (percentageView != null)
             percentageView.setVisibility(View.INVISIBLE);
-        statusView.setVisibility(View.INVISIBLE);
+        if (statusView != null)
+            statusView.setVisibility(View.INVISIBLE);
     }
 
     private void onMessageError() {
         progressBar.setVisibility(View.INVISIBLE);
         if (percentageView != null)
             percentageView.setVisibility(View.INVISIBLE);
-        statusView.setVisibility(View.VISIBLE);
+        if (statusView != null)
+            statusView.setVisibility(View.VISIBLE);
     }
 
     private void onMessageInProgress() {
@@ -104,6 +107,7 @@ public class EaseChatRowFile extends EaseChatRow{
             percentageView.setVisibility(View.VISIBLE);
             percentageView.setText(message.progress() + "%");
         }
-        statusView.setVisibility(View.INVISIBLE);
+        if (statusView != null)
+            statusView.setVisibility(View.INVISIBLE);
     }
 }

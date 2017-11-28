@@ -66,9 +66,9 @@ public class EaseChatRowVoice extends EaseChatRowFile {
             EMLog.d(TAG, "it is receive msg");
             if (voiceBody.downloadStatus() == EMFileMessageBody.EMDownloadStatus.DOWNLOADING ||
                     voiceBody.downloadStatus() == EMFileMessageBody.EMDownloadStatus.PENDING) {
-                if(EMClient.getInstance().getOptions().getAutodownloadThumbnail()){
+                if (EMClient.getInstance().getOptions().getAutodownloadThumbnail()) {
                     progressBar.setVisibility(View.VISIBLE);
-                }else{
+                } else {
                     progressBar.setVisibility(View.INVISIBLE);
                 }
 
@@ -89,12 +89,14 @@ public class EaseChatRowVoice extends EaseChatRowFile {
         super.onViewUpdate(msg);
 
         // Only the received message has the attachment download status.
-        if (message.direct() == EMMessage.Direct.SEND) return;
+        if (message.direct() == EMMessage.Direct.SEND) {
+            return;
+        }
 
         EMVoiceMessageBody voiceBody = (EMVoiceMessageBody) msg.getBody();
         if (voiceBody.downloadStatus() == EMFileMessageBody.EMDownloadStatus.DOWNLOADING ||
                 voiceBody.downloadStatus() == EMFileMessageBody.EMDownloadStatus.PENDING) {
-                progressBar.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.VISIBLE);
         } else {
             progressBar.setVisibility(View.INVISIBLE);
         }
