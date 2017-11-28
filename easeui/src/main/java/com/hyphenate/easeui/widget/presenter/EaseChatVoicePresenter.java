@@ -9,7 +9,6 @@ import android.widget.Toast;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMVoiceMessageBody;
-import com.hyphenate.easeui.EaseUI;
 import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.widget.chatrow.EaseChatRow;
 import com.hyphenate.easeui.widget.chatrow.EaseChatRowVoice;
@@ -59,74 +58,37 @@ public class EaseChatVoicePresenter extends EaseChatFilePresenter {
                 playVoice(message);
                 // Start the voice play animation.
                 ((EaseChatRowVoice) getChatRow()).startVoicePlayAnimation();
-            }else{
-                new AsyncTask<Void, Void, Void>() {
-                    @Override
-                    protected Void doInBackground(Void... params) {
-                        EMClient.getInstance().chatManager().downloadAttachment(message);
-                        return null;
-                    }
-
-                    @Override
-                    protected void onPostExecute(Void result) {
-                        super.onPostExecute(result);
-                        getChatRow().updateView(getMessage());
-                    }
-                }.execute();
+            } else {
+                asyncDownloadVoice(message);
             }
         } else {
             final String st = getContext().getResources().getString(R.string.Is_download_voice_click_later);
             if (message.status() == EMMessage.Status.SUCCESS) {
-                if(EMClient.getInstance().getOptions().getAutodownloadThumbnail()){
-                    String localPath = ((EMVoiceMessageBody) message.getBody()).getLocalUrl();
-                    File file = new File(localPath);
-                    if (file.exists() && file.isFile()) {
-                        ackMessage(message);
-                        playVoice(message);
-                        // Start the voice play animation.
-                        ((EaseChatRowVoice) getChatRow()).startVoicePlayAnimation();
-                    } else {
-                        EMLog.e(TAG, "file not exist");
-                    }
-                }else{
-                    new AsyncTask<Void, Void, Void>() {
-                        @Override
-                        protected Void doInBackground(Void... params) {
-                            EMClient.getInstance().chatManager().downloadAttachment(message);
-                            return null;
-                        }
-                    }.execute();
-                    String localPath = ((EMVoiceMessageBody) message.getBody()).getLocalUrl();
-                    File file = new File(localPath);
-                    if (file.exists() && file.isFile()) {
-                        ackMessage(message);
-                        playVoice(message);
-                        // Start the voice play animation.
-                        ((EaseChatRowVoice) getChatRow()).startVoicePlayAnimation();
-                    } else {
-                        EMLog.e(TAG, "file not exist");
+                if (EMClient.getInstance().getOptions().getAutodownloadThumbnail()) {
+                    play(message);
+                } else {
+                    EMVoiceMessageBody voiceBody = (EMVoiceMessageBody) message.getBody();
+                    EMLog.i(TAG, "Voice body download status: " + voiceBody.downloadStatus());
+                    switch (voiceBody.downloadStatus()) {
+                        case PENDING:// Download not begin
+                        case FAILED:// Download failed
+                            getChatRow().updateView(getMessage());
+                            asyncDownloadVoice(message);
+                            break;
+                        case DOWNLOADING:// During downloading
+                            Toast.makeText(getContext(), st, Toast.LENGTH_SHORT).show();
+                            break;
+                        case SUCCESSED:// Download success
+                            play(message);
+                            break;
                     }
                 }
             } else if (message.status() == EMMessage.Status.INPROGRESS) {
                 Toast.makeText(getContext(), st, Toast.LENGTH_SHORT).show();
             } else if (message.status() == EMMessage.Status.FAIL) {
                 Toast.makeText(getContext(), st, Toast.LENGTH_SHORT).show();
-                new AsyncTask<Void, Void, Void>() {
-                    @Override
-                    protected Void doInBackground(Void... params) {
-                        EMClient.getInstance().chatManager().downloadAttachment(message);
-                        return null;
-                    }
-
-                    @Override
-                    protected void onPostExecute(Void result) {
-                        super.onPostExecute(result);
-                        getChatRow().updateView(getMessage());
-                    }
-                }.execute();
+                asyncDownloadVoice(message);
             }
-
-
         }
     }
 
@@ -138,14 +100,33 @@ public class EaseChatVoicePresenter extends EaseChatFilePresenter {
         }
     }
 
-    private void playVoice(EMMessage msg) {
-        voicePlayer.play(msg, new MediaPlayer.OnCompletionListener() {
-                    @Override
-                    public void onCompletion(MediaPlayer mp) {
-                        // Stop the voice play animation.
-                        ((EaseChatRowVoice) getChatRow()).stopVoicePlayAnimation();
-                    }
-                });
+    private void asyncDownloadVoice(final EMMessage message) {
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                EMClient.getInstance().chatManager().downloadAttachment(message);
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void result) {
+                super.onPostExecute(result);
+                getChatRow().updateView(getMessage());
+            }
+        }.execute();
+    }
+
+    private void play(EMMessage message) {
+        String localPath = ((EMVoiceMessageBody) message.getBody()).getLocalUrl();
+        File file = new File(localPath);
+        if (file.exists() && file.isFile()) {
+            ackMessage(message);
+            playVoice(message);
+            // Start the voice play animation.
+            ((EaseChatRowVoice) getChatRow()).startVoicePlayAnimation();
+        } else {
+            EMLog.e(TAG, "file not exist");
+        }
     }
 
     private void ackMessage(EMMessage message) {
@@ -160,5 +141,15 @@ public class EaseChatVoicePresenter extends EaseChatFilePresenter {
         if (!message.isListened()) {
             EMClient.getInstance().chatManager().setVoiceMessageListened(message);
         }
+    }
+
+    private void playVoice(EMMessage msg) {
+        voicePlayer.play(msg, new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                // Stop the voice play animation.
+                ((EaseChatRowVoice) getChatRow()).stopVoicePlayAnimation();
+            }
+        });
     }
 }
