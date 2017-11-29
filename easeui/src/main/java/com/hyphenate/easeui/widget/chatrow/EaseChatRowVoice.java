@@ -66,20 +66,21 @@ public class EaseChatRowVoice extends EaseChatRowFile {
             EMLog.d(TAG, "it is receive msg");
             if (voiceBody.downloadStatus() == EMFileMessageBody.EMDownloadStatus.DOWNLOADING ||
                     voiceBody.downloadStatus() == EMFileMessageBody.EMDownloadStatus.PENDING) {
-                if(EMClient.getInstance().getOptions().getAutodownloadThumbnail()){
+                if (EMClient.getInstance().getOptions().getAutodownloadThumbnail()) {
                     progressBar.setVisibility(View.VISIBLE);
-                }else{
+                } else {
                     progressBar.setVisibility(View.INVISIBLE);
                 }
 
             } else {
                 progressBar.setVisibility(View.INVISIBLE);
             }
-            // To avoid the item is recycled by listview and slide to this item again but the animation is stopped.
-            EaseChatRowVoicePlayer voicePlayer = EaseChatRowVoicePlayer.getInstance(getContext());
-            if (voicePlayer.isPlaying() && message.getMsgId().equals(voicePlayer.getCurrentPlayingId())) {
-                startVoicePlayAnimation();
-            }
+        }
+
+        // To avoid the item is recycled by listview and slide to this item again but the animation is stopped.
+        EaseChatRowVoicePlayer voicePlayer = EaseChatRowVoicePlayer.getInstance(getContext());
+        if (voicePlayer.isPlaying() && message.getMsgId().equals(voicePlayer.getCurrentPlayingId())) {
+            startVoicePlayAnimation();
         }
     }
 
@@ -88,12 +89,14 @@ public class EaseChatRowVoice extends EaseChatRowFile {
         super.onViewUpdate(msg);
 
         // Only the received message has the attachment download status.
-        if (message.direct() == EMMessage.Direct.SEND) return;
+        if (message.direct() == EMMessage.Direct.SEND) {
+            return;
+        }
 
         EMVoiceMessageBody voiceBody = (EMVoiceMessageBody) msg.getBody();
         if (voiceBody.downloadStatus() == EMFileMessageBody.EMDownloadStatus.DOWNLOADING ||
                 voiceBody.downloadStatus() == EMFileMessageBody.EMDownloadStatus.PENDING) {
-                progressBar.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.VISIBLE);
         } else {
             progressBar.setVisibility(View.INVISIBLE);
         }
