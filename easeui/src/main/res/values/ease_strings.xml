@@ -298,4 +298,10 @@
     <string name="toast_updatephoto_fail">update photo fail!</string>
     <string name="quiting_the_chat_room">Exiting chat room</string>
 
+    <!-- For group ack start -->
+    <string name="title_group_notification">Group Notification</string>
+    <string name="title_ack_read_list">Read List</string>
+    <string name="group_ack_read_count">$1%d Read</string>
+    <!-- For group ack end -->
+
 </resources>
