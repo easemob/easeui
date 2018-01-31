@@ -10,7 +10,10 @@ import android.widget.TextView.BufferType;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMTextMessageBody;
 import com.hyphenate.easeui.R;
+import com.hyphenate.easeui.model.EaseDingMessageHelper;
 import com.hyphenate.easeui.utils.EaseSmileUtils;
+
+import java.util.List;
 
 public class EaseChatRowText extends EaseChatRow{
 
@@ -57,6 +60,18 @@ public class EaseChatRowText extends EaseChatRow{
         }
     }
 
+    public void onAckUserUpdate(final int count) {
+        if (ackedView != null) {
+            ackedView.post(new Runnable() {
+                @Override
+                public void run() {
+                    ackedView.setVisibility(VISIBLE);
+                    ackedView.setText(String.format(getContext().getString(R.string.group_ack_read_count), count));
+                }
+            });
+        }
+    }
+
     private void onMessageCreate() {
         progressBar.setVisibility(View.VISIBLE);
         statusView.setVisibility(View.GONE);
@@ -65,6 +80,17 @@ public class EaseChatRowText extends EaseChatRow{
     private void onMessageSuccess() {
         progressBar.setVisibility(View.GONE);
         statusView.setVisibility(View.GONE);
+
+        // Show "1 Read" if this msg is a ding-type msg.
+        if (EaseDingMessageHelper.get().isDingMessage(message) && ackedView != null) {
+            ackedView.setVisibility(VISIBLE);
+            List<String> userList = EaseDingMessageHelper.get().getAckUsers(message);
+            int count = userList == null ? 0 : userList.size();
+            ackedView.setText(String.format(getContext().getString(R.string.group_ack_read_count), count));
+        }
+
+        // Set ack-user list change listener.
+        EaseDingMessageHelper.get().setUserUpdateListener(message, userUpdateListener);
     }
 
     private void onMessageError() {
@@ -76,4 +102,12 @@ public class EaseChatRowText extends EaseChatRow{
         progressBar.setVisibility(View.VISIBLE);
         statusView.setVisibility(View.GONE);
     }
+
+    private EaseDingMessageHelper.IAckUserUpdateListener userUpdateListener =
+            new EaseDingMessageHelper.IAckUserUpdateListener() {
+                @Override
+                public void onUpdate(List<String> list) {
+                    onAckUserUpdate(list.size());
+                }
+            };
 }
