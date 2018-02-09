@@ -122,6 +122,11 @@ public class EaseDingMessageHelper {
             return;
         }
 
+        // May a user login from multiple devices, so do not need to send the ack msg.
+        if (EMClient.getInstance().getCurrentUser().equalsIgnoreCase(message.getFrom())) {
+            return;
+        }
+
         try {
             // cmd-type message will not store in native database.
             EMMessage msg = EMMessage.createSendMessage(EMMessage.Type.CMD);
