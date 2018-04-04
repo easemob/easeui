@@ -297,6 +297,7 @@
     <string name="toast_updatephoto_success">update photo success!</string>
     <string name="toast_updatephoto_fail">update photo fail!</string>
     <string name="quiting_the_chat_room">Exiting chat room</string>
+    <string name="rejoining_the_chat_room">Rejoining chat room</string>
 
     <!-- For group ack start -->
     <string name="title_group_notification">Group Notification</string>
