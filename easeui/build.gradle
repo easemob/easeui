@@ -5,7 +5,7 @@ android {
     buildToolsVersion '25.0.0'
 
     defaultConfig {
-        minSdkVersion 14
+        minSdkVersion 16
         targetSdkVersion 22
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
