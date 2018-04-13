@@ -13,6 +13,7 @@ import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -25,6 +26,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.hyphenate.EMCallBack;
 import com.hyphenate.EMMessageListener;
 import com.hyphenate.EMValueCallBack;
 import com.hyphenate.chat.EMChatRoom;
@@ -768,8 +770,34 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         }else if(chatType == EaseConstant.CHATTYPE_CHATROOM){
             message.setChatType(ChatType.ChatRoom);
         }
-        //Add to conversation
-        EMClient.getInstance().chatManager().saveMessage(message);
+
+        message.setMessageStatusCallback(new EMCallBack() {
+            @Override
+            public void onSuccess() {
+                if(isMessageListInited) {
+                    messageList.refresh();
+                }
+            }
+
+            @Override
+            public void onError(int code, String error) {
+                Log.i("EaseChatRowPresenter", "onError: " + code + ", error: " + error);
+                if(isMessageListInited) {
+                    messageList.refresh();
+                }
+            }
+
+            @Override
+            public void onProgress(int progress, String status) {
+                Log.i(TAG, "onProgress: " + progress);
+                if(isMessageListInited) {
+                    messageList.refresh();
+                }
+            }
+        });
+
+        // Send message.
+        EMClient.getInstance().chatManager().sendMessage(message);
         //refresh ui
         if(isMessageListInited) {
             messageList.refreshSelectLast();
