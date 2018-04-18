@@ -369,7 +369,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
             @Override
             public void onRefresh() {
-                new Handler().postDelayed(new Runnable() {
+                handler.postDelayed(new Runnable() {
 
                     @Override
                     public void run() {
@@ -503,6 +503,9 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
         // remove activity from foreground activity list
         EaseUI.getInstance().popActivity(getActivity());
+
+        // Remove all padding actions in handler
+        handler.removeCallbacksAndMessages(null);
     }
 
     @Override
