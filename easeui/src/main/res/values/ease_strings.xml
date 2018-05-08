@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    
+
     <string name="text_ack_msg">Read</string>
     <string name="text_delivered_msg">Delivered</string>
     <string name="back">Back</string>
@@ -48,7 +48,7 @@
     <string name="video">[Video]</string>
     <string name="file">[file]</string>
     <string name="dynamic_expression">[Dynamic expression]</string>
-     <string name="voice_prefix">[Voice]</string>
+    <string name="voice_prefix">[Voice]</string>
     <string name="voice_call">[Voice call]</string>
     <string name="video_call">[Video call]</string>
     <string name="button_cancel">Cancel</string>
@@ -254,14 +254,14 @@
     <string name="search_new">Search</string>
     <string name="were_mentioned">You were montioned</string>
     <string name="all_members">All members</string>
-    
+
     <string name="Delete_the_contact">Delete the contact</string>
     <string name="Move_into_the_blacklist_new">Move into the blacklist</string>
     <string name="Change_the_group_name">Change group name</string>
     <string name="dismiss_group">Dismiss group</string>
     <string name="add_public_group_chat">Add public group</string>
     <string name="gorup_not_found">Can not find this group</string>
-    <string name= "no_more_messages">no more messages</string>
+    <string name="no_more_messages">no more messages</string>
     <string name="join_public_group">Join public group</string>
     <string name="chatroom_allow_owner_leave">Allow chatroom owner leave</string>
     <string name="group_id">Group ID</string>
@@ -298,6 +298,7 @@
     <string name="toast_updatephoto_fail">update photo fail!</string>
     <string name="quiting_the_chat_room">Exiting chat room</string>
     <string name="rejoining_the_chat_room">Rejoining chat room</string>
+    <string name="alert_kicked_for_offline">You\'ve been kicked for offline, click to rejoin again.</string>
 
     <!-- For group ack start -->
     <string name="title_group_notification">Group Notification</string>

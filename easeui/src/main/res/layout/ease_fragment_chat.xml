@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
-    android:background="#f2f0eb" >
+    android:background="#f2f0eb">
 
     <com.hyphenate.easeui.widget.EaseTitleBar
         android:id="@+id/title_bar"
@@ -12,11 +12,30 @@
         android:layout_height="wrap_content"
         hyphenate:titleBarLeftImage="@drawable/ease_mm_title_back" />
 
+    <LinearLayout
+        android:id="@+id/layout_alert_kicked_off"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@id/title_bar"
+        android:background="@drawable/ease_alert_click_bg"
+        android:gravity="center_vertical"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tv_error_msg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            android:text="@string/alert_kicked_for_offline"
+            android:textColor="#000" />
+
+    </LinearLayout>
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/input_menu"
-        android:layout_below="@id/title_bar" >
+        android:layout_below="@id/layout_alert_kicked_off">
 
         <com.hyphenate.easeui.widget.EaseChatMessageList
             android:id="@+id/message_list"
