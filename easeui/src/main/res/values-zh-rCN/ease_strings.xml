@@ -308,6 +308,8 @@
     <string name="toast_updatephoto_success">更新头像成功!</string>
     <string name="toast_updatephoto_fail">更新头像失败!</string>
     <string name="quiting_the_chat_room">正在退出聊天室……</string>
+    <string name="rejoining_the_chat_room">正在重新加入聊天室……</string>
+    <string name="alert_kicked_for_offline">您已由于断线被踢出聊天室,点击重新加入.</string>
 
     <!-- For group ack start -->
     <string name="title_group_notification">群通知</string>

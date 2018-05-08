@@ -26,7 +26,7 @@ public abstract class EaseChatRoomListener implements EMChatRoomChangeListener {
     }
 
     @Override
-    public void onRemovedFromChatRoom(final String roomId, final String roomName, final String participant) {
+    public void onRemovedFromChatRoom(final int reason, final String roomId, final String roomName, final String participant) {
 
     }
 

@@ -37,6 +37,7 @@ import com.hyphenate.chat.EMImageMessageBody;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMMessage.ChatType;
 import com.hyphenate.chat.EMTextMessageBody;
+import com.hyphenate.chat.adapter.EMAChatRoomManagerListener;
 import com.hyphenate.easeui.EaseConstant;
 import com.hyphenate.easeui.EaseUI;
 import com.hyphenate.easeui.R;
@@ -99,6 +100,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     protected SwipeRefreshLayout swipeRefreshLayout;
     protected ListView listView;
 
+    private View kickedForOfflineLayout;
+
     protected boolean isloading;
     protected boolean haveMoreData = true;
     protected int pagesize = 20;
@@ -155,6 +158,14 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             messageList.setShowUserNick(true);
 //        messageList.setAvatarShape(1);
         listView = messageList.getListView();
+
+        kickedForOfflineLayout = getView().findViewById(R.id.layout_alert_kicked_off);
+        kickedForOfflineLayout.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onChatRoomViewCreation();
+            }
+        });
 
         extendMenuItemClickListener = new MyItemClickListener();
         inputMenu = (EaseChatInputMenu) getView().findViewById(R.id.input_menu);
@@ -559,6 +570,9 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         }
                         onConversationInit();
                         onMessageListInit();
+
+                        // Dismiss the click-to-rejoin layout.
+                        kickedForOfflineLayout.setVisibility(View.GONE);
                     }
                 });
             }
@@ -1072,14 +1086,21 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         }
 
         @Override
-        public void onRemovedFromChatRoom(final String roomId, final String roomName, final String participant) {
+        public void onRemovedFromChatRoom(final int reason, final String roomId, final String roomName, final String participant) {
             getActivity().runOnUiThread(new Runnable() {
                 public void run() {
                     if (roomId.equals(toChatUsername)) {
-                        Toast.makeText(getActivity(), R.string.quiting_the_chat_room, Toast.LENGTH_LONG).show();
-                        Activity activity = getActivity();
-                        if (activity != null && !activity.isFinishing()) {
-                            activity.finish();
+                        if (reason == EMAChatRoomManagerListener.BE_KICKED) {
+                            Toast.makeText(getActivity(), R.string.quiting_the_chat_room, Toast.LENGTH_LONG).show();
+                            Activity activity = getActivity();
+                            if (activity != null && !activity.isFinishing()) {
+                                activity.finish();
+                            }
+                        } else { // BE_KICKED_FOR_OFFLINE
+                            // Current logged in user be kicked out by server for current user offline,
+                            // show disconnect title bar, click to rejoin.
+                            Toast.makeText(getActivity(), "User be kicked for offline", Toast.LENGTH_SHORT).show();
+                            kickedForOfflineLayout.setVisibility(View.VISIBLE);
                         }
                     }
                 }
