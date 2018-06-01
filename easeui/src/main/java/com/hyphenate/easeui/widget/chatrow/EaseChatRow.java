@@ -246,6 +246,9 @@ public abstract class EaseChatRow extends LinearLayout {
 
                 @Override
                 public void onClick(View v) {
+                    if (itemClickListener != null && itemClickListener.onResendClick(message)){
+                        return;
+                    }
                     if (itemActionCallback != null) {
                         itemActionCallback.onResendClick(message);
                     }

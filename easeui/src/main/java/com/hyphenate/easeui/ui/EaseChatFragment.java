@@ -348,7 +348,23 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     chatFragmentHelper.onAvatarClick(username);
                 }
             }
-            
+
+            @Override
+            public boolean onResendClick(final EMMessage message) {
+                EMLog.i(TAG, "onResendClick");
+                new EaseAlertDialog(getContext(), R.string.resend, R.string.confirm_resend, null, new EaseAlertDialog.AlertDialogUser() {
+                    @Override
+                    public void onResult(boolean confirmed, Bundle bundle) {
+                        if (!confirmed) {
+                            return;
+                        }
+                        message.setStatus(EMMessage.Status.CREATE);
+                        sendMessage(message);
+                    }
+                }, true).show();
+                return true;
+            }
+
             @Override
             public void onUserAvatarLongClick(String username) {
                 if(chatFragmentHelper != null){
@@ -372,6 +388,10 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 return chatFragmentHelper.onMessageBubbleClick(message);
             }
 
+            @Override
+            public void onMessageInProgress(EMMessage message) {
+                message.setMessageStatusCallback(messageStatusCallback);
+            }
         });
     }
 
@@ -788,30 +808,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             message.setChatType(ChatType.ChatRoom);
         }
 
-        message.setMessageStatusCallback(new EMCallBack() {
-            @Override
-            public void onSuccess() {
-                if(isMessageListInited) {
-                    messageList.refresh();
-                }
-            }
-
-            @Override
-            public void onError(int code, String error) {
-                Log.i("EaseChatRowPresenter", "onError: " + code + ", error: " + error);
-                if(isMessageListInited) {
-                    messageList.refresh();
-                }
-            }
-
-            @Override
-            public void onProgress(int progress, String status) {
-                Log.i(TAG, "onProgress: " + progress);
-                if(isMessageListInited) {
-                    messageList.refresh();
-                }
-            }
-        });
+        message.setMessageStatusCallback(messageStatusCallback);
 
         // Send message.
         EMClient.getInstance().chatManager().sendMessage(message);
@@ -823,7 +820,31 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
 
     //===================================================================================
-    
+
+    protected EMCallBack messageStatusCallback = new EMCallBack() {
+        @Override
+        public void onSuccess() {
+            if(isMessageListInited) {
+                messageList.refresh();
+            }
+        }
+
+        @Override
+        public void onError(int code, String error) {
+            Log.i("EaseChatRowPresenter", "onError: " + code + ", error: " + error);
+            if(isMessageListInited) {
+                messageList.refresh();
+            }
+        }
+
+        @Override
+        public void onProgress(int progress, String status) {
+            Log.i(TAG, "onProgress: " + progress);
+            if(isMessageListInited) {
+                messageList.refresh();
+            }
+        }
+    };
 
     /**
      * send image
