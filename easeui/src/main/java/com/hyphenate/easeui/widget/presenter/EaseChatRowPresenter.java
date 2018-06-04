@@ -10,6 +10,7 @@ import com.hyphenate.easeui.model.styles.EaseMessageListItemStyle;
 import com.hyphenate.easeui.widget.EaseAlertDialog;
 import com.hyphenate.easeui.widget.EaseChatMessageList;
 import com.hyphenate.easeui.widget.chatrow.EaseChatRow;
+import com.hyphenate.util.EMLog;
 
 /**
  * Created by zhangsong on 17-10-12.
@@ -22,6 +23,8 @@ public abstract class EaseChatRowPresenter implements EaseChatRow.EaseChatRowAct
     private BaseAdapter adapter;
     private EMMessage message;
     private int position;
+
+    private EaseChatMessageList.MessageListItemClickListener itemClickListener;
 
     @Override
     public void onResendClick(final EMMessage message) {
@@ -57,6 +60,7 @@ public abstract class EaseChatRowPresenter implements EaseChatRow.EaseChatRowAct
                       EaseMessageListItemStyle itemStyle) {
         this.message = msg;
         this.position = position;
+        this.itemClickListener = itemClickListener;
 
         chatRow.setUpView(message, position, itemClickListener, this, itemStyle);
 
@@ -66,6 +70,13 @@ public abstract class EaseChatRowPresenter implements EaseChatRow.EaseChatRowAct
     protected void handleSendMessage(final EMMessage message) {
         // Update the view according to the message current status.
         getChatRow().updateView(message);
+
+        if (message.status() == EMMessage.Status.INPROGRESS) {
+            EMLog.i("handleSendMessage", "Message is INPROGRESS");
+            if (this.itemClickListener != null) {
+                this.itemClickListener.onMessageInProgress(message);
+            }
+        }
     }
 
     protected void handleReceiveMessage(EMMessage message) {
