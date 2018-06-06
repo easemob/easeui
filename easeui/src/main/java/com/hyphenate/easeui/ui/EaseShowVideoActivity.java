@@ -2,7 +2,9 @@ package com.hyphenate.easeui.ui;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.content.FileProvider;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -16,6 +18,7 @@ import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMVideoMessageBody;
 import com.hyphenate.easeui.R;
+import com.hyphenate.easeui.model.EaseCompat;
 import com.hyphenate.util.EMLog;
 
 import java.io.File;
@@ -53,8 +56,10 @@ public class EaseShowVideoActivity extends EaseBaseActivity{
 
 		if (localFilePath != null && new File(localFilePath).exists()) {
 			Intent intent = new Intent(Intent.ACTION_VIEW);
-			intent.setDataAndType(Uri.fromFile(new File(localFilePath)),
-					"video/mp4");
+			Uri uri = EaseCompat.getUriForFile(this, new File(localFilePath));
+			intent.setDataAndType(uri, "video/mp4");
+			// 注意添加该flag,用于Android7.0以上设备获取相册文件权限.
+			intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 			startActivity(intent);
 			finish();
 		} else {
