@@ -2,7 +2,7 @@
  *  * Hyphenate CONFIDENTIAL 
  * __________________ 
  * Copyright (C) 2016 Hyphenate Inc. All rights reserved. 
- *  
+ *
  * NOTICE: All information contained herein is, and remains 
  * the property of Hyphenate Inc.
  * Dissemination of this information or reproduction of this material 
@@ -12,6 +12,7 @@
 package com.hyphenate.easeui.model;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -38,279 +39,252 @@ import java.util.Locale;
 
 /**
  * new message notifier class
- * 
+ * <p>
  * this class is subject to be inherited and implement the relative APIs
+ * <p>
+ * <p>
+ * 在Android 8.0之前的设备上:
+ * 通知栏通知的声音和震动可以被demo设置中的'声音'和'震动'开关控制
+ * 在Android 8.0设备上:
+ * 通知栏通知的声音和震动不受demo设置中的'声音'和'震动'开关控制
  */
 public class EaseNotifier {
-    private final static String TAG = "notify";
-    Ringtone ringtone = null;
+    private final static String TAG = "EaseNotifier";
 
-    protected final static String[] msg_eng = { "sent a message", "sent a picture", "sent a voice",
-                                                "sent location message", "sent a video", "sent a file", "%1 contacts sent %2 messages"
-                                              };
-    protected final static String[] msg_ch = { "发来一条消息", "发来一张图片", "发来一段语音", "发来位置信息", "发来一个视频", "发来一个文件",
-                                               "%1个联系人发来%2条消息"
-                                             };
+    protected final static String MSG_ENG = "%s contacts sent %s messages";
+    protected final static String MSG_CH = "%s个联系人发来%s条消息";
 
-    protected static int notifyID = 0525; // start notification id
-    protected static int foregroundNotifyID = 0555;
+    protected static int NOTIFY_ID = 0525; // start notification id
+
+    protected static final String CHANNEL_ID = "hyphenate_chatuidemo_notification";
+    protected static final long[] VIBRATION_PATTERN = new long[]{0, 180, 80, 120};
 
     protected NotificationManager notificationManager = null;
 
-    protected HashSet<String> fromUsers = new HashSet<String>();
+    protected HashSet<String> fromUsers = new HashSet<>();
     protected int notificationNum = 0;
 
     protected Context appContext;
     protected String packageName;
-    protected String[] msgs;
-    protected long lastNotifiyTime;
+    protected String msg;
+    protected long lastNotifyTime;
+    protected Ringtone ringtone = null;
     protected AudioManager audioManager;
     protected Vibrator vibrator;
     protected EaseNotificationInfoProvider notificationInfoProvider;
 
-    public EaseNotifier() {
-    }
-    
-    /**
-     * this function can be override
-     * @param context
-     * @return
-     */
-    public EaseNotifier init(Context context){
-        appContext = context;
+    public EaseNotifier(Context context) {
+        appContext = context.getApplicationContext();
         notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+
+        if (Build.VERSION.SDK_INT >= 26) {
+            // Create the notification channel for Android 8.0
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID,
+                    "hyphenate chatuidemo message default channel.", NotificationManager.IMPORTANCE_DEFAULT);
+            channel.setVibrationPattern(VIBRATION_PATTERN);
+            notificationManager.createNotificationChannel(channel);
+        }
 
         packageName = appContext.getApplicationInfo().packageName;
         if (Locale.getDefault().getLanguage().equals("zh")) {
-            msgs = msg_ch;
+            msg = MSG_CH;
         } else {
-            msgs = msg_eng;
+            msg = MSG_ENG;
         }
 
         audioManager = (AudioManager) appContext.getSystemService(Context.AUDIO_SERVICE);
         vibrator = (Vibrator) appContext.getSystemService(Context.VIBRATOR_SERVICE);
-        
-        return this;
     }
-    
+
     /**
      * this function can be override
      */
-    public void reset(){
+    public void reset() {
         resetNotificationCount();
-        cancelNotificaton();
+        cancelNotification();
     }
 
     void resetNotificationCount() {
         notificationNum = 0;
         fromUsers.clear();
     }
-    
-    void cancelNotificaton() {
+
+    void cancelNotification() {
         if (notificationManager != null)
-            notificationManager.cancel(notifyID);
+            notificationManager.cancel(NOTIFY_ID);
     }
 
     /**
      * handle the new message
      * this function can be override
-     * 
+     *
      * @param message
      */
-    public synchronized void onNewMsg(EMMessage message) {
-        if(EaseCommonUtils.isSilentMessage(message)){
+    public synchronized void notify(EMMessage message) {
+        if (EaseCommonUtils.isSilentMessage(message)) {
             return;
         }
+
         EaseSettingsProvider settingsProvider = EaseUI.getInstance().getSettingsProvider();
-        if(!settingsProvider.isMsgNotifyAllowed(message)){
+        if (!settingsProvider.isMsgNotifyAllowed(message)) {
             return;
         }
-        
+
         // check if app running background
         if (!EasyUtils.isAppRunningForeground(appContext)) {
-            EMLog.d(TAG, "app is running in backgroud");
-            sendNotification(message, false);
-        } else {
-            sendNotification(message, true);
-
+            EMLog.d(TAG, "app is running in background");
+            notificationNum++;
+            fromUsers.add(message.getFrom());
+            handleMessage(message);
         }
-        
-        vibrateAndPlayTone(message);
     }
-    
-    public synchronized void onNewMesg(List<EMMessage> messages) {
-        if(EaseCommonUtils.isSilentMessage(messages.get(messages.size()-1))){
+
+    public synchronized void notify(List<EMMessage> messages) {
+        if (EaseCommonUtils.isSilentMessage(messages.get(messages.size() - 1))) {
             return;
         }
+
         EaseSettingsProvider settingsProvider = EaseUI.getInstance().getSettingsProvider();
-        if(!settingsProvider.isMsgNotifyAllowed(null)){
+        if (!settingsProvider.isMsgNotifyAllowed(null)) {
             return;
         }
+
         // check if app running background
         if (!EasyUtils.isAppRunningForeground(appContext)) {
-            EMLog.d(TAG, "app is running in backgroud");
-            sendNotification(messages, false);
-        } else {
-            sendNotification(messages, true);
-        }
-        vibrateAndPlayTone(messages.get(messages.size()-1));
-    }
-
-    /**
-     * send it to notification bar
-     * This can be override by subclass to provide customer implementation
-     * @param messages
-     * @param isForeground
-     */
-    protected void sendNotification (List<EMMessage> messages, boolean isForeground){
-        for(EMMessage message : messages){
-            if(!isForeground){
+            EMLog.d(TAG, "app is running in background");
+            for (EMMessage message : messages) {
                 notificationNum++;
                 fromUsers.add(message.getFrom());
             }
+            handleMessage(messages.get(messages.size() - 1));
         }
-        sendNotification(messages.get(messages.size()-1), isForeground, false);
     }
-    
-    protected void sendNotification (EMMessage message, boolean isForeground){
-        sendNotification(message, isForeground, true);
+
+    public synchronized void notify(String content) {
+        if (!EasyUtils.isAppRunningForeground(appContext)) {
+            try {
+                NotificationCompat.Builder builder = generateBaseBuilder(content);
+                Notification notification = builder.build();
+                notificationManager.notify(NOTIFY_ID, notification);
+
+                if (Build.VERSION.SDK_INT < 26) {
+                    vibrateAndPlayTone(null);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
-    
+
     /**
      * send it to notification bar
      * This can be override by subclass to provide customer implementation
+     *
      * @param message
      */
-    protected void sendNotification(EMMessage message, boolean isForeground, boolean numIncrease) {
-        String username = message.getFrom();
+    protected void handleMessage(EMMessage message) {
         try {
-            String notifyText = username + " ";
-            switch (message.getType()) {
-            case TXT:
-                notifyText += msgs[0];
-                break;
-            case IMAGE:
-                notifyText += msgs[1];
-                break;
-            case VOICE:
-
-                notifyText += msgs[2];
-                break;
-            case LOCATION:
-                notifyText += msgs[3];
-                break;
-            case VIDEO:
-                notifyText += msgs[4];
-                break;
-            case FILE:
-                notifyText += msgs[5];
-                break;
-            }
-            
-            PackageManager packageManager = appContext.getPackageManager();
-            String appname = (String) packageManager.getApplicationLabel(appContext.getApplicationInfo());
-            
-            // notification title
-            String contentTitle = appname;
-            if (notificationInfoProvider != null) {
-                String customNotifyText = notificationInfoProvider.getDisplayedText(message);
-                String customCotentTitle = notificationInfoProvider.getTitle(message);
-                if (customNotifyText != null){
-                    notifyText = customNotifyText;
-                }
-                    
-                if (customCotentTitle != null){
-                    contentTitle = customCotentTitle;
-                }   
-            }
-
-            // create and send notificaiton
-            NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(appContext)
-                                                                        .setSmallIcon(appContext.getApplicationInfo().icon)
-                                                                        .setWhen(System.currentTimeMillis())
-                                                                        .setAutoCancel(true);
-
-            Intent msgIntent = appContext.getPackageManager().getLaunchIntentForPackage(packageName);
-            if (notificationInfoProvider != null) {
-                msgIntent = notificationInfoProvider.getLaunchIntent(message);
-            }
-
-            PendingIntent pendingIntent = PendingIntent.getActivity(appContext, notifyID, msgIntent,PendingIntent.FLAG_UPDATE_CURRENT);
-
-            if(numIncrease){
-                // prepare latest event info section
-                if(!isForeground){
-                    notificationNum++;
-                    fromUsers.add(message.getFrom());
-                }
-            }
-
             int fromUsersNum = fromUsers.size();
-            String summaryBody = msgs[6].replaceFirst("%1", Integer.toString(fromUsersNum)).replaceFirst("%2",Integer.toString(notificationNum));
-            
+            String notifyText = String.format(msg, fromUsersNum, notificationNum);
+
+            NotificationCompat.Builder builder = generateBaseBuilder(notifyText);
             if (notificationInfoProvider != null) {
-                // lastest text
-                String customSummaryBody = notificationInfoProvider.getLatestText(message, fromUsersNum,notificationNum);
-                if (customSummaryBody != null){
-                    summaryBody = customSummaryBody;
+                String contentTitle = notificationInfoProvider.getTitle(message);
+                if (contentTitle != null) {
+                    builder.setContentTitle(contentTitle);
                 }
-                
-                // small icon
+
+                notifyText = notificationInfoProvider.getDisplayedText(message);
+                if (notifyText != null) {
+                    builder.setTicker(notifyText);
+                }
+
+                Intent i = notificationInfoProvider.getLaunchIntent(message);
+                if (i != null) {
+                    PendingIntent pendingIntent = PendingIntent.getActivity(appContext, NOTIFY_ID, i, PendingIntent.FLAG_UPDATE_CURRENT);
+                    builder.setContentIntent(pendingIntent);
+                }
+
+                notifyText = notificationInfoProvider.getLatestText(message, fromUsersNum, notificationNum);
+                if (notifyText != null) {
+                    builder.setContentText(notifyText);
+                }
+
                 int smallIcon = notificationInfoProvider.getSmallIcon(message);
-                if (smallIcon != 0){
-                    mBuilder.setSmallIcon(smallIcon);
+                if (smallIcon != 0) {
+                    builder.setSmallIcon(smallIcon);
                 }
             }
+            Notification notification = builder.build();
+            notificationManager.notify(NOTIFY_ID, notification);
 
-            mBuilder.setContentTitle(contentTitle);
-            mBuilder.setTicker(notifyText);
-            mBuilder.setContentText(summaryBody);
-            mBuilder.setContentIntent(pendingIntent);
-            // mBuilder.setNumber(notificationNum);
-            Notification notification = mBuilder.build();
-
-            if (isForeground) {
-                notificationManager.notify(foregroundNotifyID, notification);
-                notificationManager.cancel(foregroundNotifyID);
-            } else {
-                notificationManager.notify(notifyID, notification);
+            if (Build.VERSION.SDK_INT < 26) {
+                vibrateAndPlayTone(message);
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     /**
+     * Generate a base Notification#Builder, contains:
+     * 1.Use the app icon as default icon
+     * 2.Use the app name as default title
+     * 3.This notification would be sent immediately
+     * 4.Can be cancelled by user
+     * 5.Would launch the default activity when be clicked
+     *
+     * @return
+     */
+    private NotificationCompat.Builder generateBaseBuilder(String content) {
+        PackageManager pm = appContext.getPackageManager();
+        String title = pm.getApplicationLabel(appContext.getApplicationInfo()).toString();
+        Intent i = appContext.getPackageManager().getLaunchIntentForPackage(packageName);
+        PendingIntent pendingIntent = PendingIntent.getActivity(appContext, NOTIFY_ID, i, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        return new NotificationCompat.Builder(appContext, CHANNEL_ID)
+                .setSmallIcon(appContext.getApplicationInfo().icon)
+                .setContentTitle(title)
+                .setTicker(content)
+                .setContentText(content)
+                .setWhen(System.currentTimeMillis())
+                .setAutoCancel(true)
+                .setContentIntent(pendingIntent);
+    }
+
+    /**
      * vibrate and  play tone
      */
     public void vibrateAndPlayTone(EMMessage message) {
-        if(message != null){
-            if(EaseCommonUtils.isSilentMessage(message)){
+        if (message != null) {
+            if (EaseCommonUtils.isSilentMessage(message)) {
                 return;
-            } 
+            }
         }
-        
-        if (System.currentTimeMillis() - lastNotifiyTime < 1000) {
+
+        final EaseSettingsProvider settingsProvider = EaseUI.getInstance().getSettingsProvider();
+        if (!settingsProvider.isMsgNotifyAllowed(null)) {
+            return;
+        }
+
+        if (System.currentTimeMillis() - lastNotifyTime < 1000) {
             // received new messages within 2 seconds, skip play ringtone
             return;
         }
-        
+
         try {
-            lastNotifiyTime = System.currentTimeMillis();
-            
+            lastNotifyTime = System.currentTimeMillis();
+
             // check if in silent mode
             if (audioManager.getRingerMode() == AudioManager.RINGER_MODE_SILENT) {
                 EMLog.e(TAG, "in slient mode now");
                 return;
             }
-            EaseSettingsProvider settingsProvider = EaseUI.getInstance().getSettingsProvider();
-            if(settingsProvider.isMsgVibrateAllowed(message)){
-                long[] pattern = new long[] { 0, 180, 80, 120 };
-                vibrator.vibrate(pattern, -1);
+            if (settingsProvider.isMsgVibrateAllowed(message)) {
+                vibrator.vibrate(VIBRATION_PATTERN, -1);
             }
 
-            if(settingsProvider.isMsgSoundAllowed(message)){
+            if (settingsProvider.isMsgSoundAllowed(message)) {
                 if (ringtone == null) {
                     Uri notificationUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
@@ -320,10 +294,10 @@ public class EaseNotifier {
                         return;
                     }
                 }
-                
+
                 if (!ringtone.isPlaying()) {
                     String vendor = Build.MANUFACTURER;
-                    
+
                     ringtone.play();
                     // for samsung S3, we meet a bug that the phone will
                     // continue ringtone without stop
@@ -353,7 +327,7 @@ public class EaseNotifier {
 
     /**
      * set notification info Provider
-     * 
+     *
      * @param provider
      */
     public void setNotificationInfoProvider(EaseNotificationInfoProvider provider) {
@@ -363,7 +337,7 @@ public class EaseNotifier {
     public interface EaseNotificationInfoProvider {
         /**
          * set the notification content, such as "you received a new image from xxx"
-         * 
+         *
          * @param message
          * @return null-will use the default text
          */
@@ -371,17 +345,17 @@ public class EaseNotifier {
 
         /**
          * set the notification content: such as "you received 5 message from 2 contacts"
-         * 
+         *
          * @param message
          * @param fromUsersNum- number of message sender
-         * @param messageNum -number of messages
+         * @param messageNum    -number of messages
          * @return null-will use the default text
          */
         String getLatestText(EMMessage message, int fromUsersNum, int messageNum);
 
         /**
          * 设置notification标题
-         * 
+         *
          * @param message
          * @return null- will use the default text
          */
@@ -389,7 +363,7 @@ public class EaseNotifier {
 
         /**
          * set the small icon
-         * 
+         *
          * @param message
          * @return 0- will use the default icon
          */
@@ -397,7 +371,7 @@ public class EaseNotifier {
 
         /**
          * set the intent when notification is pressed
-         * 
+         *
          * @param message
          * @return null- will use the default icon
          */
