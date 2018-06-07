@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
 import android.support.v4.content.FileProvider;
+import android.view.WindowManager;
 
 import java.io.File;
 
@@ -14,12 +15,18 @@ import java.io.File;
 public class EaseCompat {
 
     public static Uri getUriForFile(Context context, File file) {
-        Uri uri;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            uri = FileProvider.getUriForFile(context, context.getPackageName() + ".fileProvider", file);
+            return FileProvider.getUriForFile(context, context.getPackageName() + ".fileProvider", file);
         } else {
-            uri = Uri.fromFile(file);
+            return Uri.fromFile(file);
         }
-        return uri;
+    }
+
+    public static int getSupportedWindowType() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            return WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
+        } else {
+            return WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
+        }
     }
 }
