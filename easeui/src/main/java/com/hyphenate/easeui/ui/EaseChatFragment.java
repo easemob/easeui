@@ -526,8 +526,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     }
     
     @Override
-    public void onStop() {
-        super.onStop();
+    public void onPause() {
+        super.onPause();
         // unregister this event listener when this activity enters the
         // background
         EMClient.getInstance().chatManager().removeMessageListener(this);
@@ -628,11 +628,9 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             // if the message is for current conversation
             if (username.equals(toChatUsername) || message.getTo().equals(toChatUsername) || message.conversationId().equals(toChatUsername)) {
                 messageList.refreshSelectLast();
-                EaseUI.getInstance().getNotifier().vibrateAndPlayTone(message);
                 conversation.markMessageAsRead(message.getMsgId());
-            } else {
-                EaseUI.getInstance().getNotifier().onNewMsg(message);
             }
+            EaseUI.getInstance().getNotifier().vibrateAndPlayTone(message);
         }
     }
 

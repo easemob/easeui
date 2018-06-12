@@ -146,8 +146,7 @@ public final class EaseUI {
     }
     
     void initNotifier(){
-        notifier = createNotifier();
-        notifier.init(appContext);
+        notifier = new EaseNotifier(appContext);
     }
     
     private void registerMessageListener() {
@@ -182,10 +181,6 @@ public final class EaseUI {
                 }
             }
         });
-    }
-    
-    protected EaseNotifier createNotifier(){
-        return new EaseNotifier();
     }
     
     public EaseNotifier getNotifier(){
