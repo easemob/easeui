@@ -44,6 +44,7 @@ import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.domain.EaseEmojicon;
 import com.hyphenate.easeui.domain.EaseUser;
 import com.hyphenate.easeui.model.EaseAtMessageHelper;
+import com.hyphenate.easeui.model.EaseCompat;
 import com.hyphenate.easeui.model.EaseDingMessageHelper;
 import com.hyphenate.easeui.utils.EaseCommonUtils;
 import com.hyphenate.easeui.utils.EaseUserUtils;
@@ -931,7 +932,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         //noinspection ResultOfMethodCallIgnored
         cameraFile.getParentFile().mkdirs();
         startActivityForResult(
-                new Intent(MediaStore.ACTION_IMAGE_CAPTURE).putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(cameraFile)),
+                new Intent(MediaStore.ACTION_IMAGE_CAPTURE).putExtra(MediaStore.EXTRA_OUTPUT, EaseCompat.getUriForFile(getContext(), cameraFile)),
                 REQUEST_CODE_CAMERA);
     }
 
