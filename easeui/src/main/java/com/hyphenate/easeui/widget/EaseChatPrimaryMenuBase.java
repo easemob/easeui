@@ -85,7 +85,12 @@ public abstract class EaseChatPrimaryMenuBase extends RelativeLayout{
          * @param content
          */
         void onSendBtnClicked(String content);
-        
+
+        /**
+         * when typing on the edit-text layout.
+         */
+        void onTyping(CharSequence s, int start, int before, int count);
+
         /**
          * when speak button is touched
          * @return
