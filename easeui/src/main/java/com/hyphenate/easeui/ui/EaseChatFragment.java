@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.provider.MediaStore;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
@@ -31,6 +32,7 @@ import com.hyphenate.EMMessageListener;
 import com.hyphenate.EMValueCallBack;
 import com.hyphenate.chat.EMChatRoom;
 import com.hyphenate.chat.EMClient;
+import com.hyphenate.chat.EMCmdMessageBody;
 import com.hyphenate.chat.EMConversation;
 import com.hyphenate.chat.EMGroup;
 import com.hyphenate.chat.EMImageMessageBody;
@@ -81,6 +83,14 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     protected static final int REQUEST_CODE_LOCAL = 3;
     protected static final int REQUEST_CODE_DING_MSG = 4;
 
+    protected static final int MSG_TYPING_BEGIN = 0;
+    protected static final int MSG_TYPING_END = 1;
+
+    protected static final String ACTION_TYPING_BEGIN = "TypingBegin";
+    protected static final String ACTION_TYPING_END = "TypingEnd";
+
+    protected static final int TYPING_SHOW_TIME = 5000;
+
     /**
      * params to fragment
      */
@@ -122,6 +132,10 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     protected MyItemClickListener extendMenuItemClickListener;
     protected boolean isRoaming = false;
     private ExecutorService fetchQueue;
+    // to handle during-typing actions.
+    private Handler typingHandler = null;
+    // "正在输入"功能的开关，打开后本设备发送消息将持续发送cmd类型消息通知对方"正在输入"
+    private boolean turnOnTyping;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -142,7 +156,13 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         // userId you are chat with or group id
         toChatUsername = fragmentArgs.getString(EaseConstant.EXTRA_USER_ID);
 
+        this.turnOnTyping = turnOnTyping();
+
         super.onActivityCreated(savedInstanceState);
+    }
+
+    protected boolean turnOnTyping() {
+        return false;
     }
 
     /**
@@ -174,6 +194,12 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         // init input menu
         inputMenu.init(null);
         inputMenu.setChatInputMenuListener(new ChatInputMenuListener() {
+
+            @Override
+            public void onTyping(CharSequence s, int start, int before, int count) {
+                // send action:TypingBegin cmd msg.
+                typingHandler.sendEmptyMessage(MSG_TYPING_BEGIN);
+            }
 
             @Override
             public void onSendMessage(String content) {
@@ -208,6 +234,62 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         if (isRoaming) {
             fetchQueue = Executors.newSingleThreadExecutor();
         }
+
+        // to handle during-typing actions.
+        typingHandler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                switch (msg.what) {
+                    case MSG_TYPING_BEGIN: // Notify typing start
+
+                        if (!turnOnTyping) return;
+
+                        // Only support single-chat type conversation.
+                        if (chatType != EaseConstant.CHATTYPE_SINGLE)
+                            return;
+
+                        if (hasMessages(MSG_TYPING_END)) {
+                            // reset the MSG_TYPING_END handler msg.
+                            removeMessages(MSG_TYPING_END);
+                        } else {
+                            // Send TYPING-BEGIN cmd msg
+                            EMMessage beginMsg = EMMessage.createSendMessage(EMMessage.Type.CMD);
+                            EMCmdMessageBody body = new EMCmdMessageBody(ACTION_TYPING_BEGIN);
+                            // Only deliver this cmd msg to online users
+                            body.deliverOnlineOnly(true);
+                            beginMsg.addBody(body);
+                            beginMsg.setTo(toChatUsername);
+                            EMClient.getInstance().chatManager().sendMessage(beginMsg);
+                        }
+
+                        sendEmptyMessageDelayed(MSG_TYPING_END, TYPING_SHOW_TIME);
+                        break;
+                    case MSG_TYPING_END:
+
+                        if (!turnOnTyping) return;
+
+                        // Only support single-chat type conversation.
+                        if (chatType != EaseConstant.CHATTYPE_SINGLE)
+                            return;
+
+                        // remove all pedding msgs to avoid memory leak.
+                        removeCallbacksAndMessages(null);
+                        // Send TYPING-END cmd msg
+                        EMMessage endMsg = EMMessage.createSendMessage(EMMessage.Type.CMD);
+                        EMCmdMessageBody body = new EMCmdMessageBody(ACTION_TYPING_END);
+                        // Only deliver this cmd msg to online users
+                        body.deliverOnlineOnly(true);
+                        endMsg.addBody(body);
+                        endMsg.setTo(toChatUsername);
+                        EMClient.getInstance().chatManager().sendMessage(endMsg);
+                        break;
+                    default:
+                        super.handleMessage(msg);
+                        break;
+                }
+            }
+        };
+
     }
 
     protected void setUpView() {
@@ -538,6 +620,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
         // Remove all padding actions in handler
         handler.removeCallbacksAndMessages(null);
+        typingHandler.sendEmptyMessage(MSG_TYPING_END);
     }
 
     @Override
@@ -637,7 +720,20 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
     @Override
     public void onCmdMessageReceived(List<EMMessage> messages) {
-
+        for (EMMessage msg : messages) {
+            final EMCmdMessageBody body = (EMCmdMessageBody) msg.getBody();
+            EMLog.i(TAG, "Receive cmd message: " + body.action() + " - " + body.isDeliverOnlineOnly());
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (ACTION_TYPING_BEGIN.equals(body.action())) {
+                        titleBar.setTitle(getString(R.string.alert_during_typing));
+                    } else if (ACTION_TYPING_END.equals(body.action())) {
+                        titleBar.setTitle(toChatUsername);
+                    }
+                }
+            });
+        }
     }
 
     @Override

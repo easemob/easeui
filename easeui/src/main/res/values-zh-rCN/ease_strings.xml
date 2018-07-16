@@ -316,4 +316,7 @@
     <string name="title_ack_read_list">已读列表</string>
     <string name="group_ack_read_count">%1$d 已读</string>
     <!-- For group ack end -->
+    
+    <string name="alert_during_typing">正在输入 &#8230;</string>
+    <string name="title_msg_typing">单聊消息显示\"正在输入\"</string>
 </resources>

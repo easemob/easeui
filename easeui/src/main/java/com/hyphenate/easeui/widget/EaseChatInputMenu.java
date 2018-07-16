@@ -181,6 +181,13 @@ public class EaseChatInputMenu extends LinearLayout {
         chatPrimaryMenu.setChatPrimaryMenuListener(new EaseChatPrimaryMenuListener() {
 
             @Override
+            public void onTyping(CharSequence s, int start, int before, int count) {
+                if (listener != null) {
+                    listener.onTyping(s, start, before, count);
+                }
+            }
+
+            @Override
             public void onSendBtnClicked(String content) {
                 if (listener != null)
                     listener.onSendMessage(content);
@@ -337,6 +344,12 @@ public class EaseChatInputMenu extends LinearLayout {
     }
 
     public interface ChatInputMenuListener {
+
+        /**
+         * when typing on the edit-text layout.
+         */
+        void onTyping(CharSequence s, int start, int before, int count);
+
         /**
          * when send message button pressed
          * 
