@@ -74,7 +74,7 @@ public class EaseShowVideoActivity extends EaseBaseActivity{
 	 */
 	private void showLocalVideo(String localPath){
 		Intent intent = new Intent(Intent.ACTION_VIEW);
-		intent.setDataAndType(Uri.fromFile(new File(localPath)),
+		intent.setDataAndType(EaseCompat.getUriForFile(this, new File(localPath)),
 				"video/mp4");
 		startActivity(intent);
 		finish();
