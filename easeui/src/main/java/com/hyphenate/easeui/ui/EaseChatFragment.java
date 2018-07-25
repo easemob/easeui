@@ -720,15 +720,15 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
     @Override
     public void onCmdMessageReceived(List<EMMessage> messages) {
-        for (EMMessage msg : messages) {
+        for (final EMMessage msg : messages) {
             final EMCmdMessageBody body = (EMCmdMessageBody) msg.getBody();
             EMLog.i(TAG, "Receive cmd message: " + body.action() + " - " + body.isDeliverOnlineOnly());
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    if (ACTION_TYPING_BEGIN.equals(body.action())) {
+                    if (ACTION_TYPING_BEGIN.equals(body.action()) && msg.getFrom().equals(toChatUsername)) {
                         titleBar.setTitle(getString(R.string.alert_during_typing));
-                    } else if (ACTION_TYPING_END.equals(body.action())) {
+                    } else if (ACTION_TYPING_END.equals(body.action()) && msg.getFrom().equals(toChatUsername)) {
                         titleBar.setTitle(toChatUsername);
                     }
                 }
