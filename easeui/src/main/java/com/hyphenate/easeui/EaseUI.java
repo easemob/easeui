@@ -101,15 +101,11 @@ public final class EaseUI {
         }
         appContext = context;
         
-        int pid = android.os.Process.myPid();
-        String processAppName = getAppName(pid);
-        
-        Log.d(TAG, "process app name : " + processAppName);
 
         // if there is application has remote service, application:onCreate() maybe called twice
         // this check is to make sure SDK will initialized only once
         // return if process name is not application's name since the package name is the default process name
-        if (processAppName == null || !processAppName.equalsIgnoreCase(appContext.getPackageName())) {
+        if (!isMainProcess(appContext)) {
             Log.e(TAG, "enter the service process!");
             return false;
         }
@@ -223,35 +219,16 @@ public final class EaseUI {
     public EaseSettingsProvider getSettingsProvider(){
         return settingsProvider;
     }
-    
-    
-    /**
-     * check the application process name if process name is not qualified, then we think it is a service process and we will not init SDK
-     * @param pID
-     * @return
-     */
-    private String getAppName(int pID) {
-        String processName = null;
-        ActivityManager am = (ActivityManager) appContext.getSystemService(Context.ACTIVITY_SERVICE);
-        List l = am.getRunningAppProcesses();
-        Iterator i = l.iterator();
-        PackageManager pm = appContext.getPackageManager();
-        while (i.hasNext()) {
-            ActivityManager.RunningAppProcessInfo info = (ActivityManager.RunningAppProcessInfo) (i.next());
-            try {
-                if (info.pid == pID) {
-                    CharSequence c = pm.getApplicationLabel(pm.getApplicationInfo(info.processName, PackageManager.GET_META_DATA));
-                    // Log.d("Process", "Id: "+ info.pid +" ProcessName: "+
-                    // info.processName +"  Label: "+c.toString());
-                    // processName = c.toString();
-                    processName = info.processName;
-                    return processName;
-                }
-            } catch (Exception e) {
-                // Log.d("Process", "Error>> :"+ e.toString());
+
+    public boolean isMainProcess(Context context) {
+        int pid = android.os.Process.myPid();
+        ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningAppProcessInfo appProcess : activityManager.getRunningAppProcesses()) {
+            if (appProcess.pid == pid) {
+                return context.getApplicationInfo().packageName.equals(appProcess.processName);
             }
         }
-        return processName;
+        return false;
     }
     
     /**
