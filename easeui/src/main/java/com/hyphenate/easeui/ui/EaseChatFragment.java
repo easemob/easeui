@@ -982,27 +982,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
      * @param uri
      */
     protected void sendFileByUri(Uri uri){
-        String filePath = null;
-        if ("content".equalsIgnoreCase(uri.getScheme())) {
-            String[] filePathColumn = { MediaStore.Images.Media.DATA };
-            Cursor cursor = null;
-
-            try {
-                cursor = getActivity().getContentResolver().query(uri, filePathColumn, null, null, null);
-                int column_index = cursor.getColumnIndexOrThrow("_data");
-                if (cursor.moveToFirst()) {
-                    filePath = cursor.getString(column_index);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                if (cursor != null) {
-                    cursor.close();
-                }
-            }
-        } else if ("file".equalsIgnoreCase(uri.getScheme())) {
-            filePath = uri.getPath();
-        }
+        String filePath = EaseCompat.getPath(getActivity(), uri);
+        EMLog.i(TAG, "sendFileByUri: " + filePath);
         if (filePath == null) {
             return;
         }
