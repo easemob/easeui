@@ -108,7 +108,7 @@ public class EaseContactAdapter extends ArrayAdapter<EaseUser> implements Sectio
         if(primarySize != 0)
             holder.nameView.setTextSize(TypedValue.COMPLEX_UNIT_PX, primarySize);
         if(initialLetterBg != null)
-            holder.headerView.setBackgroundDrawable(initialLetterBg);
+            holder.headerView.setBackground(initialLetterBg);
         if(initialLetterColor != 0)
             holder.headerView.setTextColor(initialLetterColor);
         

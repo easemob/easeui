@@ -65,7 +65,7 @@ public class EaseAtMessageHelper {
                 if(EaseUserUtils.getUserInfo(username) != null){
                     EaseUser user = EaseUserUtils.getUserInfo(username);
                     if (user != null) {
-                        nick = user.getNick();
+                        nick = user.getNickname();
                     }
                 }
                 if(content.contains(nick)){
@@ -100,7 +100,7 @@ public class EaseAtMessageHelper {
                 if(EaseUserUtils.getUserInfo(username) != null){
                     EaseUser user = EaseUserUtils.getUserInfo(username);
                     if (user != null) {
-                        nick = user.getNick();
+                        nick = user.getNickname();
                     }
                 }
                 if(content.contains(nick)){

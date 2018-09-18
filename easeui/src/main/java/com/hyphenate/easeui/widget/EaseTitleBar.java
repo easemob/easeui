@@ -67,7 +67,7 @@ public class EaseTitleBar extends RelativeLayout{
         
             Drawable background = ta.getDrawable(R.styleable.EaseTitleBar_titleBarBackground);
             if(null != background) {
-                titleLayout.setBackgroundDrawable(background);
+                titleLayout.setBackground(background);
             }
             
             ta.recycle();
