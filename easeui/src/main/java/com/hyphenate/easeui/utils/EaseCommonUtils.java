@@ -178,8 +178,8 @@ public class EaseCommonUtils {
             }
         }
         
-        if ( !TextUtils.isEmpty(user.getNick()) ) {
-            letter = new GetInitialLetter().getLetter(user.getNick());
+        if ( !TextUtils.isEmpty(user.getNickname()) ) {
+            letter = new GetInitialLetter().getLetter(user.getNickname());
             user.setInitialLetter(letter);
             return;
         } 

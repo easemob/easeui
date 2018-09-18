@@ -202,11 +202,11 @@ public abstract class EaseChatRow extends LinearLayout {
             if (bubbleLayout != null) {
                 if (message.direct() == Direct.SEND) {
                     if (itemStyle.getMyBubbleBg() != null) {
-                        bubbleLayout.setBackgroundDrawable(((EaseMessageAdapter) adapter).getMyBubbleBg());
+                        bubbleLayout.setBackground(((EaseMessageAdapter) adapter).getMyBubbleBg());
                     }
                 } else if (message.direct() == Direct.RECEIVE) {
                     if (itemStyle.getOtherBubbleBg() != null) {
-                        bubbleLayout.setBackgroundDrawable(((EaseMessageAdapter) adapter).getOtherBubbleBg());
+                        bubbleLayout.setBackground(((EaseMessageAdapter) adapter).getOtherBubbleBg());
                     }
                 }
             }
