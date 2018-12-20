@@ -1,7 +1,9 @@
 package com.hyphenate.easeui.model;
 
+import android.app.Activity;
 import android.content.ContentUris;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
@@ -10,6 +12,9 @@ import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
 import android.view.WindowManager;
+import android.widget.Toast;
+
+import com.hyphenate.util.FileUtils;
 
 import java.io.File;
 
@@ -18,6 +23,36 @@ import java.io.File;
  */
 
 public class EaseCompat {
+    private static final String TAG = "EaseCompat";
+
+    /**
+     * open file
+     *
+     * @param f
+     * @param context
+     */
+    public static void openFile(File f, Activity context) {
+        /* get MimeType */
+        String type = FileUtils.getMIMEType(f);
+        /* get uri */
+        Uri uri = getUriForFile(context, f);
+        openFile(uri, type, context);
+    }
+
+    public static void openFile(Uri uri, String type, Activity context) {
+        Intent intent = new Intent();
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+        intent.setAction(android.content.Intent.ACTION_VIEW);
+        /* set intent's file and MimeType */
+        intent.setDataAndType(uri, type);
+        try {
+            context.startActivity(intent);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(context, "Can't find proper app to open this file", Toast.LENGTH_LONG).show();
+        }
+    }
 
     public static Uri getUriForFile(Context context, File file) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {

@@ -9,7 +9,7 @@ import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMFileMessageBody;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.easeui.R;
-import com.hyphenate.util.FileUtils;
+import com.hyphenate.easeui.model.EaseCompat;
 
 import java.io.File;
 
@@ -35,7 +35,7 @@ public class EaseShowNormalFileActivity extends EaseBaseActivity {
             public void onSuccess() {
                 runOnUiThread(new Runnable() {
                     public void run() {
-                        FileUtils.openFile(file, EaseShowNormalFileActivity.this);
+                        EaseCompat.openFile(file, EaseShowNormalFileActivity.this);
                         finish();
                     }
                 });
