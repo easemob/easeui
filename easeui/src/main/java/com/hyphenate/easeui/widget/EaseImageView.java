@@ -129,13 +129,8 @@ public class EaseImageView extends ImageView {
         paint.setColor(0xffffffff);
         paint.setAntiAlias(true); //smooths out the edges of what is being drawn
         PorterDuffXfermode xfermode = new PorterDuffXfermode(PorterDuff.Mode.SRC_IN);
-        // set flags
-        int saveFlags = Canvas.MATRIX_SAVE_FLAG
-                | Canvas.CLIP_SAVE_FLAG
-                | Canvas.HAS_ALPHA_LAYER_SAVE_FLAG
-                | Canvas.FULL_COLOR_LAYER_SAVE_FLAG
-                | Canvas.CLIP_TO_LAYER_SAVE_FLAG;
-        canvas.saveLayer(0, 0, width, height, null, saveFlags);
+
+        canvas.saveLayer(0, 0, width, height, null);
 
         if (shapeType == 1) {
             canvas.drawCircle(width / 2, height / 2, width / 2 - 1, paint);
