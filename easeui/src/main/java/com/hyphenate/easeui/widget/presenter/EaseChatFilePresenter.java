@@ -8,11 +8,11 @@ import android.widget.BaseAdapter;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMNormalFileMessageBody;
+import com.hyphenate.easeui.model.EaseCompat;
 import com.hyphenate.easeui.ui.EaseShowNormalFileActivity;
 import com.hyphenate.easeui.widget.chatrow.EaseChatRow;
 import com.hyphenate.easeui.widget.chatrow.EaseChatRowFile;
 import com.hyphenate.exceptions.HyphenateException;
-import com.hyphenate.util.FileUtils;
 
 import java.io.File;
 
@@ -34,7 +34,7 @@ public class EaseChatFilePresenter extends EaseChatRowPresenter {
         File file = new File(filePath);
         if (file.exists()) {
             // open files if it exist
-            FileUtils.openFile(file, (Activity) getContext());
+            EaseCompat.openFile(file, (Activity) getContext());
         } else {
             // download the file
             getContext().startActivity(new Intent(getContext(), EaseShowNormalFileActivity.class).putExtra("msg", message));
