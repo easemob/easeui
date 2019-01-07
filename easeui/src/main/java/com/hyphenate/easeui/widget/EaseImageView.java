@@ -11,11 +11,66 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
+import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.widget.ImageView;
 
 import com.hyphenate.easeui.R;
+import com.hyphenate.util.Utils;
+
+import java.lang.reflect.Method;
+
+
+/**
+ * Canvas#save(int) has been removed from sdk-28, see detail from:
+ * https://issuetracker.google.com/issues/110856542
+ * so this helper classes uses reflection to access the API on older devices.
+ */
+@SuppressWarnings("JavaReflectionMemberAccess")
+class CanvasLegacy {
+    static final int MATRIX_SAVE_FLAG;
+    static final int CLIP_SAVE_FLAG;
+    static final int HAS_ALPHA_LAYER_SAVE_FLAG;
+    static final int FULL_COLOR_LAYER_SAVE_FLAG;
+    static final int CLIP_TO_LAYER_SAVE_FLAG;
+
+
+    private static final Method SAVE;
+
+    static {
+        try {
+            MATRIX_SAVE_FLAG = (int) Canvas.class.getField("MATRIX_SAVE_FLAG").get(null);
+            CLIP_SAVE_FLAG = (int) Canvas.class.getField("CLIP_SAVE_FLAG").get(null);
+            HAS_ALPHA_LAYER_SAVE_FLAG = (int) Canvas.class.getField("HAS_ALPHA_LAYER_SAVE_FLAG").get(null);
+            FULL_COLOR_LAYER_SAVE_FLAG = (int) Canvas.class.getField("FULL_COLOR_LAYER_SAVE_FLAG").get(null);
+            CLIP_TO_LAYER_SAVE_FLAG = (int) Canvas.class.getField("CLIP_TO_LAYER_SAVE_FLAG").get(null);
+
+            SAVE = Canvas.class.getMethod("saveLayer", float.class, float.class, float.class, float.class, Paint.class, int.class);
+        } catch (Throwable e) {
+            throw sneakyThrow(e);
+        }
+    }
+
+    static void saveLayer(Canvas canvas, float left, float top, float right, float bottom, @Nullable Paint paint,  int saveFlags) {
+        try {
+            SAVE.invoke(canvas, left, top, right, bottom, paint, saveFlags);
+        } catch (Throwable e) {
+            throw sneakyThrow(e);
+        }
+    }
+
+    private static RuntimeException sneakyThrow(Throwable t) {
+        if (t == null) throw new NullPointerException("t");
+        return CanvasLegacy.sneakyThrow0(t);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T extends Throwable> T sneakyThrow0(Throwable t) throws T {
+        throw (T) t;
+    }
+}
 
 
 /**
@@ -129,13 +184,18 @@ public class EaseImageView extends ImageView {
         paint.setColor(0xffffffff);
         paint.setAntiAlias(true); //smooths out the edges of what is being drawn
         PorterDuffXfermode xfermode = new PorterDuffXfermode(PorterDuff.Mode.SRC_IN);
-        // set flags
-        int saveFlags = Canvas.MATRIX_SAVE_FLAG
-                | Canvas.CLIP_SAVE_FLAG
-                | Canvas.HAS_ALPHA_LAYER_SAVE_FLAG
-                | Canvas.FULL_COLOR_LAYER_SAVE_FLAG
-                | Canvas.CLIP_TO_LAYER_SAVE_FLAG;
-        canvas.saveLayer(0, 0, width, height, null, saveFlags);
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            // set flags
+            int saveFlags = CanvasLegacy.MATRIX_SAVE_FLAG
+                    | CanvasLegacy.CLIP_SAVE_FLAG
+                    | CanvasLegacy.HAS_ALPHA_LAYER_SAVE_FLAG
+                    | CanvasLegacy.FULL_COLOR_LAYER_SAVE_FLAG
+                    | CanvasLegacy.CLIP_TO_LAYER_SAVE_FLAG;
+            CanvasLegacy.saveLayer(canvas,0, 0, width, height, null, saveFlags);
+        } else {
+            canvas.saveLayer(0, 0, width, height, null);
+        }
 
         if (shapeType == 1) {
             canvas.drawCircle(width / 2, height / 2, width / 2 - 1, paint);
