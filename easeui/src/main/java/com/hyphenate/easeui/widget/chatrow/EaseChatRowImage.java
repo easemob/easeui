@@ -3,7 +3,6 @@ package com.hyphenate.easeui.widget.chatrow;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
-import android.support.v4.os.AsyncTaskCompat;
 import android.view.View;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
@@ -123,7 +122,7 @@ public class EaseChatRowImage extends EaseChatRowFile{
             imageView.setImageBitmap(bitmap);
         } else {
             imageView.setImageResource(R.drawable.ease_default_image);
-            AsyncTaskCompat.executeParallel( new AsyncTask<Object, Void, Bitmap>() {
+            new AsyncTask<Object, Void, Bitmap>() {
 
                 @Override
                 protected Bitmap doInBackground(Object... args) {
@@ -152,7 +151,7 @@ public class EaseChatRowImage extends EaseChatRowFile{
                         EaseImageCache.getInstance().put(thumbernailPath, image);
                     }
                 }
-            });
+            }.execute();
         }
     }
 
