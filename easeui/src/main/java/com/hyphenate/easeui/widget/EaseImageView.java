@@ -15,10 +15,8 @@ import android.os.Build;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
-import android.widget.ImageView;
 
 import com.hyphenate.easeui.R;
-import com.hyphenate.util.Utils;
 
 import java.lang.reflect.Method;
 
@@ -77,7 +75,7 @@ class CanvasLegacy {
  * Created by lzan13 on 2015/4/30.
  * customized ImageView，Rounded Rectangle and border is implemented, and change color when you press
  */
-public class EaseImageView extends ImageView {
+public class EaseImageView extends android.support.v7.widget.AppCompatImageView {
     // paint when user press
     private Paint pressPaint;
     private int width;
