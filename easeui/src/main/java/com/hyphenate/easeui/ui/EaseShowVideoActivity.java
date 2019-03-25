@@ -1,10 +1,7 @@
 package com.hyphenate.easeui.ui;
 
 import android.content.Intent;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.content.FileProvider;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -55,13 +52,7 @@ public class EaseShowVideoActivity extends EaseBaseActivity{
 		localFilePath = messageBody.getLocalUrl();
 
 		if (localFilePath != null && new File(localFilePath).exists()) {
-			Intent intent = new Intent(Intent.ACTION_VIEW);
-			Uri uri = EaseCompat.getUriForFile(this, new File(localFilePath));
-			intent.setDataAndType(uri, "video/mp4");
-			// 注意添加该flag,用于Android7.0以上设备获取相册文件权限.
-			intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-			startActivity(intent);
-			finish();
+			showLocalVideo(localFilePath);
 		} else {
 			EMLog.d(TAG, "download remote video file");
 			downloadVideo(message);
@@ -76,6 +67,8 @@ public class EaseShowVideoActivity extends EaseBaseActivity{
 		Intent intent = new Intent(Intent.ACTION_VIEW);
 		intent.setDataAndType(EaseCompat.getUriForFile(this, new File(localPath)),
 				"video/mp4");
+		// 注意添加该flag,用于Android7.0以上设备获取相册文件权限.
+		intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 		startActivity(intent);
 		finish();
 	}
