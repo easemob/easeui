@@ -5,6 +5,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.hyphenate.EMCallBack;
+import com.hyphenate.EMError;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMFileMessageBody;
 import com.hyphenate.chat.EMMessage;
@@ -43,13 +44,16 @@ public class EaseShowNormalFileActivity extends EaseBaseActivity {
             }
 
             @Override
-            public void onError(int code, String error) {
+            public void onError(final int code, final String error) {
                 runOnUiThread(new Runnable() {
                     public void run() {
                         if(file != null && file.exists()&&file.isFile())
                             file.delete();
                         String str4 = getResources().getString(R.string.Failed_to_download_file);
-                        Toast.makeText(EaseShowNormalFileActivity.this, str4+message, Toast.LENGTH_SHORT).show();
+                        if (code == EMError.FILE_NOT_FOUND) {
+                            str4 = getResources().getString(R.string.File_expired);
+                        }
+                        Toast.makeText(getApplicationContext(), str4+message, Toast.LENGTH_SHORT).show();
                         finish();
                     }
                 });

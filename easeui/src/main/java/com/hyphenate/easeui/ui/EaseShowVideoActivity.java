@@ -11,6 +11,7 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.hyphenate.EMCallBack;
+import com.hyphenate.EMError;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMVideoMessageBody;
@@ -105,12 +106,20 @@ public class EaseShowVideoActivity extends EaseBaseActivity{
 			}
 
 			@Override
-			public void onError(int error, String msg) {
+			public void onError(final int error, String msg) {
 				Log.e("###", "offline file transfer error:" + msg);
 				File file = new File(localFilePath);
 				if (file.exists()) {
 					file.delete();
 				}
+				runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						if (error == EMError.FILE_NOT_FOUND) {
+							Toast.makeText(getApplicationContext(), R.string.Video_expired, Toast.LENGTH_SHORT).show();
+						}
+					}
+				});
 			}
 		});
 		EMClient.getInstance().chatManager().downloadAttachment(message);
