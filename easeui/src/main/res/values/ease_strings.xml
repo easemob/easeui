@@ -227,6 +227,9 @@
     <string name="Download_the_pictures">Download the pictures: 0%</string>
     <string name="Download_the_pictures_new">Download the pictures:</string>
     <string name="Failed_to_download_file">Failed to download file:</string>
+    <string name="File_expired">File expired:</string>
+    <string name="Image_expired">Image expired!</string>
+    <string name="Video_expired">Video expired!</string>
     <string name="Version_number_is_wrong">Version number is wrong</string>
     <string name="Are_connected_to_each_other">Connecting to peer..</string>
     <string name="Is_not_yet_connected_to_the_server">Not connect to server</string>

@@ -19,6 +19,7 @@ import java.util.Map;
 
 
 import com.hyphenate.EMCallBack;
+import com.hyphenate.EMError;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.easeui.R;
@@ -39,6 +40,7 @@ import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 /**
  * download and show original image
@@ -147,7 +149,7 @@ public class EaseShowBigImageActivity extends EaseBaseActivity {
 				});
 			}
 
-			public void onError(int error, String msg) {
+			public void onError(final int error, String msg) {
 				EMLog.e(TAG, "offline file transfer error:" + msg);
 				File file = new File(tempPath);
 				if (file.exists()&&file.isFile()) {
@@ -161,6 +163,9 @@ public class EaseShowBigImageActivity extends EaseBaseActivity {
 						}
                         image.setImageResource(default_res);
                         pd.dismiss();
+                        if (error == EMError.FILE_NOT_FOUND) {
+							Toast.makeText(getApplicationContext(), R.string.Image_expired, Toast.LENGTH_SHORT).show();
+						}
 					}
 				});
 			}

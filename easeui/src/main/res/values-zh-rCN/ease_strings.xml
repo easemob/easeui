@@ -232,6 +232,9 @@
     <string name="Download_the_pictures">下载图片: 0%</string>
     <string name="Download_the_pictures_new">下载图片:</string>
     <string name="Failed_to_download_file">下载文件失败:</string>
+    <string name="File_expired">文件已过期:</string>
+    <string name="Image_expired">图片已过期!</string>
+    <string name="Video_expired">视频已过期!</string>
     <string name="Version_number_is_wrong">版本号错误</string>
     <string name="Are_connected_to_each_other">正在连接对方……</string>
     <string name="Is_not_yet_connected_to_the_server">尚未连接至服务器</string>
