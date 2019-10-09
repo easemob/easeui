@@ -311,4 +311,10 @@
 
     <string name="alert_during_typing">Typing ...</string>
     <string name="title_msg_typing">Single chat shows \"Typing\"</string>
+
+    <string name="setup_unread">Setup unread</string>
+    <string name="setup_read">Setup read</string>
+
+    <string name="placed_at_top">Placed at top</string>
+    <string name="cancel_top">cancel top</string>
 </resources>

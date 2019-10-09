@@ -20,6 +20,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.text.TextUtils;
 
+import com.hyphenate.chat.EMConversation;
 import com.hyphenate.chat.EMConversation.EMConversationType;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMTextMessageBody;
@@ -29,6 +30,8 @@ import com.hyphenate.easeui.domain.EaseUser;
 import com.hyphenate.util.EMLog;
 import com.hyphenate.util.HanziToPinyin;
 import com.hyphenate.util.HanziToPinyin.Token;
+
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -218,6 +221,44 @@ public class EaseCommonUtils {
      */
     public static boolean isSilentMessage(EMMessage message){
         return message.getBooleanAttribute("em_ignore_notification", false);
+    }
+
+    /**
+     * 获取会话ext里置顶标识
+     * @param conversation
+     * @return
+     */
+    public static int getExtTop(EMConversation conversation){
+        try {
+            String extField = conversation.getExtField();
+            if (extField.contains("top")) {
+                JSONObject extJson = new JSONObject(extField);
+                int top = extJson.getInt("top");
+                return top;
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    /**
+     * 获取会话ext里保存的置顶时间戳
+     * @param conversation
+     * @return
+     */
+    public static long getExtTopTime(EMConversation conversation){
+        try {
+            String extField = conversation.getExtField();
+            if (extField.contains("topTime")) {
+                JSONObject extJson = new JSONObject(extField);
+                long topTime = extJson.getLong("topTime");
+                return topTime;
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return 0;
     }
 
 }

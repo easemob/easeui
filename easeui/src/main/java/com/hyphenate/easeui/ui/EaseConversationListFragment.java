@@ -14,8 +14,6 @@ import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -26,6 +24,8 @@ import com.hyphenate.EMError;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMConversation;
 import com.hyphenate.easeui.R;
+import com.hyphenate.easeui.adapter.EaseConversationAdapter;
+import com.hyphenate.easeui.utils.EaseCommonUtils;
 import com.hyphenate.easeui.widget.EaseConversationList;
 
 import java.util.ArrayList;
@@ -38,8 +38,8 @@ import java.util.Map;
  * conversation list fragment
  *
  */
-public class EaseConversationListFragment extends EaseBaseFragment{
-	private final static int MSG_REFRESH = 2;
+public class EaseConversationListFragment extends EaseBaseFragment implements EaseConversationAdapter.EaseConversationListItemClickListener {
+    private final static int MSG_REFRESH = 2;
     protected EditText query;
     protected ImageButton clearSearch;
     protected boolean hidden;
@@ -48,16 +48,21 @@ public class EaseConversationListFragment extends EaseBaseFragment{
     protected FrameLayout errorItemContainer;
 
     protected boolean isConflict;
-    
+
+    protected static final int DEFAULT = 0;
+    protected static final int TOP_ITEM = 1;
+    protected static final int UNREAD_ITEM = 2;
+    protected static final int REMOVE_ITEM = 3;
+
     protected EMConversationListener convListener = new EMConversationListener(){
 
-		@Override
-		public void onCoversationUpdate() {
-			refresh();
-		}
-    	
+        @Override
+        public void onCoversationUpdate() {
+            refresh();
+        }
+
     };
-    
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.ease_fragment_conversation_list, container, false);
@@ -79,25 +84,25 @@ public class EaseConversationListFragment extends EaseBaseFragment{
         clearSearch = (ImageButton) getView().findViewById(R.id.search_clear);
         errorItemContainer = (FrameLayout) getView().findViewById(R.id.fl_error_item);
     }
-    
+
     @Override
     protected void setUpView() {
         conversationList.addAll(loadConversationList());
-        conversationListView.init(conversationList);
-        
-        if(listItemClickListener != null){
-            conversationListView.setOnItemClickListener(new OnItemClickListener() {
+        conversationListView.init(conversationList, this);
 
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    EMConversation conversation = conversationListView.getItem(position);
-                    listItemClickListener.onListItemClicked(conversation);
-                }
-            });
-        }
-        
+//        if(listItemClickListener != null){
+//            conversationListView.setOnItemClickListener(new OnItemClickListener() {
+//
+//                @Override
+//                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                    EMConversation conversation = conversationListView.getItem(position);
+//                    listItemClickListener.onListItemClicked(conversation);
+//                }
+//            });
+//        }
+
         EMClient.getInstance().addConnectionListener(connectionListener);
-        
+
         query.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 conversationListView.filter(s);
@@ -121,9 +126,9 @@ public class EaseConversationListFragment extends EaseBaseFragment{
                 hideSoftKeyboard();
             }
         });
-        
+
         conversationListView.setOnTouchListener(new OnTouchListener() {
-            
+
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 hideSoftKeyboard();
@@ -131,83 +136,85 @@ public class EaseConversationListFragment extends EaseBaseFragment{
             }
         });
     }
-    
-    
+
+
     protected EMConnectionListener connectionListener = new EMConnectionListener() {
-        
+
         @Override
         public void onDisconnected(int error) {
             if (error == EMError.USER_REMOVED || error == EMError.USER_LOGIN_ANOTHER_DEVICE || error == EMError.SERVER_SERVICE_RESTRICTED
                     || error == EMError.USER_KICKED_BY_CHANGE_PASSWORD || error == EMError.USER_KICKED_BY_OTHER_DEVICE) {
                 isConflict = true;
             } else {
-               handler.sendEmptyMessage(0);
+                handler.sendEmptyMessage(0);
             }
         }
-        
+
         @Override
         public void onConnected() {
             handler.sendEmptyMessage(1);
         }
     };
-    private EaseConversationListItemClickListener listItemClickListener;
-    
+//    private EaseConversationListItemClickListener listItemClickListener;
+
     protected Handler handler = new Handler(){
         public void handleMessage(android.os.Message msg) {
             switch (msg.what) {
-            case 0:
-                onConnectionDisconnected();
-                break;
-            case 1:
-                onConnectionConnected();
-                break;
-            
-            case MSG_REFRESH:
-	            {
-	            	conversationList.clear();
-	                conversationList.addAll(loadConversationList());
-	                conversationListView.refresh();
-	                break;
-	            }
-            default:
-                break;
+                case 0:
+                    onConnectionDisconnected();
+                    break;
+                case 1:
+                    onConnectionConnected();
+                    break;
+
+                case MSG_REFRESH:
+                {
+                    conversationList.clear();
+                    conversationList.addAll(loadConversationList());
+                    conversationListView.refresh();
+                    break;
+                }
+                default:
+                    break;
             }
         }
     };
-    
+
     /**
      * connected to server
      */
     protected void onConnectionConnected(){
         errorItemContainer.setVisibility(View.GONE);
     }
-    
+
     /**
      * disconnected with server
      */
     protected void onConnectionDisconnected(){
         errorItemContainer.setVisibility(View.VISIBLE);
     }
-    
+
 
     /**
      * refresh ui
      */
     public void refresh() {
-    	if(!handler.hasMessages(MSG_REFRESH)){
-    		handler.sendEmptyMessage(MSG_REFRESH);
-    	}
+        if(!handler.hasMessages(MSG_REFRESH)){
+            handler.sendEmptyMessage(MSG_REFRESH);
+        }
     }
-    
+
     /**
      * load conversation list
-     * 
+     *
      * @return
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        +    */
+    +    */
     protected List<EMConversation> loadConversationList(){
         // get all conversations
         Map<String, EMConversation> conversations = EMClient.getInstance().chatManager().getAllConversations();
         List<Pair<Long, EMConversation>> sortList = new ArrayList<Pair<Long, EMConversation>>();
+        //置顶会话集合
+        List<Pair<Long, EMConversation>> sortListTop = new ArrayList<Pair<Long, EMConversation>>();
         /**
          * lastMsgTime will change if there is new message during sorting
          * so use synchronized to make sure timestamp of last message won't change.
@@ -215,26 +222,42 @@ public class EaseConversationListFragment extends EaseBaseFragment{
         synchronized (conversations) {
             for (EMConversation conversation : conversations.values()) {
                 if (conversation.getAllMessages().size() != 0) {
-                    sortList.add(new Pair<Long, EMConversation>(conversation.getLastMessage().getMsgTime(), conversation));
+                    //判断会话ext区分置顶会话，置顶会话以会话置顶时间戳排序
+                    if(EaseCommonUtils.getExtTop(conversation) == 1){
+                        sortListTop.add(new Pair<Long, EMConversation>(EaseCommonUtils.getExtTopTime(conversation), conversation));
+                    }else {
+                        sortList.add(new Pair<Long, EMConversation>(conversation.getLastMessage().getMsgTime(), conversation));
+                    }
                 }
             }
         }
         try {
             // Internal is TimSort algorithm, has bug
             sortConversationByLastChatTime(sortList);
+            sortConversationByLastChatTime(sortListTop);
         } catch (Exception e) {
             e.printStackTrace();
         }
         List<EMConversation> list = new ArrayList<EMConversation>();
+
         for (Pair<Long, EMConversation> sortItem : sortList) {
             list.add(sortItem.second);
         }
-        return list;
+
+        List<EMConversation> listTop = new ArrayList<EMConversation>();
+        for (Pair<Long, EMConversation> sortItem : sortListTop) {
+            listTop.add(sortItem.second);
+        }
+        List<EMConversation> allList = new ArrayList<EMConversation>();
+        allList.addAll(listTop);
+        allList.addAll(list);
+
+        return allList;
     }
 
     /**
      * sort conversations according time stamp of last message
-     * 
+     *
      * @param conversationList
      */
     private void sortConversationByLastChatTime(List<Pair<Long, EMConversation>> conversationList) {
@@ -253,8 +276,8 @@ public class EaseConversationListFragment extends EaseBaseFragment{
 
         });
     }
-    
-   protected void hideSoftKeyboard() {
+
+    protected void hideSoftKeyboard() {
         if (getActivity().getWindow().getAttributes().softInputMode != WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN) {
             if (getActivity().getCurrentFocus() != null)
                 inputMethodManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(),
@@ -278,13 +301,13 @@ public class EaseConversationListFragment extends EaseBaseFragment{
             refresh();
         }
     }
-    
+
     @Override
     public void onDestroy() {
         super.onDestroy();
         EMClient.getInstance().removeConnectionListener(connectionListener);
     }
-    
+
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -292,21 +315,26 @@ public class EaseConversationListFragment extends EaseBaseFragment{
             outState.putBoolean("isConflict", true);
         }
     }
-    
-    public interface EaseConversationListItemClickListener {
-        /**
-         * click event for conversation list
-         * @param conversation -- clicked item
-         */
-        void onListItemClicked(EMConversation conversation);
-    }
-    
+
+//    public interface EaseConversationListItemClickListener {
+//        /**
+//         * click event for conversation list
+//         * @param conversation -- clicked item
+//         */
+//        void onListItemClicked(EMConversation conversation);
+//    }
+
     /**
      * set conversation list item click listener
      * @param listItemClickListener
      */
-    public void setConversationListItemClickListener(EaseConversationListItemClickListener listItemClickListener){
-        this.listItemClickListener = listItemClickListener;
-    }
+//    public void setConversationListItemClickListener(EaseConversationListItemClickListener listItemClickListener){
+//        this.listItemClickListener = listItemClickListener;
+//    }
 
+
+    @Override
+    public void viewClick(int type, EMConversation conversation, View rootView) {
+
+    }
 }
