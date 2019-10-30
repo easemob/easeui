@@ -9,6 +9,10 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.hyphenate.EMValueCallBack;
+import com.hyphenate.chat.EMClient;
+import com.hyphenate.chat.EMCursorResult;
+import com.hyphenate.chat.EMGroupReadAck;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.model.EaseDingMessageHelper;
@@ -57,18 +61,15 @@ public class EaseDingAckUserListActivity extends EaseBaseActivity {
         userAdapter = new AckUserAdapter(this, userList);
 
         ackUserListView.setAdapter(userAdapter);
+
+        // fetch from server
+        String msgId = msg.getMsgId();
+        EaseDingMessageHelper.get().fetchGroupReadAck(msg);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-
-        List<String> list = EaseDingMessageHelper.get().getAckUsers(msg);
-        userList.clear();
-        if (list != null) {
-            userList.addAll(list);
-        }
-        userAdapter.notifyDataSetChanged();
 
         // Set ack-user change listener.
         EaseDingMessageHelper.get().setUserUpdateListener(msg, userUpdateListener);

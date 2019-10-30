@@ -6,10 +6,14 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.LruCache;
 
+import com.hyphenate.EMValueCallBack;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMCmdMessageBody;
 import com.hyphenate.chat.EMConversation;
+import com.hyphenate.chat.EMCursorResult;
+import com.hyphenate.chat.EMGroupReadAck;
 import com.hyphenate.chat.EMMessage;
+import com.hyphenate.chat.EMTextMessageBody;
 import com.hyphenate.exceptions.HyphenateException;
 import com.hyphenate.util.EMLog;
 
@@ -96,12 +100,7 @@ public class EaseDingMessageHelper {
      * @return
      */
     public boolean isDingMessage(EMMessage message) {
-        try {
-            return message.getBooleanAttribute(KEY_DING);
-        } catch (HyphenateException e) {
-        }
-
-        return false;
+         return message.isNeedGroupAck();
     }
 
     /**
@@ -109,7 +108,7 @@ public class EaseDingMessageHelper {
      */
     public EMMessage createDingMessage(String to, String content) {
         EMMessage message = EMMessage.createTxtSendMessage(content, to);
-        message.setAttribute(KEY_DING, true);
+        message.setIsNeedGroupAck(true);
         return message;
     }
 
@@ -128,39 +127,59 @@ public class EaseDingMessageHelper {
         }
 
         try {
-            // cmd-type message will not store in native database.
-            EMMessage msg = EMMessage.createSendMessage(EMMessage.Type.CMD);
-            msg.setTo(message.getFrom());
-            msg.setAttribute(KEY_CONVERSATION_ID, message.getTo());
-            msg.setAttribute(KEY_DING_ACK, true);
-            msg.addBody(new EMCmdMessageBody(message.getMsgId()));
-            EMClient.getInstance().chatManager().sendMessage(msg);
-            message.setAcked(true);
-            EMLog.i(TAG, "Send the group ack cmd-type message.");
+            if (message.isNeedGroupAck() && !message.isUnread()) {
+                String to = message.conversationId(); // do not user getFrom() here
+                String msgId = message.getMsgId();
+                EMClient.getInstance().chatManager().ackGroupMessageRead(to, msgId, ((EMTextMessageBody)message.getBody()).getMessage());
+                message.setUnread(false);
+                EMLog.i(TAG, "Send the group ack cmd-type message.");
+            }
         } catch (Exception e) {
+            EMLog.d(TAG, e.getMessage());
         }
+    }
+
+    public void fetchGroupReadAck(EMMessage msg) {
+        // fetch from server
+        String msgId = msg.getMsgId();
+        EMClient.getInstance().chatManager().asyncFetchGroupReadAcks(msgId, 20, "", new EMValueCallBack<EMCursorResult<EMGroupReadAck>>() {
+            @Override
+            public void onSuccess(EMCursorResult<EMGroupReadAck> value) {
+                EMLog.d(TAG, "asyncFetchGroupReadAcks success");
+
+                if (value.getData() != null && value.getData().size() > 0) {
+                    List<EMGroupReadAck> acks = value.getData();
+
+                    for (EMGroupReadAck c : acks) {
+                        handleGroupReadAck(c);
+                    }
+
+                } else {
+                    EMLog.d(TAG, "no data");
+                }
+            }
+
+            @Override
+            public void onError(int error, String errorMsg) {
+                EMLog.d(TAG, "asyncFetchGroupReadAcks fail: " + error);
+            }
+        });
     }
 
     /**
      * To handle ding-type ack msg.
      * Need store native for reload when app restart.
      *
-     * @param message The ding-type message.
+     * @param ack The ding-type message.
      */
-    public void handleAckMessage(EMMessage message) {
-        if (message == null) {
-            return;
-        }
+    public void handleGroupReadAck(EMGroupReadAck ack) {
+        if (ack == null) return;;
 
-        EMLog.i(TAG, "To handle ding-type ack msg: " + message.toString());
+        EMLog.d(TAG, "handle group read ack: " + ack.getMsgId());
 
-        if (!isDingAckMessage(message)) {
-            return;
-        }
-
-        String conversationId = message.getStringAttribute(KEY_CONVERSATION_ID, "");
-        String msgId = ((EMCmdMessageBody) message.getBody()).action();
-        String username = message.getFrom();
+        String username = ack.getFrom();
+        String msgId = ack.getMsgId();
+        String conversationId = EMClient.getInstance().chatManager().getMessage(msgId).conversationId();
 
         // Get a message map.
         LruCache<String, List<String>> msgCache = dataCache.get(conversationId);
@@ -193,55 +212,6 @@ public class EaseDingMessageHelper {
         prefsEditor.putStringSet(key, set).commit();
     }
 
-    /**
-     * Get the acked users by the ding-type message.
-     *
-     * @param message
-     * @return Nullable, If this message is not a ding-type msg or does not exist this msg's ack-user data,
-     * this will return null.
-     */
-    @Nullable
-    public List<String> getAckUsers(EMMessage message) {
-        if (!validateMessage(message)) {
-            return null;
-        }
-
-        String conversationId = message.getTo();
-        String msgId = message.getMsgId();
-
-        // Load from memory first.
-        LruCache<String, List<String>> msgCache = dataCache.get(conversationId);
-        if (msgCache == null) {
-            msgCache = createCache();
-            dataCache.put(conversationId, msgCache);
-        }
-
-        List<String> userList = msgCache.get(msgId);
-        if (userList != null) {// return memory data directly.
-            return userList;
-        }
-
-        // Need to load from preferences.
-        String key = generateKey(conversationId, msgId);
-
-        // No data for this message in preferences.
-        if (!dataPrefs.contains(key)) {
-            return null;
-        }
-
-        Set<String> set = dataPrefs.getStringSet(key, null);
-        if (set == null) {
-            return null;
-        }
-
-        userList = new ArrayList<>();
-        userList.addAll(set);
-
-        // Put this in memory.
-        msgCache.put(msgId, userList);
-
-        return userList;
-    }
 
     /**
      * Delete the native stored acked users if this message deleted.
@@ -349,14 +319,6 @@ public class EaseDingMessageHelper {
         }
 
         return true;
-    }
-
-    private boolean isDingAckMessage(EMMessage message) {
-        try {
-            return message.getBooleanAttribute(KEY_DING_ACK);
-        } catch (HyphenateException e) {
-        }
-        return false;
     }
 
     private LruCache<String, List<String>> createCache() {

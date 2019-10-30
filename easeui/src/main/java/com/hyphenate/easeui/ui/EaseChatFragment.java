@@ -35,6 +35,7 @@ import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMCmdMessageBody;
 import com.hyphenate.chat.EMConversation;
 import com.hyphenate.chat.EMGroup;
+import com.hyphenate.chat.EMGroupReadAck;
 import com.hyphenate.chat.EMImageMessageBody;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMMessage.ChatType;
@@ -762,6 +763,16 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         if(isMessageListInited) {
             messageList.refresh();
         }
+    }
+
+    @Override
+    public void onGroupMessageRead(List<EMGroupReadAck> groupReadAcks) {
+
+    }
+
+    @Override
+    public void onReadAckForGroupMessageUpdated() {
+
     }
 
     /**
