@@ -84,8 +84,7 @@ public class EaseChatRowText extends EaseChatRow{
         // Show "1 Read" if this msg is a ding-type msg.
         if (EaseDingMessageHelper.get().isDingMessage(message) && ackedView != null) {
             ackedView.setVisibility(VISIBLE);
-            List<String> userList = EaseDingMessageHelper.get().getAckUsers(message);
-            int count = userList == null ? 0 : userList.size();
+            int count = message.groupAckCount();
             ackedView.setText(String.format(getContext().getString(R.string.group_ack_read_count), count));
         }
 

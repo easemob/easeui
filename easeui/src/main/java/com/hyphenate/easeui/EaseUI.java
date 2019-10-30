@@ -8,6 +8,7 @@ import android.util.Log;
 
 import com.hyphenate.EMMessageListener;
 import com.hyphenate.chat.EMClient;
+import com.hyphenate.chat.EMGroupReadAck;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMOptions;
 import com.hyphenate.easeui.domain.EaseAvatarOptions;
@@ -171,9 +172,13 @@ public final class EaseUI {
             }
             @Override
             public void onCmdMessageReceived(List<EMMessage> messages) {
-                for (EMMessage message : messages) {
-                    // To handle group-ack msg.
-                    EaseDingMessageHelper.get().handleAckMessage(message);
+
+            }
+
+            @Override
+            public void onGroupMessageRead(List<EMGroupReadAck> groupReadAcks) {
+                for (EMGroupReadAck ack: groupReadAcks) {
+                    EaseDingMessageHelper.get().handleGroupReadAck(ack);
                 }
             }
         });
