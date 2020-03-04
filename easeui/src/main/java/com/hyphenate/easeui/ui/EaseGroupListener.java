@@ -57,6 +57,21 @@ public abstract class EaseGroupListener implements EMGroupChangeListener{
     }
 
     @Override
+    public void onWhiteListAdded(String groupId, List<String> whitelist) {
+
+    }
+
+    @Override
+    public void onWhiteListRemoved(String groupId, List<String> whitelist) {
+
+    }
+
+    @Override
+    public void onAllMemberMuteStateChanged(String groupId, boolean isMuted) {
+
+    }
+
+    @Override
     public void onAdminAdded(String groupId, String administrator) {
 
     }
