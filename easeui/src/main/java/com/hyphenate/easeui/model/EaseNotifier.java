@@ -11,6 +11,7 @@
  */
 package com.hyphenate.easeui.model;
 
+import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -25,6 +26,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Vibrator;
 import android.support.v4.app.NotificationCompat;
+import android.text.TextUtils;
 
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.easeui.EaseUI;
@@ -177,6 +179,31 @@ public class EaseNotifier {
     }
 
     /**
+     * 适用于android10以后，从后台启动 Activity 的限制
+     * @param fullScreenIntent
+     * @param title
+     * @param content
+     */
+    public synchronized void notify(Intent fullScreenIntent, String title, String content) {
+        if (!EasyUtils.isAppRunningForeground(appContext)) {
+            try {
+                NotificationCompat.Builder builder = generateBaseFullIntentBuilder(fullScreenIntent, content);
+                if(!TextUtils.isEmpty(title)) {
+                    builder.setContentTitle(title);
+                }
+                Notification notification = builder.build();
+                notificationManager.notify(NOTIFY_ID, notification);
+
+                if (Build.VERSION.SDK_INT < 26) {
+                    vibrateAndPlayTone(null);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
      * send it to notification bar
      * This can be override by subclass to provide customer implementation
      *
@@ -250,6 +277,29 @@ public class EaseNotifier {
                 .setWhen(System.currentTimeMillis())
                 .setAutoCancel(true)
                 .setContentIntent(pendingIntent);
+    }
+
+    /**
+     * Generate a base Notification#Builder to replace of start background activity.
+     * @param fullScreenIntent
+     * @param content
+     * @return
+     */
+    private NotificationCompat.Builder generateBaseFullIntentBuilder(Intent fullScreenIntent, String content) {
+        PackageManager pm = appContext.getPackageManager();
+        String title = pm.getApplicationLabel(appContext.getApplicationInfo()).toString();
+        PendingIntent fullScreenPendingIntent = PendingIntent.getActivity(appContext, NOTIFY_ID,
+                fullScreenIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        return new NotificationCompat.Builder(appContext, CHANNEL_ID)
+                .setSmallIcon(appContext.getApplicationInfo().icon)
+                .setContentTitle(title)
+                .setTicker(content)
+                .setContentText(content)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setCategory(NotificationCompat.CATEGORY_CALL)
+                .setWhen(System.currentTimeMillis())
+                .setAutoCancel(true)
+                .setFullScreenIntent(fullScreenPendingIntent, true);
     }
 
     /**
