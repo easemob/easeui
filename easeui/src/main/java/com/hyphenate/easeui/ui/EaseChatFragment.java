@@ -51,6 +51,7 @@ import com.hyphenate.easeui.model.EaseCompat;
 import com.hyphenate.easeui.model.EaseDingMessageHelper;
 import com.hyphenate.easeui.utils.EaseCommonUtils;
 import com.hyphenate.easeui.utils.EaseUserUtils;
+import com.hyphenate.easeui.utils.EaseVersionUtils;
 import com.hyphenate.easeui.widget.EaseAlertDialog;
 import com.hyphenate.easeui.widget.EaseAlertDialog.AlertDialogUser;
 import com.hyphenate.easeui.widget.EaseChatExtendMenu;
@@ -571,7 +572,11 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 if (data != null) {
                     Uri selectedImage = data.getData();
                     if (selectedImage != null) {
-                        sendPicByUri(selectedImage);
+                        if(EaseVersionUtils.isTargetQ()) {
+                            sendImageMessage(selectedImage);
+                        }else {
+                            sendPicByUri(selectedImage);
+                        }
                     }
                 }
             } else if (requestCode == REQUEST_CODE_MAP) { // location
@@ -884,6 +889,11 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         sendMessage(message);
     }
 
+    protected void sendImageMessage(Uri imageUri) {
+        EMMessage message = EMMessage.createImageSendMessage(imageUri, false, toChatUsername);
+        sendMessage(message);
+    }
+
     protected void sendLocationMessage(double latitude, double longitude, String locationAddress) {
         EMMessage message = EMMessage.createLocationSendMessage(latitude, longitude, locationAddress, toChatUsername);
         sendMessage(message);
@@ -894,11 +904,21 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         sendMessage(message);
     }
 
+    protected void sendVideoMessage(Uri videoUri, String thumbPath, int videoLength) {
+        EMMessage message = EMMessage.createVideoSendMessage(videoUri, thumbPath, videoLength, toChatUsername);
+        sendMessage(message);
+    }
+
     protected void sendFileMessage(String filePath) {
         EMMessage message = EMMessage.createFileSendMessage(filePath, toChatUsername);
         sendMessage(message);
     }
-    
+
+    protected void sendFileMessage(Uri fileUri) {
+        EMMessage message = EMMessage.createFileSendMessage(fileUri, toChatUsername);
+        sendMessage(message);
+    }
+
     
     protected void sendMessage(EMMessage message){
         if (message == null) {
@@ -993,17 +1013,21 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
      * @param uri
      */
     protected void sendFileByUri(Uri uri){
-        String filePath = EaseCompat.getPath(getActivity(), uri);
-        EMLog.i(TAG, "sendFileByUri: " + filePath);
-        if (filePath == null) {
-            return;
+        if(EaseVersionUtils.isTargetQ()) {
+            sendFileMessage(uri);
+        }else {
+            String filePath = EaseCompat.getPath(getActivity(), uri);
+            EMLog.i(TAG, "sendFileByUri: " + filePath);
+            if (filePath == null) {
+                return;
+            }
+            File file = new File(filePath);
+            if (!file.exists()) {
+                Toast.makeText(getActivity(), R.string.File_does_not_exist, Toast.LENGTH_SHORT).show();
+                return;
+            }
+            sendFileMessage(filePath);
         }
-        File file = new File(filePath);
-        if (!file.exists()) {
-            Toast.makeText(getActivity(), R.string.File_does_not_exist, Toast.LENGTH_SHORT).show();
-            return;
-        }
-        sendFileMessage(filePath);
     }
 
     /**

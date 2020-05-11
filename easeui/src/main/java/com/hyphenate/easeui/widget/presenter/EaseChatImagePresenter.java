@@ -3,6 +3,7 @@ package com.hyphenate.easeui.widget.presenter;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.text.TextUtils;
 import android.widget.BaseAdapter;
 
 import com.hyphenate.EMCallBack;
@@ -74,13 +75,16 @@ public class EaseChatImagePresenter extends EaseChatFilePresenter {
         if (file.exists()) {
             Uri uri = Uri.fromFile(file);
             intent.putExtra("uri", uri);
-        } else {
+        } else if(!TextUtils.isEmpty(imgBody.getUriString())) {
+            Uri uri = Uri.parse(imgBody.getUriString());
+            intent.putExtra("uri", uri);
+        } else{
             // The local full size pic does not exist yet.
             // ShowBigImage needs to download it from the server
             // first
             String msgId = message.getMsgId();
             intent.putExtra("messageId", msgId);
-            intent.putExtra("localUrl", imgBody.getLocalUrl());
+            intent.putExtra("filename", imgBody.getFileName());
         }
         if (message != null && message.direct() == EMMessage.Direct.RECEIVE && !message.isAcked()
                 && message.getChatType() == EMMessage.ChatType.Chat) {

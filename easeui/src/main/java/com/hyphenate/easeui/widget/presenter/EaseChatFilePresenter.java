@@ -3,6 +3,8 @@ package com.hyphenate.easeui.widget.presenter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
+import android.text.TextUtils;
 import android.widget.BaseAdapter;
 
 import com.hyphenate.chat.EMClient;
@@ -10,9 +12,11 @@ import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMNormalFileMessageBody;
 import com.hyphenate.easeui.model.EaseCompat;
 import com.hyphenate.easeui.ui.EaseShowNormalFileActivity;
+import com.hyphenate.easeui.utils.EaseImageUtils;
 import com.hyphenate.easeui.widget.chatrow.EaseChatRow;
 import com.hyphenate.easeui.widget.chatrow.EaseChatRowFile;
 import com.hyphenate.exceptions.HyphenateException;
+import com.hyphenate.util.UriUtils;
 
 import java.io.File;
 
@@ -32,9 +36,12 @@ public class EaseChatFilePresenter extends EaseChatRowPresenter {
         EMNormalFileMessageBody fileMessageBody = (EMNormalFileMessageBody) message.getBody();
         String filePath = fileMessageBody.getLocalUrl();
         File file = new File(filePath);
+        String uriString = fileMessageBody.getUriString();
         if (file.exists()) {
             // open files if it exist
             EaseCompat.openFile(file, (Activity) getContext());
+        } else if(!TextUtils.isEmpty(uriString)){
+            EaseCompat.openFile(Uri.parse(uriString), UriUtils.getFileMimeType(getContext(), Uri.parse(uriString)), (Activity) getContext());
         } else {
             // download the file
             getContext().startActivity(new Intent(getContext(), EaseShowNormalFileActivity.class).putExtra("msg", message));
