@@ -14,6 +14,7 @@
 package com.hyphenate.easeui.ui;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,6 +23,7 @@ import com.bumptech.glide.Glide;
 import com.hyphenate.EMCallBack;
 import com.hyphenate.EMError;
 import com.hyphenate.chat.EMClient;
+import com.hyphenate.chat.EMImageMessageBody;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.model.EaseImageCache;
@@ -104,44 +106,45 @@ public class EaseShowBigImageActivity extends EaseBaseActivity {
 		pd.setCanceledOnTouchOutside(false);
 		pd.setMessage(str1);
 		pd.show();
-		final String tempPath = EaseImageUtils.getImagePathByFileName(filename);
-        final String tempUri = UriUtils.getLocalUriFromString(tempPath).toString();
+        final EMMessage msg = EMClient.getInstance().chatManager().getMessage(msgId);
         final EMCallBack callback = new EMCallBack() {
 			public void onSuccess() {
 			    EMLog.e(TAG, "onSuccess" );
 				runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
+					    if(!isFinishing() && !isDestroyed()) {
+                            DisplayMetrics metrics = new DisplayMetrics();
+                            getWindowManager().getDefaultDisplay().getMetrics(metrics);
+                            int screenWidth = metrics.widthPixels;
+                            int screenHeight = metrics.heightPixels;
 
-                        DisplayMetrics metrics = new DisplayMetrics();
-						getWindowManager().getDefaultDisplay().getMetrics(metrics);
-						int screenWidth = metrics.widthPixels;
-						int screenHeight = metrics.heightPixels;
-
-						bitmap = ImageUtils.decodeScaleImage(tempPath, screenWidth, screenHeight);
-						if (bitmap == null) {
-							image.setImageResource(default_res);
-						} else {
-							image.setImageBitmap(bitmap);
-							EaseImageCache.getInstance().put(tempUri, bitmap);
-							isDownloaded = true;
-						}
-						if (isFinishing() || isDestroyed()) {
-						    return;
-						}
-						if (pd != null) {
-							pd.dismiss();
-						}
+                            Uri localUrlUri = ((EMImageMessageBody) msg.getBody()).getLocalUrlUri();
+                            try {
+                                bitmap = ImageUtils.decodeScaleImage(EaseShowBigImageActivity.this, localUrlUri, screenWidth, screenHeight);
+                                if (bitmap == null) {
+                                    image.setImageResource(default_res);
+                                } else {
+                                    image.setImageBitmap(bitmap);
+                                    EaseImageCache.getInstance().put(localUrlUri.toString(), bitmap);
+                                    isDownloaded = true;
+                                }
+                                if (isFinishing() || isDestroyed()) {
+                                    return;
+                                }
+                                if (pd != null) {
+                                    pd.dismiss();
+                                }
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+					    }
 					}
 				});
 			}
 
-			public void onError(final int error, String msg) {
-				EMLog.e(TAG, "offline file transfer error:" + msg);
-				File file = new File(tempPath);
-				if (file.exists()&&file.isFile()) {
-					file.delete();
-				}
+			public void onError(final int error, String message) {
+				EMLog.e(TAG, "offline file transfer error:" + message);
 				runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
@@ -172,10 +175,9 @@ public class EaseShowBigImageActivity extends EaseBaseActivity {
 			}
 		};
 		
-		EMMessage msg = EMClient.getInstance().chatManager().getMessage(msgId);
+
 		msg.setMessageStatusCallback(callback);
 
-		EMLog.e(TAG, "downloadAttachement");
 		EMClient.getInstance().chatManager().downloadAttachment(msg);
 	}
 

@@ -73,15 +73,7 @@ public class EaseChatImagePresenter extends EaseChatFilePresenter {
         }
         Intent intent = new Intent(getContext(), EaseShowBigImageActivity.class);
         Uri imgUri = imgBody.getLocalUrlUri();
-        String filePath = UriUtils.getFilePath(imgUri);
-        File file = null;
-        if(!TextUtils.isEmpty(filePath)) {
-            file = new File(filePath);
-        }
-        if (file != null && file.exists()) {
-            Uri uri = Uri.fromFile(file);
-            intent.putExtra("uri", uri);
-        } else if(UriUtils.isFileExistByUri(getContext(), imgUri)) {
+        if(UriUtils.isFileExistByUri(getContext(), imgUri)) {
             intent.putExtra("uri", imgUri);
         } else{
             // The local full size pic does not exist yet.

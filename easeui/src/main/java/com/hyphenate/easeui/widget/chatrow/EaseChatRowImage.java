@@ -117,10 +117,6 @@ public class EaseChatRowImage extends EaseChatRowFile{
             percentageView.setVisibility(View.GONE);
             imageView.setImageResource(R.drawable.ease_default_image);
             Uri thumbPath = imgBody.thumbnailLocalPathUri();
-            if (!UriUtils.isFileExistByUri(context, thumbPath)) {
-                // to make it compatible with thumbnail received in previous version
-                thumbPath = UriUtils.getLocalUriFromString(EaseImageUtils.getThumbnailImagePath(UriUtils.getFileNameByUri(getContext(), imgBody.getLocalUrlUri())));
-            }
             showImageView(thumbPath, imgBody.getLocalUrlUri(), message);
         }
     }
@@ -144,20 +140,10 @@ public class EaseChatRowImage extends EaseChatRowFile{
                 @Override
                 protected Bitmap doInBackground(Object... args) {
                     if (UriUtils.isFileExistByUri(context, thumbernailPath)) {
-                        String filePath = UriUtils.getFilePath(thumbernailPath);
-                        EMLog.d(EaseChatRow.TAG, "thumbUri = "+thumbernailPath + " filePath = "+filePath);
-                        if(!TextUtils.isEmpty(filePath) && new File(filePath).exists()) {
-                            return EaseImageUtils.decodeScaleImage(filePath, 160, 160);
-                        }
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                            try {
-                                return EaseImageUtils.decodeScaleImage(context, thumbernailPath, 160, 160);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                    else {
+                        return getCacheBitmap(thumbernailPath);
+                    } else if(UriUtils.isFileExistByUri(context, localFullSizePath)) {
+                        return getCacheBitmap(localFullSizePath);
+                    } else {
                         if (message.direct() == EMMessage.Direct.SEND) {
                             if (UriUtils.isFileExistByUri(context, localFullSizePath)) {
                                 String filePath = UriUtils.getFilePath(localFullSizePath);
@@ -177,7 +163,6 @@ public class EaseChatRowImage extends EaseChatRowFile{
                         }
                         return null;
                     }
-                    return null;
                 }
 
                 protected void onPostExecute(Bitmap image) {
@@ -187,8 +172,25 @@ public class EaseChatRowImage extends EaseChatRowFile{
                         EaseImageCache.getInstance().put(thumbernailPath.toString(), image);
                     }
                 }
+
+                private Bitmap getCacheBitmap(Uri fileUri) {
+                    String filePath = UriUtils.getFilePath(fileUri);
+                    EMLog.d(EaseChatRow.TAG, "fileUri = "+fileUri);
+                    if(!TextUtils.isEmpty(filePath) && new File(filePath).exists()) {
+                        return EaseImageUtils.decodeScaleImage(filePath, 160, 160);
+                    }
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        try {
+                            return EaseImageUtils.decodeScaleImage(context, fileUri, 160, 160);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    return null;
+                }
             }.execute();
         }
     }
+
 
 }
