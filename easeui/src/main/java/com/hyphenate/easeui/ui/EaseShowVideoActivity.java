@@ -93,6 +93,7 @@ public class EaseShowVideoActivity extends EaseBaseActivity{
 	 * download video file
 	 */
 	private void downloadVideo(EMMessage message) {
+		loadingLayout.setVisibility(View.VISIBLE);
 		message.setMessageStatusCallback(new EMCallBack() {
 			@Override
 			public void onSuccess() {
