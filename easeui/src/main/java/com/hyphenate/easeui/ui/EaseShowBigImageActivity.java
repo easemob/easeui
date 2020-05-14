@@ -31,6 +31,7 @@ import com.hyphenate.easeui.widget.photoview.EasePhotoView;
 import com.hyphenate.util.EMLog;
 import com.hyphenate.util.ImageUtils;
 import com.hyphenate.util.PathUtil;
+import com.hyphenate.util.UriUtils;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
@@ -73,29 +74,8 @@ public class EaseShowBigImageActivity extends EaseBaseActivity {
 		EMLog.d(TAG, "show big msgId:" + msgId );
 
 		//show the image if it exist in local path
-		if (uri != null) {
-			if(new File(uri.getPath()).exists()) {
-				EMLog.d(TAG, "showbigimage file exists. directly show it");
-				DisplayMetrics metrics = new DisplayMetrics();
-				getWindowManager().getDefaultDisplay().getMetrics(metrics);
-				// int screenWidth = metrics.widthPixels;
-				// int screenHeight =metrics.heightPixels;
-				bitmap = EaseImageCache.getInstance().get(uri.getPath());
-				if (bitmap == null) {
-					EaseLoadLocalBigImgTask task = new EaseLoadLocalBigImgTask(this, uri.getPath(), image, loadLocalPb, ImageUtils.SCALE_IMAGE_WIDTH,
-							ImageUtils.SCALE_IMAGE_HEIGHT);
-					if (android.os.Build.VERSION.SDK_INT > 10) {
-						task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-					} else {
-						task.execute();
-					}
-				} else {
-					image.setImageBitmap(bitmap);
-				}
-			}else {
-				Glide.with(this).load(uri).into(image);
-			}
-
+		if (UriUtils.isFileExistByUri(this, uri)) {
+            Glide.with(this).load(uri).into(image);
 		} else if(msgId != null) {
 		    downloadImage(msgId);
 		}else {
@@ -125,7 +105,8 @@ public class EaseShowBigImageActivity extends EaseBaseActivity {
 		pd.setMessage(str1);
 		pd.show();
 		final String tempPath = EaseImageUtils.getImagePathByFileName(filename);
-		final EMCallBack callback = new EMCallBack() {
+        final String tempUri = UriUtils.getLocalUriFromString(tempPath).toString();
+        final EMCallBack callback = new EMCallBack() {
 			public void onSuccess() {
 			    EMLog.e(TAG, "onSuccess" );
 				runOnUiThread(new Runnable() {
@@ -142,7 +123,7 @@ public class EaseShowBigImageActivity extends EaseBaseActivity {
 							image.setImageResource(default_res);
 						} else {
 							image.setImageBitmap(bitmap);
-							EaseImageCache.getInstance().put(tempPath, bitmap);
+							EaseImageCache.getInstance().put(tempUri, bitmap);
 							isDownloaded = true;
 						}
 						if (isFinishing() || isDestroyed()) {

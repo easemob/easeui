@@ -41,5 +41,11 @@ public class EaseImageUtils extends com.hyphenate.util.ImageUtils{
         EMLog.d("msg", "thum image path:" + path);
         return path;
     }
-	
+
+	public static String getThumbnailImagePathByName(String filename) {
+		String path =PathUtil.getInstance().getImagePath()+"/"+ "th"+filename;
+        EMLog.d("msg", "thum image dgdfg path:" + path);
+        return path;
+    }
+
 }

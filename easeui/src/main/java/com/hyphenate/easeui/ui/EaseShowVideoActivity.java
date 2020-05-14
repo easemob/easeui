@@ -20,6 +20,7 @@ import com.hyphenate.chat.EMVideoMessageBody;
 import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.model.EaseCompat;
 import com.hyphenate.util.EMLog;
+import com.hyphenate.util.UriUtils;
 
 import java.io.File;
 
@@ -32,7 +33,7 @@ public class EaseShowVideoActivity extends EaseBaseActivity{
 	
 	private RelativeLayout loadingLayout;
 	private ProgressBar progressBar;
-	private String localFilePath;
+	private Uri localFilePath;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -52,13 +53,15 @@ public class EaseShowVideoActivity extends EaseBaseActivity{
 		}
 		EMVideoMessageBody messageBody = (EMVideoMessageBody)message.getBody();
 
-		localFilePath = messageBody.getLocalUrl();
-		String videoUri = messageBody.getUriString();
+		localFilePath = messageBody.getLocalUrlUri();
+		EMLog.d(TAG, "localFilePath = "+localFilePath);
+		EMLog.d(TAG, "local filename = "+messageBody.getFileName());
 
-		if (localFilePath != null && new File(localFilePath).exists()) {
+		String filePath = UriUtils.getFilePath(localFilePath);
+		if (filePath != null && new File(filePath).exists()) {
+			showLocalVideo(filePath);
+		} else if(UriUtils.uriStartWithContent(localFilePath)){
 			showLocalVideo(localFilePath);
-		} else if(!TextUtils.isEmpty(videoUri)){
-			showLocalVideo(Uri.parse(videoUri));
 		} else {
 			EMLog.d(TAG, "download remote video file");
 			downloadVideo(message);
@@ -70,12 +73,16 @@ public class EaseShowVideoActivity extends EaseBaseActivity{
 	 * @param localPath -- local path of the video file
 	 */
 	private void showLocalVideo(String localPath){
+		EMLog.d(TAG,"localPath = "+localPath);
 		showLocalVideo(EaseCompat.getUriForFile(this, new File(localPath)));
 	}
 
 	private void showLocalVideo(Uri videoUri) {
 		Intent intent = new Intent(Intent.ACTION_VIEW);
-		intent.setDataAndType(videoUri, "video/mp4");
+		String mimeType = UriUtils.getMimeType(this, videoUri);
+		EMLog.d(TAG, "video uri = "+videoUri);
+		EMLog.d(TAG, "video mimeType = "+mimeType);
+		intent.setDataAndType(videoUri, mimeType);
 		// 注意添加该flag,用于Android7.0以上设备获取相册文件权限.
 		intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 		startActivity(intent);
@@ -116,10 +123,16 @@ public class EaseShowVideoActivity extends EaseBaseActivity{
 			@Override
 			public void onError(final int error, String msg) {
 				Log.e("###", "offline file transfer error:" + msg);
-				File file = new File(localFilePath);
-				if (file.exists()) {
-					file.delete();
+				String filePath = UriUtils.getFilePath(localFilePath);
+				if(TextUtils.isEmpty(filePath)) {
+				    EaseShowVideoActivity.this.getContentResolver().delete(localFilePath, null, null);
+				}else {
+					File file = new File(filePath);
+					if (file.exists()) {
+						file.delete();
+					}
 				}
+
 				runOnUiThread(new Runnable() {
 					@Override
 					public void run() {

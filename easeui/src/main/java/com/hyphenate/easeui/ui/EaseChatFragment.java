@@ -14,6 +14,7 @@ import android.os.Message;
 import android.provider.MediaStore;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -51,7 +52,7 @@ import com.hyphenate.easeui.model.EaseCompat;
 import com.hyphenate.easeui.model.EaseDingMessageHelper;
 import com.hyphenate.easeui.utils.EaseCommonUtils;
 import com.hyphenate.easeui.utils.EaseUserUtils;
-import com.hyphenate.easeui.utils.EaseVersionUtils;
+import com.hyphenate.util.VersionUtils;
 import com.hyphenate.easeui.widget.EaseAlertDialog;
 import com.hyphenate.easeui.widget.EaseAlertDialog.AlertDialogUser;
 import com.hyphenate.easeui.widget.EaseChatExtendMenu;
@@ -572,7 +573,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 if (data != null) {
                     Uri selectedImage = data.getData();
                     if (selectedImage != null) {
-                        if(EaseVersionUtils.isTargetQ()) {
+                        if(VersionUtils.isTargetQ(getContext())) {
                             sendImageMessage(selectedImage);
                         }else {
                             sendPicByUri(selectedImage);
@@ -900,6 +901,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     }
 
     protected void sendVideoMessage(String videoPath, String thumbPath, int videoLength) {
+        EMLog.d(EMClient.TAG, "sendVideoMessage 1 thumbPath = "+thumbPath);
         EMMessage message = EMMessage.createVideoSendMessage(videoPath, thumbPath, videoLength, toChatUsername);
         sendMessage(message);
     }
@@ -1013,7 +1015,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
      * @param uri
      */
     protected void sendFileByUri(Uri uri){
-        if(EaseVersionUtils.isTargetQ()) {
+        if(VersionUtils.isTargetQ(getContext())) {
             sendFileMessage(uri);
         }else {
             String filePath = EaseCompat.getPath(getActivity(), uri);

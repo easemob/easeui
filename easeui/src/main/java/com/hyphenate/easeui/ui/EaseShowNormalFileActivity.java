@@ -1,6 +1,8 @@
 package com.hyphenate.easeui.ui;
 
+import android.net.Uri;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -11,10 +13,13 @@ import com.hyphenate.chat.EMFileMessageBody;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.model.EaseCompat;
+import com.hyphenate.util.EMLog;
+import com.hyphenate.util.UriUtils;
 
 import java.io.File;
 
 public class EaseShowNormalFileActivity extends EaseBaseActivity {
+    private static final String TAG = EaseShowNormalFileActivity.class.getSimpleName();
 	private ProgressBar progressBar;
 
 	@Override
@@ -29,14 +34,16 @@ public class EaseShowNormalFileActivity extends EaseBaseActivity {
             finish();
             return;
         }
-        final File file = new File(((EMFileMessageBody)message.getBody()).getLocalUrl());
-
         message.setMessageStatusCallback(new EMCallBack() {
             @Override
             public void onSuccess() {
                 runOnUiThread(new Runnable() {
                     public void run() {
-                        EaseCompat.openFile(file, EaseShowNormalFileActivity.this);
+                        String filePath = getFilePath(message);
+                        if(!TextUtils.isEmpty(filePath)) {
+                            EMLog.d(TAG, "执行这里");
+                            EaseCompat.openFile(new File(filePath), EaseShowNormalFileActivity.this);
+                        }
                         finish();
                     }
                 });
@@ -47,8 +54,12 @@ public class EaseShowNormalFileActivity extends EaseBaseActivity {
             public void onError(final int code, final String error) {
                 runOnUiThread(new Runnable() {
                     public void run() {
-                        if(file != null && file.exists()&&file.isFile())
-                            file.delete();
+                        String filePath = getFilePath(message);
+                        if(TextUtils.isEmpty(filePath)) {
+                            File file = new File(filePath);
+                            if(file != null && file.exists()&&file.isFile())
+                                file.delete();
+                        }
                         String str4 = getResources().getString(R.string.Failed_to_download_file);
                         if (code == EMError.FILE_NOT_FOUND) {
                             str4 = getResources().getString(R.string.File_expired);
@@ -70,4 +81,9 @@ public class EaseShowNormalFileActivity extends EaseBaseActivity {
         });
         EMClient.getInstance().chatManager().downloadAttachment(message);
 	}
+
+	private String getFilePath(EMMessage message) {
+        Uri localUrlUri = ((EMFileMessageBody) message.getBody()).getLocalUrlUri();
+        return UriUtils.getFilePath(localUrlUri);
+    }
 }

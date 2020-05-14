@@ -3,7 +3,11 @@ package com.hyphenate.easeui.widget.chatrow;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
@@ -22,8 +26,10 @@ import com.hyphenate.util.DateUtils;
 import com.hyphenate.util.EMLog;
 import com.hyphenate.util.ImageUtils;
 import com.hyphenate.util.TextFormater;
+import com.hyphenate.util.UriUtils;
 
 import java.io.File;
+import java.io.IOException;
 
 public class EaseChatRowVideo extends EaseChatRowFile{
     private static final String TAG = "EaseChatRowVideo";
@@ -120,30 +126,57 @@ public class EaseChatRowVideo extends EaseChatRowFile{
      */
     private void showVideoThumbView(final String localThumb, final ImageView iv, String thumbnailUrl, final EMMessage message) {
         // first check if the thumbnail image already loaded into cache
+        EMLog.d(EMClient.TAG, " localThumb = "+localThumb);
         Bitmap bitmap = EaseImageCache.getInstance().get(localThumb);
         if (bitmap != null) {
             // thumbnail image is already loaded, reuse the drawable
+            EMLog.d(EMClient.TAG, "easechatvideo bitmap 不为空");
             iv.setImageBitmap(bitmap);
         } else {
+            EMLog.d(EMClient.TAG, "easechatvideo bitmap 为空");
             imageView.setImageResource(R.drawable.ease_default_image);
             new AsyncTask<Void, Void, Bitmap>() {
 
                 @Override
                 protected Bitmap doInBackground(Void... params) {
-                    if (new File(localThumb).exists()) {
-                        return ImageUtils.decodeScaleImage(localThumb, 160, 160);
-                    } else {
+                    if(!UriUtils.isFileExistByUri(context, UriUtils.getLocalUriFromString(localThumb))) {
+                        EMLog.d(EMClient.TAG, "easechatvideo 文件不存在");
                         return null;
                     }
+                    String filePath = UriUtils.getFilePath(localThumb);
+                    if(!TextUtils.isEmpty(filePath)) {
+                        EMLog.d(EMClient.TAG, "easechatvideo 文件不 为空");
+                        if (new File(filePath).exists()) {
+                            EMLog.d(EMClient.TAG, "easechatvideo 文件是存在的 filePath = "+filePath);
+                            return ImageUtils.decodeScaleImage(filePath, 160, 160);
+                        } else {
+                            return null;
+                        }
+                    }else {
+                        if(!TextUtils.isEmpty(localThumb) && localThumb.startsWith("content")) {
+                            EMLog.d(EMClient.TAG, "easechatvideo 是content localThumb = "+localThumb);
+                            if(UriUtils.isFileExistByUri(context, UriUtils.getLocalUriFromString(localThumb))) {
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                                    try {
+                                        return ImageUtils.decodeScaleImage(context, UriUtils.getLocalUriFromString(localThumb), 160, 160);
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }
+                        }
+                        return null;
+                    }
+
                 }
                 
                 @Override
                 protected void onPostExecute(Bitmap result) {
                     super.onPostExecute(result);
                     if (result != null) {
-                        EaseImageCache.getInstance().put(localThumb, result);
+                        EMLog.d(EMClient.TAG, " bitmap width = "+result.getWidth() + " height = "+result.getHeight());
                         iv.setImageBitmap(result);
-
+                        EaseImageCache.getInstance().put(localThumb, result);
                     } else {
                         if (message.status() == EMMessage.Status.FAIL) {
                             if (EaseCommonUtils.isNetWorkConnected(activity)) {
