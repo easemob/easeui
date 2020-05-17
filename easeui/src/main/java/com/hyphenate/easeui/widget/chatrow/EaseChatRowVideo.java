@@ -77,10 +77,12 @@ public class EaseChatRowVideo extends EaseChatRowFile{
                 sizeView.setText(size);
             }
         } else {
-            if (videoBody.getLocalUrl() != null && new File(videoBody.getLocalUrl()).exists()) {
-                String size = TextFormater.getDataSize(new File(videoBody.getLocalUrl()).length());
-                sizeView.setText(size);
-            }
+            long videoFileLength = videoBody.getVideoFileLength();
+            sizeView.setText(TextFormater.getDataSize(videoFileLength));
+//            if (videoBody.getLocalUrl() != null && new File(videoBody.getLocalUrl()).exists()) {
+//                String size = TextFormater.getDataSize(new File(videoBody.getLocalUrl()).length());
+//                sizeView.setText(size);
+//            }
         }
 
         EMLog.d(TAG,  "video thumbnailStatus:" + videoBody.thumbnailDownloadStatus());

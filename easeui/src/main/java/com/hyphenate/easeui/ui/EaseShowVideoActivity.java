@@ -57,42 +57,39 @@ public class EaseShowVideoActivity extends EaseBaseActivity{
 		EMLog.d(TAG, "localFilePath = "+localFilePath);
 		EMLog.d(TAG, "local filename = "+messageBody.getFileName());
 
-		String filePath = UriUtils.getFilePath(localFilePath);
-		if (filePath != null && new File(filePath).exists()) {
-			showLocalVideo(filePath);
-		} else if(UriUtils.uriStartWithContent(localFilePath)){
-			showLocalVideo(localFilePath);
+		if(UriUtils.isFileExistByUri(this, localFilePath)) {
+		    showLocalVideo(localFilePath);
 		} else {
 			EMLog.d(TAG, "download remote video file");
 			downloadVideo(message);
 		}
 	}
 
-	/**
-	 * show local video
-	 * @param localPath -- local path of the video file
-	 */
-	private void showLocalVideo(String localPath){
-		EMLog.d(TAG,"localPath = "+localPath);
-		showLocalVideo(EaseCompat.getUriForFile(this, new File(localPath)));
-	}
-
 	private void showLocalVideo(Uri videoUri) {
-		Intent intent = new Intent(Intent.ACTION_VIEW);
-		String mimeType = UriUtils.getMimeType(this, videoUri);
-		EMLog.d(TAG, "video uri = "+videoUri);
-		EMLog.d(TAG, "video mimeType = "+mimeType);
-		intent.setDataAndType(videoUri, mimeType);
-		// 注意添加该flag,用于Android7.0以上设备获取相册文件权限.
-		intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-		startActivity(intent);
+		String filePath = UriUtils.getFilePath(videoUri);
+		if(!TextUtils.isEmpty(filePath) && new File(filePath).exists()) {
+		    videoUri = EaseCompat.getUriForFile(this, new File(filePath));
+		}
+		try {
+			Intent intent = new Intent(Intent.ACTION_VIEW);
+			String mimeType = EaseCompat.getMimeType(this, UriUtils.getFileNameByUri(this, videoUri));
+			EMLog.d(TAG, "video uri = "+videoUri);
+			EMLog.d(TAG, "video mimeType = "+mimeType);
+			intent.setDataAndType(videoUri, mimeType);
+			// 注意添加该flag,用于Android7.0以上设备获取相册文件权限.
+			intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+			startActivity(intent);
+		} catch (Exception e) {
+			e.printStackTrace();
+			EMLog.e(TAG, e.getMessage());
+		}
 		finish();
 	}
 
 	/**
 	 * download video file
 	 */
-	private void downloadVideo(EMMessage message) {
+	private void downloadVideo(final EMMessage message) {
 		loadingLayout.setVisibility(View.VISIBLE);
 		message.setMessageStatusCallback(new EMCallBack() {
 			@Override
@@ -103,7 +100,7 @@ public class EaseShowVideoActivity extends EaseBaseActivity{
 					public void run() {
 						loadingLayout.setVisibility(View.GONE);
 						progressBar.setProgress(0);
-						showLocalVideo(localFilePath);
+						showLocalVideo(((EMVideoMessageBody)message.getBody()).getLocalUrlUri());
 					}
 				});
 			}
@@ -124,6 +121,7 @@ public class EaseShowVideoActivity extends EaseBaseActivity{
 			@Override
 			public void onError(final int error, String msg) {
 				Log.e("###", "offline file transfer error:" + msg);
+				Uri localFilePath = ((EMVideoMessageBody) message.getBody()).getLocalUrlUri();
 				String filePath = UriUtils.getFilePath(localFilePath);
 				if(TextUtils.isEmpty(filePath)) {
 				    EaseShowVideoActivity.this.getContentResolver().delete(localFilePath, null, null);
