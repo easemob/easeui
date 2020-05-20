@@ -322,4 +322,10 @@
     
     <string name="alert_during_typing">正在输入 &#8230;</string>
     <string name="title_msg_typing">单聊消息显示\"正在输入\"</string>
+
+    <string name="setup_unread">设置未读</string>
+    <string name="setup_read">设置已读</string>
+
+    <string name="placed_at_top">置顶</string>
+    <string name="cancel_top">取消置顶</string>
 </resources>

@@ -31,9 +31,11 @@ import com.hyphenate.easeui.widget.EaseConversationList.EaseConversationListHelp
 import com.hyphenate.easeui.widget.EaseImageView;
 import com.hyphenate.util.DateUtils;
 
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 
 /**
  * conversation list adapter
@@ -45,7 +47,7 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
     private List<EMConversation> copyConversationList;
     private ConversationFilter conversationFilter;
     private boolean notiyfyByFilter;
-    
+
     protected int primaryColor;
     protected int secondaryColor;
     protected int timeColor;
@@ -53,10 +55,20 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
     protected int secondarySize;
     protected float timeSize;
 
+    protected static final int DEFAULT = 0;
+    protected static final int TOP_ITEM = 1;
+    protected static final int UNREAD_ITEM = 2;
+    protected static final int REMOVE_ITEM = 3;
+
+
+
+    EaseConversationListItemClickListener easeConversationListItemClickListener;
+
     public EaseConversationAdapter(Context context, int resource,
-                                   List<EMConversation> objects) {
+                                   List<EMConversation> objects, EaseConversationListItemClickListener easeConversationListItemClickListener) {
         super(context, resource, objects);
         conversationList = objects;
+        this.easeConversationListItemClickListener = easeConversationListItemClickListener;
         copyConversationList = new ArrayList<EMConversation>();
         copyConversationList.addAll(objects);
     }
@@ -79,6 +91,44 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
         return position;
     }
 
+    /***
+     *
+     * @param holder
+     * @param conversation
+     * @param view
+     * 子view统一设置点击事件
+     */
+    public void setUpEvent(final ViewHolder holder, final EMConversation conversation, final View view) {
+
+        holder.list_itease_layout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                easeConversationListItemClickListener.viewClick(DEFAULT, conversation, view);
+            }
+        });
+
+        holder.atTop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                easeConversationListItemClickListener.viewClick(TOP_ITEM, conversation, view);
+            }
+        });
+
+        holder.markUnread.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                easeConversationListItemClickListener.viewClick(UNREAD_ITEM, conversation, view);
+            }
+        });
+
+        holder.remove.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                easeConversationListItemClickListener.viewClick(REMOVE_ITEM, conversation, view);
+            }
+        });
+    }
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
@@ -95,15 +145,22 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
             holder.msgState = convertView.findViewById(R.id.msg_state);
             holder.list_itease_layout = (RelativeLayout) convertView.findViewById(R.id.list_itease_layout);
             holder.motioned = (TextView) convertView.findViewById(R.id.mentioned);
+
+            holder.atTop = (TextView) convertView.findViewById(R.id.top);
+            holder.markUnread = (TextView) convertView.findViewById(R.id.unread);
+            holder.remove = (TextView) convertView.findViewById(R.id.remove_conversation);
             convertView.setTag(holder);
         }
+
+        setUpEvent(holder, getItem(position), convertView);
+
         holder.list_itease_layout.setBackgroundResource(R.drawable.ease_mm_listitem);
 
         // get conversation
         EMConversation conversation = getItem(position);
         // get username or group id
         String username = conversation.conversationId();
-        
+
         if (conversation.getType() == EMConversationType.GroupChat) {
             String groupId = conversation.conversationId();
             if(EaseAtMessageHelper.get().hasAtMeMsg(groupId)){
@@ -138,16 +195,32 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
             if (avatarOptions.getAvatarRadius() != 0)
                 avatarView.setRadius(avatarOptions.getAvatarRadius());
         }
+
+        //判断文字显示
         if (conversation.getUnreadMsgCount() > 0) {
+            holder.markUnread.setText(R.string.setup_read);
+
             // show unread message count
             holder.unreadLabel.setText(String.valueOf(conversation.getUnreadMsgCount()));
             holder.unreadLabel.setVisibility(View.VISIBLE);
         } else {
+            holder.markUnread.setText(R.string.setup_unread);
+
             holder.unreadLabel.setVisibility(View.INVISIBLE);
         }
 
+        int top = EaseCommonUtils.getExtTop(conversation);
+        if(top == 1){
+            holder.atTop.setText(R.string.cancel_top);
+            holder.list_itease_layout.setBackgroundResource(R.drawable.ease_mm_listitem_grey);
+        }else{
+            holder.atTop.setText(R.string.placed_at_top);
+            holder.list_itease_layout.setBackgroundResource(R.drawable.ease_mm_listitem);
+        }
+
+
         if (conversation.getAllMsgCount() != 0) {
-        	// show the content of latest message
+            // show the content of latest message
             EMMessage lastMessage = conversation.getLastMessage();
             String content = null;
             if(cvsListHelper != null){
@@ -165,7 +238,7 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
                 holder.msgState.setVisibility(View.GONE);
             }
         }
-        
+
         //set property
         holder.name.setTextColor(primaryColor);
         holder.message.setTextColor(secondaryColor);
@@ -179,7 +252,7 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
 
         return convertView;
     }
-    
+
     @Override
     public void notifyDataSetChanged() {
         super.notifyDataSetChanged();
@@ -189,7 +262,7 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
             notiyfyByFilter = false;
         }
     }
-    
+
     @Override
     public Filter getFilter() {
         if (conversationFilter == null) {
@@ -197,7 +270,7 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
         }
         return conversationFilter;
     }
-    
+
 
     public void setPrimaryColor(int primaryColor) {
         this.primaryColor = primaryColor;
@@ -252,7 +325,7 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
                 for (int i = 0; i < count; i++) {
                     final EMConversation value = mOriginalValues.get(i);
                     String username = value.conversationId();
-                    
+
                     EMGroup group = EMClient.getInstance().groupManager().getGroup(username);
                     if(group != null){
                         username = group.getGroupName();
@@ -267,10 +340,10 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
                     if (username.startsWith(prefixString)) {
                         newValues.add(value);
                     } else{
-                          final String[] words = username.split(" ");
-                            final int wordCount = words.length;
+                        final String[] words = username.split(" ");
+                        final int wordCount = words.length;
 
-                            // Start at index 0, in case valueText starts with space(s)
+                        // Start at index 0, in case valueText starts with space(s)
                         for (String word : words) {
                             if (word.startsWith(prefixString)) {
                                 newValues.add(value);
@@ -306,8 +379,13 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
     public void setCvsListHelper(EaseConversationListHelper cvsListHelper){
         this.cvsListHelper = cvsListHelper;
     }
-    
-    private static class ViewHolder {
+
+    public interface EaseConversationListItemClickListener {
+
+        void viewClick(int type, EMConversation conversation, View rootView);
+    }
+
+    public static class ViewHolder {
         /** who you chat with */
         TextView name;
         /** unread message count */
@@ -323,6 +401,22 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
         /** layout */
         RelativeLayout list_itease_layout;
         TextView motioned;
+
+        /** 置顶 */
+        TextView atTop;
+        /** 未读 */
+        TextView markUnread;
+        /** 删除 */
+        TextView remove;
+
+
+
+//        TextView itemTvToTop;
+//        public ViewHolder(View center,View menu) {
+//            this.itemTvToTop = (TextView) menu.findViewById(R.id.top);
+//        }
     }
+
+
 }
 
