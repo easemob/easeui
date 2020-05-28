@@ -53,7 +53,7 @@ public class EaseShowVideoActivity extends EaseBaseActivity{
 		}
 		EMVideoMessageBody messageBody = (EMVideoMessageBody)message.getBody();
 
-		localFilePath = messageBody.getLocalUrlUri();
+		localFilePath = messageBody.getLocalUri();
 		EMLog.d(TAG, "localFilePath = "+localFilePath);
 		EMLog.d(TAG, "local filename = "+messageBody.getFileName());
 
@@ -100,7 +100,7 @@ public class EaseShowVideoActivity extends EaseBaseActivity{
 					public void run() {
 						loadingLayout.setVisibility(View.GONE);
 						progressBar.setProgress(0);
-						showLocalVideo(((EMVideoMessageBody)message.getBody()).getLocalUrlUri());
+						showLocalVideo(((EMVideoMessageBody)message.getBody()).getLocalUri());
 					}
 				});
 			}
@@ -121,7 +121,7 @@ public class EaseShowVideoActivity extends EaseBaseActivity{
 			@Override
 			public void onError(final int error, String msg) {
 				Log.e("###", "offline file transfer error:" + msg);
-				Uri localFilePath = ((EMVideoMessageBody) message.getBody()).getLocalUrlUri();
+				Uri localFilePath = ((EMVideoMessageBody) message.getBody()).getLocalUri();
 				String filePath = UriUtils.getFilePath(localFilePath);
 				if(TextUtils.isEmpty(filePath)) {
 				    EaseShowVideoActivity.this.getContentResolver().delete(localFilePath, null, null);

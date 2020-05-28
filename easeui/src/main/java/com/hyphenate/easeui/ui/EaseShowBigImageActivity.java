@@ -13,10 +13,7 @@
  */
 package com.hyphenate.easeui.ui;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 
 import com.bumptech.glide.Glide;
@@ -27,21 +24,16 @@ import com.hyphenate.chat.EMImageMessageBody;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.model.EaseImageCache;
-import com.hyphenate.easeui.utils.EaseImageUtils;
-import com.hyphenate.easeui.utils.EaseLoadLocalBigImgTask;
 import com.hyphenate.easeui.widget.photoview.EasePhotoView;
 import com.hyphenate.util.EMLog;
 import com.hyphenate.util.ImageUtils;
-import com.hyphenate.util.PathUtil;
 import com.hyphenate.util.UriUtils;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -119,7 +111,7 @@ public class EaseShowBigImageActivity extends EaseBaseActivity {
                             int screenWidth = metrics.widthPixels;
                             int screenHeight = metrics.heightPixels;
 
-                            Uri localUrlUri = ((EMImageMessageBody) msg.getBody()).getLocalUrlUri();
+                            Uri localUrlUri = ((EMImageMessageBody) msg.getBody()).getLocalUri();
                             try {
                                 bitmap = ImageUtils.decodeScaleImage(EaseShowBigImageActivity.this, localUrlUri, screenWidth, screenHeight);
                                 if (bitmap == null) {

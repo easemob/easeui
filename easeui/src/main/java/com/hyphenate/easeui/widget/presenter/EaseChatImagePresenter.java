@@ -3,7 +3,6 @@ package com.hyphenate.easeui.widget.presenter;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.text.TextUtils;
 import android.widget.BaseAdapter;
 
 import com.hyphenate.EMCallBack;
@@ -15,8 +14,6 @@ import com.hyphenate.easeui.ui.EaseShowBigImageActivity;
 import com.hyphenate.easeui.widget.chatrow.EaseChatRow;
 import com.hyphenate.easeui.widget.chatrow.EaseChatRowImage;
 import com.hyphenate.util.UriUtils;
-
-import java.io.File;
 
 /**
  * Created by zhangsong on 17-10-12.
@@ -72,7 +69,7 @@ public class EaseChatImagePresenter extends EaseChatFilePresenter {
             }
         }
         Intent intent = new Intent(getContext(), EaseShowBigImageActivity.class);
-        Uri imgUri = imgBody.getLocalUrlUri();
+        Uri imgUri = imgBody.getLocalUri();
         if(UriUtils.isFileExistByUri(getContext(), imgUri)) {
             intent.putExtra("uri", imgUri);
         } else{

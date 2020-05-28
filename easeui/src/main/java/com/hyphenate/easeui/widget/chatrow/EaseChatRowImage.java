@@ -7,21 +7,17 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.baidu.platform.comapi.map.E;
-import com.bumptech.glide.Glide;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMFileMessageBody;
 import com.hyphenate.chat.EMImageMessageBody;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.model.EaseImageCache;
-import com.hyphenate.easeui.ui.EaseChatFragment;
 import com.hyphenate.easeui.utils.EaseImageUtils;
 import com.hyphenate.util.EMLog;
 import com.hyphenate.util.UriUtils;
@@ -61,7 +57,7 @@ public class EaseChatRowImage extends EaseChatRowFile{
             return;
         }
 
-        Uri filePath = imgBody.getLocalUrlUri();
+        Uri filePath = imgBody.getLocalUri();
         EMLog.e(TAG, " filePath = "+filePath);
         Uri thumbPath = UriUtils.getLocalUriFromString(EaseImageUtils.getThumbnailImagePathByName(UriUtils.getFileNameByUri(getContext(), filePath)));
         showImageView(thumbPath, filePath, message);
@@ -83,12 +79,12 @@ public class EaseChatRowImage extends EaseChatRowFile{
                     progressBar.setVisibility(View.GONE);
                     percentageView.setVisibility(View.GONE);
                     imageView.setImageResource(R.drawable.ease_default_image);
-                    Uri thumbPath = imgBody.thumbnailLocalPathUri();
+                    Uri thumbPath = imgBody.thumbnailLocalUri();
                     if (!UriUtils.isFileExistByUri(context, thumbPath)) {
                         // to make it compatible with thumbnail received in previous version
-                        thumbPath = UriUtils.getLocalUriFromString(EaseImageUtils.getThumbnailImagePath(UriUtils.getFileNameByUri(getContext(), imgBody.getLocalUrlUri())));
+                        thumbPath = UriUtils.getLocalUriFromString(EaseImageUtils.getThumbnailImagePath(UriUtils.getFileNameByUri(getContext(), imgBody.getLocalUri())));
                     }
-                    showImageView(thumbPath, imgBody.getLocalUrlUri(), message);
+                    showImageView(thumbPath, imgBody.getLocalUri(), message);
                 }
             }
             return;
@@ -116,8 +112,8 @@ public class EaseChatRowImage extends EaseChatRowFile{
             progressBar.setVisibility(View.GONE);
             percentageView.setVisibility(View.GONE);
             imageView.setImageResource(R.drawable.ease_default_image);
-            Uri thumbPath = imgBody.thumbnailLocalPathUri();
-            showImageView(thumbPath, imgBody.getLocalUrlUri(), message);
+            Uri thumbPath = imgBody.thumbnailLocalUri();
+            showImageView(thumbPath, imgBody.getLocalUri(), message);
         }
     }
 
