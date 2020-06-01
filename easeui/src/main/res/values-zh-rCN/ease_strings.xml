@@ -322,4 +322,6 @@
     
     <string name="alert_during_typing">正在输入 &#8230;</string>
     <string name="title_msg_typing">单聊消息显示\"正在输入\"</string>
+
+    <string name="custom_message">自定义消息: %1$s</string>
 </resources>

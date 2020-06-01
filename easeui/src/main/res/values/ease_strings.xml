@@ -311,4 +311,6 @@
 
     <string name="alert_during_typing">Typing ...</string>
     <string name="title_msg_typing">Single chat shows \"Typing\"</string>
+
+    <string name="custom_message">custom message: %1$s</string>
 </resources>
