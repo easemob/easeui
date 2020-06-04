@@ -40,6 +40,7 @@
     <string name="location_prefix">[Мое местоположение]</string>
     <string name="picture">[Изображение]</string>
     <string name="video">[Видео]</string>
+    <string name="custom">[Самоопределение сообщения]</string>
     <string name="file">[Документ]</string>
     <string name="voice_call">[Голосовой вызов]</string>
     <string name="button_cancel">Отправить</string>
