@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.support.v4.provider.DocumentFile;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.BaseAdapter;
@@ -58,9 +59,8 @@ public class EaseChatRowImage extends EaseChatRowFile{
         }
 
         Uri filePath = imgBody.getLocalUri();
-        EMLog.e(TAG, " filePath = "+filePath);
-        Uri thumbPath = UriUtils.getLocalUriFromString(EaseImageUtils.getThumbnailImagePathByName(UriUtils.getFileNameByUri(getContext(), filePath)));
-        showImageView(thumbPath, filePath, message);
+        Uri thumbnailUrl = imgBody.thumbnailLocalUri();
+        showImageView(thumbnailUrl, filePath, message);
     }
 
     @Override
@@ -80,10 +80,6 @@ public class EaseChatRowImage extends EaseChatRowFile{
                     percentageView.setVisibility(View.GONE);
                     imageView.setImageResource(R.drawable.ease_default_image);
                     Uri thumbPath = imgBody.thumbnailLocalUri();
-                    if (!UriUtils.isFileExistByUri(context, thumbPath)) {
-                        // to make it compatible with thumbnail received in previous version
-                        thumbPath = UriUtils.getLocalUriFromString(EaseImageUtils.getThumbnailImagePath(UriUtils.getFileNameByUri(getContext(), imgBody.getLocalUri())));
-                    }
                     showImageView(thumbPath, imgBody.getLocalUri(), message);
                 }
             }
