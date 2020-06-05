@@ -12,6 +12,7 @@ import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 import android.view.WindowManager;
@@ -21,6 +22,7 @@ import com.hyphenate.easeui.R;
 import com.hyphenate.util.EMLog;
 import com.hyphenate.util.FileUtils;
 import com.hyphenate.util.UriUtils;
+import com.hyphenate.util.VersionUtils;
 
 import java.io.File;
 
@@ -30,6 +32,30 @@ import java.io.File;
 
 public class EaseCompat {
     private static final String TAG = "EaseCompat";
+
+    public static void openImage(Activity context, int requestCode) {
+        Intent intent = null;
+        if(VersionUtils.isTargetQ(context)) {
+            intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        }else {
+            intent = new Intent(Intent.ACTION_GET_CONTENT);
+        }
+        intent.setType("image/*");
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        context.startActivityForResult(intent, requestCode);
+    }
+
+    public static void openImage(Fragment context, int requestCode) {
+        Intent intent = null;
+        if(VersionUtils.isTargetQ(context.getActivity())) {
+            intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        }else {
+            intent = new Intent(Intent.ACTION_GET_CONTENT);
+        }
+        intent.setType("image/*");
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        context.startActivityForResult(intent, requestCode);
+    }
 
     /**
      * open file

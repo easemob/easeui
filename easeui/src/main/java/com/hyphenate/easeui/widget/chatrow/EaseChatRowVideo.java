@@ -132,31 +132,25 @@ public class EaseChatRowVideo extends EaseChatRowFile{
         Bitmap bitmap = EaseImageCache.getInstance().get(localThumb);
         if (bitmap != null) {
             // thumbnail image is already loaded, reuse the drawable
-            EMLog.d(EMClient.TAG, "easechatvideo bitmap 不为空");
             iv.setImageBitmap(bitmap);
         } else {
-            EMLog.d(EMClient.TAG, "easechatvideo bitmap 为空");
             imageView.setImageResource(R.drawable.ease_default_image);
             new AsyncTask<Void, Void, Bitmap>() {
 
                 @Override
                 protected Bitmap doInBackground(Void... params) {
                     if(!UriUtils.isFileExistByUri(context, UriUtils.getLocalUriFromString(localThumb))) {
-                        EMLog.d(EMClient.TAG, "easechatvideo 文件不存在");
                         return null;
                     }
                     String filePath = UriUtils.getFilePath(localThumb);
                     if(!TextUtils.isEmpty(filePath)) {
-                        EMLog.d(EMClient.TAG, "easechatvideo 文件不 为空");
                         if (new File(filePath).exists()) {
-                            EMLog.d(EMClient.TAG, "easechatvideo 文件是存在的 filePath = "+filePath);
                             return ImageUtils.decodeScaleImage(filePath, 160, 160);
                         } else {
                             return null;
                         }
                     }else {
                         if(!TextUtils.isEmpty(localThumb) && localThumb.startsWith("content")) {
-                            EMLog.d(EMClient.TAG, "easechatvideo 是content localThumb = "+localThumb);
                             if(UriUtils.isFileExistByUri(context, UriUtils.getLocalUriFromString(localThumb))) {
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                                     try {
@@ -176,7 +170,6 @@ public class EaseChatRowVideo extends EaseChatRowFile{
                 protected void onPostExecute(Bitmap result) {
                     super.onPostExecute(result);
                     if (result != null) {
-                        EMLog.d(EMClient.TAG, " bitmap width = "+result.getWidth() + " height = "+result.getHeight());
                         iv.setImageBitmap(result);
                         EaseImageCache.getInstance().put(localThumb, result);
                     } else {

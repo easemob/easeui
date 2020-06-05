@@ -980,33 +980,39 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
      * @param selectedImage
      */
     protected void sendPicByUri(Uri selectedImage) {
-        String[] filePathColumn = { MediaStore.Images.Media.DATA };
-        Cursor cursor = getActivity().getContentResolver().query(selectedImage, filePathColumn, null, null, null);
-        if (cursor != null) {
-            cursor.moveToFirst();
-            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-            String picturePath = cursor.getString(columnIndex);
-            cursor.close();
-            cursor = null;
-
-            if (picturePath == null || picturePath.equals("null")) {
-                Toast toast = Toast.makeText(getActivity(), R.string.cant_find_pictures, Toast.LENGTH_SHORT);
-                toast.setGravity(Gravity.CENTER, 0, 0);
-                toast.show();
-                return;
-            }
-            sendImageMessage(picturePath);
-        } else {
-            File file = new File(selectedImage.getPath());
-            if (!file.exists()) {
-                Toast toast = Toast.makeText(getActivity(), R.string.cant_find_pictures, Toast.LENGTH_SHORT);
-                toast.setGravity(Gravity.CENTER, 0, 0);
-                toast.show();
-                return;
-
-            }
-            sendImageMessage(file.getAbsolutePath());
+        String path = EaseCompat.getPath(getActivity(), selectedImage);
+        if(!TextUtils.isEmpty(path) && new File(path).exists()) {
+            sendImageMessage(path);
+        }else {
+            sendImageMessage(selectedImage);
         }
+//        String[] filePathColumn = { MediaStore.Images.Media.DATA };
+//        Cursor cursor = getActivity().getContentResolver().query(selectedImage, filePathColumn, null, null, null);
+//        if (cursor != null) {
+//            cursor.moveToFirst();
+//            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+//            String picturePath = cursor.getString(columnIndex);
+//            cursor.close();
+//            cursor = null;
+//
+//            if (picturePath == null || picturePath.equals("null")) {
+//                Toast toast = Toast.makeText(getActivity(), R.string.cant_find_pictures, Toast.LENGTH_SHORT);
+//                toast.setGravity(Gravity.CENTER, 0, 0);
+//                toast.show();
+//                return;
+//            }
+//            sendImageMessage(picturePath);
+//        } else {
+//            File file = new File(selectedImage.getPath());
+//            if (!file.exists()) {
+//                Toast toast = Toast.makeText(getActivity(), R.string.cant_find_pictures, Toast.LENGTH_SHORT);
+//                toast.setGravity(Gravity.CENTER, 0, 0);
+//                toast.show();
+//                return;
+//
+//            }
+//            sendImageMessage(file.getAbsolutePath());
+//        }
 
     }
     
@@ -1054,15 +1060,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
      * select local image
      */
     protected void selectPicFromLocal() {
-        Intent intent;
-        if (Build.VERSION.SDK_INT < 19) {
-            intent = new Intent(Intent.ACTION_GET_CONTENT);
-            intent.setType("image/*");
-
-        } else {
-            intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        }
-        startActivityForResult(intent, REQUEST_CODE_LOCAL);
+        EaseCompat.openImage(this, REQUEST_CODE_LOCAL);
     }
 
 
