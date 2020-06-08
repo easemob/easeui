@@ -958,10 +958,18 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         }
 
         @Override
-        public void onError(int code, String error) {
+        public void onError(final int code, final String error) {
             Log.i("EaseChatRowPresenter", "onError: " + code + ", error: " + error);
             if(isMessageListInited) {
                 messageList.refresh();
+            }
+            if(getActivity() != null && !getActivity().isFinishing()) {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getActivity(), "onError: " + code + ", error: " + error, Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         }
 
