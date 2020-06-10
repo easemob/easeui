@@ -46,6 +46,7 @@
     <string name="voice">Voice</string>
     <string name="picture">[Picture]</string>
     <string name="video">[Video]</string>
+    <string name="custom">[Custom]</string>
     <string name="file">[file]</string>
     <string name="dynamic_expression">[Dynamic expression]</string>
     <string name="voice_prefix">[Voice]</string>
@@ -311,4 +312,6 @@
 
     <string name="alert_during_typing">Typing ...</string>
     <string name="title_msg_typing">Single chat shows \"Typing\"</string>
+
+    <string name="custom_message">custom message: %1$s</string>
 </resources>

@@ -31,6 +31,7 @@ import com.hyphenate.easeui.utils.EaseCommonUtils;
 import com.hyphenate.easeui.widget.EaseChatMessageList.MessageListItemClickListener;
 import com.hyphenate.easeui.widget.chatrow.EaseCustomChatRowProvider;
 import com.hyphenate.easeui.widget.presenter.EaseChatBigExpressionPresenter;
+import com.hyphenate.easeui.widget.presenter.EaseChatCustomPresenter;
 import com.hyphenate.easeui.widget.presenter.EaseChatFilePresenter;
 import com.hyphenate.easeui.widget.presenter.EaseChatImagePresenter;
 import com.hyphenate.easeui.widget.presenter.EaseChatLocationPresenter;
@@ -38,6 +39,7 @@ import com.hyphenate.easeui.widget.presenter.EaseChatRowPresenter;
 import com.hyphenate.easeui.widget.presenter.EaseChatTextPresenter;
 import com.hyphenate.easeui.widget.presenter.EaseChatVideoPresenter;
 import com.hyphenate.easeui.widget.presenter.EaseChatVoicePresenter;
+import com.hyphenate.util.EMLog;
 
 public class EaseMessageAdapter extends BaseAdapter{
 
@@ -222,6 +224,7 @@ public class EaseMessageAdapter extends BaseAdapter{
         }
 
         EaseChatRowPresenter presenter = null;
+		EMLog.d(TAG, "message's type = "+message.getType());
 
         switch (message.getType()) {
         case TXT:
@@ -246,6 +249,9 @@ public class EaseMessageAdapter extends BaseAdapter{
         case VIDEO:
         	presenter = new EaseChatVideoPresenter();
             break;
+		case CUSTOM:
+			presenter = new EaseChatCustomPresenter();
+		    break;
         default:
             break;
         }

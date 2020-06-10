@@ -14,6 +14,7 @@ import android.os.Message;
 import android.provider.MediaStore;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -51,6 +52,7 @@ import com.hyphenate.easeui.model.EaseCompat;
 import com.hyphenate.easeui.model.EaseDingMessageHelper;
 import com.hyphenate.easeui.utils.EaseCommonUtils;
 import com.hyphenate.easeui.utils.EaseUserUtils;
+import com.hyphenate.util.VersionUtils;
 import com.hyphenate.easeui.widget.EaseAlertDialog;
 import com.hyphenate.easeui.widget.EaseAlertDialog.AlertDialogUser;
 import com.hyphenate.easeui.widget.EaseChatExtendMenu;
@@ -571,7 +573,11 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 if (data != null) {
                     Uri selectedImage = data.getData();
                     if (selectedImage != null) {
-                        sendPicByUri(selectedImage);
+                        if(VersionUtils.isTargetQ(getContext())) {
+                            sendImageMessage(selectedImage);
+                        }else {
+                            sendPicByUri(selectedImage);
+                        }
                     }
                 }
             } else if (requestCode == REQUEST_CODE_MAP) { // location
@@ -884,13 +890,24 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         sendMessage(message);
     }
 
+    protected void sendImageMessage(Uri imageUri) {
+        EMMessage message = EMMessage.createImageSendMessage(imageUri, false, toChatUsername);
+        sendMessage(message);
+    }
+
     protected void sendLocationMessage(double latitude, double longitude, String locationAddress) {
         EMMessage message = EMMessage.createLocationSendMessage(latitude, longitude, locationAddress, toChatUsername);
         sendMessage(message);
     }
 
     protected void sendVideoMessage(String videoPath, String thumbPath, int videoLength) {
+        EMLog.d(EMClient.TAG, "sendVideoMessage 1 thumbPath = "+thumbPath);
         EMMessage message = EMMessage.createVideoSendMessage(videoPath, thumbPath, videoLength, toChatUsername);
+        sendMessage(message);
+    }
+
+    protected void sendVideoMessage(Uri videoUri, String thumbPath, int videoLength) {
+        EMMessage message = EMMessage.createVideoSendMessage(videoUri, thumbPath, videoLength, toChatUsername);
         sendMessage(message);
     }
 
@@ -898,7 +915,12 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         EMMessage message = EMMessage.createFileSendMessage(filePath, toChatUsername);
         sendMessage(message);
     }
-    
+
+    protected void sendFileMessage(Uri fileUri) {
+        EMMessage message = EMMessage.createFileSendMessage(fileUri, toChatUsername);
+        sendMessage(message);
+    }
+
     
     protected void sendMessage(EMMessage message){
         if (message == null) {
@@ -936,10 +958,18 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         }
 
         @Override
-        public void onError(int code, String error) {
+        public void onError(final int code, final String error) {
             Log.i("EaseChatRowPresenter", "onError: " + code + ", error: " + error);
             if(isMessageListInited) {
                 messageList.refresh();
+            }
+            if(getActivity() != null && !getActivity().isFinishing()) {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getActivity(), "onError: " + code + ", error: " + error, Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         }
 
@@ -958,33 +988,39 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
      * @param selectedImage
      */
     protected void sendPicByUri(Uri selectedImage) {
-        String[] filePathColumn = { MediaStore.Images.Media.DATA };
-        Cursor cursor = getActivity().getContentResolver().query(selectedImage, filePathColumn, null, null, null);
-        if (cursor != null) {
-            cursor.moveToFirst();
-            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-            String picturePath = cursor.getString(columnIndex);
-            cursor.close();
-            cursor = null;
-
-            if (picturePath == null || picturePath.equals("null")) {
-                Toast toast = Toast.makeText(getActivity(), R.string.cant_find_pictures, Toast.LENGTH_SHORT);
-                toast.setGravity(Gravity.CENTER, 0, 0);
-                toast.show();
-                return;
-            }
-            sendImageMessage(picturePath);
-        } else {
-            File file = new File(selectedImage.getPath());
-            if (!file.exists()) {
-                Toast toast = Toast.makeText(getActivity(), R.string.cant_find_pictures, Toast.LENGTH_SHORT);
-                toast.setGravity(Gravity.CENTER, 0, 0);
-                toast.show();
-                return;
-
-            }
-            sendImageMessage(file.getAbsolutePath());
+        String path = EaseCompat.getPath(getActivity(), selectedImage);
+        if(!TextUtils.isEmpty(path) && new File(path).exists()) {
+            sendImageMessage(path);
+        }else {
+            sendImageMessage(selectedImage);
         }
+//        String[] filePathColumn = { MediaStore.Images.Media.DATA };
+//        Cursor cursor = getActivity().getContentResolver().query(selectedImage, filePathColumn, null, null, null);
+//        if (cursor != null) {
+//            cursor.moveToFirst();
+//            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+//            String picturePath = cursor.getString(columnIndex);
+//            cursor.close();
+//            cursor = null;
+//
+//            if (picturePath == null || picturePath.equals("null")) {
+//                Toast toast = Toast.makeText(getActivity(), R.string.cant_find_pictures, Toast.LENGTH_SHORT);
+//                toast.setGravity(Gravity.CENTER, 0, 0);
+//                toast.show();
+//                return;
+//            }
+//            sendImageMessage(picturePath);
+//        } else {
+//            File file = new File(selectedImage.getPath());
+//            if (!file.exists()) {
+//                Toast toast = Toast.makeText(getActivity(), R.string.cant_find_pictures, Toast.LENGTH_SHORT);
+//                toast.setGravity(Gravity.CENTER, 0, 0);
+//                toast.show();
+//                return;
+//
+//            }
+//            sendImageMessage(file.getAbsolutePath());
+//        }
 
     }
     
@@ -993,17 +1029,21 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
      * @param uri
      */
     protected void sendFileByUri(Uri uri){
-        String filePath = EaseCompat.getPath(getActivity(), uri);
-        EMLog.i(TAG, "sendFileByUri: " + filePath);
-        if (filePath == null) {
-            return;
+        if(VersionUtils.isTargetQ(getContext())) {
+            sendFileMessage(uri);
+        }else {
+            String filePath = EaseCompat.getPath(getActivity(), uri);
+            EMLog.i(TAG, "sendFileByUri: " + filePath);
+            if (filePath == null) {
+                return;
+            }
+            File file = new File(filePath);
+            if (!file.exists()) {
+                Toast.makeText(getActivity(), R.string.File_does_not_exist, Toast.LENGTH_SHORT).show();
+                return;
+            }
+            sendFileMessage(filePath);
         }
-        File file = new File(filePath);
-        if (!file.exists()) {
-            Toast.makeText(getActivity(), R.string.File_does_not_exist, Toast.LENGTH_SHORT).show();
-            return;
-        }
-        sendFileMessage(filePath);
     }
 
     /**
@@ -1028,15 +1068,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
      * select local image
      */
     protected void selectPicFromLocal() {
-        Intent intent;
-        if (Build.VERSION.SDK_INT < 19) {
-            intent = new Intent(Intent.ACTION_GET_CONTENT);
-            intent.setType("image/*");
-
-        } else {
-            intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        }
-        startActivityForResult(intent, REQUEST_CODE_LOCAL);
+        EaseCompat.openImage(this, REQUEST_CODE_LOCAL);
     }
 
 
