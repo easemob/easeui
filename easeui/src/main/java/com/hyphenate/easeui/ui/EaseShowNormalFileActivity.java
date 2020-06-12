@@ -84,6 +84,6 @@ public class EaseShowNormalFileActivity extends EaseBaseActivity {
 
 	private String getFilePath(EMMessage message) {
         Uri localUrlUri = ((EMFileMessageBody) message.getBody()).getLocalUri();
-        return UriUtils.getFilePath(localUrlUri);
+        return UriUtils.getFilePath(this, localUrlUri);
     }
 }
