@@ -99,6 +99,9 @@ public class EaseCommonUtils {
         case VIDEO:
             digest = getString(context, R.string.video);
             break;
+            case CUSTOM:
+            digest = getString(context, R.string.custom);
+            break;
         case TXT:
             EMTextMessageBody txtBody = (EMTextMessageBody) message.getBody();
             if(message.getBooleanAttribute(EaseConstant.MESSAGE_ATTR_IS_VOICE_CALL, false)){

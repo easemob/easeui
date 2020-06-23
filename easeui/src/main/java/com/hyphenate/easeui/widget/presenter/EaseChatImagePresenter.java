@@ -13,8 +13,7 @@ import com.hyphenate.chat.EMMessage;
 import com.hyphenate.easeui.ui.EaseShowBigImageActivity;
 import com.hyphenate.easeui.widget.chatrow.EaseChatRow;
 import com.hyphenate.easeui.widget.chatrow.EaseChatRowImage;
-
-import java.io.File;
+import com.hyphenate.util.UriUtils;
 
 /**
  * Created by zhangsong on 17-10-12.
@@ -70,17 +69,16 @@ public class EaseChatImagePresenter extends EaseChatFilePresenter {
             }
         }
         Intent intent = new Intent(getContext(), EaseShowBigImageActivity.class);
-        File file = new File(imgBody.getLocalUrl());
-        if (file.exists()) {
-            Uri uri = Uri.fromFile(file);
-            intent.putExtra("uri", uri);
-        } else {
+        Uri imgUri = imgBody.getLocalUri();
+        if(UriUtils.isFileExistByUri(getContext(), imgUri)) {
+            intent.putExtra("uri", imgUri);
+        } else{
             // The local full size pic does not exist yet.
             // ShowBigImage needs to download it from the server
             // first
             String msgId = message.getMsgId();
             intent.putExtra("messageId", msgId);
-            intent.putExtra("localUrl", imgBody.getLocalUrl());
+            intent.putExtra("filename", imgBody.getFileName());
         }
         if (message != null && message.direct() == EMMessage.Direct.RECEIVE && !message.isAcked()
                 && message.getChatType() == EMMessage.ChatType.Chat) {
