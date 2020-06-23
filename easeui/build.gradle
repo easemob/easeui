@@ -30,7 +30,7 @@ android {
 dependencies {
     //release时需要把hyphenatechatsdk的依赖注释掉，sdk已经被打成jar包放在libs底下
     //api project(':hyphenatechatsdk')
-	api 'com.hyphenate:hyphenate-sdk:3.6.8'
+	api 'com.hyphenate:hyphenate-sdk:3.6.9'
     api fileTree(dir: 'libs', include: ['*.jar'])
     api 'com.github.bumptech.glide:glide:4.7.1'
 
