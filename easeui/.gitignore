@@ -39,3 +39,6 @@ proguard/
 /.idea/libraries
 /.idea/modules.xml
 /.idea/workspace.xml
+
+src/test/
+src/androidTest/
