@@ -1,0 +1,2 @@
+include ':app',':easeui'
+rootProject.name='easeui'

@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="side_bar_array">
+        <item>@string/search_new</item>
+        <item>A</item>
+        <item>B</item>
+        <item>C</item>
+        <item>D</item>
+        <item>E</item>
+        <item>F</item>
+        <item>G</item>
+        <item>H</item>
+        <item>I</item>
+        <item>J</item>
+        <item>K</item>
+        <item>L</item>
+        <item>M</item>
+        <item>N</item>
+        <item>O</item>
+        <item>P</item>
+        <item>Q</item>
+        <item>R</item>
+        <item>S</item>
+        <item>T</item>
+        <item>U</item>
+        <item>V</item>
+        <item>W</item>
+        <item>X</item>
+        <item>Y</item>
+        <item>Z</item>
+        <item>#</item>
+    </string-array>
+
+    <array name="ease_apk_file_suffix">
+        <item>.apk</item>
+    </array>
+    <array name="ease_audio_file_suffix">
+        <item>.mp3</item>
+        <item>.au</item>
+        <item>.awb</item>
+        <item>.snd</item>
+        <item>.mid</item>
+        <item>.rmi</item>
+        <item>.aif</item>
+        <item>.aifc</item>
+        <item>.aiff</item>
+        <item>.als</item>
+        <item>.m3u</item>
+        <item>.ra</item>
+        <item>.ram</item>
+        <item>.wav</item>
+        <item>.wma</item>
+        <item>.es</item>
+        <item>.esl</item>
+        <item>.it</item>
+        <item>.itz</item>
+        <item>.m15</item>
+        <item>.m3u</item>
+        <item>.m3url</item>
+        <item>.ma1</item>
+        <item>.ma2</item>
+        <item>.ma3</item>
+        <item>.ma5</item>
+    </array>
+    <array name="ease_excel_file_suffix">
+        <item>.xla</item>
+        <item>.xlc</item>
+        <item>.xlm</item>
+        <item>.xls</item>
+        <item>.xlt</item>
+        <item>.xlw</item>
+        <item>.xlsx</item>
+    </array>
+    <array name="ease_file_file_suffix">
+        <item>.txt</item>
+        <item>.log</item>
+        <item>.html</item>
+        <item>.stm</item>
+        <item>.uls</item>
+        <item>.bas</item>
+        <item>.c</item>
+        <item>.h</item>
+        <item>.rtx</item>
+        <item>.sct</item>
+        <item>.tsv</item>
+        <item>.htt</item>
+        <item>.htc</item>
+        <item>.etx</item>
+        <item>.vcf</item>
+    </array>
+    <array name="ease_image_file_suffix">
+        <item>.bmp</item>
+        <item>.cod</item>
+        <item>.gif</item>
+        <item>.ief</item>
+        <item>.jpe</item>
+        <item>.jpeg</item>
+        <item>.jpg</item>
+        <item>.jfif</item>
+        <item>.svg</item>
+        <item>.tif</item>
+        <item>.tiff</item>
+        <item>.ras</item>
+        <item>.ico</item>
+        <item>.pbm</item>
+        <item>.pgm</item>
+        <item>.png</item>
+        <item>.pnm</item>
+        <item>.ppm</item>
+        <item>.xbm</item>
+        <item>.xpm</item>
+        <item>.xwd</item>
+        <item>.rgb</item>
+    </array>
+    <array name="ease_key_file_suffix">
+        <item>.key</item>
+    </array>
+    <array name="ease_numbers_file_suffix">
+        <item>.numbers</item>
+    </array>
+    <array name="ease_other_file_suffix">
+        <item>.doc</item>
+        <item>.dot</item>
+        <item>.xla</item>
+        <item>.xlc</item>
+        <item>.xlm</item>
+        <item>.xls</item>
+        <item>.xlt</item>
+        <item>.xlw</item>
+        <item>.gif</item>
+        <item>.jpe</item>
+        <item>.jpeg</item>
+        <item>.jpg</item>
+    </array>
+    <array name="ease_pages_file_suffix">
+        <item>.pages</item>
+    </array>
+    <array name="ease_pdf_file_suffix">
+        <item>.pdf</item>
+    </array>
+    <array name="ease_ppt_file_suffix">
+        <item>.ppt</item>
+        <item>.pptx</item>
+    </array>
+    <array name="ease_video_file_suffix">
+        <item>.rmvb</item>
+        <item>.avi</item>
+        <item>.mp4</item>
+        <item>.mp2</item>
+        <item>.mpa</item>
+        <item>.mpe</item>
+        <item>.mpeg</item>
+        <item>.mpg</item>
+        <item>.mpv2</item>
+        <item>.mpg4</item>
+        <item>.mov</item>
+        <item>.mng</item>
+        <item>.movie</item>
+        <item>.qt</item>
+        <item>.lsf</item>
+        <item>.lsx</item>
+        <item>.asf</item>
+        <item>.asr</item>
+        <item>.asx</item>
+        <item>.avi</item>
+        <item>.wmv</item>
+        <item>.3gp</item>
+        <item>.fvi</item>
+        <item>.pvx</item>
+        <item>.rv</item>
+        <item>.vdo</item>
+        <item>.viv</item>
+        <item>.vivo</item>
+        <item>.wm</item>
+        <item>.wmx</item>
+        <item>.wv</item>
+        <item>.wvx</item>
+    </array>
+    <array name="ease_word_file_suffix">
+        <item>.doc</item>
+        <item>.dot</item>
+        <item>.docx</item>
+    </array>
+</resources>
