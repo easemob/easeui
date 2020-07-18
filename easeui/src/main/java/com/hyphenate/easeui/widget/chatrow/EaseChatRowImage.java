@@ -3,11 +3,13 @@ package com.hyphenate.easeui.widget.chatrow;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.support.v4.provider.DocumentFile;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
@@ -124,7 +126,7 @@ public class EaseChatRowImage extends EaseChatRowFile{
 
         if (bitmap != null) {
             // thumbnail image is already loaded, reuse the drawable
-            imageView.setImageBitmap(bitmap);
+            imageView.setImageBitmap(checkBitmap(bitmap));
         } else {
             imageView.setImageResource(R.drawable.ease_default_image);
             new AsyncTask<Object, Void, Bitmap>() {
@@ -182,6 +184,18 @@ public class EaseChatRowImage extends EaseChatRowFile{
                 }
             }.execute();
         }
+    }
+
+    private Bitmap checkBitmap(Bitmap bitmap) {
+        if(bitmap != null) {
+            int width = bitmap.getWidth();
+            int height = bitmap.getHeight();
+            Log.e("TAG", "width = "+width+ " height = "+height);
+            if(width > 160 || height > 160) {
+                return Bitmap.createScaledBitmap(bitmap, 160, 160, true);
+            }
+        }
+        return bitmap;
     }
 
 
