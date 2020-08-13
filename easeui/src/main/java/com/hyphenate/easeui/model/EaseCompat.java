@@ -19,7 +19,6 @@ import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.hyphenate.easeui.R;
-import com.hyphenate.easeui.utils.EasePathUtils;
 import com.hyphenate.util.EMLog;
 import com.hyphenate.util.FileUtils;
 import com.hyphenate.util.UriUtils;
@@ -84,7 +83,7 @@ public class EaseCompat {
             return;
         }
         EMLog.e(TAG, "openFile uri = "+uri + " type = "+type);
-        String filename = EasePathUtils.getFileNameByUri(context, uri);
+        String filename = UriUtils.getFileNameByUri(context, uri);
         Intent intent = new Intent(android.content.Intent.ACTION_VIEW);
         setIntentByType(context, filename, intent);
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
@@ -100,9 +99,9 @@ public class EaseCompat {
     }
 
     public static void openFile(Uri uri, Activity context) {
-        String mimeType = EasePathUtils.getMimeType(context, uri);
+        String mimeType = UriUtils.getMimeType(context, uri);
         if(TextUtils.isEmpty(mimeType) || TextUtils.equals(mimeType, "application/octet-stream")) {
-            mimeType = getMimeType(context, EasePathUtils.getFileNameByUri(context, uri));
+            mimeType = getMimeType(context, UriUtils.getFileNameByUri(context, uri));
         }
         EMLog.d(TAG, "mimeType = "+mimeType);
         openFile(uri, mimeType, context);
@@ -187,8 +186,8 @@ public class EaseCompat {
     }
 
     public static boolean openApk(Context context, Uri uri) {
-        String filename = EasePathUtils.getFileNameByUri(context, uri);
-        String filePath = EasePathUtils.getFilePath(context, uri);
+        String filename = UriUtils.getFileNameByUri(context, uri);
+        String filePath = UriUtils.getFilePath(context, uri);
         if(filename.endsWith(".apk")) {
             if(TextUtils.isEmpty(filePath) || !new File(filePath).exists()) {
                 Toast.makeText(context, "Can't find proper app to open this file", Toast.LENGTH_LONG).show();
@@ -242,7 +241,7 @@ public class EaseCompat {
      */
     public static String getPath(final Context context, final Uri uri) {
 
-        return EasePathUtils.getFilePath(context, uri);
+        return UriUtils.getFilePath(context, uri);
     }
 
 }
