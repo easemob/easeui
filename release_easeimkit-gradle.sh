@@ -18,12 +18,12 @@ function log_print() {
 }
 
 function bintray_upload() {
-	log_print "Start to build easeim-kit aar and upload ..."
+	log_print "Start to build ease-im-kit aar and upload ..."
 	# sdk aar 打包
-	./gradlew :easeui:clean :easeui:build -PisAarRelease=true :easeui:install
+	./gradlew :ease-im-kit:clean :ease-im-kit:build -PisAarRelease=true :ease-im-kit:install
 	# push to jcenter
-	./gradlew -PisAarRelease=true :easeui:bintrayUpload
-	log_print "easeim-kit aar build and upload finish."
+	./gradlew -PisAarRelease=true :ease-im-kit:bintrayUpload
+	log_print "ease-im-kit aar build and upload finish."
 }
 
 bintray_upload
