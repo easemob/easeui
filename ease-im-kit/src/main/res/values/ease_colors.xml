@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="red">#ffff0000</color>
+    <color name="white">#feffffff</color>
+    <color name="black">#ff000000</color>
+    <color name="transparent">@android:color/transparent</color>
+    <color name="gray">#ffe9e9e9</color>
+    <color name="blue">#FF5A5DD0</color>
+    <color name="common_bg">#fcfcfc</color>
+    <color name="btn_gray_normal">#c0c0c0</color>
+    <color name="top_bar_normal_bg">#00acff</color>
+    <color name="error_item_color">#F6EBE6</color>
+    <color name="gray_normal">#666667</color>
+    <color name="emojicon_tab_selected">#D9D9D9</color>
+    <color name="emojicon_tab_nomal">#ffffff</color>
+
+    <color name="voip_interface_text_color">#bababa</color>
+
+    <color name="em_color_brand">#ff04aef0</color>
+    <color name="em_chat_bg">#fff2f2f2</color>
+    <color name="em_toolbar_color_title">@color/black</color>
+    <color name="em_toolbar_color_title_right">@color/black</color>
+
+    <color name="grid_state_pressed">#1Affffff</color>
+    <color name="grid_state_focused">#80000000</color>
+
+    <color name="ease_chat_voice_bg">#ffbbbbbb</color>
+    <color name="ease_chat_video_bg">#ff000000</color>
+
+    <color name="btn_gray_pressed_status">#b5b5b6</color>
+    <color name="btn_gray_pressed">#666667</color>
+    <color name="btn_blue_normal">#1e90ff</color>
+    <color name="btn_blue_pressed">#0066FF</color>
+
+    <color name="ease_color_map_right_normal">#ff48c890</color>
+    <color name="ease_color_map_right_press">#ffe9e9e9</color>
+
+    <color name="ease_base_color_divider">#fff2f2f2</color>
+
+    <color name="ease_color_common_text_black">#ff333333</color>
+
+    <color name="ease_conversation_color_item_name">@color/ease_color_common_text_black</color>
+    <color name="ease_conversation_color_item_mention">#ffff2b2b</color>
+    <color name="ease_conversation_color_item_message">#ff999999</color>
+    <color name="ease_conversation_color_item_time">#ff999999</color>
+
+    <color name="ease_contact_color_item_header">#ff333333</color>
+    <color name="ease_contact_color_item_header_bg">#fff2f2f2</color>
+    <color name="ease_contact_color_item_title">#ff333333</color>
+</resources>

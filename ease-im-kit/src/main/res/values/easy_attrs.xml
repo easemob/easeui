@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="EasyVideoPlayer">
+        <!--播放资源-->
+        <attr name="easy_source" format="string" />
+        <!--播放按钮-->
+        <attr name="easy_playDrawable" format="reference" />
+        <!--暂定按钮-->
+        <attr name="easy_pauseDrawable" format="reference" />
+        <!--播放开始时隐藏控制盘-->
+        <attr name="easy_hideControlsOnPlay" format="boolean" />
+        <!--自动播放-->
+        <attr name="easy_autoPlay" format="boolean" />
+        <!--controls不可用-->
+        <attr name="easy_disableControls" format="boolean" />
+        <!--主题颜色-->
+        <attr name="easy_themeColor" format="color" />
+        <!--全屏-->
+        <attr name="easy_autoFullscreen" format="boolean" />
+        <!--自动循环播放-->
+        <attr name="easy_loop" format="boolean" />
+    </declare-styleable>
+
+</resources>

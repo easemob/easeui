@@ -1,2 +1,3 @@
-include ':app',':easeui'
+include ':ease-im-kit'
+include ':app'
 rootProject.name='easeui'

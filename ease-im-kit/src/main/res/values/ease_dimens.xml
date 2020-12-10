@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="height_top_bar">46dp</dimen>
+    <dimen name="em_toolbar_title_size">18sp</dimen>
+    <dimen name="em_toolbar_title_right_size">16sp</dimen>
+    <dimen name="ease_common_title_bar_height">44dp</dimen>
+
+    <dimen name="margin_chat_activity">10dp</dimen>
+    <dimen name="size_avatar">42dp</dimen>
+    <dimen name="chat_nick_margin_left">12dp</dimen>
+    <dimen name="chat_nick_text_size">13sp</dimen>
+
+    <dimen name="ease_chat_file_icon_size">64dp</dimen>
+    <dimen name="ease_chat_file_icon_margin">8dp</dimen>
+    <dimen name="ease_chat_file_bubble_min_height">80dp</dimen>
+
+    <dimen name="image_thumbnail_size">100dp</dimen>
+    <dimen name="image_thumbnail_spacing">1dp</dimen>
+
+    <dimen name="ease_chat_primary_menu_icon_size">34dp</dimen>
+    <dimen name="ease_chat_primary_menu_more_icon_size">24dp</dimen>
+    <dimen name="ease_chat_primary_menu_send_icon_height_size">30dp</dimen>
+
+    <dimen name="ease_chat_image_corner_radius">8dp</dimen>
+    <dimen name="ease_chat_primary_margin_right">16dp</dimen>
+
+    <dimen name="ease_chat_text_min_height">22dp</dimen>
+
+    <!--头像距离左边或者右边的距离-->
+    <dimen name="ease_chat_avatar_margin">18dp</dimen>
+    <!--内容布局距离头像的距离-->
+    <dimen name="ease_chat_bubble_margin_avatar">10dp</dimen>
+    <!--已送达距离bubble的距离-->
+    <dimen name="ease_chat_ack_margin_bubble">5dp</dimen>
+</resources>

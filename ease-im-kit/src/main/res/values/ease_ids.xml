@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--删除联系人-->
+    <item name="action_friend_delete" type="id"/>
+    <!--添加备注-->
+    <item name="action_add_note" type="id"/>
+
+    <!-- 聊天长按菜单项id -->
+    <!--复制-->
+    <item name="action_chat_copy" type="id"/>
+    <!--删除-->
+    <item name="action_chat_delete" type="id"/>
+    <!--撤回-->
+    <item name="action_chat_recall" type="id"/>
+
+    <!-- 会话列表长按菜单项id -->
+    <!-- 会话列表条目置为已读 -->
+    <item name="action_con_make_read" type="id"/>
+    <!-- 会话列表条目置顶 -->
+    <item name="action_con_make_top" type="id"/>
+    <!-- 会话列表条目取消置顶 -->
+    <item name="action_con_cancel_top" type="id"/>
+    <!-- 会话列表条目删除 -->
+    <item name="action_con_delete" type="id"/>
+
+    <!-- 聊天菜单扩展条目id -->
+    <!-- 拍照 -->
+    <item name="extend_item_take_picture" type="id"/>
+    <!-- 相册 -->
+    <item name="extend_item_picture" type="id"/>
+    <!-- 位置 -->
+    <item name="extend_item_location" type="id"/>
+    <!-- 视频 -->
+    <item name="extend_item_video" type="id"/>
+    <!-- 文件 -->
+    <item name="extend_item_file" type="id"/>
+
+</resources>

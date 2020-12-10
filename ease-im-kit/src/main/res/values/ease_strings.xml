@@ -1,0 +1,159 @@
+<resources>
+    <string name="app_name">easeUI</string>
+
+    <string name="location_recv">[%1$s的位置]</string>
+    <string name="location_prefix">[我的位置]</string>
+    <string name="picture">[图片]</string>
+    <string name="video">[视频]</string>
+    <string name="file">[文件]</string>
+    <string name="custom">[自定义消息]</string>
+    <string name="voice_prefix">[语音]</string>
+    <string name="voice_call">[语音通话]</string>
+    <string name="video_call">[视频通话]</string>
+    <string name="dynamic_expression">[动态表情]</string>
+
+    <string name="were_mentioned">[有人@我]</string>
+    <string name="were_not_send_msg">[草稿]</string>
+
+    <string name="text_ack_msg">已读</string>
+    <string name="text_delivered_msg">送达</string>
+    <string name="not_download">未下载:</string>
+    <string name="have_downloaded">已下载</string>
+    <string name="did_not_download">未下载</string>
+    <string name="have_uploaded">已上传</string>
+    <string name="downwaiting">正在下载文件请稍后</string>
+    <string name="Failed_to_download_file">下载文件失败:</string>
+    <string name="File_expired">文件已过期:</string>
+    <string name="Download_the_pictures">下载图片: 0%</string>
+    <string name="Image_expired">图片已过期!</string>
+    <string name="Video_expired">视频已过期!</string>
+    <string name="Download_the_pictures_new">下载图片:</string>
+    <string name="location_message">位置信息</string>
+    <string name="button_send">发送</string>
+    <string name="Network_error">网络出错</string>
+    <string name="please_check">key 验证出错! 请在 AndroidManifest.xml 文件中检查 key 设置</string>
+    <string name="Making_sure_your_location">正在确定你的位置……</string>
+    <string name="is_down_please_wait">正在下载视频请稍候</string>
+    <string name="Is_download_voice_click_later">正在下载语音，稍后点击</string>
+    <string name="alert_kicked_for_offline">您已由于断线被踢出聊天室,点击重新加入.</string>
+    <string name="button_pushtotalk">按住说话</string>
+    <string name="button_pushtotalk_pressed">松开发送</string>
+    <string name="Recording_without_permission">无录音权限</string>
+    <string name="The_recording_time_is_too_short">说话时间太短</string>
+    <string name="send_failure_please">发送失败，请检测服务器是否连接</string>
+    <string name="Send_voice_need_sdcard_support">发送语音需要sdcard支持</string>
+    <string name="move_up_to_cancel">手指上滑\u0020\u0020取消发送</string>
+    <string name="release_to_cancel">松开手指\u0020\u0020取消发送</string>
+    <string name="send_fail">发送消息失败,</string>
+    <string name="recoding_fail">录音失败，请重试！</string>
+    <string name="attach_smile">表情</string>
+    <string name="attach_picture">相册</string>
+    <string name="attach_take_pic">相机</string>
+    <string name="attach_location">位置</string>
+    <string name="attach_video">视频</string>
+    <string name="attach_file">文件</string>
+    <string name="attach_media_call">音视频</string>
+    <string name="attach_voice_call">语音电话</string>
+    <string name="attach_video_call">视频通话</string>
+    <string name="sd_card_does_not_exist">SD卡不存在，不能拍照</string>
+    <string name="cant_find_pictures">找不到图片</string>
+    <string name="File_does_not_exist">文件不存在</string>
+    <string name="unable_to_get_loaction">无法获取到您的位置信息!</string>
+    <string name="alert_during_typing">正在输入 &#8230;</string>
+    <string name= "no_more_messages">没有更多的消息了</string>
+    <string name="all_members">所有成员</string>
+    <string name="not_connect_to_server">尚未连接至服务器，请稍后重试</string>
+
+    <string name="msg_recall_by_self">您撤回了一条消息</string>
+    <string name="msg_recall_by_user">%1$s 撤回了一条消息</string>
+
+    <string name="Video_footage">拍摄录像</string>
+    <string name="recording_video">录制视频</string>
+    <string name="The_video_to_start">录像开始</string>
+    <string name="Whether_to_send">是否发送？</string>
+    <string name="ok">确定</string>
+    <string name="cancel">取消</string>
+    <string name="prompt">提示</string>
+    <string name="Open_the_equipment_failure">打开设备失败!</string>
+
+    <string name="The_other_party_has_refused_to">对方已拒绝</string>
+    <string name="The_other_is_not_online">对方不在线</string>
+    <string name="The_other_is_on_the_phone">对方正在通话中</string>
+    <string name="The_other_party_did_not_answer">未接听</string>
+    <string name="did_not_answer">已挂断</string>
+    <string name="Has_been_cancelled">已取消</string>
+    <string name="illegal_user_name">用户名不合法</string>
+    <string name="can_not_connect_chat_server_connection">连接不到聊天服务器</string>
+    <string name="call_duration">通话时长</string>
+    <string name="Refused">已拒绝</string>
+    <string name="call_version_inconsistent">通话协议不一致，请升级到最新版本</string>
+    <string name="switch_camera">切换摄像头</string>
+    <string name="mute">静音</string>
+    <string name="Hands_free">免提</string>
+    <string name="hang_up">挂断</string>
+    <string name="has_been_hang_up">已挂断</string>
+    <string name="answer">接听</string>
+    <string name="Are_connected_to_each_other">正在连接，请稍等</string>
+    <string name="Is_not_yet_connected_to_the_server">尚未连接至服务器</string>
+    <string name="In_the_call">通话中……</string>
+    <string name="The_other_party_refused_to_accept">已拒绝</string>
+    <string name="Connection_failure">连接建立失败，请重试</string>
+    <string name="The_other_party_is_not_online">对方不在线，请稍后再试</string>
+    <string name="The_other_is_on_the_phone_please">正在通话中，请稍后再试</string>
+    <string name="The_other_is_hang_up">已挂断</string>
+    <string name="The_other_party_did_not_answer_new">未接听</string>
+    <string name="direct_call">Direct</string>
+    <string name="relay_call">Relay</string>
+    <string name="network_unavailable">网络连接不可用，请检查网络</string>
+    <string name="network_unstable">网络不稳定</string>
+    <string name="no_call_data">没有通话数据</string>
+    <string name="hanging_up">正在挂断</string>
+    <string name="have_connected_with">已经和对方建立连接</string>
+    <string name="voice_and_video_conference">音视频会议</string>
+    <string name="title_live">互动视频</string>
+    <string name="resend">重发</string>
+    <string name="confirm_resend">确认重发该信息？</string>
+    <string name="answering">接通中</string>
+
+    <!-- For group ack start -->
+    <string name="title_group_notification">群通知</string>
+    <string name="title_ack_read_list">已读列表</string>
+    <string name="group_ack_read_count">%1$d 已读</string>
+
+    <string name="search_new">搜</string>
+    <string name="has_been_send">已发送</string>
+
+    <string name="ease_search_text_hint">搜索</string>
+
+    <string name="ease_list_no_data_text">暂无数据</string>
+    <string name="ease_list_no_conversation_data_text">暂无聊天数据</string>
+
+    <string name="ease_map_title">位置信息</string>
+
+    <string name="custom_message">自定义消息: %1$s</string>
+
+    <string name="ease_conversation_menu_make_read">置为已读</string>
+    <string name="ease_conversation_menu_make_top">置顶</string>
+    <string name="ease_conversation_menu_cancel_top">取消置顶</string>
+    <string name="ease_conversation_menu_delete">删除会话</string>
+    <string name="ease_delete_conversation_error">删除失败或不存在该对话</string>
+    <string name="ease_friends_delete_the_contact">删除联系人</string>
+    <string name="ease_friends_delete_contact_hint">是否删除联系人？</string>
+    <string name="ease_check_file_exist">请检查消息附件是否存在！</string>
+
+    <string name="ease_conversation_delete_item_fail">删除失败！</string>
+    <string name="ease_conversation_system_message">系统消息</string>
+
+    <string name="ease_contact_delete_item_fail">删除失败！</string>
+    <string name="ease_contact_menu_add_note">设置备注</string>
+    <string name="ease_contact_add_note_developing">功能开发中，敬请期待</string>
+
+    <string name="action_copy">复制</string>
+    <string name="action_forward">转发</string>
+    <string name="action_recall">撤回</string>
+    <string name="action_delete">删除</string>
+    <string name="action_multi_select">多选</string>
+    <string name="delete_voice">删除语音</string>
+    <string name="delete_video">删除视频</string>
+
+</resources>

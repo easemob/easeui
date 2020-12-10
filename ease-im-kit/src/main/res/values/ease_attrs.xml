@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="EaseTitleBar">
+        <!-- 标题文本 -->
+        <attr name="titleBarTitle" format="reference|string"/>
+        <!-- 左侧图片 -->
+        <attr name="titleBarLeftImage" format="reference"/>
+        <!-- 右侧图片 -->
+        <attr name="titleBarRightImage" format="reference"/>
+        <!-- 右标题文本 -->
+        <attr name="titleBarRightTitle" format="reference|string"/>
+        <!-- Toolbar返回箭头颜色 -->
+        <attr name="titleBarArrowColor" format="reference|color"/>
+        <!-- Toolbar右侧菜单更多的图标 -->
+        <attr name="titleBarMenuResource" format="reference"/>
+        <!-- Toolbar是否可见返回按钮 -->
+        <attr name="titleBarDisplayHomeAsUpEnabled" format="boolean"/>
+        <!-- 右侧布局是否可见 -->
+        <attr name="titleBarRightVisible" format="boolean"/>
+        <!-- 标题文本的位置-->
+        <attr name="titleBarTitlePosition" format="enum">
+            <enum name="center" value="0"/>
+            <enum name="left" value="1"/>
+            <enum name="right" value="2"/>
+        </attr>
+        <!-- 标题文本的字体大小 -->
+        <attr name="titleBarTitleTextSize" format="dimension"/>
+        <!-- 标题文本的字体颜色 -->
+        <attr name="titleBarTitleTextColor" format="reference|color"/>
+    </declare-styleable>
+
+    <declare-styleable name="EaseImageView">
+        <attr name="ease_border_color" format="color" />
+        <attr name="ease_border_width" format="dimension" />
+        <attr name="ease_press_alpha" format="integer" />
+        <attr name="ease_press_color" format="color" />
+        <attr name="ease_radius" format="dimension" />
+        <attr name="ease_shape_type" format="enum">
+            <enum name="none" value="0" />
+            <enum name="round" value="1" />
+            <enum name="rectangle" value="2" />
+        </attr>
+    </declare-styleable>
+
+    <declare-styleable name="EaseSearchTextView">
+        <attr name="search_drawable_left_width" format="dimension"/>
+        <attr name="search_drawable_left_height" format="dimension"/>
+        <attr name="search_drawable_right_width" format="dimension"/>
+        <attr name="search_drawable_right_height" format="dimension"/>
+    </declare-styleable>
+
+    <declare-styleable name="EaseSearchEditText">
+        <attr name="search_edit_drawable_left_width" format="dimension"/>
+        <attr name="search_edit_drawable_left_height" format="dimension"/>
+        <attr name="search_edit_drawable_right_width" format="dimension"/>
+        <attr name="search_edit_drawable_right_height" format="dimension"/>
+    </declare-styleable>
+
+    <declare-styleable name="EaseSidebar">
+        <attr name="ease_side_bar_top_text" format="reference|string"/>
+        <attr name="ease_side_bar_text_color" format="reference|color"/>
+        <attr name="ease_side_bar_text_size" format="dimension"/>
+        <attr name="ease_side_bar_background" format="reference|color"/>
+        <attr name="ease_side_bar_head_arrays" format="reference"/>
+    </declare-styleable>
+
+    <declare-styleable name="EaseChatExtendMenu">
+        <attr name="numColumns" format="integer"/>
+        <attr name="numRows" format="integer"/>
+    </declare-styleable>
+
+    <declare-styleable name="EaseEmojiconMenu">
+        <attr name="bigEmojiconRows" format="integer"/>
+        <attr name="emojiconColumns" format="integer"/>
+    </declare-styleable>
+
+    <declare-styleable name="EaseChatInputMenu">
+        <attr name="chat_extend_menu_num_columns" format="integer"/>
+        <attr name="chat_extend_menu_vertical_spacing" format="dimension"/>
+    </declare-styleable>
+
+    <declare-styleable name="EaseChatMessageList">
+        <attr name="msgListMyBubbleBackground" format="reference"/>
+        <attr name="msgListOtherBubbleBackground" format="reference"/>
+        <attr name="msgListShowUserAvatar" format="boolean"/>
+        <attr name="msgListShowUserNick" format="boolean"/>
+    </declare-styleable>
+
+    <declare-styleable name="EaseRoundImageView">
+        <attr name="ease_round_border_color" format="color" />
+        <attr name="ease_round_border_width" format="dimension" />
+        <attr name="ease_round_press_alpha" format="integer" />
+        <attr name="ease_round_press_color" format="color" />
+        <attr name="ease_round_radius" format="dimension" />
+        <attr name="ease_round_show_left_up" format="boolean"/>
+        <attr name="ease_round_show_left_down" format="boolean"/>
+        <attr name="ease_round_show_right_up" format="boolean"/>
+        <attr name="ease_round_show_right_down" format="boolean"/>
+        <attr name="roundWidth" format="dimension" />
+        <attr name="roundHeight" format="dimension" />
+        <attr name="ease_round_shape_type" format="enum">
+            <enum name="round" value="1" />
+            <enum name="rectangle" value="2" />
+        </attr>
+    </declare-styleable>
+
+    <declare-styleable name="EaseConversationListLayout">
+        <attr name="ease_con_item_title_text_size" format="dimension"/>
+        <attr name="ease_con_item_title_text_color" format="reference|color"/>
+        <attr name="ease_con_item_content_text_size" format="dimension"/>
+        <attr name="ease_con_item_content_text_color" format="reference|color"/>
+        <attr name="ease_con_item_date_text_size" format="dimension"/>
+        <attr name="ease_con_item_date_text_color" format="reference|color"/>
+        <attr name="ease_con_item_mention_text_size" format="dimension"/>
+        <attr name="ease_con_item_mention_text_color" format="reference|color"/>
+        <!-- 头像大小 宽和高一样 -->
+        <attr name="ease_con_item_avatar_size" format="dimension"/>
+        <!-- 头像形状 -->
+        <attr name="ease_con_item_avatar_shape_type" format="enum">
+            <enum name="none" value="0" />
+            <enum name="round" value="1" />
+            <enum name="rectangle" value="2" />
+        </attr>
+        <!-- 头像圆角半径 -->
+        <attr name="ease_con_item_avatar_radius" format="dimension"/>
+        <!-- 描边宽度 -->
+        <attr name="ease_con_item_avatar_border_width" format="dimension"/>
+        <!-- 描边颜色 -->
+        <attr name="ease_con_item_avatar_border_color" format="reference|color"/>
+        <attr name="ease_con_item_height" format="dimension"/>
+        <attr name="ease_con_item_background" format="reference|color"/>
+        <attr name="ease_con_item_unread_dot_position" format="enum">
+            <enum name="left" value="0"/>
+            <enum name="right" value="1"/>
+        </attr>
+        <!-- 是否展示系统消息 -->
+        <attr name="ease_con_item_show_system_message" format="boolean"/>
+    </declare-styleable>
+
+    <declare-styleable name="EaseContactListLayout">
+        <attr name="ease_contact_item_title_text_size" format="dimension"/>
+        <attr name="ease_contact_item_title_text_color" format="reference|color"/>
+        <attr name="ease_contact_item_header_text_size" format="dimension"/>
+        <attr name="ease_contact_item_header_text_color" format="reference|color"/>
+        <attr name="ease_contact_item_header_background" format="reference|color"/>
+        <!-- 设置默认头像 -->
+        <attr name="ease_contact_item_avatar_default_src" format="reference"/>
+        <!-- 头像大小 宽和高一样 -->
+        <attr name="ease_contact_item_avatar_size" format="dimension"/>
+        <!-- 头像形状 -->
+        <attr name="ease_contact_item_avatar_shape_type" format="enum">
+            <enum name="none" value="0" />
+            <enum name="round" value="1" />
+            <enum name="rectangle" value="2" />
+        </attr>
+        <!-- 头像圆角半径 -->
+        <attr name="ease_contact_item_avatar_radius" format="dimension"/>
+        <!-- 描边宽度 -->
+        <attr name="ease_contact_item_avatar_border_width" format="dimension"/>
+        <!-- 描边颜色 -->
+        <attr name="ease_contact_item_avatar_border_color" format="reference|color"/>
+        <attr name="ease_contact_item_height" format="dimension"/>
+        <attr name="ease_contact_item_background" format="reference|color"/>
+    </declare-styleable>
+
+    <declare-styleable name="EaseChatMessageListLayout">
+        <!-- 文本消息文本字体大小 -->
+        <attr name="ease_chat_item_text_size" format="dimension"/>
+        <!-- 文本消息文本颜色 -->
+        <attr name="ease_chat_item_text_color" format="reference|color"/>
+        <!-- 文本消息文本最小高度 -->
+        <attr name="ease_chat_item_min_height" format="dimension"/>
+        <!-- 时间线文本字体大小 -->
+        <attr name="ease_chat_item_time_text_size" format="dimension"/>
+        <!-- 时间线文本字体颜色 -->
+        <attr name="ease_chat_item_time_text_color" format="reference|color"/>
+        <!-- 时间线背景色 -->
+        <attr name="ease_chat_item_time_background" format="reference|color"/>
+        <!-- 设置默认头像 -->
+        <attr name="ease_chat_item_avatar_default_src" format="reference"/>
+        <!-- 头像大小 宽和高一样 -->
+        <!--<attr name="ease_chat_item_avatar_size" format="dimension"/>-->
+        <!-- 头像形状 -->
+        <attr name="ease_chat_item_avatar_shape_type" format="enum">
+            <enum name="none" value="0" />
+            <enum name="round" value="1" />
+            <enum name="rectangle" value="2" />
+        </attr>
+        <!-- 头像圆角半径 -->
+        <!--<attr name="ease_chat_item_avatar_radius" format="dimension"/>-->
+        <!-- 描边宽度 -->
+        <!--<attr name="ease_chat_item_avatar_border_width" format="dimension"/>-->
+        <!-- 描边颜色 -->
+        <!--<attr name="ease_chat_item_avatar_border_color" format="reference|color"/>-->
+        <!-- 条目背景资源 -->
+        <attr name="ease_chat_item_receiver_background" format="reference|color"/>
+        <attr name="ease_chat_item_sender_background" format="reference|color"/>
+        <!-- 是否展示头像 -->
+        <!--<attr name="ease_chat_item_show_avatar" format="boolean"/>-->
+        <!-- 是否展示昵称 -->
+        <attr name="ease_chat_item_show_nickname" format="boolean"/>
+        <!-- 条目的展示形式 -->
+        <attr name="ease_chat_item_show_type" format="enum">
+            <enum name="normal" value="0"/>
+            <enum name="left" value="1"/>
+            <enum name="right" value="2"/>
+        </attr>
+    </declare-styleable>
+
+</resources>

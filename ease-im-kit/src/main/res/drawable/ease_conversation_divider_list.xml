@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="@color/ease_base_color_divider"/>
+    <padding android:left="78dp"/>
+    <size android:height="1dp"/>
+</shape>
