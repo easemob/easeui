@@ -43,7 +43,7 @@ def ndkBuildPrefix = "."
 def projectName = 'ease-im-kit'
 project.archivesBaseName=projectName
 group = "com.hyphenate"//groupId
-version = '1.0.0'//发布aar的库版本
+version = project.sdkVersion//发布aar的库版本
 
 install {
     repositories.mavenInstaller {
