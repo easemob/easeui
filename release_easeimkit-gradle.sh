@@ -47,6 +47,16 @@ function fetch_code_from_git() {
 	echo -e "\n** SDK版本为：$SDK_VERSION **\n"
 }
 
+function prepare() {
+    cp emclient-android/hyphenatechatsdk/res/layout/em_simple_notification.xml easeui/EaseIMKit/src/main/res/layout
+}
+
+function add_tag() {
+	TAG=$1
+        echo "add tag $TAG"
+        (echo "easeui"; cd easeui; git tag $TAG; git push origin $TAG;)
+}
+
 function bintray_upload() {
 	log_print "Start to build ease-im-kit aar and upload ..."
 	# sdk aar 打包
@@ -57,7 +67,25 @@ function bintray_upload() {
 }
 
 get_sdk_version
-fetch_code_from_git
-bintray_upload
+if [[ $# == 0 ]];then
+  fetch_code_from_git
+  prepare
+  bintray_upload
+elif [[ $# -ge 1 ]];then
+  if [[ $1 = "add_tag" ]];then
+      if [[ $# -eq 1 ]];then
+			  TAG=$SDK_VERSION
+		  else
+			  TAG=$2
+		  fi
+      echo "confirm to add tag \"$TAG\" to remote server[yes/no]?"
+		  read confirm
+		  if [[ $confirm = 'yes' ]];then
+			  add_tag $TAG
+			  exit 0
+		  fi
+  fi
+fi
+
 
 
