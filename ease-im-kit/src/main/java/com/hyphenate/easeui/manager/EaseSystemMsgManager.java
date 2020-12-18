@@ -189,17 +189,33 @@ public class EaseSystemMsgManager {
      * @return
      */
     public boolean updateMessage(EMMessage message) {
-        if(message == null) {
+        if(message == null || !isSystemMessage(message)) {
             return false;
         }
-        if(!isSystemMessage(message)) {
+        EMClient.getInstance().chatManager().updateMessage(message);
+        return true;
+    }
+
+    /**
+     * 移除系统消息
+     * @param message
+     * @return
+     */
+    public boolean removeMessage(EMMessage message) {
+        if(message == null || !isSystemMessage(message)) {
             return false;
         }
         EMConversation conversation = EMClient.getInstance().chatManager().getConversation(EaseConstant.DEFAULT_SYSTEM_MESSAGE_ID);
         conversation.removeMessage(message.getMsgId());
-        EMClient.getInstance().chatManager().saveMessage(message);
         return true;
     }
 
+    /**
+     * 将会话置为已读
+     */
+    public void markAllMessagesAsRead() {
+        EMConversation conversation = EMClient.getInstance().chatManager().getConversation(EaseConstant.DEFAULT_SYSTEM_MESSAGE_ID);
+        conversation.markAllMessagesAsRead();
+    }
 }
 

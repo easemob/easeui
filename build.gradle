@@ -33,6 +33,13 @@ if (JavaVersion.current().isJava8Compatible()) {
     }
 }
 
+ext{
+    if(!project.hasProperty('sdkVersion')){
+        sdkVersion = '3.2.3'
+    }
+}
+
+
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
