@@ -37,7 +37,10 @@ android {
 
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    //implementation fileTree(dir: 'libs', include: ['*.jar'])
+    // baidu
+    compileOnly files('libs/BaiduLBS_Android.jar')
+
     //api project(':hyphenatechatsdk')
     implementation 'com.hyphenate:hyphenate-sdk:3.7.2'
     implementation 'androidx.appcompat:appcompat:1.2.0'
