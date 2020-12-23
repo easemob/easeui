@@ -189,6 +189,9 @@ public class EaseChatMessageListLayout extends RelativeLayout implements IChatMe
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
+        if(conversation != null) {
+            conversation.markAllMessagesAsRead();
+        }
         EaseChatItemStyleHelper.getInstance().clear();
     }
 

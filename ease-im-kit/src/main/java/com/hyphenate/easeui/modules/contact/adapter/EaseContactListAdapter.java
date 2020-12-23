@@ -130,7 +130,10 @@ public class EaseContactListAdapter extends EaseBaseRecyclerViewAdapter<EaseUser
         public void setData(EaseUser item, int position) {
             EaseUserProfileProvider provider = EaseIM.getInstance().getUserProvider();
             if(provider != null) {
-                item = provider.getUser(item.getUsername());
+                EaseUser user = provider.getUser(item.getUsername());
+                if(user != null) {
+                    item = user;
+                }
             }
             String header = item.getInitialLetter();
             mHeader.setVisibility(View.GONE);
