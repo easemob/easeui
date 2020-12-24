@@ -304,7 +304,7 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
 
         isNotFirstSend = false;
         // remove all pedding msgs to avoid memory leak.
-        handler.removeCallbacksAndMessages(null);
+        handler.removeMessages(MSG_TYPING_END);
         // Send TYPING-END cmd msg
         //presenter.sendCmdMessage(ACTION_TYPING_END);
     }
@@ -434,6 +434,14 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
         this.recallMessageListener = listener;
     }
 
+    /**
+     * 发送逻辑：如果正在输入，第一次发送一条cmd消息，然后每隔10s发送一次；
+     * 如果停止发送超过10s后，则状态需重置。
+     * @param s
+     * @param start
+     * @param before
+     * @param count
+     */
     @Override
     public void onTyping(CharSequence s, int start, int before, int count) {
         if(listener != null) {
@@ -444,9 +452,9 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
                 if(!isNotFirstSend) {
                     isNotFirstSend = true;
                     typingHandler.sendEmptyMessage(MSG_TYPING_HEARTBEAT);
+                    typingHandler.removeMessages(MSG_TYPING_END);
+                    typingHandler.sendEmptyMessageDelayed(MSG_TYPING_END, TYPING_SHOW_TIME);
                 }
-                typingHandler.removeMessages(MSG_TYPING_END);
-                typingHandler.sendEmptyMessageDelayed(MSG_TYPING_END, TYPING_SHOW_TIME);
             }
         }
     }
@@ -508,6 +516,11 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
         }
     }
 
+    /**
+     * 接收到正在输入动作的处理逻辑：
+     * 如果接收到正在输入的消息，则开始计时，5s内如果没有接收到新的消息，则输入状态结束
+     * @param messages
+     */
     @Override
     public void onCmdMessageReceived(List<EMMessage> messages) {
         // 对方是否正在输入的消息回调

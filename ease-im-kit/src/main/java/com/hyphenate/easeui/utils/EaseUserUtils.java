@@ -27,7 +27,8 @@ public class EaseUserUtils {
      * @return
      */
     public static EaseUser getUserInfo(String username){
-        return EaseIM.getInstance().getUserProvider().getUser(username);
+        EaseUserProfileProvider provider = EaseIM.getInstance().getUserProvider();
+        return provider == null ? null : provider.getUser(username);
     }
 
     /**
