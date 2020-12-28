@@ -48,6 +48,7 @@ public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutLi
     public int chatType;
     public String historyMsgId;
     public boolean isRoam;
+    public boolean isMessageInit;
     private OnChatLayoutListener listener;
 
     protected File cameraFile;
@@ -108,6 +109,15 @@ public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutLi
                 chatLayout.init(conversationId, chatType);
             }
             chatLayout.loadDefaultData();
+        }
+        isMessageInit = true;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if(isMessageInit) {
+            chatLayout.getChatMessageListLayout().refreshMessages();
         }
     }
 
