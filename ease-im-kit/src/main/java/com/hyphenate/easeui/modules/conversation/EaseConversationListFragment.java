@@ -13,6 +13,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.interfaces.OnItemClickListener;
+import com.hyphenate.easeui.modules.conversation.interfaces.OnConversationChangeListener;
 import com.hyphenate.easeui.modules.conversation.interfaces.OnConversationLoadListener;
 import com.hyphenate.easeui.modules.conversation.model.EaseConversationInfo;
 import com.hyphenate.easeui.modules.menu.EasePopupMenuHelper;
@@ -23,7 +24,7 @@ import com.hyphenate.util.EMLog;
 
 import java.util.List;
 
-public class EaseConversationListFragment extends EaseBaseFragment implements OnItemClickListener, OnPopupMenuItemClickListener, OnPopupMenuPreShowListener, SwipeRefreshLayout.OnRefreshListener, OnConversationLoadListener {
+public class EaseConversationListFragment extends EaseBaseFragment implements OnItemClickListener, OnPopupMenuItemClickListener, OnPopupMenuPreShowListener, SwipeRefreshLayout.OnRefreshListener, OnConversationLoadListener, OnConversationChangeListener {
     private static final String TAG = EaseConversationListFragment.class.getSimpleName();
     public LinearLayout llRoot;
     public EaseConversationListLayout conversationListLayout;
@@ -64,6 +65,7 @@ public class EaseConversationListFragment extends EaseBaseFragment implements On
         conversationListLayout.setOnPopupMenuItemClickListener(this);
         conversationListLayout.setOnPopupMenuPreShowListener(this);
         conversationListLayout.setOnConversationLoadListener(this);
+        conversationListLayout.setOnConversationChangeListener(this);
         srlRefresh.setOnRefreshListener(this);
     }
 
@@ -125,6 +127,21 @@ public class EaseConversationListFragment extends EaseBaseFragment implements On
         if(!mContext.isFinishing() && srlRefresh != null) {
             runOnUiThread(()->srlRefresh.setRefreshing(false));
         }
+    }
+
+    @Override
+    public void notifyItemChange(int position) {
+
+    }
+
+    @Override
+    public void notifyAllChange() {
+
+    }
+
+    @Override
+    public void notifyItemRemove(int position) {
+
     }
 }
 

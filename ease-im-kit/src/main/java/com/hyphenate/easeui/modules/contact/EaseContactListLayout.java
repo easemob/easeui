@@ -217,8 +217,8 @@ public class EaseContactListLayout extends EaseRecyclerView implements IEaseCont
         menuHelper.setOnPopupMenuItemClickListener(new OnPopupMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item, int menuPos) {
-                if(popupMenuItemClickListener != null) {
-                    return popupMenuItemClickListener.onMenuItemClick(item, position);
+                if(popupMenuItemClickListener != null && popupMenuItemClickListener.onMenuItemClick(item, position)) {
+                    return true;
                 }
                 if(item.getItemId() == R.id.action_add_note) {
                     presenter.addNote(position, user);
