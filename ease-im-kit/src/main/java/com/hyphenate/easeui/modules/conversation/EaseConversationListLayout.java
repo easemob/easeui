@@ -311,14 +311,15 @@ public class EaseConversationListLayout extends EaseBaseLayout implements IConve
         if(info.getInfo() instanceof EMConversation) {
             menuHelper.findItemVisible(R.id.action_con_make_read, ((EMConversation) info.getInfo()).getUnreadMsgCount() > 0);
         }
+        menuHelper.findItemVisible(R.id.action_con_make_read, false);
         if(menuPreShowListener != null) {
             menuPreShowListener.onMenuPreShow(menuHelper, position);
         }
         menuHelper.setOnPopupMenuItemClickListener(new OnPopupMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item, int menuPos) {
-                if(popupMenuItemClickListener != null) {
-                    return popupMenuItemClickListener.onMenuItemClick(item, position);
+                if(popupMenuItemClickListener != null && popupMenuItemClickListener.onMenuItemClick(item, position)) {
+                    return true;
                 }
                 int itemId = item.getItemId();
                 if(itemId == R.id.action_con_make_read) {

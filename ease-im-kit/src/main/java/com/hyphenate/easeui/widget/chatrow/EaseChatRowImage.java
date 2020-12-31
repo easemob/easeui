@@ -63,7 +63,10 @@ public class EaseChatRowImage extends EaseChatRowFile {
         imgBody = (EMImageMessageBody) message.getBody();
         // received messages
         if (message.direct() == EMMessage.Direct.RECEIVE) {
-            imageView.setImageResource(R.drawable.ease_default_image);
+            ViewGroup.LayoutParams params = EaseImageUtils.getImageShowSize(context, message);
+            ViewGroup.LayoutParams layoutParams = imageView.getLayoutParams();
+            layoutParams.width = params.width;
+            layoutParams.height = params.height;
             return;
         }
         showImageView(message);
@@ -88,7 +91,7 @@ public class EaseChatRowImage extends EaseChatRowFile {
             super.onMessageInProgress();
         }else {
             if(EMClient.getInstance().getOptions().getAutodownloadThumbnail()){
-                imageView.setImageResource(R.drawable.ease_default_image);
+                //imageView.setImageResource(R.drawable.ease_default_image);
             }else {
                 progressBar.setVisibility(View.INVISIBLE);
                 if(percentageView != null) {

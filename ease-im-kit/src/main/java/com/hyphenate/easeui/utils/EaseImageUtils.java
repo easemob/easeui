@@ -13,6 +13,7 @@
  */
 package com.hyphenate.easeui.utils;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -106,6 +107,71 @@ public class EaseImageUtils extends com.hyphenate.util.ImageUtils{
 		return showImage(context, imageView, localThumbUri, thumbnailUrl, width, height);
 	}
 
+	public static ViewGroup.LayoutParams getImageShowSize(Context context, EMMessage message) {
+		ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+		EMMessageBody body = message.getBody();
+		if(!(body instanceof EMImageMessageBody)) {
+			return params;
+		}
+		//获取图片的长和宽
+		int width = ((EMImageMessageBody) body).getWidth();
+		int height = ((EMImageMessageBody) body).getHeight();
+		//获取图片本地资源地址
+		Uri imageUri = ((EMImageMessageBody) body).getLocalUri();
+		if(!UriUtils.isFileExistByUri(context, imageUri)) {
+			imageUri = ((EMImageMessageBody) body).thumbnailLocalUri();
+		}
+		//图片附件上传之前从消息体中获取不到图片的长和宽
+		if(width == 0 || height == 0) {
+			BitmapFactory.Options options = null;
+			try {
+				options = ImageUtils.getBitmapOptions(context, imageUri);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			if(options != null) {
+				width = options.outWidth;
+				height = options.outHeight;
+			}
+		}
+		int[] maxSize = getImageMaxSize(context);
+		int maxWidth = maxSize[0];
+		int maxHeight = maxSize[1];
+
+		float mRadio = maxWidth * 1.0f / maxHeight;
+		float radio  = width * 1.0f / (height == 0 ? 1 : height);
+		if(radio == 0) {
+			radio = 1;
+		}
+		//按原图展示的情况
+		if((maxHeight == 0 && maxWidth == 0) /*|| (width <= maxWidth && height <= maxHeight)*/) {
+			return params;
+		}
+		//如果宽度方向大于最大值，且宽高比过大,将图片设置为centerCrop类型
+		//宽度方向设置为最大值，高度的话设置为宽度的1/2
+		if(mRadio / radio < 0.1f) {
+			params.width = maxWidth;
+			params.height = maxWidth / 2;
+		}else if(mRadio / radio > 4) {
+			//如果高度方向大于最大值，且宽高比过大,将图片设置为centerCrop类型
+			//高度方向设置为最大值，宽度的话设置为宽度的1/2
+			params.width = maxHeight / 2;
+			params.height = maxHeight;
+		}else {
+			//对比图片的宽高比，找到最接近最大值的，其余方向，按比例缩放
+			if(radio < mRadio) {
+				//说明高度方向上更大
+				params.height = maxHeight;
+				params.width = (int) (maxHeight * radio);
+			}else {
+				//宽度方向上更大
+				params.width = maxWidth;
+				params.height = (int) (maxWidth / radio);
+			}
+		}
+		return params;
+	}
+
 	/**
 	 * 展示图片
 	 * @param context
@@ -173,6 +239,9 @@ public class EaseImageUtils extends com.hyphenate.util.ImageUtils{
 
 		//按原图展示的情况
 		if((maxHeight == 0 && maxWidth == 0) /*|| (width <= maxWidth && height <= maxHeight)*/) {
+			if(context instanceof Activity && (((Activity) context).isFinishing() || ((Activity) context).isDestroyed())) {
+				return imageView.getLayoutParams();
+			}
 			Glide.with(context).load(imageUri == null ? imageUrl : imageUri).diskCacheStrategy(DiskCacheStrategy.ALL).into(imageView);
 			return imageView.getLayoutParams();
 		}
@@ -201,11 +270,15 @@ public class EaseImageUtils extends com.hyphenate.util.ImageUtils{
 				params.height = (int) (maxWidth / radio);
 			}
 		}
+		if(context instanceof Activity && (((Activity) context).isFinishing() || ((Activity) context).isDestroyed())) {
+			return params;
+		}
 		Glide.with(context)
 				.load(imageUri == null ? imageUrl : imageUri)
 				.apply(new RequestOptions()
 						.error(R.drawable.ease_default_image))
 				.diskCacheStrategy(DiskCacheStrategy.ALL)
+				.override(params.width, params.height)
 				.into(imageView);
 		return params;
 	}
