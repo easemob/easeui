@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.IdRes;
+import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -30,6 +31,9 @@ public abstract class EaseBaseRecyclerViewAdapter<T> extends EaseBaseAdapter<Eas
     private OnItemLongClickListener mOnItemLongClickListener;
     public Context mContext;
     public List<T> mData;
+    private boolean hideEmptyView;
+    private View emptyView;
+    private int emptyViewId;
 
     @NonNull
     @Override
@@ -137,6 +141,15 @@ public abstract class EaseBaseRecyclerViewAdapter<T> extends EaseBaseAdapter<Eas
      */
     private ViewHolder getEmptyViewHolder(ViewGroup parent) {
         View emptyView = getEmptyView(parent);
+        if(this.emptyView != null) {
+            emptyView = this.emptyView;
+        }
+        if(this.emptyViewId > 0) {
+            emptyView = LayoutInflater.from(mContext).inflate(this.emptyViewId, parent, false);
+        }
+        if(hideEmptyView) {
+            emptyView = LayoutInflater.from(mContext).inflate(R.layout.ease_layout_no_data_show_nothing, parent, false);
+        }
         return new ViewHolder<T>(emptyView) {
 
             @Override
@@ -149,6 +162,33 @@ public abstract class EaseBaseRecyclerViewAdapter<T> extends EaseBaseAdapter<Eas
 
             }
         };
+    }
+
+    /**
+     * 隐藏空白布局
+     * @param hide
+     */
+    public void hideEmptyView(boolean hide) {
+        hideEmptyView = hide;
+        notifyDataSetChanged();
+    }
+
+    /**
+     * 设置空白布局
+     * @param emptyView
+     */
+    public void setEmptyView(View emptyView) {
+        this.emptyView = emptyView;
+        notifyDataSetChanged();
+    }
+
+    /**
+     * 设置空白布局
+     * @param emptyViewId
+     */
+    public void setEmptyView(@LayoutRes int emptyViewId) {
+        this.emptyViewId = emptyViewId;
+        notifyDataSetChanged();
     }
 
     /**
