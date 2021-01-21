@@ -44,6 +44,7 @@ import com.hyphenate.easeui.manager.EaseThreadManager;
 import com.hyphenate.easeui.modules.chat.interfaces.ChatInputMenuListener;
 import com.hyphenate.easeui.modules.chat.interfaces.IChatLayout;
 import com.hyphenate.easeui.modules.chat.interfaces.OnChatLayoutListener;
+import com.hyphenate.easeui.modules.chat.interfaces.OnChatVoiceTouchListener;
 import com.hyphenate.easeui.modules.chat.interfaces.OnMenuChangeListener;
 import com.hyphenate.easeui.modules.chat.interfaces.OnRecallMessageResultListener;
 import com.hyphenate.easeui.modules.chat.presenter.EaseHandleMessagePresenter;
@@ -101,6 +102,10 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
      * 用于监听消息的变化
      */
     private OnChatLayoutListener listener;
+    /**
+     * 用于监听发送语音的触摸事件
+     */
+    private OnChatVoiceTouchListener voiceTouchListener;
     private EaseHandleMessagePresenter presenter;
     /**
      * 是否展示默认菜单
@@ -430,6 +435,11 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
     }
 
     @Override
+    public void setOnChatVoiceTouchListener(OnChatVoiceTouchListener voiceTouchListener) {
+        this.voiceTouchListener = voiceTouchListener;
+    }
+
+    @Override
     public void setOnRecallMessageResultListener(OnRecallMessageResultListener listener) {
         this.recallMessageListener = listener;
     }
@@ -473,6 +483,9 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
 
     @Override
     public boolean onPressToSpeakBtnTouch(View v, MotionEvent event) {
+        if(voiceTouchListener != null && voiceTouchListener.onVoiceTouch(v, event)) {
+            return voiceTouchListener.onVoiceTouch(v, event);
+        }
         return voiceRecorder.onPressToSpeakBtnTouch(v, event, (this::sendVoiceMessage));
     }
 
