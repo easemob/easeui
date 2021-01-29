@@ -145,7 +145,7 @@ public interface IChatLayout {
      * 用于监听发送语音的触摸事件
      * @param voiceTouchListener
      */
-    void setOnChatVoiceTouchListener(OnChatVoiceTouchListener voiceTouchListener);
+    void setOnChatRecordTouchListener(OnChatRecordTouchListener voiceTouchListener);
 
     /**
      * 消息撤回监听

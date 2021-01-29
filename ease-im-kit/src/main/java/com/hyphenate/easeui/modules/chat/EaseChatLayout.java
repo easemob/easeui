@@ -10,7 +10,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -21,16 +20,13 @@ import android.widget.RelativeLayout;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.hyphenate.EMChatRoomChangeListener;
 import com.hyphenate.EMConversationListener;
-import com.hyphenate.EMGroupChangeListener;
 import com.hyphenate.EMMessageListener;
 import com.hyphenate.chat.EMChatManager;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMCmdMessageBody;
 import com.hyphenate.chat.EMConversation;
 import com.hyphenate.chat.EMMessage;
-import com.hyphenate.chat.EMMucSharedFile;
 import com.hyphenate.chat.EMTextMessageBody;
 import com.hyphenate.chat.adapter.EMAChatRoomManagerListener;
 import com.hyphenate.easeui.EaseIM;
@@ -47,7 +43,7 @@ import com.hyphenate.easeui.modules.chat.interfaces.ChatInputMenuListener;
 import com.hyphenate.easeui.modules.chat.interfaces.IChatLayout;
 import com.hyphenate.easeui.modules.chat.interfaces.OnAddMsgAttrsBeforeSendEvent;
 import com.hyphenate.easeui.modules.chat.interfaces.OnChatLayoutListener;
-import com.hyphenate.easeui.modules.chat.interfaces.OnChatVoiceTouchListener;
+import com.hyphenate.easeui.modules.chat.interfaces.OnChatRecordTouchListener;
 import com.hyphenate.easeui.modules.chat.interfaces.OnMenuChangeListener;
 import com.hyphenate.easeui.modules.chat.interfaces.OnRecallMessageResultListener;
 import com.hyphenate.easeui.modules.chat.presenter.EaseHandleMessagePresenter;
@@ -108,7 +104,7 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
     /**
      * 用于监听发送语音的触摸事件
      */
-    private OnChatVoiceTouchListener voiceTouchListener;
+    private OnChatRecordTouchListener recordTouchListener;
     private EaseHandleMessagePresenter presenter;
     /**
      * 是否展示默认菜单
@@ -471,8 +467,8 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
     }
 
     @Override
-    public void setOnChatVoiceTouchListener(OnChatVoiceTouchListener voiceTouchListener) {
-        this.voiceTouchListener = voiceTouchListener;
+    public void setOnChatRecordTouchListener(OnChatRecordTouchListener recordTouchListener) {
+        this.recordTouchListener = recordTouchListener;
     }
 
     @Override
@@ -524,8 +520,8 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
 
     @Override
     public boolean onPressToSpeakBtnTouch(View v, MotionEvent event) {
-        if(voiceTouchListener != null && voiceTouchListener.onVoiceTouch(v, event)) {
-            return voiceTouchListener.onVoiceTouch(v, event);
+        if(recordTouchListener != null && recordTouchListener.onRecordTouch(v, event)) {
+            return recordTouchListener.onRecordTouch(v, event);
         }
         return voiceRecorder.onPressToSpeakBtnTouch(v, event, (this::sendVoiceMessage));
     }
