@@ -20,6 +20,7 @@ import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.constants.EaseConstant;
 import com.hyphenate.easeui.manager.EaseDingMessageHelper;
 import com.hyphenate.easeui.model.EaseEvent;
+import com.hyphenate.easeui.modules.chat.interfaces.OnAddMsgAttrsBeforeSendEvent;
 import com.hyphenate.easeui.modules.chat.interfaces.OnChatLayoutListener;
 import com.hyphenate.easeui.modules.chat.interfaces.OnMenuChangeListener;
 import com.hyphenate.easeui.modules.menu.EasePopupWindowHelper;
@@ -35,7 +36,7 @@ import com.hyphenate.util.VersionUtils;
 
 import java.io.File;
 
-public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutListener, OnMenuChangeListener {
+public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutListener, OnMenuChangeListener, OnAddMsgAttrsBeforeSendEvent {
     protected static final int REQUEST_CODE_MAP = 1;
     protected static final int REQUEST_CODE_CAMERA = 2;
     protected static final int REQUEST_CODE_LOCAL = 3;
@@ -96,6 +97,7 @@ public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutLi
     public void initListener() {
         chatLayout.setOnChatLayoutListener(this);
         chatLayout.setOnPopupWindowItemClickListener(this);
+        chatLayout.setOnAddMsgAttrsBeforeSendEvent(this);
     }
 
     public void initData() {
@@ -345,6 +347,11 @@ public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutLi
 
     @Override
     public boolean onMenuItemClick(MenuItemBean item, EMMessage message) {
+        return false;
+    }
+
+    @Override
+    public boolean addMsgAttrsBeforeSend(EMMessage message) {
         return false;
     }
 }

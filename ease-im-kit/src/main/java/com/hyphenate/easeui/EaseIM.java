@@ -9,6 +9,7 @@ import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMOptions;
 import com.hyphenate.easeui.domain.EaseAvatarOptions;
 import com.hyphenate.easeui.manager.EaseChatPresenter;
+import com.hyphenate.easeui.manager.EaseConfigsManager;
 import com.hyphenate.easeui.model.EaseNotifier;
 import com.hyphenate.easeui.provider.EaseConversationInfoProvider;
 import com.hyphenate.easeui.provider.EaseEmojiconInfoProvider;
@@ -50,6 +51,10 @@ public class EaseIM {
     public boolean isVoiceCalling;
     public boolean isVideoCalling;
     private EaseChatPresenter presenter;
+    /**
+     * 配置管理类
+     */
+    private EaseConfigsManager configsManager;
 
     private EaseIM() {}
 
@@ -85,6 +90,7 @@ public class EaseIM {
         if(options == null) {
             options = initChatOptions();
         }
+        configsManager = new EaseConfigsManager(context);
         EMClient.getInstance().init(context, options);
         initNotifier();
         presenter = new EaseChatPresenter();
@@ -134,6 +140,10 @@ public class EaseIM {
 
     public EaseChatPresenter getChatPresenter() {
         return presenter;
+    }
+
+    public EaseConfigsManager getConfigsManager() {
+        return configsManager;
     }
 
     /**

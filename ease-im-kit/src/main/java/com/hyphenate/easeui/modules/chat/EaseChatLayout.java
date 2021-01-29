@@ -22,6 +22,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.hyphenate.EMChatRoomChangeListener;
+import com.hyphenate.EMConversationListener;
 import com.hyphenate.EMGroupChangeListener;
 import com.hyphenate.EMMessageListener;
 import com.hyphenate.chat.EMChatManager;
@@ -32,6 +33,7 @@ import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMMucSharedFile;
 import com.hyphenate.chat.EMTextMessageBody;
 import com.hyphenate.chat.adapter.EMAChatRoomManagerListener;
+import com.hyphenate.easeui.EaseIM;
 import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.constants.EaseConstant;
 import com.hyphenate.easeui.domain.EaseEmojicon;
@@ -43,6 +45,7 @@ import com.hyphenate.easeui.manager.EaseAtMessageHelper;
 import com.hyphenate.easeui.manager.EaseThreadManager;
 import com.hyphenate.easeui.modules.chat.interfaces.ChatInputMenuListener;
 import com.hyphenate.easeui.modules.chat.interfaces.IChatLayout;
+import com.hyphenate.easeui.modules.chat.interfaces.OnAddMsgAttrsBeforeSendEvent;
 import com.hyphenate.easeui.modules.chat.interfaces.OnChatLayoutListener;
 import com.hyphenate.easeui.modules.chat.interfaces.OnChatVoiceTouchListener;
 import com.hyphenate.easeui.modules.chat.interfaces.OnMenuChangeListener;
@@ -129,6 +132,10 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
      * 群组监听
      */
     private GroupListener groupListener;
+    /**
+     * 发送消息前添加消息属性事件
+     */
+    private OnAddMsgAttrsBeforeSendEvent sendMsgEvent;
     /**
      * 是否是首次发送，默认true
      */
@@ -231,14 +238,17 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
 
     public void loadDefaultData() {
         messageListLayout.loadDefaultData();
+        sendChannelAck();
     }
 
     public void loadData(String msgId, int pageSize) {
         messageListLayout.loadData(pageSize, msgId);
+        sendChannelAck();
     }
 
     public void loadData(String msgId) {
         messageListLayout.loadData(msgId);
+        sendChannelAck();
     }
 
     private void initTypingHandler() {
@@ -261,6 +271,26 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
         if(!turnOnTyping) {
             if(typingHandler != null) {
                 typingHandler.removeCallbacksAndMessages(null);
+            }
+        }
+    }
+
+    /**
+     * 发送channel ack消息
+     * (1)如果是1v1会话，对方将收到channel ack的回调，回调方法为{@link EMConversationListener#onConversationRead(String, String)},
+     * SDK内部将会将该会话的发送消息的isAcked置为true.
+     * (2)如果是多端设备，另一端将会收到channel ack的回调，SDK内部将会把该会话置为已读。
+     */
+    private void sendChannelAck() {
+        if(EaseIM.getInstance().getConfigsManager().enableSendChannelAck()) {
+            EMConversation conversation = EMClient.getInstance().chatManager().getConversation(conversationId);
+            if(conversation == null || conversation.getUnreadMsgCount() <= 0) {
+                return;
+            }
+            try {
+                EMClient.getInstance().chatManager().ackConversationRead(conversationId);
+            } catch (HyphenateException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -414,6 +444,12 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
     }
 
     @Override
+    public void resendMessage(EMMessage message) {
+        EMLog.i(TAG, "resendMessage");
+        presenter.resendMessage(message);
+    }
+
+    @Override
     public void deleteMessage(EMMessage message) {
         messageListLayout.getCurrentConversation().removeMessage(message.getMsgId());
         messageListLayout.removeMessage(message);
@@ -442,6 +478,11 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
     @Override
     public void setOnRecallMessageResultListener(OnRecallMessageResultListener listener) {
         this.recallMessageListener = listener;
+    }
+
+    @Override
+    public void setOnAddMsgAttrsBeforeSendEvent(OnAddMsgAttrsBeforeSendEvent sendMsgEvent) {
+        this.sendMsgEvent = sendMsgEvent;
     }
 
     /**
@@ -505,13 +546,8 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
         boolean refresh = false;
         for (EMMessage message : messages) {
             String username = null;
-            if(message.isNeedGroupAck() && message.isUnread()) {
-                try {
-                    EMClient.getInstance().chatManager().ackGroupMessageRead(message.getTo(), message.getMsgId(), "");
-                } catch (HyphenateException e) {
-                    e.printStackTrace();
-                }
-            }
+            sendGroupReadAck(message);
+            sendReadAck(message);
             // group message
             if (message.getChatType() == EMMessage.ChatType.GroupChat || message.getChatType() == EMMessage.ChatType.ChatRoom) {
                 username = message.getTo();
@@ -526,6 +562,44 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
         }
         if(refresh) {
             getChatMessageListLayout().refreshToLatest();
+        }
+    }
+
+    /**
+     * 发送群组已读回执
+     * @param message
+     */
+    public void sendReadAck(EMMessage message) {
+        if(EaseIM.getInstance().getConfigsManager().enableSendChannelAck()) {
+            //是接收的消息，未发送过read ack消息且是单聊
+            if(message.direct() == EMMessage.Direct.RECEIVE
+                    && !message.isAcked()
+                    && message.getChatType() == EMMessage.ChatType.Chat) {
+                EMMessage.Type type = message.getType();
+                //视频，语音及文件需要点击后再发送
+                if(type == EMMessage.Type.VIDEO || type == EMMessage.Type.VOICE || type == EMMessage.Type.FILE) {
+                    return;
+                }
+                try {
+                    EMClient.getInstance().chatManager().ackMessageRead(message.getFrom(), message.getMsgId());
+                } catch (HyphenateException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    /**
+     * 发送群组已读回执
+     * @param message
+     */
+    private void sendGroupReadAck(EMMessage message) {
+        if(message.isNeedGroupAck() && message.isUnread()) {
+            try {
+                EMClient.getInstance().chatManager().ackGroupMessageRead(message.getTo(), message.getMsgId(), "");
+            } catch (HyphenateException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -601,6 +675,14 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
     }
 
     @Override
+    public void addMsgAttrBeforeSend(EMMessage message) {
+        //发送消息前，添加消息属性，比如设置ext
+        if(sendMsgEvent != null && sendMsgEvent.addMsgAttrsBeforeSend(message)) {
+            sendMsgEvent.addMsgAttrsBeforeSend(message);
+        }
+    }
+
+    @Override
     public void sendMessageFail(String message) {
         if(listener != null) {
             listener.onChatError(-1, message);
@@ -666,8 +748,7 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
                 if (!confirmed) {
                     return;
                 }
-                message.setStatus(EMMessage.Status.CREATE);
-                sendMessage(message);
+                resendMessage(message);
             }
         }, true).show();
         return true;

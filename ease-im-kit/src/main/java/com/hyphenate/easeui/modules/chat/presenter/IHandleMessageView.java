@@ -11,6 +11,12 @@ public interface IHandleMessageView extends ILoadDataView {
     void createThumbFileFail(String message);
 
     /**
+     * 在发送消息前，添加消息属性，如设置ext等
+     * @param message
+     */
+    void addMsgAttrBeforeSend(EMMessage message);
+
+    /**
      * 发送消息失败
      * @param message
      */

@@ -12,6 +12,7 @@ import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMFileMessageBody;
 import com.hyphenate.chat.EMImageMessageBody;
 import com.hyphenate.chat.EMMessage;
+import com.hyphenate.easeui.EaseIM;
 import com.hyphenate.easeui.adapter.EaseBaseRecyclerViewAdapter;
 import com.hyphenate.easeui.adapter.EaseMessageAdapter;
 import com.hyphenate.easeui.interfaces.MessageListItemClickListener;
@@ -65,14 +66,19 @@ public class EaseImageViewHolder extends EaseChatRowViewHolder {
             intent.putExtra("messageId", msgId);
             intent.putExtra("filename", imgBody.getFileName());
         }
-        if (message != null && message.direct() == EMMessage.Direct.RECEIVE && !message.isAcked()
-                && message.getChatType() == EMMessage.ChatType.Chat) {
-            try {
-                EMClient.getInstance().chatManager().ackMessageRead(message.getFrom(), message.getMsgId());
-            } catch (Exception e) {
-                e.printStackTrace();
+        if(EaseIM.getInstance().getConfigsManager().enableSendChannelAck()) {
+            //此处不再单独发送read_ack消息，改为进入聊天页面发送channel_ack
+            //新消息在聊天页面的onReceiveMessage方法中，排除视频，语音和文件消息外，发送read_ack消息
+            if (message != null && message.direct() == EMMessage.Direct.RECEIVE && !message.isAcked()
+                    && message.getChatType() == EMMessage.ChatType.Chat) {
+                try {
+                    EMClient.getInstance().chatManager().ackMessageRead(message.getFrom(), message.getMsgId());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
+
         getContext().startActivity(intent);
     }
 

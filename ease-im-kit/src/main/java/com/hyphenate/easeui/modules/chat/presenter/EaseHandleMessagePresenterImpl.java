@@ -117,6 +117,7 @@ public class EaseHandleMessagePresenterImpl extends EaseHandleMessagePresenter {
     @Override
     public void addMessageAttributes(EMMessage message) {
         //可以添加一些自定义属性
+        mView.addMsgAttrBeforeSend(message);
     }
 
     @Override
@@ -149,6 +150,12 @@ public class EaseHandleMessagePresenterImpl extends EaseHandleMessagePresenter {
         beginMsg.addBody(body);
         beginMsg.setTo(toChatUsername);
         EMClient.getInstance().chatManager().sendMessage(beginMsg);
+    }
+
+    @Override
+    public void resendMessage(EMMessage message) {
+        message.setStatus(EMMessage.Status.CREATE);
+        sendMessage(message);
     }
 
     @Override
