@@ -41,7 +41,7 @@ public class EaseLocationViewHolder extends EaseChatRowViewHolder{
     @Override
     protected void handleReceiveMessage(EMMessage message) {
         super.handleReceiveMessage(message);
-        if(EaseIM.getInstance().getConfigsManager().enableSendChannelAck()) {
+        if(!EaseIM.getInstance().getConfigsManager().enableSendChannelAck()) {
             //此处不再单独发送read_ack消息，改为进入聊天页面发送channel_ack
             //新消息在聊天页面的onReceiveMessage方法中，排除视频，语音和文件消息外，发送read_ack消息
             if (!message.isAcked() && message.getChatType() == EMMessage.ChatType.Chat) {
