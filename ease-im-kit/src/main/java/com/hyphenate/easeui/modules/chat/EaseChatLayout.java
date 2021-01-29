@@ -233,18 +233,18 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
     }
 
     public void loadDefaultData() {
-        messageListLayout.loadDefaultData();
         sendChannelAck();
+        messageListLayout.loadDefaultData();
     }
 
     public void loadData(String msgId, int pageSize) {
-        messageListLayout.loadData(pageSize, msgId);
         sendChannelAck();
+        messageListLayout.loadData(pageSize, msgId);
     }
 
     public void loadData(String msgId) {
-        messageListLayout.loadData(msgId);
         sendChannelAck();
+        messageListLayout.loadData(msgId);
     }
 
     private void initTypingHandler() {
