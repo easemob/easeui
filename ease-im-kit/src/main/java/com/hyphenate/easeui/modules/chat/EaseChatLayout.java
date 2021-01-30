@@ -188,6 +188,10 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
         if(isChatRoomCon()) {
             EMClient.getInstance().chatroomManager().leaveChatRoom(conversationId);
         }
+        if(isGroupCon()) {
+            EaseAtMessageHelper.get().removeAtMeGroup(conversationId);
+            EaseAtMessageHelper.get().cleanToAtUserList();
+        }
         if(typingHandler != null) {
             typingHandler.removeCallbacksAndMessages(null);
         }
@@ -217,6 +221,7 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
             chatRoomListener = new ChatRoomListener();
             EMClient.getInstance().chatroomManager().addChatRoomChangeListener(chatRoomListener);
         }else if(isGroupCon()) {
+            EaseAtMessageHelper.get().removeAtMeGroup(conversationId);
             groupListener = new GroupListener();
             EMClient.getInstance().groupManager().addGroupChangeListener(groupListener);
         }
