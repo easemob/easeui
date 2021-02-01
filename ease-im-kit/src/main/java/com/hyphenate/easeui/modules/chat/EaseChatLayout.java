@@ -905,8 +905,8 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
         menuHelper.setOnPopupMenuItemClickListener(new EasePopupWindow.OnPopupWindowItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItemBean item) {
-                if(menuChangeListener != null) {
-                    return menuChangeListener.onMenuItemClick(item, message);
+                if(menuChangeListener != null && menuChangeListener.onMenuItemClick(item, message)) {
+                    return true;
                 }
                 if(showDefaultMenu) {
                     int itemId = item.getItemId();
