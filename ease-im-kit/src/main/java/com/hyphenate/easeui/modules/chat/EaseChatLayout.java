@@ -339,7 +339,7 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
             return;
 
         isNotFirstSend = false;
-        // remove all pedding msgs to avoid memory leak.
+        handler.removeMessages(MSG_TYPING_HEARTBEAT);
         handler.removeMessages(MSG_TYPING_END);
         // Send TYPING-END cmd msg
         //presenter.sendCmdMessage(ACTION_TYPING_END);
@@ -504,9 +504,9 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
                 if(!isNotFirstSend) {
                     isNotFirstSend = true;
                     typingHandler.sendEmptyMessage(MSG_TYPING_HEARTBEAT);
-                    typingHandler.removeMessages(MSG_TYPING_END);
-                    typingHandler.sendEmptyMessageDelayed(MSG_TYPING_END, TYPING_SHOW_TIME);
                 }
+                typingHandler.removeMessages(MSG_TYPING_END);
+                typingHandler.sendEmptyMessageDelayed(MSG_TYPING_END, TYPING_SHOW_TIME);
             }
         }
     }
