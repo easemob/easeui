@@ -118,6 +118,8 @@ public class EaseChatMessagePresenterImpl extends EaseChatMessagePresenter {
                 new EMValueCallBack<EMCursorResult<EMMessage>>() {
                     @Override
                     public void onSuccess(EMCursorResult<EMMessage> value) {
+                        //需要从数据将下载的数据放到缓存中
+                        conversation.loadMoreMsgFromDB("", pageSize);
                         runOnUI(() -> {
                             if(isActive()) {
                                 mView.loadServerMsgSuccess(value.getData());
@@ -150,6 +152,8 @@ public class EaseChatMessagePresenterImpl extends EaseChatMessagePresenter {
                 new EMValueCallBack<EMCursorResult<EMMessage>>() {
                     @Override
                     public void onSuccess(EMCursorResult<EMMessage> value) {
+                        //需要从数据将下载的数据放到缓存中
+                        conversation.loadMoreMsgFromDB(msgId, pageSize);
                         runOnUI(() -> {
                             if(isActive()) {
                                 mView.loadMoreServerMsgSuccess(value.getData());
