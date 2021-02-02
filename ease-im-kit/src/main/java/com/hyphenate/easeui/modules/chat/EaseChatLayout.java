@@ -301,9 +301,9 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
      * @param handler
      */
     private void setOtherTypingEnd(Handler handler) {
-        if(!turnOnTyping) {
-            return;
-        }
+//        if(!turnOnTyping) {
+//            return;
+//        }
         // Only support single-chat type conversation.
         if (chatType != EaseConstant.CHATTYPE_SINGLE)
             return;
