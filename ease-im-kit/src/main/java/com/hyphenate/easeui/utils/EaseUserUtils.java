@@ -1,6 +1,7 @@
 package com.hyphenate.easeui.utils;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -69,6 +70,29 @@ public class EaseUserUtils {
             }
         }else{
             Glide.with(context).load(R.drawable.ease_default_avatar).into(imageView);
+        }
+    }
+
+    /**
+     * show user avatar
+     * @param context
+     * @param avatar
+     * @param imageView
+     */
+    public static void showUserAvatar(Context context, String avatar, ImageView imageView) {
+        if(TextUtils.isEmpty(avatar)) {
+            Glide.with(context).load(R.drawable.ease_default_avatar).into(imageView);
+            return;
+        }
+        try {
+            int avatarResId = Integer.parseInt(avatar);
+            Glide.with(context).load(avatarResId).into(imageView);
+        } catch (Exception e) {
+            //use default avatar
+            Glide.with(context).load(avatar)
+                    .apply(RequestOptions.placeholderOf(R.drawable.ease_default_avatar)
+                            .diskCacheStrategy(DiskCacheStrategy.ALL))
+                    .into(imageView);
         }
     }
     

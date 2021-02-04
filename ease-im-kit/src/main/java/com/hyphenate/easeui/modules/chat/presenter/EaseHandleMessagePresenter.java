@@ -131,6 +131,12 @@ public abstract class EaseHandleMessagePresenter extends EaseBasePresenter {
     public abstract void sendCmdMessage(String action);
 
     /**
+     * 重新发送消息
+     * @param message
+     */
+    public abstract void resendMessage(EMMessage message);
+
+    /**
      * 删除消息
      * @param message
      */

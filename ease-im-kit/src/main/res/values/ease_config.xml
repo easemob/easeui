@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--是否使用发送channel_ack消息功能，此功能启动旨在减少发送read_ack消息，默认为开启-->
+    <bool name="ease_enable_send_channel_ack">true</bool>
+</resources>

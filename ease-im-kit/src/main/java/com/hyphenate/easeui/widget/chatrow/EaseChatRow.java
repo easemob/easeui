@@ -289,12 +289,12 @@ public abstract class EaseChatRow extends LinearLayout {
                 setAvatarOptions(itemStyle);
             }
             if(usernickView != null) {
-                usernickView.setVisibility(itemStyle.isShowNickname() ? VISIBLE : GONE);
                 //如果在同一侧展示，则需要显示昵称
                 if(itemStyle.getItemShowType() == 1 || itemStyle.getItemShowType() == 2) {
                     usernickView.setVisibility(VISIBLE);
                 }else {
-                    usernickView.setVisibility(GONE);
+                    //如果不在同一侧的话，则根据判断是否显示昵称
+                    usernickView.setVisibility((itemStyle.isShowNickname() && message.direct() == Direct.RECEIVE) ? VISIBLE : GONE);
                 }
             }
             if(bubbleLayout != null) {

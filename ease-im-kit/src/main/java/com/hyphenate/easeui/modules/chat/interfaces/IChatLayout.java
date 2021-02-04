@@ -118,6 +118,12 @@ public interface IChatLayout {
     void sendMessage(EMMessage message);
 
     /**
+     * 重新发送消息
+     * @param message
+     */
+    void resendMessage(EMMessage message);
+
+    /**
      * 删除消息
      * @param message
      */
@@ -136,9 +142,21 @@ public interface IChatLayout {
     void setOnChatLayoutListener(OnChatLayoutListener listener);
 
     /**
+     * 用于监听发送语音的触摸事件
+     * @param voiceTouchListener
+     */
+    void setOnChatRecordTouchListener(OnChatRecordTouchListener voiceTouchListener);
+
+    /**
      * 消息撤回监听
      * @param listener
      */
     void setOnRecallMessageResultListener(OnRecallMessageResultListener listener);
+
+    /**
+     * 设置发送消息前设置属性事件
+     * @param sendMsgEvent
+     */
+    void setOnAddMsgAttrsBeforeSendEvent(OnAddMsgAttrsBeforeSendEvent sendMsgEvent);
 
 }
