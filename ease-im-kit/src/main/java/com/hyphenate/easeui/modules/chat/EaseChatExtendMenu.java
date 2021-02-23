@@ -14,7 +14,6 @@ import android.widget.TextView;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.ConcatAdapter;
 import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.hyphenate.easeui.R;
@@ -28,7 +27,11 @@ import com.hyphenate.easeui.widget.chatextend.PagingScrollHelper;
 import com.hyphenate.util.DensityUtil;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Extend menu when user want send image, voice clip, etc
@@ -39,6 +42,7 @@ public class EaseChatExtendMenu extends FrameLayout implements PagingScrollHelpe
     private RecyclerView rvExtendMenu;
     private RecyclerView rvIndicator;
     private List<ChatMenuItemModel> itemModels = new ArrayList<ChatMenuItemModel>();
+    private Map<Integer, ChatMenuItemModel> itemMap = new HashMap();
     private EaseChatExtendMenuAdapter adapter;
     private int numColumns;
     private int numRows;
@@ -132,8 +136,21 @@ public class EaseChatExtendMenu extends FrameLayout implements PagingScrollHelpe
     @Override
     public void clear() {
         itemModels.clear();
+        itemMap.clear();
         adapter.notifyDataSetChanged();
         indicatorAdapter.setPageCount(0);
+    }
+
+    @Override
+    public void setMenuOrder(int itemId, int order) {
+        if(itemMap.containsKey(itemId)) {
+            ChatMenuItemModel model = itemMap.get(itemId);
+            if(model != null) {
+                model.order = order;
+                sortByOrder(itemModels);
+                adapter.notifyDataSetChanged();
+            }
+        }
     }
 
     /**
@@ -149,15 +166,49 @@ public class EaseChatExtendMenu extends FrameLayout implements PagingScrollHelpe
      *            on click event of item
      */
     public void registerMenuItem(String name, int drawableRes, int itemId, EaseChatExtendMenuItemClickListener listener) {
-        ChatMenuItemModel item = new ChatMenuItemModel();
-        item.name = name;
-        item.image = drawableRes;
-        item.id = itemId;
-        item.clickListener = listener;
-        itemModels.add(item);
-        adapter.notifyItemInserted(itemModels.size() - 1);
-        //设置需要显示的indicator的个数
-        indicatorAdapter.setPageCount((int) Math.ceil(itemModels.size() * 1.0f / (numColumns * numRows)));
+        if(!itemMap.containsKey(itemId)) {
+            ChatMenuItemModel item = new ChatMenuItemModel();
+            item.name = name;
+            item.image = drawableRes;
+            item.id = itemId;
+            item.clickListener = listener;
+            itemMap.put(itemId, item);
+            itemModels.add(item);
+            adapter.notifyItemInserted(itemModels.size() - 1);
+            //设置需要显示的indicator的个数
+            indicatorAdapter.setPageCount((int) Math.ceil(itemModels.size() * 1.0f / (numColumns * numRows)));
+        }
+    }
+
+    /**
+     * register menu item
+     *
+     * @param name
+     *            item name
+     * @param drawableRes
+     *            background of item
+     * @param itemId
+     *             id
+     * @param order
+     *             order by
+     * @param listener
+     *            on click event of item
+     */
+    public void registerMenuItem(String name, int drawableRes, int itemId, int order, EaseChatExtendMenuItemClickListener listener) {
+        if(!itemMap.containsKey(itemId)) {
+            ChatMenuItemModel item = new ChatMenuItemModel();
+            item.name = name;
+            item.image = drawableRes;
+            item.id = itemId;
+            item.order = order;
+            item.clickListener = listener;
+            itemMap.put(itemId, item);
+            itemModels.add(item);
+            sortByOrder(itemModels);
+            adapter.notifyDataSetChanged();
+            //设置需要显示的indicator的个数
+            indicatorAdapter.setPageCount((int) Math.ceil(itemModels.size() * 1.0f / (numColumns * numRows)));
+        }
     }
 
     /**
@@ -174,6 +225,40 @@ public class EaseChatExtendMenu extends FrameLayout implements PagingScrollHelpe
      */
     public void registerMenuItem(int nameRes, int drawableRes, int itemId, EaseChatExtendMenuItemClickListener listener) {
         registerMenuItem(context.getString(nameRes), drawableRes, itemId, listener);
+    }
+
+    /**
+     * register menu item
+     *
+     * @param nameRes
+     *            resource id of item name
+     * @param drawableRes
+     *            background of item
+     * @param itemId
+     *             id
+     * @param order
+     *             order by
+     * @param listener
+     *             on click event of item
+     */
+    public void registerMenuItem(int nameRes, int drawableRes, int itemId, int order, EaseChatExtendMenuItemClickListener listener) {
+        registerMenuItem(context.getString(nameRes), drawableRes, itemId, order, listener);
+    }
+
+    private void sortByOrder(List<ChatMenuItemModel> itemModels) {
+        Collections.sort(itemModels, new Comparator<ChatMenuItemModel>() {
+            @Override
+            public int compare(ChatMenuItemModel o1, ChatMenuItemModel o2) {
+                int val = o1.order - o2.order;
+                if(val > 0) {
+                    return 1;
+                }else if(val == 0) {
+                    return 0;
+                }else {
+                    return -1;
+                }
+            }
+        });
     }
 
     @Override
@@ -197,8 +282,18 @@ public class EaseChatExtendMenu extends FrameLayout implements PagingScrollHelpe
     }
 
     @Override
+    public void registerMenuItem(String name, int drawableRes, int itemId, int order) {
+        registerMenuItem(name, drawableRes, itemId, order, null);
+    }
+
+    @Override
     public void registerMenuItem(int nameRes, int drawableRes, int itemId) {
         registerMenuItem(nameRes, drawableRes, itemId, null);
+    }
+
+    @Override
+    public void registerMenuItem(int nameRes, int drawableRes, int itemId, int order) {
+        registerMenuItem(nameRes, drawableRes, itemId, order, null);
     }
 
     @Override
@@ -216,9 +311,22 @@ public class EaseChatExtendMenu extends FrameLayout implements PagingScrollHelpe
     }
 
     public static class ChatMenuItemModel{
+        /**
+         * 条目名称
+         */
         public String name;
+        /**
+         * 条目图标
+         */
         public int image;
+        /**
+         * 条目id
+         */
         public int id;
+        /**
+         * 用作排序
+         */
+        public int order;
         public EaseChatExtendMenuItemClickListener clickListener;
     }
     
