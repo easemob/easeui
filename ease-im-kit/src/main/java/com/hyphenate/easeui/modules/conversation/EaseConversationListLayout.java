@@ -515,6 +515,7 @@ public class EaseConversationListLayout extends EaseBaseLayout implements IConve
         if(loadListener != null) {
             loadListener.loadDataFinish(new ArrayList<>());
         }
+        listAdapter.setData(new ArrayList<>());
     }
 
     @Override
