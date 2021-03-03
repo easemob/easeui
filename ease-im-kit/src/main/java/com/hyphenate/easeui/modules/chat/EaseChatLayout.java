@@ -791,7 +791,7 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
         //发送失败的消息再次进行发送
         // send message
         EMLog.i(TAG, "onMessageCreate");
-        sendMessage(message);
+        //sendMessage(message);
     }
 
     @Override
