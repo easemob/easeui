@@ -1,0 +1,124 @@
+group = "io.hyphenate"
+archivesBaseName = "ease-im-kit"
+version = project.sdkVersion//发布aar的库版本
+apply plugin: 'maven'
+apply plugin: 'signing'
+
+def stagingRepositoryId = project.stagingRepositoryId
+
+def localProperties = new Properties()
+localProperties.load(project.rootProject.file('local.properties').newDataInputStream())
+
+Properties properties = new Properties()
+properties.load(file(localProperties.getProperty('maven.dir')).newDataInputStream())
+
+//指定singing的相关信息
+gradle.taskGraph.whenReady { taskGraph ->
+    if (taskGraph.allTasks.any { it instanceof Sign }) {
+        def id = properties.getProperty("signing.keyId")
+        def file = properties.getProperty("signing.secretKeyRingFile")
+        def password = properties.getProperty("signing.password")
+
+        println "key id: $id file: $file password: $password"
+        allprojects { ext."signing.keyId" = id }
+        allprojects { ext."signing.secretKeyRingFile" = file }
+        allprojects { ext."signing.password" = password }
+    }
+}
+
+configurations {
+    deployerJars
+}
+
+task javadoc(type: Javadoc) {
+    options {
+        encoding 'UTF-8'
+        charSet 'UTF-8'
+    }
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+
+artifacts {
+    archives javadocJar, sourcesJar
+}
+
+signing {
+    sign configurations.archives
+}
+
+def getRepositoryUsername() {
+    return ${properties}.getProperty('ossrhUsername', "")
+}
+
+def getRepositoryPassword() {
+    return ${properties}.getProperty('ossrhPassword', "")
+}
+
+nexusStaging {
+    packageGroup = "$group" //optional if packageGroup == project.getGroup()
+    stagingProfileId = "$group" //when not defined will be got from server using "packageGroup"
+    username = getRepositoryUsername()
+    password = getRepositoryPassword()
+    stagingRepositoryId = $stagingRepositoryId
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
+            }
+
+            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
+            }
+
+            pom.project {
+                //version version
+                name archivesBaseName
+                packaging 'aar'
+                // optionally artifactId can be defined here
+                //println "current groupId:$group"
+                //groupId group
+                //artifactId archivesBaseName
+                description 'Easy UI for Easemob IM SDK'
+                url 'https://github.com/easemob/easeui'
+
+                scm {
+                    connection 'scm:git@github.com:easemob/easeui.git'
+                    developerConnection 'scm:git@github.com:easemob/easeui.git'
+                    url 'https://github.com/easemob/easeui.git'
+                }
+
+                licenses {
+                    license {
+                        name 'The Apache License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id 'Easemob'
+                        name 'Easemob'
+                        email 'sdk-tools@easemob.com'
+                    }
+                }
+            }
+        }
+    }
+}
+
