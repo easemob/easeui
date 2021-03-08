@@ -4,22 +4,24 @@ version = project.sdkVersion//发布aar的库版本
 apply plugin: 'maven'
 apply plugin: 'signing'
 
-def stagingRepositoryId = project.stagingRepositoryId
+def repositoryId = project.stagingRepositoryId
 
 def localProperties = new Properties()
 localProperties.load(project.rootProject.file('local.properties').newDataInputStream())
 
 Properties properties = new Properties()
-properties.load(file(localProperties.getProperty('maven.dir')).newDataInputStream())
+properties.load(file(localProperties.getProperty('maven.dir')+"./project.properties").newDataInputStream())
+
+def ossrhUsername = properties.getProperty('ossrhUsername')
+def ossrhPassword = properties.getProperty('ossrhPassword')
 
 //指定singing的相关信息
 gradle.taskGraph.whenReady { taskGraph ->
     if (taskGraph.allTasks.any { it instanceof Sign }) {
         def id = properties.getProperty("signing.keyId")
-        def file = properties.getProperty("signing.secretKeyRingFile")
+        def file = localProperties.getProperty('maven.dir')+properties.getProperty("signing.secretKeyRingFile")
         def password = properties.getProperty("signing.password")
 
-        println "key id: $id file: $file password: $password"
         allprojects { ext."signing.keyId" = id }
         allprojects { ext."signing.secretKeyRingFile" = file }
         allprojects { ext."signing.password" = password }
@@ -57,20 +59,12 @@ signing {
     sign configurations.archives
 }
 
-def getRepositoryUsername() {
-    return ${properties}.getProperty('ossrhUsername', "")
-}
-
-def getRepositoryPassword() {
-    return ${properties}.getProperty('ossrhPassword', "")
-}
-
 nexusStaging {
     packageGroup = "$group" //optional if packageGroup == project.getGroup()
     stagingProfileId = "$group" //when not defined will be got from server using "packageGroup"
-    username = getRepositoryUsername()
-    password = getRepositoryPassword()
-    stagingRepositoryId = $stagingRepositoryId
+    username = ossrhUsername
+    password = ossrhPassword
+    stagingRepositoryId = repositoryId
 }
 
 uploadArchives {
@@ -79,11 +73,11 @@ uploadArchives {
             beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
             repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
+                authentication(userName: ossrhUsername, password: ossrhPassword)
             }
 
             snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-                authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
+                authentication(userName: ossrhUsername, password: ossrhPassword)
             }
 
             pom.project {
