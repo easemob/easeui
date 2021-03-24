@@ -321,7 +321,7 @@ public abstract class EaseChatRow extends LinearLayout {
             if(userAvatarView instanceof EaseImageView) {
                 EaseImageView avatarView = (EaseImageView) userAvatarView;
                 if(itemStyle.getAvatarDefaultSrc() != null) {
-                    avatarView.setBackground(itemStyle.getAvatarDefaultSrc());
+                    avatarView.setImageDrawable(itemStyle.getAvatarDefaultSrc());
                 }
                 avatarView.setShapeType(itemStyle.getShapeType());
                 if(itemStyle.getAvatarSize() != 0) {
