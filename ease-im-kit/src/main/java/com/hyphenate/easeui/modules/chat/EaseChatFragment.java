@@ -351,8 +351,8 @@ public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutLi
     }
 
     @Override
-    public boolean addMsgAttrsBeforeSend(EMMessage message) {
-        return false;
+    public void addMsgAttrsBeforeSend(EMMessage message) {
+
     }
 }
 

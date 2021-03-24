@@ -11,5 +11,5 @@ public interface OnAddMsgAttrsBeforeSendEvent {
      * @param message
      * @return
      */
-    boolean addMsgAttrsBeforeSend(EMMessage message);
+    void addMsgAttrsBeforeSend(EMMessage message);
 }
