@@ -678,7 +678,7 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
     @Override
     public void addMsgAttrBeforeSend(EMMessage message) {
         //发送消息前，添加消息属性，比如设置ext
-        if(sendMsgEvent != null && sendMsgEvent.addMsgAttrsBeforeSend(message)) {
+        if(sendMsgEvent != null) {
             sendMsgEvent.addMsgAttrsBeforeSend(message);
         }
     }
