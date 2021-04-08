@@ -11,7 +11,9 @@ import com.hyphenate.easeui.delegate.EaseTextAdapterDelegate;
 import com.hyphenate.easeui.delegate.EaseVideoAdapterDelegate;
 import com.hyphenate.easeui.delegate.EaseVoiceAdapterDelegate;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class EaseMessageTypeSetManager {
@@ -19,6 +21,7 @@ public class EaseMessageTypeSetManager {
     private EaseAdapterDelegate<?,?> defaultDelegate = new EaseTextAdapterDelegate();
     private Class<? extends EaseAdapterDelegate<?,?>> defaultDelegateCls;
     private Set<Class<? extends EaseAdapterDelegate<?, ?>>> delegates = new HashSet<>();
+    private List<Class<? extends EaseAdapterDelegate<?, ?>>> delegateList = new ArrayList<>();
     private boolean hasConsistItemType;
 
     private EaseMessageTypeSetManager(){}
@@ -45,7 +48,11 @@ public class EaseMessageTypeSetManager {
     }
 
     public EaseMessageTypeSetManager addMessageType(Class<? extends EaseAdapterDelegate<?, ?>> cls) {
+        int size = delegates.size();
         delegates.add(cls);
+        if(delegates.size() > size) {
+            delegateList.add(cls);
+        }
         return this;
     }
 
@@ -68,7 +75,7 @@ public class EaseMessageTypeSetManager {
             return;
         }
         //如果没有注册聊天类型，则使用默认的
-        if(delegates.size() <= 0) {
+        if(delegateList.size() <= 0) {
             addMessageType(EaseExpressionAdapterDelegate.class)       //自定义表情
             .addMessageType(EaseFileAdapterDelegate.class)             //文件
             .addMessageType(EaseImageAdapterDelegate.class)            //图片
@@ -78,7 +85,7 @@ public class EaseMessageTypeSetManager {
             .addMessageType(EaseCustomAdapterDelegate.class)           //自定义消息
             .setDefaultMessageType(EaseTextAdapterDelegate.class);       //文本
         }
-        for (Class<? extends EaseAdapterDelegate<?, ?>> cls : delegates) {
+        for (Class<? extends EaseAdapterDelegate<?, ?>> cls : delegateList) {
             EaseAdapterDelegate delegate = cls.newInstance();
             adapter.addDelegate(delegate);
         }

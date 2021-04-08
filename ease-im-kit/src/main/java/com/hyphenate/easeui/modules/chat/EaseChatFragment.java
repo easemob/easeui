@@ -29,6 +29,7 @@ import com.hyphenate.easeui.ui.EaseBaiduMapActivity;
 import com.hyphenate.easeui.ui.base.EaseBaseFragment;
 import com.hyphenate.easeui.utils.EaseCommonUtils;
 import com.hyphenate.easeui.utils.EaseCompat;
+import com.hyphenate.easeui.utils.EaseFileUtils;
 import com.hyphenate.util.EMLog;
 import com.hyphenate.util.PathUtil;
 import com.hyphenate.util.UriUtils;
@@ -275,7 +276,7 @@ public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutLi
         if (data != null) {
             Uri selectedImage = data.getData();
             if (selectedImage != null) {
-                String filePath = UriUtils.getFilePath(mContext, selectedImage);
+                String filePath = EaseFileUtils.getFilePath(mContext, selectedImage);
                 if(!TextUtils.isEmpty(filePath) && new File(filePath).exists()) {
                     chatLayout.sendImageMessage(Uri.parse(filePath));
                 }else {
@@ -322,7 +323,7 @@ public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutLi
         if (data != null) {
             Uri uri = data.getData();
             if (uri != null) {
-                String filePath = UriUtils.getFilePath(mContext, uri);
+                String filePath = EaseFileUtils.getFilePath(mContext, uri);
                 if(!TextUtils.isEmpty(filePath) && new File(filePath).exists()) {
                     chatLayout.sendFileMessage(Uri.parse(filePath));
                 }else {
@@ -351,8 +352,8 @@ public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutLi
     }
 
     @Override
-    public boolean addMsgAttrsBeforeSend(EMMessage message) {
-        return false;
+    public void addMsgAttrsBeforeSend(EMMessage message) {
+
     }
 }
 

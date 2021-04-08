@@ -12,6 +12,7 @@ import android.os.Environment;
 import android.os.FileUtils;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.provider.OpenableColumns;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
@@ -27,8 +28,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.URLDecoder;
 import java.util.List;
 
 public class EaseFileUtils {
@@ -117,16 +120,27 @@ public class EaseFileUtils {
                     if ("primary".equalsIgnoreCase(type)) {
                         return Environment.getExternalStorageDirectory() + "/" + split[1];
                     }
-
-                    // TODO handle non-primary volumes
+                    //如果获取不到路径，则将Uri写入新文件中，然后返回新文件的路径
+                    return copyFileProviderUri(context, uri);
                 }
                 // DownloadsProvider
                 else if (isDownloadsDocument(uri)) {
                     final String id = DocumentsContract.getDocumentId(uri);
-                    final Uri contentUri = ContentUris.withAppendedId(
-                            Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
+                    if (id.startsWith("raw:")) {
+                        return id.replaceFirst("raw:", "");
+                    }
+                    String[] contentUriPrefixesToTry = new String[]{
+                            "content://downloads/public_downloads",
+                            "content://downloads/my_downloads",
+                            "content://downloads/all_downloads"
+                    };
 
-                    return getDataColumn(context, contentUri, null, null);
+                    for (String contentUriPrefix : contentUriPrefixesToTry) {
+                        Uri contentUri = ContentUris.withAppendedId(Uri.parse(contentUriPrefix), Long.valueOf(id));
+                        return getDataColumn(context, contentUri, null, null);
+                    }
+                    //如果获取不到路径，则将Uri写入新文件中，然后返回新文件的路径
+                    return copyFileProviderUri(context, uri);
                 }
                 // MediaProvider
                 else if (isMediaDocument(uri)) {
@@ -147,8 +161,12 @@ public class EaseFileUtils {
                     final String[] selectionArgs = new String[]{
                             split[1]
                     };
-
-                    return getDataColumn(context, contentUri, selection, selectionArgs);
+                    String path = getDataColumn(context, contentUri, selection, selectionArgs);
+                    //如果获取不到路径，则将Uri写入新文件中，然后返回新文件的路径
+                    if(TextUtils.isEmpty(path)) {
+                        path = copyFileProviderUri(context, uri);
+                    }
+                    return path;
                 }
             }
             else if(isFileProvider(context, uri)) {
@@ -158,7 +176,12 @@ public class EaseFileUtils {
             }
             // MediaStore (and general)
             else if (uriStartWithContent(uri)) {
-                return getDataColumn(context, uri, null, null);
+                String path = getDataColumn(context, uri, null, null);
+                if(TextUtils.isEmpty(path)) {
+                    //如果获取不到路径，则将Uri写入新文件中，然后返回新文件的路径
+                    path = copyFileProviderUri(context, uri);
+                }
+                return path;
             }
             // File
             else if (uriStartWithFile(uri)) {
@@ -185,11 +208,8 @@ public class EaseFileUtils {
      */
     private static String copyFileProviderUri(Context context, Uri uri) {
         //如果是分享过来的文件，则将其写入到私有目录下
-        String[] subs = uri.toString().split("/");
-        String filename = null;
-        if(subs.length > 0) {
-            filename = subs[subs.length -1];
-        }else {
+        String filename = getFileName(context, uri);
+        if(TextUtils.isEmpty(filename)) {
             return "";
         }
         String filePath = PathUtil.getInstance().getFilePath() + File.separator + filename;
@@ -217,6 +237,39 @@ public class EaseFileUtils {
             }
         }
         return new File(filePath).exists() ? filePath : "";
+    }
+
+    private static String getFileName(@NonNull Context context, Uri uri) {
+        String mimeType = context.getContentResolver().getType(uri);
+        String filename = null;
+
+        if (mimeType == null && context != null) {
+            String uriString = null;
+            try {
+                uriString = URLDecoder.decode(uri.toString(), "utf-8");
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+            filename = getName(uriString);
+        } else {
+            Cursor returnCursor = context.getContentResolver().query(uri, null,
+                    null, null, null);
+            if (returnCursor != null) {
+                int nameIndex = returnCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+                returnCursor.moveToFirst();
+                filename = returnCursor.getString(nameIndex);
+                returnCursor.close();
+            }
+        }
+        return filename;
+    }
+
+    private static String getName(String filename) {
+        if (filename == null) {
+            return null;
+        }
+        int index = filename.lastIndexOf('/');
+        return filename.substring(index + 1);
     }
 
     public static long copy(@NonNull InputStream in, @NonNull OutputStream out) {
