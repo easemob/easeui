@@ -46,4 +46,25 @@ public interface IHandleMessageView extends ILoadDataView {
      * @param message
      */
     void recallMessageFail(int code, String message);
+
+    /**
+     * message send success
+     * @param message
+     */
+    void onPresenterMessageSuccess(EMMessage message);
+
+    /**
+     * message send fail
+     * @param message
+     * @param code
+     * @param error
+     */
+    void onPresenterMessageError(EMMessage message, int code, String error);
+
+    /**
+     * message in sending progress
+     * @param message
+     * @param progress
+     */
+    void onPresenterMessageInProgress(EMMessage message, int progress);
 }

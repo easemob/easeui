@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.text.TextUtils;
 
 import com.baidu.mapapi.map.MapView;
+import com.hyphenate.EMCallBack;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMCmdMessageBody;
 import com.hyphenate.chat.EMGroup;
@@ -134,6 +135,28 @@ public class EaseHandleMessagePresenterImpl extends EaseHandleMessagePresenter {
         }else if(chatType == EaseConstant.CHATTYPE_CHATROOM){
             message.setChatType(EMMessage.ChatType.ChatRoom);
         }
+        message.setMessageStatusCallback(new EMCallBack() {
+            @Override
+            public void onSuccess() {
+                if(isActive()) {
+                    runOnUI(()-> mView.onPresenterMessageSuccess(message));
+                }
+            }
+
+            @Override
+            public void onError(int code, String error) {
+                if(isActive()) {
+                    runOnUI(()-> mView.onPresenterMessageError(message, code, error));
+                }
+            }
+
+            @Override
+            public void onProgress(int progress, String status) {
+                if(isActive()) {
+                    runOnUI(()-> mView.onPresenterMessageInProgress(message, progress));
+                }
+            }
+        });
         // send message
         EMClient.getInstance().chatManager().sendMessage(message);
         if(isActive()) {
