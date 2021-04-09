@@ -3,7 +3,9 @@ package com.hyphenate.easeui.delegate;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.hyphenate.chat.EMCustomMessageBody;
 import com.hyphenate.chat.EMMessage;
+import com.hyphenate.easeui.constants.EaseConstant;
 import com.hyphenate.easeui.interfaces.MessageListItemClickListener;
 import com.hyphenate.easeui.model.styles.EaseMessageListItemStyle;
 import com.hyphenate.easeui.viewholder.EaseChatRowViewHolder;
@@ -15,7 +17,14 @@ public class EaseCustomAdapterDelegate extends EaseMessageAdapterDelegate<EMMess
 
     @Override
     public boolean isForViewType(EMMessage item, int position) {
-        return item.getType() == EMMessage.Type.CUSTOM;
+        if(item.getType() == EMMessage.Type.CUSTOM){
+            EMCustomMessageBody messageBody = (EMCustomMessageBody) item.getBody();
+            if(messageBody.event().equals(EaseConstant.USER_CARD_EVENT)){
+                return  false;
+            }
+            return true;
+        }
+        return false;
     }
 
     @Override

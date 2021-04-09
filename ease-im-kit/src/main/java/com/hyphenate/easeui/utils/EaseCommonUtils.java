@@ -109,18 +109,20 @@ public class EaseCommonUtils {
             break;
         case TXT:
             EMTextMessageBody txtBody = (EMTextMessageBody) message.getBody();
-            if(message.getBooleanAttribute(EaseConstant.MESSAGE_ATTR_IS_VOICE_CALL, false)){
-                digest = getString(context, R.string.voice_call) + txtBody.getMessage();
-            }else if(message.getBooleanAttribute(EaseConstant.MESSAGE_ATTR_IS_VIDEO_CALL, false)){
-                digest = getString(context, R.string.video_call) + txtBody.getMessage();
-            }else if(message.getBooleanAttribute(EaseConstant.MESSAGE_ATTR_IS_BIG_EXPRESSION, false)){
-                if(!TextUtils.isEmpty(txtBody.getMessage())){
-                    digest = txtBody.getMessage();
+            if(txtBody != null){
+                if(message.getBooleanAttribute(EaseConstant.MESSAGE_ATTR_IS_VOICE_CALL, false)){
+                    digest = getString(context, R.string.voice_call) + txtBody.getMessage();
+                }else if(message.getBooleanAttribute(EaseConstant.MESSAGE_ATTR_IS_VIDEO_CALL, false)){
+                    digest = getString(context, R.string.video_call) + txtBody.getMessage();
+                }else if(message.getBooleanAttribute(EaseConstant.MESSAGE_ATTR_IS_BIG_EXPRESSION, false)){
+                    if(!TextUtils.isEmpty(txtBody.getMessage())){
+                        digest = txtBody.getMessage();
+                    }else{
+                        digest = getString(context, R.string.dynamic_expression);
+                    }
                 }else{
-                    digest = getString(context, R.string.dynamic_expression);
+                    digest = txtBody.getMessage();
                 }
-            }else{
-                digest = txtBody.getMessage();
             }
             break;
         case FILE:

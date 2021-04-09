@@ -34,5 +34,7 @@
     <item name="extend_item_video" type="id"/>
     <!-- 文件 -->
     <item name="extend_item_file" type="id"/>
+    <!-- 名片 -->
+    <item name="extend_item_user_card" type="id"/>
 
 </resources>
