@@ -69,7 +69,4 @@ public interface EaseConstant {
     String DEFAULT_SYSTEM_MESSAGE_TYPE = "em_system_type";
 
     String USER_CARD_EVENT = "userCard";
-    String USER_CARD_ID = "uid";
-    String USER_CARD_NICK = "nickname";
-    String USER_CARD_AVATAR = "avatar";
 }
