@@ -17,14 +17,7 @@ public class EaseCustomAdapterDelegate extends EaseMessageAdapterDelegate<EMMess
 
     @Override
     public boolean isForViewType(EMMessage item, int position) {
-        if(item.getType() == EMMessage.Type.CUSTOM){
-            EMCustomMessageBody messageBody = (EMCustomMessageBody) item.getBody();
-            if(messageBody.event().equals(EaseConstant.USER_CARD_EVENT)){
-                return  false;
-            }
-            return true;
-        }
-        return false;
+        return item.getType() == EMMessage.Type.CUSTOM;
     }
 
     @Override
