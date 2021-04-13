@@ -6,11 +6,16 @@ import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 
+import com.hyphenate.chat.EMClient;
+import com.hyphenate.chat.EMUserInfo;
 import com.hyphenate.util.HanziToPinyin;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class EaseUser implements Serializable {
     /**
@@ -33,19 +38,50 @@ public class EaseUser implements Serializable {
     private String avatar;
 
     /**
-     * contact 0: normal, 1: black
+     * contact 0: normal, 1: black ,3: no friend
      */
     private int contact;
 
     /**
-     * the timestamp when set nickname
+     * the timestamp when last modify
      */
-    private long modifyNicknameTimestamp;
+    private long lastModifyTimestamp;
 
     /**
      * the timestamp when set initialLetter
      */
     private long modifyInitialLetterTimestamp;
+
+    /**
+     * user's email;
+     */
+    private String email;
+
+    /**
+     * user's phone;
+     */
+    private String phone;
+
+    /**
+     * user's gender;
+     */
+    private int gender;
+
+    /**
+     * user's birth;
+     */
+    private String sign;
+
+    /**
+     * user's birth;
+     */
+    private String birth;
+
+    /**
+     * user's ext;
+     */
+    private String ext;
+
 
     @NonNull
     public String getUsername() {
@@ -54,6 +90,8 @@ public class EaseUser implements Serializable {
 
     public void setUsername(@NonNull String  username) {
         this.username = username;
+        lastModifyTimestamp = System.currentTimeMillis();
+        setLastModifyTimestamp(lastModifyTimestamp);
     }
 
     public String getNickname() {
@@ -62,11 +100,12 @@ public class EaseUser implements Serializable {
 
     public void setNickname(String nickname) {
         this.nickname = nickname;
-        modifyNicknameTimestamp = System.currentTimeMillis();
+        lastModifyTimestamp = System.currentTimeMillis();
+        setLastModifyTimestamp(lastModifyTimestamp);
     }
 
     public String getInitialLetter() {
-        if(initialLetter == null || modifyNicknameTimestamp > modifyInitialLetterTimestamp) {
+        if(initialLetter == null || lastModifyTimestamp > modifyInitialLetterTimestamp) {
             if(!TextUtils.isEmpty(nickname)) {
                 return getInitialLetter(nickname);
             }
@@ -86,6 +125,58 @@ public class EaseUser implements Serializable {
 
     public void setAvatar(String avatar) {
         this.avatar = avatar;
+        lastModifyTimestamp = System.currentTimeMillis();
+        setLastModifyTimestamp(lastModifyTimestamp);
+    }
+
+    public String getEmail() { return email; }
+
+    public void setEmail(String email) {
+        this.email = email;
+        lastModifyTimestamp = System.currentTimeMillis();
+        setLastModifyTimestamp(lastModifyTimestamp);
+    }
+
+    public String getPhone() { return phone; }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+        lastModifyTimestamp = System.currentTimeMillis();
+        setLastModifyTimestamp(lastModifyTimestamp);
+    }
+
+    public int getGender() { return gender; }
+
+    public void setGender(int gender) {
+        this.gender = gender;
+        lastModifyTimestamp = System.currentTimeMillis();
+        setLastModifyTimestamp(lastModifyTimestamp);
+    }
+
+    public String getSign() {
+        return sign;
+    }
+
+    public void setSign(String sign) {
+        this.sign = sign;
+        lastModifyTimestamp = System.currentTimeMillis();
+        setLastModifyTimestamp(lastModifyTimestamp);
+    }
+
+    public String getBirth() { return birth; }
+
+    public void setBirth(String birth) {
+        this.birth = birth;
+        lastModifyTimestamp = System.currentTimeMillis();
+        setLastModifyTimestamp(lastModifyTimestamp);
+    }
+
+    public String getExt() { return ext; }
+
+    public void setExt(String ext) {
+        this.ext = ext;
+        lastModifyTimestamp = System.currentTimeMillis();
+        setLastModifyTimestamp(lastModifyTimestamp);
     }
 
     public int getContact() {
@@ -94,18 +185,20 @@ public class EaseUser implements Serializable {
 
     public void setContact(int contact) {
         this.contact = contact;
+        lastModifyTimestamp = System.currentTimeMillis();
+        setLastModifyTimestamp(lastModifyTimestamp);
     }
 
     public String getInitialLetter(String name) {
         return new GetInitialLetter().getLetter(name);
     }
 
-    public long getModifyNicknameTimestamp() {
-        return modifyNicknameTimestamp;
+    public long getLastModifyTimestamp() {
+        return lastModifyTimestamp;
     }
 
-    public void setModifyNicknameTimestamp(long modifyNicknameTimestamp) {
-        this.modifyNicknameTimestamp = modifyNicknameTimestamp;
+    public void setLastModifyTimestamp(long modifyNicknameTimestamp) {
+        this.lastModifyTimestamp = modifyNicknameTimestamp;
     }
 
     public long getModifyInitialLetterTimestamp() {
@@ -125,11 +218,17 @@ public class EaseUser implements Serializable {
 
     @Override
     public String toString() {
-        return "EaseUser{" +
+                return "EaseUser{" +
                 "username='" + username + '\'' +
                 ", nickname='" + nickname + '\'' +
                 ", initialLetter='" + initialLetter + '\'' +
                 ", avatar='" + avatar + '\'' +
+                ", email='" + email + '\'' +
+                ", phone='" + phone + '\'' +
+                ", gender='" + gender + '\'' +
+                ", sign='" + sign + '\'' +
+                ", birth='" + birth + '\'' +
+                ", ext='" + ext + '\'' +
                 ", contact=" + contact +
                 '}';
     }
@@ -143,6 +242,46 @@ public class EaseUser implements Serializable {
         for (String id : ids) {
             user = new EaseUser(id);
             users.add(user);
+        }
+        return users;
+    }
+
+    public static List<EaseUser> parse(String[] ids) {
+        List<EaseUser> users = new ArrayList<>();
+        if(ids == null || ids.length == 0) {
+            return users;
+        }
+        EaseUser user;
+        for (String id : ids) {
+            user = new EaseUser(id);
+            users.add(user);
+        }
+        return users;
+    }
+
+    public static List<EaseUser> parseUserInfo(Map<String, EMUserInfo> userInfos) {
+        List<EaseUser> users = new ArrayList<>();
+        if(userInfos == null || userInfos.isEmpty()) {
+            return users;
+        }
+        EaseUser user;
+        Set<String> userSet = userInfos.keySet();
+        Iterator<String> it=userSet.iterator();
+        while(it.hasNext()){
+            String userId=it.next();
+            EMUserInfo info = userInfos.get(userId);
+            user = new EaseUser(info.getUserId());
+            user.setNickname(info.getNickName());
+            user.setAvatar(info.getAvatarUrl());
+            user.setEmail(info.getEmail());
+            user.setGender(info.getGender());
+            user.setBirth(info.getBirth());
+            user.setSign(info.getSignature());
+            user.setExt(info.getExt());
+            if(!info.getUserId().equals(EMClient.getInstance().getCurrentUser())){
+                users.add(user);
+            }
+
         }
         return users;
     }

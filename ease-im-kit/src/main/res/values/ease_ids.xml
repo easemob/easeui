@@ -34,5 +34,4 @@
     <item name="extend_item_video" type="id"/>
     <!-- 文件 -->
     <item name="extend_item_file" type="id"/>
-
 </resources>

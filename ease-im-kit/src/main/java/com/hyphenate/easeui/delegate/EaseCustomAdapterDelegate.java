@@ -3,7 +3,9 @@ package com.hyphenate.easeui.delegate;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.hyphenate.chat.EMCustomMessageBody;
 import com.hyphenate.chat.EMMessage;
+import com.hyphenate.easeui.constants.EaseConstant;
 import com.hyphenate.easeui.interfaces.MessageListItemClickListener;
 import com.hyphenate.easeui.model.styles.EaseMessageListItemStyle;
 import com.hyphenate.easeui.viewholder.EaseChatRowViewHolder;
