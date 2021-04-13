@@ -52,7 +52,6 @@
     <string name="attach_location">位置</string>
     <string name="attach_video">视频</string>
     <string name="attach_file">文件</string>
-    <string name="attach_user_card">名片</string>
     <string name="attach_media_call">音视频</string>
     <string name="attach_voice_call">语音电话</string>
     <string name="attach_video_call">视频通话</string>
