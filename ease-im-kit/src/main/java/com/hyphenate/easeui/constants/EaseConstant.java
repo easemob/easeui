@@ -68,4 +68,5 @@ public interface EaseConstant {
     String DEFAULT_SYSTEM_MESSAGE_ID = "em_system";
     String DEFAULT_SYSTEM_MESSAGE_TYPE = "em_system_type";
 
+    String USER_CARD_EVENT = "userCard";
 }

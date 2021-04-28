@@ -42,14 +42,16 @@ dependencies {
     compileOnly files('libs/BaiduLBS_Android.jar')
 
     //api project(':hyphenatechatsdk')
-	implementation 'com.hyphenate:hyphenate-chat:3.8.0'
+	implementation 'io.hyphenate:hyphenate-chat:3.8.1'
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     api 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
     implementation 'androidx.lifecycle:lifecycle-viewmodel:2.2.0'
     testImplementation 'junit:junit:4.12'
     implementation "androidx.recyclerview:recyclerview:1.2.0-beta01"
-    implementation 'com.github.bumptech.glide:glide:4.9.0'
+    api 'com.github.bumptech.glide:glide:4.9.0'
 }
 //apply from: "../upload_aar.gradle"
 //apply from: 'https://raw.githubusercontent.com/blundell/release-android-library/master/android-release-aar.gradle'
+
+//apply from: "../maven-push-release.gradle"

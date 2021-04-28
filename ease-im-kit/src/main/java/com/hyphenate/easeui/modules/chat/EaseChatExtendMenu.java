@@ -54,7 +54,7 @@ public class EaseChatExtendMenu extends FrameLayout implements PagingScrollHelpe
     private int[] itemStrings = { R.string.attach_take_pic, R.string.attach_picture,
             R.string.attach_location, R.string.attach_video, R.string.attach_file};
     private int[] itemdrawables = { R.drawable.ease_chat_takepic_selector, R.drawable.ease_chat_image_selector,
-            R.drawable.ease_chat_location_selector, R.drawable.em_chat_video_selector, R.drawable.em_chat_file_selector };
+            R.drawable.ease_chat_location_selector, R.drawable.em_chat_video_selector, R.drawable.em_chat_file_selector};
     private int[] itemIds = { R.id.extend_item_take_picture, R.id.extend_item_picture, R.id.extend_item_location, R.id.extend_item_video, R.id.extend_item_file};
 
     public EaseChatExtendMenu(Context context) {

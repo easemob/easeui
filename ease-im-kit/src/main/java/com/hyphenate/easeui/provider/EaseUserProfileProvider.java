@@ -1,7 +1,4 @@
 package com.hyphenate.easeui.provider;
-
-import android.text.TextUtils;
-
 import com.hyphenate.easeui.domain.EaseUser;
 
 /**
