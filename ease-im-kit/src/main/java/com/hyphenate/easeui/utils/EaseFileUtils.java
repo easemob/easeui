@@ -2,6 +2,7 @@ package com.hyphenate.easeui.utils;
 
 import android.content.ContentUris;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ProviderInfo;
@@ -18,6 +19,8 @@ import android.text.TextUtils;
 import androidx.annotation.NonNull;
 import androidx.core.content.FileProvider;
 
+import com.hyphenate.easeui.manager.EasePreferenceManager;
+import com.hyphenate.util.EMFileHelper;
 import com.hyphenate.util.EMLog;
 import com.hyphenate.util.PathUtil;
 import com.hyphenate.util.UriUtils;
@@ -37,13 +40,21 @@ import java.util.List;
 public class EaseFileUtils {
     private static final String TAG = EaseFileUtils.class.getSimpleName();
 
+    private static boolean isQ() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q;
+    }
+
+    public static boolean isFileExistByUri(Context context, Uri fileUri) {
+        return EMFileHelper.getInstance().isFileExist(fileUri);
+    }
+
     /**
      * 删除文件
      * @param context
      * @param uri
      */
     public static void deleteFile(Context context, Uri uri) {
-        if(UriUtils.isFileExistByUri(context, uri)) {
+        if(isFileExistByUri(context, uri)) {
             String filePath = getFilePath(context, uri);
             if(!TextUtils.isEmpty(filePath)) {
                 File file = new File(filePath);
@@ -67,30 +78,7 @@ public class EaseFileUtils {
      * @return
      */
     public static String getFileNameByUri(Context context, Uri fileUri) {
-        if(fileUri == null) {
-            return "";
-        }
-        //target 小于Q
-        if(!VersionUtils.isTargetQ(context)) {
-            String filePath = getFilePath(context, fileUri);
-            if(!TextUtils.isEmpty(filePath) && new File(filePath).exists()) {
-                return new File(filePath).getName();
-            }
-            return "";
-        }
-        //target 大于Q
-        if(uriStartWithFile(fileUri)) {
-            File file = new File(fileUri.getPath());
-            return file.exists() ? file.getName() : "";
-        }
-        if(!uriStartWithContent(fileUri)) {
-            if(fileUri.toString().startsWith("/") && new File(fileUri.toString()).exists()) {
-                return new File(fileUri.toString()).getName();
-            }
-            return "";
-        }
-
-        return UriUtils.getFilenameByDocument(context, fileUri);
+        return EMFileHelper.getInstance().getFilename(fileUri);
     }
 
     /**
@@ -103,188 +91,7 @@ public class EaseFileUtils {
      * @author paulburke
      */
     public static String getFilePath(final Context context, final Uri uri) {
-        if(uri == null) {
-            return "";
-        }
-        final boolean isKitKat = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
-        //sdk版本在29之前的
-        if(!VersionUtils.isTargetQ(context)) {
-            // DocumentProvider
-            if (isKitKat && DocumentsContract.isDocumentUri(context, uri)) {
-                // ExternalStorageProvider
-                if (isExternalStorageDocument(uri)) {
-                    final String docId = DocumentsContract.getDocumentId(uri);
-                    final String[] split = docId.split(":");
-                    final String type = split[0];
-
-                    if ("primary".equalsIgnoreCase(type)) {
-                        return Environment.getExternalStorageDirectory() + "/" + split[1];
-                    }
-                    //如果获取不到路径，则将Uri写入新文件中，然后返回新文件的路径
-                    return copyFileProviderUri(context, uri);
-                }
-                // DownloadsProvider
-                else if (isDownloadsDocument(uri)) {
-                    final String id = DocumentsContract.getDocumentId(uri);
-                    if (id.startsWith("raw:")) {
-                        return id.replaceFirst("raw:", "");
-                    }
-                    String[] contentUriPrefixesToTry = new String[]{
-                            "content://downloads/public_downloads",
-                            "content://downloads/my_downloads",
-                            "content://downloads/all_downloads"
-                    };
-
-                    for (String contentUriPrefix : contentUriPrefixesToTry) {
-                        Uri contentUri = ContentUris.withAppendedId(Uri.parse(contentUriPrefix), Long.valueOf(id));
-                        return getDataColumn(context, contentUri, null, null);
-                    }
-                    //如果获取不到路径，则将Uri写入新文件中，然后返回新文件的路径
-                    return copyFileProviderUri(context, uri);
-                }
-                // MediaProvider
-                else if (isMediaDocument(uri)) {
-                    final String docId = DocumentsContract.getDocumentId(uri);
-                    final String[] split = docId.split(":");
-                    final String type = split[0];
-
-                    Uri contentUri = null;
-                    if ("image".equals(type)) {
-                        contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-                    } else if ("video".equals(type)) {
-                        contentUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
-                    } else if ("audio".equals(type)) {
-                        contentUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-                    }
-
-                    final String selection = "_id=?";
-                    final String[] selectionArgs = new String[]{
-                            split[1]
-                    };
-                    String path = getDataColumn(context, contentUri, selection, selectionArgs);
-                    //如果获取不到路径，则将Uri写入新文件中，然后返回新文件的路径
-                    if(TextUtils.isEmpty(path)) {
-                        path = copyFileProviderUri(context, uri);
-                    }
-                    return path;
-                }
-            }
-            else if(isFileProvider(context, uri)) {
-                return getFPUriToPath(context, uri);
-            }else if(isOtherFileProvider(context, uri)) {
-                return copyFileProviderUri(context, uri);
-            }
-            // MediaStore (and general)
-            else if (uriStartWithContent(uri)) {
-                String path = getDataColumn(context, uri, null, null);
-                if(TextUtils.isEmpty(path)) {
-                    //如果获取不到路径，则将Uri写入新文件中，然后返回新文件的路径
-                    path = copyFileProviderUri(context, uri);
-                }
-                return path;
-            }
-            // File
-            else if (uriStartWithFile(uri)) {
-                return uri.getPath();
-            }else if(uri.toString().startsWith("/")) {//如果是路径的话，返回路径
-                return uri.toString();
-            }
-        }else {
-            //29之后，判断是否是file开头及是否是以"/"开头
-            if(uriStartWithFile(uri)) {
-                return uri.getPath();
-            }else if(uri.toString().startsWith("/")) {
-                return uri.toString();
-            }
-        }
-        return "";
-    }
-
-    /**
-     * 从FileProvider获取文件
-     * @param context
-     * @param uri
-     * @return
-     */
-    private static String copyFileProviderUri(Context context, Uri uri) {
-        //如果是分享过来的文件，则将其写入到私有目录下
-        String filename = getFileName(context, uri);
-        if(TextUtils.isEmpty(filename)) {
-            return "";
-        }
-        String filePath = PathUtil.getInstance().getFilePath() + File.separator + filename;
-        if(new File(filePath).exists()) {
-            return filePath;
-        }
-        InputStream in = null;
-        OutputStream out = null;
-        try {
-            in = context.getContentResolver().openInputStream(uri);
-            out = new FileOutputStream(filePath);
-            copy(in, out);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if(in != null) {
-                    in.close();
-                }
-                if(out != null) {
-                    out.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return new File(filePath).exists() ? filePath : "";
-    }
-
-    private static String getFileName(@NonNull Context context, Uri uri) {
-        String mimeType = context.getContentResolver().getType(uri);
-        String filename = null;
-
-        if (mimeType == null && context != null) {
-            String uriString = null;
-            try {
-                uriString = URLDecoder.decode(uri.toString(), "utf-8");
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-            filename = getName(uriString);
-        } else {
-            Cursor returnCursor = context.getContentResolver().query(uri, null,
-                    null, null, null);
-            if (returnCursor != null) {
-                int nameIndex = returnCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
-                returnCursor.moveToFirst();
-                filename = returnCursor.getString(nameIndex);
-                returnCursor.close();
-            }
-        }
-        return filename;
-    }
-
-    private static String getName(String filename) {
-        if (filename == null) {
-            return null;
-        }
-        int index = filename.lastIndexOf('/');
-        return filename.substring(index + 1);
-    }
-
-    public static long copy(@NonNull InputStream in, @NonNull OutputStream out) {
-        long sum = 0;
-        try {
-            byte[] tmp = new byte[2048];
-            int l;
-            while ((l = in.read(tmp)) != -1) {
-                out.write(tmp, 0, l);
-                sum += l;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return sum;
+        return EMFileHelper.getInstance().getFilePath(uri);
     }
 
     /**
@@ -304,96 +111,6 @@ public class EaseFileUtils {
     public static boolean uriStartWithContent(Uri fileUri) {
         return "content".equalsIgnoreCase(fileUri.getScheme());
     }
-
-    /**
-     * Get the value of the data column for this Uri. This is useful for
-     * MediaStore Uris, and other file-based ContentProviders.
-     *
-     * @param context       The context.
-     * @param uri           The Uri to query.
-     * @param selection     (Optional) Filter used in the query.
-     * @param selectionArgs (Optional) Selection arguments used in the query.
-     * @return The value of the _data column, which is typically a file path.
-     */
-    public static String getDataColumn(Context context, Uri uri, String selection,
-                                       String[] selectionArgs) {
-
-        Cursor cursor = null;
-        final String column = "_data";
-        final String[] projection = {
-                column
-        };
-
-        try {
-            cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs,
-                    null);
-            if (cursor != null && cursor.moveToFirst()) {
-                final int column_index = cursor.getColumnIndexOrThrow(column);
-                return cursor.getString(column_index);
-            }
-        } finally {
-            if (cursor != null)
-                cursor.close();
-        }
-        return null;
-    }
-
-    /**
-     * 从FileProvider获取文件路径
-     * @param context
-     * @param uri
-     * @return
-     */
-    private static String getFPUriToPath(Context context, Uri uri) {
-        try {
-            List<PackageInfo> packs = context.getPackageManager().getInstalledPackages(PackageManager.GET_PROVIDERS);
-            if (packs != null) {
-                String fileProviderClassName = FileProvider.class.getName();
-                for (PackageInfo pack : packs) {
-                    ProviderInfo[] providers = pack.providers;
-                    if (providers != null) {
-                        for (ProviderInfo provider : providers) {
-                            if (uri.getAuthority().equals(provider.authority)) {
-                                if (provider.name.equalsIgnoreCase(fileProviderClassName)) {
-                                    Class<FileProvider> fileProviderClass = FileProvider.class;
-                                    try {
-                                        Method getPathStrategy = fileProviderClass.getDeclaredMethod("getPathStrategy", Context.class, String.class);
-                                        getPathStrategy.setAccessible(true);
-                                        Object invoke = getPathStrategy.invoke(null, context, uri.getAuthority());
-                                        if (invoke != null) {
-                                            String PathStrategyStringClass = FileProvider.class.getName() + "$PathStrategy";
-                                            Class<?> PathStrategy = Class.forName(PathStrategyStringClass);
-                                            Method getFileForUri = PathStrategy.getDeclaredMethod("getFileForUri", Uri.class);
-                                            getFileForUri.setAccessible(true);
-                                            Object invoke1 = getFileForUri.invoke(invoke, uri);
-                                            if (invoke1 instanceof File) {
-                                                String filePath = ((File) invoke1).getAbsolutePath();
-                                                return filePath;
-                                            }
-                                        }
-                                    } catch (NoSuchMethodException e) {
-                                        e.printStackTrace();
-                                    } catch (InvocationTargetException e) {
-                                        e.printStackTrace();
-                                    } catch (IllegalAccessException e) {
-                                        e.printStackTrace();
-                                    } catch (ClassNotFoundException e) {
-                                        e.printStackTrace();
-                                    }
-                                    break;
-                                }
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
 
     /**
      * @param uri The Uri to check.
@@ -444,6 +161,78 @@ public class EaseFileUtils {
         return !(context.getApplicationInfo().packageName + ".fileProvider").equalsIgnoreCase(uri.getAuthority())
                 && "content".equalsIgnoreCase(uri.getScheme())
                 && authority.contains(".fileProvider".toLowerCase());
+    }
+
+    public static boolean saveUriPermission(Context context, Uri fileUri, Intent intent) {
+        if(context == null || fileUri == null) {
+            return false;
+        }
+        //目前只处理scheme为"content"的Uri
+        if(!uriStartWithContent(fileUri)) {
+            return false;
+        }
+        int intentFlags = 0;
+        if(intent != null) {
+            intentFlags = intent.getFlags();
+        }
+        int takeFlags = intentFlags & (Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+        context.getContentResolver().takePersistableUriPermission(fileUri, takeFlags);
+        String last = getLastSubFromUri(fileUri);
+        EMLog.d(TAG, "saveUriPermission last part of Uri: "+last);
+        if(!TextUtils.isEmpty(last)) {
+            EasePreferenceManager.getInstance().putString(last, fileUri.toString());
+            return true;
+        }
+        return false;
+    }
+
+    private static String getLastSubFromUri(Uri fileUri) {
+        if(fileUri == null) {
+            return "";
+        }
+        String uri = fileUri.toString();
+        if(!uri.contains("/")) {
+            return "";
+        }
+        int lastIndex = uri.lastIndexOf("/");
+        return uri.substring(lastIndex + 1);
+    }
+
+    /**
+     * 获取Uri的永久读权限
+     * @param context
+     * @param uri
+     * @return
+     */
+    public static Uri takePersistableUriPermission(Context context, Uri uri) {
+        if(context == null || uri == null) {
+            return null;
+        }
+        //目前只处理scheme为"content"的Uri
+        if(!uriStartWithContent(uri)) {
+            return null;
+        }
+        //获取Uri的读权限
+        String last = getLastSubFromUri(uri);
+        if(!TextUtils.isEmpty(last)) {
+            String fileUri = EasePreferenceManager.getInstance().getString(last);
+            if(!TextUtils.isEmpty(fileUri)) {
+                try {
+                    context.getContentResolver().takePersistableUriPermission(Uri.parse(fileUri), Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    return Uri.parse(fileUri);
+                } catch (SecurityException e) {
+                    EMLog.e("EaseFileUtils", "takePersistableUriPermission failed e: "+e.getMessage());
+                    return null;
+                }
+            }
+        }
+        try {
+            context.getContentResolver().takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        } catch (SecurityException e) {
+            EMLog.e("EaseFileUtils", "takePersistableUriPermission failed e: "+e.getMessage());
+            return null;
+        }
+        return uri;
     }
 }
 
