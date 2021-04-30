@@ -1,41 +1,16 @@
 package com.hyphenate.easeui.utils;
 
-import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.ProviderInfo;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Environment;
-import android.os.FileUtils;
-import android.provider.DocumentsContract;
-import android.provider.MediaStore;
-import android.provider.OpenableColumns;
 import android.text.TextUtils;
-
-import androidx.annotation.NonNull;
-import androidx.core.content.FileProvider;
 
 import com.hyphenate.easeui.manager.EasePreferenceManager;
 import com.hyphenate.util.EMFileHelper;
 import com.hyphenate.util.EMLog;
-import com.hyphenate.util.PathUtil;
-import com.hyphenate.util.UriUtils;
-import com.hyphenate.util.VersionUtils;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.net.URLDecoder;
-import java.util.List;
 
 public class EaseFileUtils {
     private static final String TAG = EaseFileUtils.class.getSimpleName();

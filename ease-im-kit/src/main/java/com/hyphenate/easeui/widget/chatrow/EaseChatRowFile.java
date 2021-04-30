@@ -13,9 +13,9 @@ import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMNormalFileMessageBody;
 import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.utils.EaseEditTextUtils;
+import com.hyphenate.easeui.utils.EaseFileUtils;
 import com.hyphenate.util.EMLog;
 import com.hyphenate.util.TextFormater;
-import com.hyphenate.util.UriUtils;
 
 import java.io.File;
 
@@ -74,7 +74,7 @@ public class EaseChatRowFile extends EaseChatRow {
         });
         fileSizeView.setText(TextFormater.getDataSize(fileMessageBody.getFileSize()));
         if (message.direct() == EMMessage.Direct.SEND){
-            if (UriUtils.isFileExistByUri(context, filePath)
+            if (EaseFileUtils.isFileExistByUri(context, filePath)
                     && message.status() == EMMessage.Status.SUCCESS) {
                 fileStateView.setText(R.string.have_uploaded);
             }else {
@@ -82,7 +82,7 @@ public class EaseChatRowFile extends EaseChatRow {
             }
         }
         if (message.direct() == EMMessage.Direct.RECEIVE) {
-            if (UriUtils.isFileExistByUri(context, filePath)) {
+            if (EaseFileUtils.isFileExistByUri(context, filePath)) {
                 fileStateView.setText(R.string.have_downloaded);
             } else {
                 fileStateView.setText(R.string.did_not_download);

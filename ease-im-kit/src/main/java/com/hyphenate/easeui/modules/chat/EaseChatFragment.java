@@ -32,7 +32,6 @@ import com.hyphenate.easeui.utils.EaseCompat;
 import com.hyphenate.easeui.utils.EaseFileUtils;
 import com.hyphenate.util.EMLog;
 import com.hyphenate.util.PathUtil;
-import com.hyphenate.util.UriUtils;
 import com.hyphenate.util.VersionUtils;
 
 import java.io.File;

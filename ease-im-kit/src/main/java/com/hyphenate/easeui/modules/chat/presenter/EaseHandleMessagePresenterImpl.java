@@ -20,10 +20,10 @@ import com.hyphenate.easeui.constants.EaseConstant;
 import com.hyphenate.easeui.manager.EaseAtMessageHelper;
 import com.hyphenate.easeui.modules.chat.EaseChatLayout;
 import com.hyphenate.easeui.utils.EaseCommonUtils;
+import com.hyphenate.easeui.utils.EaseFileUtils;
 import com.hyphenate.exceptions.HyphenateException;
 import com.hyphenate.util.EMLog;
 import com.hyphenate.util.PathUtil;
-import com.hyphenate.util.UriUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -219,10 +219,10 @@ public class EaseHandleMessagePresenterImpl extends EaseHandleMessagePresenter {
      * @return
      */
     private String getThumbPath(Uri videoUri) {
-        if(!UriUtils.isFileExistByUri(mView.context(), videoUri)) {
+        if(!EaseFileUtils.isFileExistByUri(mView.context(), videoUri)) {
             return "";
         }
-        String filePath = UriUtils.getFilePath(mView.context(), videoUri);
+        String filePath = EaseFileUtils.getFilePath(mView.context(), videoUri);
         File file = new File(PathUtil.getInstance().getVideoPath(), "thvideo" + System.currentTimeMillis()+".jpeg");
         boolean createSuccess = true;
         if(!TextUtils.isEmpty(filePath) && new File(filePath).exists()) {
