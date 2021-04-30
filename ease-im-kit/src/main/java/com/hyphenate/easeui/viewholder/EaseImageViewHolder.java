@@ -18,7 +18,9 @@ import com.hyphenate.easeui.adapter.EaseMessageAdapter;
 import com.hyphenate.easeui.interfaces.MessageListItemClickListener;
 import com.hyphenate.easeui.model.styles.EaseMessageListItemStyle;
 import com.hyphenate.easeui.ui.EaseShowBigImageActivity;
+import com.hyphenate.easeui.utils.EaseFileUtils;
 import com.hyphenate.easeui.widget.chatrow.EaseChatRowImage;
+import com.hyphenate.util.EMLog;
 import com.hyphenate.util.UriUtils;
 
 import java.io.File;
@@ -56,6 +58,9 @@ public class EaseImageViewHolder extends EaseChatRowViewHolder {
         }
         Intent intent = new Intent(getContext(), EaseShowBigImageActivity.class);
         Uri imgUri = imgBody.getLocalUri();
+        //检查Uri读权限
+        EaseFileUtils.takePersistableUriPermission(getContext(), imgUri);
+        EMLog.e("Tag", "big image uri: " + imgUri + "  exist: "+UriUtils.isFileExistByUri(getContext(), imgUri));
         if(UriUtils.isFileExistByUri(getContext(), imgUri)) {
             intent.putExtra("uri", imgUri);
         } else{

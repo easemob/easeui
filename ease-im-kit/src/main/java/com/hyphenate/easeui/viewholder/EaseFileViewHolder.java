@@ -16,6 +16,7 @@ import com.hyphenate.easeui.interfaces.MessageListItemClickListener;
 import com.hyphenate.easeui.utils.EaseCompat;
 import com.hyphenate.easeui.model.styles.EaseMessageListItemStyle;
 import com.hyphenate.easeui.ui.EaseShowNormalFileActivity;
+import com.hyphenate.easeui.utils.EaseFileUtils;
 import com.hyphenate.easeui.widget.chatrow.EaseChatRowFile;
 import com.hyphenate.exceptions.HyphenateException;
 import com.hyphenate.util.UriUtils;
@@ -38,6 +39,8 @@ public class EaseFileViewHolder extends EaseChatRowViewHolder{
         super.onBubbleClick(message);
         EMNormalFileMessageBody fileMessageBody = (EMNormalFileMessageBody) message.getBody();
         Uri filePath = fileMessageBody.getLocalUri();
+        //检查Uri读权限
+        EaseFileUtils.takePersistableUriPermission(getContext(), filePath);
         if(UriUtils.isFileExistByUri(getContext(), filePath)){
             EaseCompat.openFile(getContext(), filePath);
         } else {

@@ -34,22 +34,21 @@ public class EaseCompat {
     private static final String TAG = "EaseCompat";
 
     public static void openImage(Activity context, int requestCode) {
-        Intent intent = null;
-        if(VersionUtils.isTargetQ(context)) {
-            intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-        }else {
-            intent = new Intent(Intent.ACTION_GET_CONTENT);
-        }
-        intent.setType("image/*");
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        Intent intent = getOpenImageIntent(context);
         context.startActivityForResult(intent, requestCode);
     }
 
     public static void openImage(Fragment context, int requestCode) {
+        Intent intent = getOpenImageIntent(context.getActivity());
+        context.startActivityForResult(intent, requestCode);
+    }
+
+    private static Intent getOpenImageIntent(Context context) {
         Intent intent = null;
-        if(VersionUtils.isTargetQ(context.getActivity())) {
+        if(VersionUtils.isTargetQ(context)) {
             intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
             intent.addCategory(Intent.CATEGORY_OPENABLE);
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         }else {
             if (Build.VERSION.SDK_INT < 19) {
                 intent = new Intent(Intent.ACTION_GET_CONTENT);
@@ -59,7 +58,7 @@ public class EaseCompat {
             }
         }
         intent.setType("image/*");
-        context.startActivityForResult(intent, requestCode);
+        return intent;
     }
 
     /**

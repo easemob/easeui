@@ -18,6 +18,7 @@ import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMVideoMessageBody;
 import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.ui.base.EaseBaseActivity;
+import com.hyphenate.easeui.utils.EaseFileUtils;
 import com.hyphenate.util.EMLog;
 import com.hyphenate.util.UriUtils;
 
@@ -55,6 +56,9 @@ public class EaseShowVideoActivity extends EaseBaseActivity {
 		localFilePath = messageBody.getLocalUri();
 		EMLog.d(TAG, "localFilePath = "+localFilePath);
 		EMLog.d(TAG, "local filename = "+messageBody.getFileName());
+
+		//检查Uri读权限
+		EaseFileUtils.takePersistableUriPermission(this, localFilePath);
 
 		if(UriUtils.isFileExistByUri(this, localFilePath)) {
 		    showLocalVideo(localFilePath);

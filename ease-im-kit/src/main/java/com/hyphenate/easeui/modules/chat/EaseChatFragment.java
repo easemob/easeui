@@ -249,6 +249,7 @@ public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutLi
         Intent intent = new Intent();
         if(VersionUtils.isTargetQ(getActivity())) {
             intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         }else {
             intent.setAction(Intent.ACTION_GET_CONTENT);
         }
@@ -280,6 +281,7 @@ public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutLi
                 if(!TextUtils.isEmpty(filePath) && new File(filePath).exists()) {
                     chatLayout.sendImageMessage(Uri.parse(filePath));
                 }else {
+                    EaseFileUtils.saveUriPermission(mContext, selectedImage, data);
                     chatLayout.sendImageMessage(selectedImage);
                 }
             }
@@ -327,6 +329,7 @@ public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutLi
                 if(!TextUtils.isEmpty(filePath) && new File(filePath).exists()) {
                     chatLayout.sendFileMessage(Uri.parse(filePath));
                 }else {
+                    EaseFileUtils.saveUriPermission(mContext, uri, data);
                     chatLayout.sendFileMessage(uri);
                 }
             }

@@ -828,7 +828,7 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
 
     @Override
     public void onMessageInProgress(EMMessage message, int progress) {
-        EMLog.i(TAG, "send message on progress");
+        EMLog.i(TAG, "send message on progress: "+progress);
 
     }
 
