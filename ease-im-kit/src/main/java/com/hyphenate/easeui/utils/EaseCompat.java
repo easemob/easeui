@@ -218,7 +218,7 @@ public class EaseCompat {
      * @param mimeType
      */
     public static void openFile(Context context, Uri uri, String filename, String mimeType) {
-        if(openApk(context, uri)) {
+        if(openApk(context, uri, filename)) {
             return;
         }
         EMLog.d(TAG, "openFile filename = "+filename + " mimeType = "+mimeType);
@@ -390,22 +390,20 @@ public class EaseCompat {
     }
 
     public static boolean openApk(Context context, Uri uri, @NonNull String filename) {
-        String filePath = EaseFileUtils.getFilePath(context, uri);
         if(filename.endsWith(".apk")) {
-            if(TextUtils.isEmpty(filePath) || !new File(filePath).exists()) {
+            if(!EaseFileUtils.isFileExistByUri(context, uri)) {
                 Toast.makeText(context, "Can't find proper app to open this file", Toast.LENGTH_LONG).show();
                 return true;
             }
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                Uri fileUri = FileProvider.getUriForFile(context, context.getPackageName() + ".fileProvider", new File(filePath));
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                intent.setDataAndType(fileUri, getMimeType(context, filename));
+                intent.setDataAndType(uri, getMimeType(context, filename));
                 context.startActivity(intent);
             }else {
                 Intent installIntent = new Intent(Intent.ACTION_VIEW);
                 installIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                installIntent.setDataAndType(Uri.fromFile(new File(filePath)), getMimeType(context, filename));
+                installIntent.setDataAndType(uri, getMimeType(context, filename));
                 context.startActivity(installIntent);
             }
             return true;
