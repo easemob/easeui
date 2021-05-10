@@ -151,9 +151,14 @@ public class EaseFileUtils {
             intentFlags = intent.getFlags();
         }
         int takeFlags = intentFlags & (Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-        context.getContentResolver().takePersistableUriPermission(fileUri, takeFlags);
-        String last = getLastSubFromUri(fileUri);
-        EMLog.d(TAG, "saveUriPermission last part of Uri: "+last);
+        String last = null;
+        try {
+            context.getContentResolver().takePersistableUriPermission(fileUri, takeFlags);
+            last = getLastSubFromUri(fileUri);
+            EMLog.d(TAG, "saveUriPermission last part of Uri: "+last);
+        } catch (SecurityException e) {
+            EMLog.e("EaseFileUtils", "saveUriPermission failed e: "+e.getMessage());
+        }
         if(!TextUtils.isEmpty(last)) {
             EasePreferenceManager.getInstance().putString(last, fileUri.toString());
             return true;

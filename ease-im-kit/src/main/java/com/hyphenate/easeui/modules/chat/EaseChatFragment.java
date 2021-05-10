@@ -3,6 +3,7 @@ package com.hyphenate.easeui.modules.chat;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.TextUtils;
@@ -248,10 +249,14 @@ public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutLi
         Intent intent = new Intent();
         if(VersionUtils.isTargetQ(getActivity())) {
             intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
-            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         }else {
-            intent.setAction(Intent.ACTION_GET_CONTENT);
+            if(Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+            }else {
+                intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
+            }
         }
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.setType("*/*");
 
