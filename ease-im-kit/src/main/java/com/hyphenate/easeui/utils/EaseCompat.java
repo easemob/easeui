@@ -182,6 +182,10 @@ public class EaseCompat {
      * @param file
      */
     public static void openFile(Context context, File file) {
+        if(file == null || !file.exists()) {
+            EMLog.e(TAG, "Cannot open the file, because the file is not exit, file: "+file);
+            return;
+        }
         String filename = file.getName();
         String mimeType = getMimeType(context, file);
         /* get uri */
@@ -199,6 +203,10 @@ public class EaseCompat {
      * @param uri
      */
     public static void openFile(Context context, Uri uri) {
+        if(!EaseFileUtils.isFileExistByUri(context, uri)) {
+            EMLog.e(TAG, "Cannot open the file, because the file is not exit, uri: "+uri);
+            return;
+        }
         String filePath = EaseFileUtils.getFilePath(context, uri);
         //如果可以获取文件的绝对路径，则需要根据sdk版本处理FileProvider的问题
         if(!TextUtils.isEmpty(filePath) && new File(filePath).exists()) {
@@ -217,7 +225,7 @@ public class EaseCompat {
      * @param filename
      * @param mimeType
      */
-    public static void openFile(Context context, Uri uri, String filename, String mimeType) {
+    private static void openFile(Context context, Uri uri, String filename, String mimeType) {
         if(openApk(context, uri, filename)) {
             return;
         }
@@ -389,12 +397,8 @@ public class EaseCompat {
         return openApk(context, uri, filename);
     }
 
-    public static boolean openApk(Context context, Uri uri, @NonNull String filename) {
+    private static boolean openApk(Context context, Uri uri, @NonNull String filename) {
         if(filename.endsWith(".apk")) {
-            if(!EaseFileUtils.isFileExistByUri(context, uri)) {
-                Toast.makeText(context, "Can't find proper app to open this file", Toast.LENGTH_LONG).show();
-                return true;
-            }
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
