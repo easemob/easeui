@@ -18,8 +18,8 @@ import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMVideoMessageBody;
 import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.ui.base.EaseBaseActivity;
+import com.hyphenate.easeui.utils.EaseFileUtils;
 import com.hyphenate.util.EMLog;
-import com.hyphenate.util.UriUtils;
 
 import java.io.File;
 
@@ -56,7 +56,10 @@ public class EaseShowVideoActivity extends EaseBaseActivity {
 		EMLog.d(TAG, "localFilePath = "+localFilePath);
 		EMLog.d(TAG, "local filename = "+messageBody.getFileName());
 
-		if(UriUtils.isFileExistByUri(this, localFilePath)) {
+		//检查Uri读权限
+		EaseFileUtils.takePersistableUriPermission(this, localFilePath);
+
+		if(EaseFileUtils.isFileExistByUri(this, localFilePath)) {
 		    showLocalVideo(localFilePath);
 		} else {
 			EMLog.d(TAG, "download remote video file");
@@ -122,7 +125,7 @@ public class EaseShowVideoActivity extends EaseBaseActivity {
 			public void onError(final int error, String msg) {
 				Log.e("###", "offline file transfer error:" + msg);
 				Uri localFilePath = ((EMVideoMessageBody) message.getBody()).getLocalUri();
-				String filePath = UriUtils.getFilePath(EaseShowVideoActivity.this, localFilePath);
+				String filePath = EaseFileUtils.getFilePath(EaseShowVideoActivity.this, localFilePath);
 				if(TextUtils.isEmpty(filePath)) {
 				    EaseShowVideoActivity.this.getContentResolver().delete(localFilePath, null, null);
 				}else {

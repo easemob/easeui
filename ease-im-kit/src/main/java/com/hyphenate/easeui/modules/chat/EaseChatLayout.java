@@ -721,6 +721,26 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
     }
 
     @Override
+    public void onPresenterMessageSuccess(EMMessage message) {
+        EMLog.i(TAG, "send message onPresenterMessageSuccess");
+    }
+
+    @Override
+    public void onPresenterMessageError(EMMessage message, int code, String error) {
+        EMLog.i(TAG, "send message onPresenterMessageError code: "+code + " error: "+error);
+        //刷新条目
+        refreshMessage(message);
+        if(listener != null) {
+            listener.onChatError(code, error);
+        }
+    }
+
+    @Override
+    public void onPresenterMessageInProgress(EMMessage message, int progress) {
+        EMLog.i(TAG, "send message onPresenterMessageInProgress");
+    }
+
+    @Override
     public void onTouchItemOutside(View v, int position) {
         inputMenu.hideSoftKeyboard();
         inputMenu.showExtendMenu(false);
@@ -808,7 +828,7 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
 
     @Override
     public void onMessageInProgress(EMMessage message, int progress) {
-        EMLog.i(TAG, "send message on progress");
+        EMLog.i(TAG, "send message on progress: "+progress);
 
     }
 

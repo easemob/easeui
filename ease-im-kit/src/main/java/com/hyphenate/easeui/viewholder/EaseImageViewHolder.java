@@ -7,21 +7,16 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 
-import com.hyphenate.EMCallBack;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMFileMessageBody;
 import com.hyphenate.chat.EMImageMessageBody;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.easeui.EaseIM;
-import com.hyphenate.easeui.adapter.EaseBaseRecyclerViewAdapter;
-import com.hyphenate.easeui.adapter.EaseMessageAdapter;
 import com.hyphenate.easeui.interfaces.MessageListItemClickListener;
-import com.hyphenate.easeui.model.styles.EaseMessageListItemStyle;
 import com.hyphenate.easeui.ui.EaseShowBigImageActivity;
+import com.hyphenate.easeui.utils.EaseFileUtils;
 import com.hyphenate.easeui.widget.chatrow.EaseChatRowImage;
-import com.hyphenate.util.UriUtils;
-
-import java.io.File;
+import com.hyphenate.util.EMLog;
 
 public class EaseImageViewHolder extends EaseChatRowViewHolder {
 
@@ -56,7 +51,10 @@ public class EaseImageViewHolder extends EaseChatRowViewHolder {
         }
         Intent intent = new Intent(getContext(), EaseShowBigImageActivity.class);
         Uri imgUri = imgBody.getLocalUri();
-        if(UriUtils.isFileExistByUri(getContext(), imgUri)) {
+        //检查Uri读权限
+        EaseFileUtils.takePersistableUriPermission(getContext(), imgUri);
+        EMLog.e("Tag", "big image uri: " + imgUri + "  exist: "+EaseFileUtils.isFileExistByUri(getContext(), imgUri));
+        if(EaseFileUtils.isFileExistByUri(getContext(), imgUri)) {
             intent.putExtra("uri", imgUri);
         } else{
             // The local full size pic does not exist yet.

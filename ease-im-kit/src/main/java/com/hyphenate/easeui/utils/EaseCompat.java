@@ -34,20 +34,18 @@ public class EaseCompat {
     private static final String TAG = "EaseCompat";
 
     public static void openImage(Activity context, int requestCode) {
-        Intent intent = null;
-        if(VersionUtils.isTargetQ(context)) {
-            intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-        }else {
-            intent = new Intent(Intent.ACTION_GET_CONTENT);
-        }
-        intent.setType("image/*");
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        Intent intent = getOpenImageIntent(context);
         context.startActivityForResult(intent, requestCode);
     }
 
     public static void openImage(Fragment context, int requestCode) {
+        Intent intent = getOpenImageIntent(context.getActivity());
+        context.startActivityForResult(intent, requestCode);
+    }
+
+    private static Intent getOpenImageIntent(Context context) {
         Intent intent = null;
-        if(VersionUtils.isTargetQ(context.getActivity())) {
+        if(VersionUtils.isTargetQ(context)) {
             intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
             intent.addCategory(Intent.CATEGORY_OPENABLE);
         }else {
@@ -58,8 +56,9 @@ public class EaseCompat {
                 intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             }
         }
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
         intent.setType("image/*");
-        context.startActivityForResult(intent, requestCode);
+        return intent;
     }
 
     /**
@@ -183,6 +182,10 @@ public class EaseCompat {
      * @param file
      */
     public static void openFile(Context context, File file) {
+        if(file == null || !file.exists()) {
+            EMLog.e(TAG, "Cannot open the file, because the file is not exit, file: "+file);
+            return;
+        }
         String filename = file.getName();
         String mimeType = getMimeType(context, file);
         /* get uri */
@@ -200,6 +203,10 @@ public class EaseCompat {
      * @param uri
      */
     public static void openFile(Context context, Uri uri) {
+        if(!EaseFileUtils.isFileExistByUri(context, uri)) {
+            EMLog.e(TAG, "Cannot open the file, because the file is not exit, uri: "+uri);
+            return;
+        }
         String filePath = EaseFileUtils.getFilePath(context, uri);
         //如果可以获取文件的绝对路径，则需要根据sdk版本处理FileProvider的问题
         if(!TextUtils.isEmpty(filePath) && new File(filePath).exists()) {
@@ -218,8 +225,8 @@ public class EaseCompat {
      * @param filename
      * @param mimeType
      */
-    public static void openFile(Context context, Uri uri, String filename, String mimeType) {
-        if(openApk(context, uri)) {
+    private static void openFile(Context context, Uri uri, String filename, String mimeType) {
+        if(openApk(context, uri, filename)) {
             return;
         }
         EMLog.d(TAG, "openFile filename = "+filename + " mimeType = "+mimeType);
@@ -390,23 +397,17 @@ public class EaseCompat {
         return openApk(context, uri, filename);
     }
 
-    public static boolean openApk(Context context, Uri uri, @NonNull String filename) {
-        String filePath = EaseFileUtils.getFilePath(context, uri);
+    private static boolean openApk(Context context, Uri uri, @NonNull String filename) {
         if(filename.endsWith(".apk")) {
-            if(TextUtils.isEmpty(filePath) || !new File(filePath).exists()) {
-                Toast.makeText(context, "Can't find proper app to open this file", Toast.LENGTH_LONG).show();
-                return true;
-            }
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                Uri fileUri = FileProvider.getUriForFile(context, context.getPackageName() + ".fileProvider", new File(filePath));
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                intent.setDataAndType(fileUri, getMimeType(context, filename));
+                intent.setDataAndType(uri, getMimeType(context, filename));
                 context.startActivity(intent);
             }else {
                 Intent installIntent = new Intent(Intent.ACTION_VIEW);
                 installIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                installIntent.setDataAndType(Uri.fromFile(new File(filePath)), getMimeType(context, filename));
+                installIntent.setDataAndType(uri, getMimeType(context, filename));
                 context.startActivity(installIntent);
             }
             return true;

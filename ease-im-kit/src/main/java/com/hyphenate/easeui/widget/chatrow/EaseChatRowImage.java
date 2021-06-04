@@ -22,7 +22,6 @@ import com.hyphenate.easeui.utils.EaseCommonUtils;
 import com.hyphenate.easeui.utils.EaseImageCache;
 import com.hyphenate.easeui.utils.EaseImageUtils;
 import com.hyphenate.util.EMLog;
-import com.hyphenate.util.UriUtils;
 
 import java.io.File;
 import java.io.IOException;
