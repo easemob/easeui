@@ -105,6 +105,9 @@ public class EaseImageUtils extends com.hyphenate.util.ImageUtils{
 		EaseFileUtils.takePersistableUriPermission(context, localThumbUri);
 		//获取视频封面服务器地址
 		String thumbnailUrl = ((EMVideoMessageBody) body).getThumbnailUrl();
+		if(!EaseFileUtils.isFileExistByUri(context, localThumbUri)) {
+		    localThumbUri = null;
+		}
 		return showImage(context, imageView, localThumbUri, thumbnailUrl, width, height);
 	}
 
@@ -130,7 +133,7 @@ public class EaseImageUtils extends com.hyphenate.util.ImageUtils{
 			BitmapFactory.Options options = null;
 			try {
 				options = ImageUtils.getBitmapOptions(context, imageUri);
-			} catch (IOException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			if(options != null) {
@@ -210,7 +213,7 @@ public class EaseImageUtils extends com.hyphenate.util.ImageUtils{
 			BitmapFactory.Options options = null;
 			try {
 				options = ImageUtils.getBitmapOptions(context, imageUri);
-			} catch (IOException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			if(options != null) {
