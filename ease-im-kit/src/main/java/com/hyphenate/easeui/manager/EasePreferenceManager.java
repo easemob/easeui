@@ -73,4 +73,13 @@ public class EasePreferenceManager {
     public String getUnSendMsgInfo(String toChatUsername) {
         return mSharedPreferences.getString(toChatUsername, "");
     }
+
+    public void putString(String key, String value) {
+        editor.putString(key, value);
+        editor.commit();
+    }
+
+    public String getString(String key) {
+        return mSharedPreferences.getString(key, "");
+    }
 }

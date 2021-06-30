@@ -33,13 +33,9 @@ import com.hyphenate.chat.EMImageMessageBody;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.ui.base.EaseBaseActivity;
-import com.hyphenate.easeui.utils.EaseImageCache;
+import com.hyphenate.easeui.utils.EaseFileUtils;
 import com.hyphenate.easeui.widget.photoview.EasePhotoView;
 import com.hyphenate.util.EMLog;
-import com.hyphenate.util.ImageUtils;
-import com.hyphenate.util.UriUtils;
-
-import java.io.IOException;
 
 /**
  * download and show original image
@@ -69,7 +65,7 @@ public class EaseShowBigImageActivity extends EaseBaseActivity {
 		EMLog.d(TAG, "show big msgId:" + msgId );
 
 		//show the image if it exist in local path
-		if (UriUtils.isFileExistByUri(this, uri)) {
+		if (EaseFileUtils.isFileExistByUri(this, uri)) {
             Glide.with(this).load(uri).into(image);
 		} else if(msgId != null) {
 		    downloadImage(msgId);

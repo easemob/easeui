@@ -14,10 +14,6 @@ import com.hyphenate.chat.EMMessage;
 import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.utils.EaseCompat;
 import com.hyphenate.easeui.ui.base.EaseBaseActivity;
-import com.hyphenate.util.EMLog;
-import com.hyphenate.util.UriUtils;
-
-import java.io.File;
 
 public class EaseShowNormalFileActivity extends EaseBaseActivity {
     private static final String TAG = EaseShowNormalFileActivity.class.getSimpleName();

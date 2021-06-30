@@ -15,14 +15,14 @@ package com.hyphenate.easeui.utils;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Bitmap;
+import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import androidx.annotation.NonNull;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -35,7 +35,6 @@ import com.hyphenate.easeui.R;
 import com.hyphenate.util.EMLog;
 import com.hyphenate.util.ImageUtils;
 import com.hyphenate.util.PathUtil;
-import com.hyphenate.util.UriUtils;
 
 import java.io.IOException;
 
@@ -102,6 +101,8 @@ public class EaseImageUtils extends com.hyphenate.util.ImageUtils{
 		int height = ((EMVideoMessageBody) body).getThumbnailHeight();
 		//获取视频封面本地资源路径
 		Uri localThumbUri = ((EMVideoMessageBody) body).getLocalThumbUri();
+		//检查Uri读权限
+		EaseFileUtils.takePersistableUriPermission(context, localThumbUri);
 		//获取视频封面服务器地址
 		String thumbnailUrl = ((EMVideoMessageBody) body).getThumbnailUrl();
 		return showImage(context, imageView, localThumbUri, thumbnailUrl, width, height);
@@ -118,8 +119,11 @@ public class EaseImageUtils extends com.hyphenate.util.ImageUtils{
 		int height = ((EMImageMessageBody) body).getHeight();
 		//获取图片本地资源地址
 		Uri imageUri = ((EMImageMessageBody) body).getLocalUri();
-		if(!UriUtils.isFileExistByUri(context, imageUri)) {
+		if(!EaseFileUtils.isFileExistByUri(context, imageUri)) {
 			imageUri = ((EMImageMessageBody) body).thumbnailLocalUri();
+			if(!EaseFileUtils.isFileExistByUri(context, imageUri)) {
+			    imageUri = null;
+			}
 		}
 		//图片附件上传之前从消息体中获取不到图片的长和宽
 		if(width == 0 || height == 0) {
@@ -189,8 +193,17 @@ public class EaseImageUtils extends com.hyphenate.util.ImageUtils{
 		int height = ((EMImageMessageBody) body).getHeight();
 		//获取图片本地资源地址
 		Uri imageUri = ((EMImageMessageBody) body).getLocalUri();
-		if(!UriUtils.isFileExistByUri(context, imageUri)) {
+		// 获取Uri的读权限
+		EaseFileUtils.takePersistableUriPermission(context, imageUri);
+		EMLog.e("tag", "current show small view big file: uri:"+imageUri + " exist: "+EaseFileUtils.isFileExistByUri(context, imageUri));
+		if(!EaseFileUtils.isFileExistByUri(context, imageUri)) {
 			imageUri = ((EMImageMessageBody) body).thumbnailLocalUri();
+			EaseFileUtils.takePersistableUriPermission(context, imageUri);
+			EMLog.e("tag", "current show small view thumbnail file: uri:"+imageUri + " exist: "+EaseFileUtils.isFileExistByUri(context, imageUri));
+			if(!EaseFileUtils.isFileExistByUri(context, imageUri)) {
+				//context.revokeUriPermission(imageUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+			    imageUri = null;
+			}
 		}
 		//图片附件上传之前从消息体中获取不到图片的长和宽
 		if(width == 0 || height == 0) {
@@ -207,6 +220,9 @@ public class EaseImageUtils extends com.hyphenate.util.ImageUtils{
 		}
 		//获取图片服务器地址
 		String thumbnailUrl = ((EMImageMessageBody) body).getThumbnailUrl();
+		if(TextUtils.isEmpty(thumbnailUrl)) {
+		    thumbnailUrl = ((EMImageMessageBody) body).getRemoteUrl();
+		}
 		return showImage(context, imageView, imageUri, thumbnailUrl, width, height);
 	}
 
