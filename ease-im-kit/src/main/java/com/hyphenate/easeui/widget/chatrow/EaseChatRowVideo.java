@@ -66,9 +66,7 @@ public class EaseChatRowVideo extends EaseChatRowFile {
             bubbleLayout.setBackground(null);
         }
         EMVideoMessageBody videoBody = (EMVideoMessageBody) message.getBody();
-        Uri localThumb = videoBody.getLocalThumbUri();
 
-        showVideoThumbView(message);
         if (videoBody.getDuration() > 0) {
             String time = EaseDateUtils.toTime(videoBody.getDuration());
             timeLengthView.setText(time);
@@ -82,25 +80,17 @@ public class EaseChatRowVideo extends EaseChatRowFile {
         } else {
             long videoFileLength = videoBody.getVideoFileLength();
             sizeView.setText(TextFormater.getDataSize(videoFileLength));
-//            if (videoBody.getLocalUrl() != null && new File(videoBody.getLocalUrl()).exists()) {
-//                String size = TextFormater.getDataSize(new File(videoBody.getLocalUrl()).length());
-//                sizeView.setText(size);
-//            }
         }
 
         EMLog.d(TAG,  "video thumbnailStatus:" + videoBody.thumbnailDownloadStatus());
         if (message.direct() == EMMessage.Direct.RECEIVE) {
-            if (videoBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.DOWNLOADING ||
-                    videoBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.PENDING) {
+            if (videoBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.DOWNLOADING) {
                 imageView.setImageResource(R.drawable.ease_default_image);
             } else {
                 // System.err.println("!!!! not back receive, show image directly");
                 imageView.setImageResource(R.drawable.ease_default_image);
-                if (localThumb != null) {
-                    showVideoThumbView(message);
-                }
+                showVideoThumbView(message);
             }
-            return;
         }else{
             if (videoBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.DOWNLOADING ||
                     videoBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.PENDING ||
@@ -111,7 +101,11 @@ public class EaseChatRowVideo extends EaseChatRowFile {
                 if(percentageView != null) {
                     percentageView.setVisibility(View.INVISIBLE);
                 }
-                imageView.setImageResource(R.drawable.ease_default_image);
+                if(videoBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.PENDING) {
+                    showVideoThumbView(message);
+                }else {
+                    imageView.setImageResource(R.drawable.ease_default_image);
+                }
             } else {
                 if(progressBar != null) {
                     progressBar.setVisibility(View.GONE);
