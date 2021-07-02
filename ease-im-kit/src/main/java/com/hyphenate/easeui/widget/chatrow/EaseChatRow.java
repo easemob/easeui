@@ -251,6 +251,7 @@ public abstract class EaseChatRow extends LinearLayout {
         if (timestamp != null) {
             setTimestamp(timestamp);
         }
+        setItemStyle();
         if(userAvatarView != null) {
             setAvatarAndNick();
         }
@@ -275,7 +276,6 @@ public abstract class EaseChatRow extends LinearLayout {
                 }
             }
         }
-        setItemStyle();
     }
 
     /**
