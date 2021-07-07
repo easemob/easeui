@@ -27,6 +27,7 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
+import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMImageMessageBody;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMMessageBody;
@@ -222,9 +223,13 @@ public class EaseImageUtils extends com.hyphenate.util.ImageUtils{
 			}
 		}
 		//获取图片服务器地址
-		String thumbnailUrl = ((EMImageMessageBody) body).getThumbnailUrl();
-		if(TextUtils.isEmpty(thumbnailUrl)) {
-		    thumbnailUrl = ((EMImageMessageBody) body).getRemoteUrl();
+		String thumbnailUrl = null;
+		// If not auto download thumbnail, do not set remote url
+		if(EMClient.getInstance().getOptions().getAutodownloadThumbnail()) {
+			thumbnailUrl = ((EMImageMessageBody) body).getThumbnailUrl();
+			if(TextUtils.isEmpty(thumbnailUrl)) {
+				thumbnailUrl = ((EMImageMessageBody) body).getRemoteUrl();
+			}
 		}
 		return showImage(context, imageView, imageUri, thumbnailUrl, width, height);
 	}
