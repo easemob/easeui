@@ -193,6 +193,7 @@ public class EaseChatMessageListLayout extends RelativeLayout implements IChatMe
             conversation.markAllMessagesAsRead();
         }
         EaseChatItemStyleHelper.getInstance().clear();
+        EaseMessageTypeSetManager.getInstance().release();
     }
 
     private void registerChatType() {
