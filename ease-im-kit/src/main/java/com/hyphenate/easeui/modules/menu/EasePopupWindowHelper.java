@@ -3,6 +3,7 @@ package com.hyphenate.easeui.modules.menu;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -172,6 +173,10 @@ public class EasePopupWindowHelper {
     public void show(View parent, View v) {
         showPre();
         //根据条目选择spanCount
+        if(menuItems.size() <= 0) {
+            Log.e("EasePopupWindowHelper", "Span count should be at least 1. Provided " + menuItems.size());
+            return;
+        }
         if(menuItems.size() < SPAN_COUNT) {
             rvMenuList.setLayoutManager(new GridLayoutManager(context, menuItems.size(), RecyclerView.VERTICAL, false));
         }else {

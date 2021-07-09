@@ -595,6 +595,12 @@ public abstract class EaseChatRow extends LinearLayout {
      * message fail status
      */
     protected void onMessageError() {
+        if(ackedView != null) {
+            ackedView.setVisibility(INVISIBLE);
+        }
+        if(deliveredView != null) {
+            deliveredView.setVisibility(INVISIBLE);
+        }
         EMLog.e(TAG, "onMessageError");
     }
 

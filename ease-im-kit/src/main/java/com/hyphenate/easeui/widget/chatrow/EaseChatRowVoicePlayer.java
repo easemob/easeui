@@ -101,6 +101,10 @@ public class EaseChatRowVoicePlayer {
         }
     }
 
+    public void release() {
+        onCompletionListener = null;
+    }
+
     private EaseChatRowVoicePlayer(Context cxt) {
         baseContext = cxt.getApplicationContext();
         audioManager = (AudioManager) baseContext.getSystemService(Context.AUDIO_SERVICE);

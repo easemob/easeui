@@ -75,19 +75,22 @@ public class EaseConversationDelegate extends EaseDefaultConversationDelegate {
                 Glide.with(holder.mContext).load(avatarResource).error(defaultAvatar).into(holder.avatar);
             }
         }
-        EaseUserProfileProvider userProvider = EaseIM.getInstance().getUserProvider();
-        if(userProvider != null) {
-            EaseUser user = userProvider.getUser(username);
-            if(user != null) {
-                if(!TextUtils.isEmpty(user.getNickname())) {
-                    holder.name.setText(user.getNickname());
-                }
-                if(!TextUtils.isEmpty(user.getAvatar())) {
-                    Drawable drawable = holder.avatar.getDrawable();
-                    Glide.with(holder.mContext)
-                            .load(user.getAvatar())
-                            .error(drawable)
-                            .into(holder.avatar);
+        // add judgement for conversation type
+        if(item.getType() == EMConversation.EMConversationType.Chat) {
+            EaseUserProfileProvider userProvider = EaseIM.getInstance().getUserProvider();
+            if(userProvider != null) {
+                EaseUser user = userProvider.getUser(username);
+                if(user != null) {
+                    if(!TextUtils.isEmpty(user.getNickname())) {
+                        holder.name.setText(user.getNickname());
+                    }
+                    if(!TextUtils.isEmpty(user.getAvatar())) {
+                        Drawable drawable = holder.avatar.getDrawable();
+                        Glide.with(holder.mContext)
+                                .load(user.getAvatar())
+                                .error(drawable)
+                                .into(holder.avatar);
+                    }
                 }
             }
         }
