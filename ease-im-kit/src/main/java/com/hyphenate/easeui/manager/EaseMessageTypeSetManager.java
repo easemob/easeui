@@ -102,4 +102,8 @@ public class EaseMessageTypeSetManager {
         return this.hasConsistItemType;
     }
 
+    public void release() {
+        defaultDelegate = null;
+    }
+
 }

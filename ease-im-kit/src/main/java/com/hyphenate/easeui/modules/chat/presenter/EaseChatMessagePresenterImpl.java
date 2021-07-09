@@ -54,6 +54,7 @@ public class EaseChatMessagePresenterImpl extends EaseChatMessagePresenter {
             return;
         }
         if(isActive()) {
+            checkMessageStatus(messages);
             List<EMMessage> finalMessages = messages;
             runOnUI(()->mView.loadLocalMsgSuccess(finalMessages));
         }
@@ -80,6 +81,7 @@ public class EaseChatMessagePresenterImpl extends EaseChatMessagePresenter {
             return;
         }
         if(isActive()) {
+            checkMessageStatus(moreMsgs);
             List<EMMessage> finalMoreMsgs = moreMsgs;
             runOnUI(()->mView.loadMoreLocalMsgSuccess(finalMoreMsgs));
         }
@@ -209,6 +211,21 @@ public class EaseChatMessagePresenterImpl extends EaseChatMessagePresenter {
         }
         EMMessage message = conversation.getMessage(msgId, false);
         return message != null;
+    }
+
+    /**
+     * Check message's status, if is not success or fail, set to {@link com.hyphenate.chat.EMMessage.Status#FAIL}
+     * @param messages
+     */
+    private void checkMessageStatus(List<EMMessage> messages) {
+        if(messages == null || messages.isEmpty()) {
+            return;
+        }
+        for (EMMessage message : messages) {
+            if(message.status() != EMMessage.Status.SUCCESS && message.status() != EMMessage.Status.FAIL) {
+                message.setStatus(EMMessage.Status.FAIL);
+            }
+        }
     }
 }
 

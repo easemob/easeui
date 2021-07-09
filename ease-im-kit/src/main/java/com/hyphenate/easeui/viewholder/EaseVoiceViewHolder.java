@@ -155,6 +155,7 @@ public class EaseVoiceViewHolder extends EaseChatRowViewHolder{
         super.onDetachedFromWindow();
         if(voicePlayer.isPlaying()) {
             voicePlayer.stop();
+            voicePlayer.release();
         }
     }
 }

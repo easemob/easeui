@@ -66,6 +66,7 @@ public class EaseChatRowText extends EaseChatRow {
 
     @Override
     protected void onMessageError() {
+        super.onMessageError();
         setStatus(View.GONE, View.VISIBLE);
     }
 

@@ -166,6 +166,7 @@ public class EaseContactListLayout extends EaseRecyclerView implements IEaseCont
     private void addHeader() {
         customAdapter = new EaseContactCustomAdapter();
         customAdapter.setSettingModel(contactSetModel);
+        customAdapter.setEmptyView(R.layout.ease_layout_empty_list_wrap_content);
         concatAdapter.addAdapter(customAdapter);
     }
 

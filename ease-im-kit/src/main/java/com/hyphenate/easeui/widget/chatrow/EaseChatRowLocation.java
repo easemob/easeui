@@ -66,6 +66,7 @@ public class EaseChatRowLocation extends EaseChatRow {
 
     @Override
     protected void onMessageError() {
+        super.onMessageError();
         if(progressBar != null) {
             progressBar.setVisibility(View.GONE);
         }
