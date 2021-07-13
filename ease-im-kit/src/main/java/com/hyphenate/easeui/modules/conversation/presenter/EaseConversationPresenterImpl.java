@@ -5,7 +5,6 @@ import android.text.TextUtils;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMConversation;
 import com.hyphenate.easeui.constants.EaseConstant;
-import com.hyphenate.easeui.manager.EaseThreadManager;
 import com.hyphenate.easeui.modules.conversation.model.EaseConversationInfo;
 import com.hyphenate.easeui.utils.EaseCommonUtils;
 
@@ -47,11 +46,17 @@ public class EaseConversationPresenterImpl extends EaseConversationPresenter {
                     info = new EaseConversationInfo();
                     info.setInfo(conversation);
                     String extField = conversation.getExtField();
+                    long lastMsgTime=conversation.getLastMessage().getMsgTime();
                     if(!TextUtils.isEmpty(extField) && EaseCommonUtils.isTimestamp(extField)) {
-                        info.setTimestamp(Long.parseLong(extField));
                         info.setTop(true);
-                    }else {
-                        info.setTimestamp(conversation.getLastMessage().getMsgTime());
+                        long makeTopTime=Long.parseLong(extField);
+                        if(makeTopTime>lastMsgTime) {
+                            info.setTimestamp(makeTopTime);
+                        }else{
+                            info.setTimestamp(lastMsgTime);
+                        }
+                    }else{
+                        info.setTimestamp(lastMsgTime);
                     }
                     infos.add(info);
                 }
