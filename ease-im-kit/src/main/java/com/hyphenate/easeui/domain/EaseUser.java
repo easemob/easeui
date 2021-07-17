@@ -8,7 +8,7 @@ import androidx.annotation.NonNull;
 
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMUserInfo;
-import com.hyphenate.util.HanziToPinyin;
+import com.hyphenate.easeui.utils.HanziToPinyin;
 
 import java.io.Serializable;
 import java.util.ArrayList;

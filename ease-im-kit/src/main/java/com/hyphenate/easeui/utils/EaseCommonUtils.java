@@ -31,9 +31,8 @@ import com.hyphenate.chat.EMTextMessageBody;
 import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.constants.EaseConstant;
 import com.hyphenate.easeui.domain.EaseUser;
+import com.hyphenate.easeui.utils.HanziToPinyin;
 import com.hyphenate.util.EMLog;
-import com.hyphenate.util.HanziToPinyin;
-import com.hyphenate.util.HanziToPinyin.Token;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -173,10 +172,10 @@ public class EaseCommonUtils {
                 if (Character.isDigit(char0)) {
                     return DefaultLetter;
                 }
-                ArrayList<Token> l = HanziToPinyin.getInstance().get(name.substring(0, 1));
+                ArrayList<HanziToPinyin.Token> l = HanziToPinyin.getInstance().get(name.substring(0, 1));
                 if (l != null && l.size() > 0 && l.get(0).target.length() > 0)
                 {
-                    Token token = l.get(0);
+                    HanziToPinyin.Token token = l.get(0);
                     String letter = token.target.substring(0, 1).toUpperCase();
                     char c = letter.charAt(0);
                     if (c < 'A' || c > 'Z') {

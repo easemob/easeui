@@ -59,7 +59,7 @@ public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutLi
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         initArguments();
-        return LayoutInflater.from(container.getContext()).inflate(getLayoutId(), null);
+        return inflater.inflate(getLayoutId(), null);
     }
 
     private int getLayoutId() {
