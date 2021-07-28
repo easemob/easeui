@@ -2,6 +2,8 @@ package com.hyphenate.easeui.widget.chatrow;
 
 import android.content.Context;
 import android.text.Spannable;
+import android.text.Spanned;
+import android.text.style.URLSpan;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.TextView.BufferType;
@@ -41,6 +43,46 @@ public class EaseChatRowText extends EaseChatRow {
             Spannable span = EaseSmileUtils.getSmiledText(context, txtBody.getMessage());
             // 设置内容
             contentView.setText(span, BufferType.SPANNABLE);
+            contentView.setOnLongClickListener(new OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    contentView.setTag(R.id.action_chat_long_click,true);
+                    if (itemClickListener != null) {
+                        return itemClickListener.onBubbleLongClick(v, message);
+                    }
+                    return false;
+                }
+            });
+            replaceSpan();
+        }
+    }
+
+    /**
+     * 解决长按事件与relink冲突，参考：https://www.jianshu.com/p/d3bef8449960
+     */
+    private void replaceSpan() {
+        Spannable spannable = (Spannable) contentView.getText();
+        URLSpan[] spans = spannable.getSpans(0, spannable.length(), URLSpan.class);
+        for (int i = 0; i < spans.length; i++) {
+            String url = spans[i].getURL();
+            int index = spannable.toString().indexOf(url);
+            int end = index + url.length();
+            if (index == -1) {
+                if (url.contains("http://")) {
+                    url = url.replace("http://", "");
+                } else if (url.contains("https://")) {
+                    url = url.replace("https://", "");
+                } else if (url.contains("rtsp://")) {
+                    url = url.replace("rtsp://", "");
+                }
+                index = spannable.toString().indexOf(url);
+                end = index + url.length();
+            }
+            if (index != -1) {
+                spannable.removeSpan(spans[i]);
+                spannable.setSpan(new AutolinkSpan(spans[i].getURL()), index
+                        , end, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+            }
         }
     }
 
