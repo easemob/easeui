@@ -41,13 +41,21 @@ if (JavaVersion.current().isJava8Compatible()) {
         }
     }
 }
-
 ext{
     if(!project.hasProperty('sdkVersion')){
         sdkVersion = '3.2.3'
     }
     if(!project.hasProperty('stagingRepositoryId')){
         stagingRepositoryId = 'iohyphenate-1000'
+    }
+    if(!project.hasProperty('isAarRelease')){
+        isAarRelease = false;
+    }
+    if(!project.hasProperty('isLite')){
+        isLite = false;
+    }
+    if(!project.hasProperty('isTravis')) {
+        isTravis = false
     }
 }
 
