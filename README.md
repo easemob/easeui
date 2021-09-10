@@ -8,9 +8,28 @@ github上的代码不包含环信sdk，需要依赖环信IM 3.x版本的SDK使�
 当前分支EaseIMKit分支是EaseIMKit UI库的开源分支。开发者使用时，建议使用EaseIMKit的远程依赖。
 
 ## 关于Gradle接入
+使用MavenCentral仓库，需要在项目根目录build.gradle中配置：
 >```Java
->implementation 'com.hyphenate:ease-im-kit:xxx版本'
->implementation 'com.hyphenate:hyphenate-sdk:xxx版本'
+>buildscript {
+>    repositories {
+>        ...
+>        mavenCentral()
+>    }
+>}
+>
+>
+>allprojects {
+>    repositories {
+>        ...
+>        mavenCentral()
+>    }
+>}
+>```
+>
+在module的build.gradle里加入以下依赖：
+>```Java
+>implementation 'io.hyphenate:ease-im-kit:xxx版本'
+>implementation 'io.hyphenate:hyphenate-chat:xxx版本'
 >```
 其中，xxx版本请替换为最新的aar版本号。</br>
 最新版本号请跳转到这里进行查看：http://docs-im.easemob.com/im/android/sdk/releasenote
