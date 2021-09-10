@@ -59,7 +59,7 @@ public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutLi
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         initArguments();
-        return LayoutInflater.from(container.getContext()).inflate(getLayoutId(), null);
+        return inflater.inflate(getLayoutId(), null);
     }
 
     private int getLayoutId() {
@@ -176,6 +176,11 @@ public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutLi
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
 
+    }
+
+    @Override
+    public void onChatSuccess(EMMessage message) {
+        // you can do something after sending a successful message
     }
 
     @Override
