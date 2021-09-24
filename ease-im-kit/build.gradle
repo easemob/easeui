@@ -42,7 +42,7 @@ dependencies {
     compileOnly files('libs/BaiduLBS_Android.jar')
 
     //api project(':hyphenatechatsdk')
-	  implementation 'io.hyphenate:hyphenate-chat:3.8.5'
+	  implementation 'io.hyphenate:hyphenate-chat:3.8.6'
 
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
