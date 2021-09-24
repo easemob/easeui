@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -23,6 +24,7 @@ import com.hyphenate.easeui.manager.EaseDingMessageHelper;
 import com.hyphenate.easeui.model.EaseEvent;
 import com.hyphenate.easeui.modules.chat.interfaces.OnAddMsgAttrsBeforeSendEvent;
 import com.hyphenate.easeui.modules.chat.interfaces.OnChatLayoutListener;
+import com.hyphenate.easeui.modules.chat.interfaces.OnChatRecordTouchListener;
 import com.hyphenate.easeui.modules.chat.interfaces.OnMenuChangeListener;
 import com.hyphenate.easeui.modules.menu.EasePopupWindowHelper;
 import com.hyphenate.easeui.modules.menu.MenuItemBean;
@@ -37,7 +39,7 @@ import com.hyphenate.util.VersionUtils;
 
 import java.io.File;
 
-public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutListener, OnMenuChangeListener, OnAddMsgAttrsBeforeSendEvent {
+public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutListener, OnMenuChangeListener, OnAddMsgAttrsBeforeSendEvent, OnChatRecordTouchListener {
     protected static final int REQUEST_CODE_MAP = 1;
     protected static final int REQUEST_CODE_CAMERA = 2;
     protected static final int REQUEST_CODE_LOCAL = 3;
@@ -99,6 +101,7 @@ public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutLi
         chatLayout.setOnChatLayoutListener(this);
         chatLayout.setOnPopupWindowItemClickListener(this);
         chatLayout.setOnAddMsgAttrsBeforeSendEvent(this);
+        chatLayout.setOnChatRecordTouchListener(this);
     }
 
     public void initData() {
@@ -366,6 +369,17 @@ public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutLi
     @Override
     public void addMsgAttrsBeforeSend(EMMessage message) {
 
+    }
+
+    /**
+     * Set whether can touch voice button
+     * @param v
+     * @param event
+     * @return
+     */
+    @Override
+    public boolean onRecordTouch(View v, MotionEvent event) {
+        return true;
     }
 }
 
