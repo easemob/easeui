@@ -28,9 +28,11 @@ import com.hyphenate.chat.EMConversation;
 import com.hyphenate.chat.EMConversation.EMConversationType;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMTextMessageBody;
+import com.hyphenate.easeui.EaseIM;
 import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.constants.EaseConstant;
 import com.hyphenate.easeui.domain.EaseUser;
+import com.hyphenate.easeui.provider.EaseUserProfileProvider;
 import com.hyphenate.easeui.utils.HanziToPinyin;
 import com.hyphenate.util.EMLog;
 
@@ -88,7 +90,15 @@ public class EaseCommonUtils {
         case LOCATION:
             if (message.direct() == EMMessage.Direct.RECEIVE) {
                 digest = getString(context, R.string.location_recv);
-                digest = String.format(digest, message.getFrom());
+                EaseUserProfileProvider userProvider = EaseIM.getInstance().getUserProvider();
+                String from = message.getFrom();
+                if(userProvider != null && userProvider.getUser(from) != null) {
+                    EaseUser user = userProvider.getUser(from);
+                    if(user != null && !TextUtils.isEmpty(user.getNickname())) {
+                        from = user.getNickname();
+                    }
+                }
+                digest = String.format(digest, from);
                 return digest;
             } else {
                 digest = getString(context, R.string.location_prefix);
