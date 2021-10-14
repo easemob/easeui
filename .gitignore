@@ -14,4 +14,7 @@
 .externalNativeBuild
 .cxx
 
+local.properties.bak
+.idea/
+
 
