@@ -1,6 +1,7 @@
 package com.hyphenate.easeui.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.interfaces.OnItemClickListener;
 import com.hyphenate.easeui.interfaces.OnItemLongClickListener;
+import com.hyphenate.util.EMLog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +40,7 @@ public abstract class EaseBaseRecyclerViewAdapter<T> extends EaseBaseAdapter<Eas
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        EMLog.i("adapter", "onCreateViewHolder()");
         mContext = parent.getContext();
         if(viewType == VIEW_TYPE_EMPTY) {
             return getEmptyViewHolder(parent);
@@ -102,6 +105,11 @@ public abstract class EaseBaseRecyclerViewAdapter<T> extends EaseBaseAdapter<Eas
     @Override
     public int getItemViewType(int position) {
         return (mData == null || mData.isEmpty()) ? VIEW_TYPE_EMPTY : VIEW_TYPE_ITEM;
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return position;
     }
 
     /**

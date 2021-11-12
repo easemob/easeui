@@ -5,6 +5,7 @@ import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -192,8 +193,12 @@ public class EaseConversationListLayout extends EaseBaseLayout implements IConve
         rvConversationList = findViewById(R.id.rv_conversation_list);
 
         rvConversationList.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new ConcatAdapter();
+        ConcatAdapter.Config config = new ConcatAdapter.Config.Builder()
+                .setStableIdMode(ConcatAdapter.Config.StableIdMode.ISOLATED_STABLE_IDS)
+                .build();
+        adapter = new ConcatAdapter(config);
         listAdapter = new EaseConversationListAdapter();
+        listAdapter.setHasStableIds(true);
         adapter.addAdapter(listAdapter);
 
         menuHelper = new EasePopupMenuHelper();
