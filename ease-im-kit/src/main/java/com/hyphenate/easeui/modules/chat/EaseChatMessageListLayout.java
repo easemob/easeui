@@ -19,10 +19,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.hyphenate.EMValueCallBack;
 import com.hyphenate.chat.EMChatRoom;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMConversation;
 import com.hyphenate.chat.EMMessage;
+import com.hyphenate.chat.EMTextMessageBody;
 import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.adapter.EaseMessageAdapter;
 import com.hyphenate.easeui.interfaces.MessageListItemClickListener;
@@ -36,6 +38,9 @@ import com.hyphenate.easeui.modules.chat.model.EaseChatItemStyleHelper;
 import com.hyphenate.easeui.modules.chat.presenter.EaseChatMessagePresenter;
 import com.hyphenate.easeui.modules.chat.presenter.EaseChatMessagePresenterImpl;
 import com.hyphenate.easeui.modules.chat.presenter.IChatMessageListView;
+import com.hyphenate.chat.translator.EMTranslationManager;
+import com.hyphenate.chat.translator.EMTranslationMessage;
+import com.hyphenate.chat.translator.EMTranslationResult;
 import com.hyphenate.easeui.utils.EaseCommonUtils;
 
 import java.util.List;
@@ -602,6 +607,7 @@ public class EaseChatMessageListLayout extends RelativeLayout implements IChatMe
             return;
         }
         conversation.removeMessage(message.getMsgId());
+        EMTranslationManager.getInstance().removeTranslationByMsgId(message.getMsgId());
         runOnUi(()-> {
             if(presenter.isActive()) {
                 List<EMMessage> messages = messageAdapter.getData();
@@ -744,6 +750,61 @@ public class EaseChatMessageListLayout extends RelativeLayout implements IChatMe
     @Override
     public void removeRVItemDecoration(@NonNull RecyclerView.ItemDecoration decor) {
         rvList.removeItemDecoration(decor);
+    }
+
+    public void translateMessage(EMMessage message, String languageCode) {
+        EMTextMessageBody body = (EMTextMessageBody) message.getBody();
+        if(body == null)
+            return;
+
+        EMTranslationManager.getInstance().translate(message.getMsgId(),
+                message.conversationId(),
+                body.getMessage(),
+                languageCode,
+                new EMValueCallBack<EMTranslationResult>() {
+                    @Override
+                    public void onSuccess(EMTranslationResult result) {
+                        if(message == null || messageAdapter.getData() == null) {
+                            return;
+                        }
+                        runOnUi(()-> {
+                            if(presenter.isActive()) {
+                                List<EMMessage> messages = messageAdapter.getData();
+                                int position = messages.lastIndexOf(message);
+                                if(position != -1) {
+                                    EMTranslationMessage translationMessage = EMTranslationMessage.createMessage(message, result);
+                                    message.setSubMessage(translationMessage);
+                                    messageAdapter.notifyItemChanged(position);
+                                }
+                            }
+                        });
+                    }
+                    @Override
+                    public void onError(int errorCode, String errorText) {
+                        //not used here
+                    }
+        });
+    }
+
+    public void hideMessage(EMMessage message) {
+        EMTranslationMessage translationMessage = (EMTranslationMessage) message;
+        EMMessage parent = translationMessage.getParent();
+        translationMessage.hide();
+        parent.setSubMessage(null);
+
+        int position = messageAdapter.getData().lastIndexOf(parent);
+        if(position != -1) {
+            messageAdapter.notifyItemChanged(position);
+        }
+
+    }
+
+    public void reTranslate(EMMessage message, String languageCode) {
+        EMTranslationMessage translationMessage = (EMTranslationMessage) message;
+        EMMessage parent = translationMessage.getParent();
+        translationMessage.clearParent();;
+        parent.setSubMessage(null);
+        translateMessage(parent, languageCode);
     }
 
     /**

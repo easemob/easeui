@@ -60,5 +60,37 @@
             android:layout_toRightOf="@id/iv_userhead"
             android:visibility="gone" />
     </RelativeLayout>
+    <RelativeLayout
+        android:id="@+id/subBubble"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/bubble"
+        android:minWidth="30dp"
+        android:layout_marginLeft="50dp"
+        android:layout_toRightOf="@id/iv_userhead"
+        android:padding="8dp"
+        android:layout_marginTop="2dp"
+        android:background="@drawable/ease_chat_bubble_receive_bg">
+
+        <com.hyphenate.easeui.widget.EaseImageView
+            android:id="@+id/translation_status"
+            android:layout_width="10dp"
+            android:layout_height="10dp" />
+
+        <TextView
+            android:id="@+id/tv_subContent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_toRightOf="@id/translation_status"
+            android:autoLink="web"
+            android:gravity="center|left"
+            android:lineSpacingExtra="2dp"
+            android:maxWidth="225.0dip"
+            android:minHeight="@dimen/ease_chat_text_min_height"
+            android:textColor="#ff000000"
+            android:textSize="15sp"
+            tools:text="环信" />
+    </RelativeLayout>
 
 </LinearLayout>

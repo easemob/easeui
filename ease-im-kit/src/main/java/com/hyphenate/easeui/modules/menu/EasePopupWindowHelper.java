@@ -30,9 +30,9 @@ import java.util.List;
 import java.util.Map;
 
 public class EasePopupWindowHelper {
-    private static final int[] itemIds = {R.id.action_chat_copy, R.id.action_chat_delete, R.id.action_chat_recall};
-    private static final int[] titles = {R.string.action_copy, R.string.action_delete, R.string.action_recall};
-    private static final int[] icons = {R.drawable.ease_chat_item_menu_copy, R.drawable.ease_chat_item_menu_delete, R.drawable.ease_chat_item_menu_recall};
+    private static final int[] itemIds = {R.id.action_chat_copy, R.id.action_chat_delete, R.id.action_chat_recall, R.id.action_chat_translate, R.id.action_chat_reTranslate, R.id.action_chat_hide};
+    private static final int[] titles = {R.string.action_copy, R.string.action_delete, R.string.action_recall, R.string.action_translate, R.string.action_reTranslate, R.string.action_hide };
+    private static final int[] icons = {R.drawable.ease_chat_item_menu_copy, R.drawable.ease_chat_item_menu_delete, R.drawable.ease_chat_item_menu_recall, R.drawable.ease_chat_item_menu_recall, R.drawable.ease_chat_item_menu_recall, R.drawable.ease_chat_item_menu_recall};
     private static final int SPAN_COUNT = 5;
     private EasePopupWindow pMenu;
     private List<MenuItemBean> menuItems = new ArrayList<>();
