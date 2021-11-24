@@ -357,7 +357,7 @@ public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutLi
     }
 
     @Override
-    public void onPreMenu(EasePopupWindowHelper helper, EMMessage message) {
+    public void onPreMenu(EasePopupWindowHelper helper, EMMessage message, View v) {
 
     }
 

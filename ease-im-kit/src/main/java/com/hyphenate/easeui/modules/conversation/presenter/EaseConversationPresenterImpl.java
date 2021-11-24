@@ -170,6 +170,7 @@ public class EaseConversationPresenterImpl extends EaseConversationPresenter {
             if(!isDestroy()) {
                 if(isDelete) {
                     mView.deleteItem(position);
+                    EMClient.getInstance().translationManager().removeResultsByConversationId(((EMConversation) info.getInfo()).conversationId());
                 }else {
                     mView.deleteItemFail(position, "");
                 }

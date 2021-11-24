@@ -1,9 +1,11 @@
 package com.hyphenate.easeui.modules.chat;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -28,6 +30,7 @@ import com.hyphenate.chat.EMCmdMessageBody;
 import com.hyphenate.chat.EMConversation;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMTextMessageBody;
+import com.hyphenate.chat.EMTranslationResult;
 import com.hyphenate.chat.adapter.EMAChatRoomManagerListener;
 import com.hyphenate.easeui.EaseIM;
 import com.hyphenate.easeui.R;
@@ -136,6 +139,12 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
      * 是否是首次发送，默认true
      */
     private boolean isNotFirstSend;
+
+    /**
+     *  翻译目标语言，默认英文
+     */
+
+    private String targetLanguageCode = "en";
 
     public EaseChatLayout(Context context) {
         this(context, null);
@@ -250,6 +259,10 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
     public void loadData(String msgId) {
         sendChannelAck();
         messageListLayout.loadData(msgId);
+    }
+
+    public void setTargetLanguageCode(String lanugageCode) {
+        targetLanguageCode = lanugageCode;
     }
 
     private void initTypingHandler() {
@@ -927,9 +940,9 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
         menuHelper.initMenu(getContext());
         menuHelper.setDefaultMenus();
         menuHelper.setOutsideTouchable(true);
-        setMenuByMsgType(message);
+        setMenuByMsgType(v, message);
         if(menuChangeListener != null) {
-            menuChangeListener.onPreMenu(menuHelper, message);
+            menuChangeListener.onPreMenu(menuHelper, message, v);
         }
         menuHelper.setOnPopupMenuItemClickListener(new EasePopupWindow.OnPopupWindowItemClickListener() {
             @Override
@@ -948,6 +961,19 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
                         EMLog.i(TAG,"currentMsgId = "+message.getMsgId() + " timestamp = "+message.getMsgTime());
                     }else if(itemId == R.id.action_chat_recall) {
                         recallMessage(message);
+                    }else if(itemId == R.id.action_chat_translate) {
+                        messageListLayout.translateMessage(message, targetLanguageCode, true);
+                    }else if(itemId == R.id.action_chat_reTranslate) {
+                        new AlertDialog.Builder(getContext())
+                                .setTitle("Using Translate")
+                                .setMessage("Each translation can be retranslated only once. The translation provided is for reference only.")
+                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        messageListLayout.translateMessage(message, targetLanguageCode, false);
+                                    }
+                                }).show();
+                    }else if(itemId == R.id.action_chat_hide) {
+                        messageListLayout.hideMessage(message);
                     }
                     return true;
                 }
@@ -965,15 +991,47 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
         menuHelper.show(this, v);
     }
 
-    private void setMenuByMsgType(EMMessage message) {
+    private boolean showTranslation(EMMessage message) {
+        if(!EMClient.getInstance().translationManager().isInitialized())
+            return false;
+
+        if(!EMClient.getInstance().translationManager().isTranslationResultForMessage(message.getMsgId()))
+            return true;
+
+        EMTranslationResult result = EMClient.getInstance().translationManager().getTranslationResult(message.getMsgId());
+        if(result.showTranslation())
+            return false;
+
+        return true;
+    }
+
+    private void setMenuByMsgType(View v, EMMessage message) {
         EMMessage.Type type = message.getType();
         menuHelper.findItemVisible(R.id.action_chat_copy, false);
         menuHelper.findItemVisible(R.id.action_chat_recall, false);
+        menuHelper.findItemVisible(R.id.action_chat_translate, false);
+        menuHelper.findItemVisible(R.id.action_chat_reTranslate, false);
+        menuHelper.findItemVisible(R.id.action_chat_hide, false);
         menuHelper.findItem(R.id.action_chat_delete).setTitle(getContext().getString(R.string.action_delete));
+        EMLog.e("setMenuByMsgType:", (v.getId() == R.id.subBubble) + "");
         switch (type) {
             case TXT:
-                menuHelper.findItemVisible(R.id.action_chat_copy, true);
-                menuHelper.findItemVisible(R.id.action_chat_recall, true);
+                EMTranslationResult result = EMClient.getInstance().translationManager().getTranslationResult(message.getMsgId());
+                if(v.getId() == R.id.subBubble && result != null) {
+                    menuHelper.findItemVisible(R.id.action_chat_delete, false);
+
+                    if(result.translateCount() < 2)
+                        menuHelper.findItemVisible(R.id.action_chat_reTranslate, true);
+
+                    menuHelper.findItemVisible(R.id.action_chat_hide, true);
+                } else {
+                    menuHelper.findItemVisible(R.id.action_chat_copy, true);
+                    menuHelper.findItemVisible(R.id.action_chat_recall, true);
+                    menuHelper.findItemVisible(R.id.action_chat_delete, true);
+
+                    if (showTranslation(message))
+                        menuHelper.findItemVisible(R.id.action_chat_translate, true);
+                }
                 break;
             case LOCATION:
             case FILE:

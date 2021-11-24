@@ -1,7 +1,9 @@
 package com.hyphenate.easeui.modules.chat;
 
 import android.animation.ValueAnimator;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
@@ -19,10 +21,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.hyphenate.EMValueCallBack;
 import com.hyphenate.chat.EMChatRoom;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMConversation;
 import com.hyphenate.chat.EMMessage;
+import com.hyphenate.chat.EMTextMessageBody;
+import com.hyphenate.chat.EMTranslationResult;
 import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.adapter.EaseMessageAdapter;
 import com.hyphenate.easeui.interfaces.MessageListItemClickListener;
@@ -602,6 +607,7 @@ public class EaseChatMessageListLayout extends RelativeLayout implements IChatMe
             return;
         }
         conversation.removeMessage(message.getMsgId());
+        EMClient.getInstance().translationManager().removeTranslationResult(message.getMsgId());
         runOnUi(()-> {
             if(presenter.isActive()) {
                 List<EMMessage> messages = messageAdapter.getData();
@@ -744,6 +750,112 @@ public class EaseChatMessageListLayout extends RelativeLayout implements IChatMe
     @Override
     public void removeRVItemDecoration(@NonNull RecyclerView.ItemDecoration decor) {
         rvList.removeItemDecoration(decor);
+    }
+
+    public void translateMessage(EMMessage message, String languageCode, boolean isTranslation) {
+        EMTextMessageBody body = (EMTextMessageBody) message.getBody();
+        if(isTranslation){
+            EMTranslationResult result = EMClient.getInstance().translationManager().getTranslationResult(message.getMsgId());
+            if(result != null){
+                result.setShowTranslation(true);
+                EMClient.getInstance().translationManager().updateTranslationResult(result);
+                runOnUi(()-> {
+                    if(presenter.isActive()) {
+                        List<EMMessage> messages = messageAdapter.getData();
+                        int position = messages.lastIndexOf(message);
+                        if(position != -1) {
+                            messageAdapter.notifyItemChanged(position);
+                            boolean isNoBottom = rvList.canScrollVertically(1);
+                            if(!isNoBottom){
+                                View oldView = rvList.getLayoutManager().findViewByPosition(messageAdapter.getItemCount() - 1);
+                                int oldHeight = 0;
+                                if( oldView != null){
+                                    oldHeight = oldView.getMeasuredHeight();
+                                }
+                                int finalOldHeight = oldHeight;
+                                rvList.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        View v = rvList.getLayoutManager().findViewByPosition(messageAdapter.getItemCount() - 1);
+                                        int height = 0;
+                                        if( v != null){
+                                            height = v.getMeasuredHeight();
+                                        }
+                                        rvList.smoothScrollBy(0, height - finalOldHeight);
+                                    }
+                                }, 500);
+                            }
+                        }
+                    }
+                });
+                return;
+            }
+        }
+
+        EMClient.getInstance().translationManager().translate(message.getMsgId(),
+                message.conversationId(),
+                body.getMessage(),
+                languageCode,
+                new EMValueCallBack<EMTranslationResult>() {
+                    @Override
+                    public void onSuccess(EMTranslationResult result) {
+                        if(message == null || messageAdapter.getData() == null) {
+                            return;
+                        }
+                        runOnUi(()-> {
+                            if(presenter.isActive()) {
+                                List<EMMessage> messages = messageAdapter.getData();
+                                int position = messages.lastIndexOf(message);
+                                if(position != -1) {
+                                    messageAdapter.notifyItemChanged(position);
+                                    boolean isNoBottom = rvList.canScrollVertically(1);
+                                    if(!isNoBottom){
+                                        View oldView = rvList.getLayoutManager().findViewByPosition(messageAdapter.getItemCount() - 1);
+                                        int oldHeight = 0;
+                                        if( oldView != null){
+                                            oldHeight = oldView.getMeasuredHeight();
+                                        }
+                                        int finalOldHeight = oldHeight;
+                                        rvList.postDelayed(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                View v = rvList.getLayoutManager().findViewByPosition(messageAdapter.getItemCount() - 1);
+                                                int height = 0;
+                                                if( v != null){
+                                                    height = v.getMeasuredHeight();
+                                                }
+                                                rvList.smoothScrollBy(0, height - finalOldHeight);
+                                            }
+                                        }, 500);
+                                    }
+                                }
+                            }
+                        });
+                    }
+                    @Override
+                    public void onError(int errorCode, String errorText) {
+                        new AlertDialog.Builder(getContext())
+                                .setTitle("Unable to Translate")
+                                .setMessage(errorText+".")
+                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                }).show();
+                    }
+                });
+    }
+
+    public void hideMessage(EMMessage message) {
+        EMTranslationResult result = EMClient.getInstance().translationManager().getTranslationResult(message.getMsgId());
+        result.setShowTranslation(false);
+        EMClient.getInstance().translationManager().updateTranslationResult(result);
+
+        int position = messageAdapter.getData().lastIndexOf(message);
+        if(position != -1) {
+            messageAdapter.notifyItemChanged(position);
+        }
+
     }
 
     /**

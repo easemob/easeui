@@ -10,8 +10,8 @@
 
     <ImageView
         android:id="@+id/iv_action_icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
         android:src="@drawable/ease_chat_item_menu_copy"/>
 
     <TextView

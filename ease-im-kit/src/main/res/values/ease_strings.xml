@@ -155,5 +155,8 @@
     <string name="action_multi_select">多选</string>
     <string name="delete_voice">删除语音</string>
     <string name="delete_video">删除视频</string>
+    <string name="action_translate">翻译</string>
+    <string name="action_reTranslate">重译</string>
+    <string name="action_hide">隐藏</string>
 
 </resources>
