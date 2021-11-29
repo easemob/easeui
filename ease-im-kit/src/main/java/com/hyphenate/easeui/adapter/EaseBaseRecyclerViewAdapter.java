@@ -221,15 +221,15 @@ public abstract class EaseBaseRecyclerViewAdapter<T> extends EaseBaseAdapter<Eas
      * @param position
      * @return
      */
-    public T getItem(int position) {
-        return mData == null ? null : mData.get(position);
+    public synchronized T getItem(int position) {
+        return mData == null ? null : mData.size() <= position ? null : mData.get(position);
     }
 
     /**
      * 添加数据
      * @param data
      */
-    public void setData(List<T> data) {
+    public synchronized void setData(List<T> data) {
         this.mData = data;
         notifyDataSetChanged();
     }
