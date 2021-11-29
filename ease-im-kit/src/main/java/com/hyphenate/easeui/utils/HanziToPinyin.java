@@ -187,7 +187,7 @@ public class HanziToPinyin {
         sb.setLength(0);
     }
 
-    public String getPinyin(String input) {
+    public static String getPinyin(String input) {
         if(TextUtils.isEmpty(input)) {
             return null;
         }

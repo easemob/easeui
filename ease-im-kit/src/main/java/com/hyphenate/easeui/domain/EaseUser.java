@@ -306,7 +306,7 @@ public class EaseUser implements Serializable {
             if(Character.isDigit(char0)) {
                 return defaultLetter;
             }
-            String pinyin = HanziToPinyin.getInstance().getPinyin(name);
+            String pinyin = HanziToPinyin.getPinyin(name);
             EMLog.e("pinyin", "letter: "+pinyin);
             if(!TextUtils.isEmpty(pinyin)) {
                 String letter = pinyin.substring(0, 1).toUpperCase();

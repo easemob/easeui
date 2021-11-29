@@ -182,7 +182,7 @@ public class EaseCommonUtils {
                 if (Character.isDigit(char0)) {
                     return DefaultLetter;
                 }
-                String pinyin = HanziToPinyin.getInstance().getPinyin(name);
+                String pinyin = HanziToPinyin.getPinyin(name);
                 if(!TextUtils.isEmpty(pinyin)) {
                     String letter = pinyin.substring(0, 1).toUpperCase();
                     char c = letter.charAt(0);
@@ -337,7 +337,7 @@ public class EaseCommonUtils {
             if(Character.isDigit(char0)) {
                 return defaultLetter;
             }
-            String pinyin = HanziToPinyin.getInstance().getPinyin(name);
+            String pinyin = HanziToPinyin.getPinyin(name);
             if(!TextUtils.isEmpty(pinyin)) {
                 String letter = pinyin.substring(0, 1).toUpperCase();
                 char c = letter.charAt(0);
