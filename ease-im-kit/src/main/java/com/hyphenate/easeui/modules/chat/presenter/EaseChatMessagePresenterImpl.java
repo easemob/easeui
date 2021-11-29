@@ -95,7 +95,7 @@ public class EaseChatMessagePresenterImpl extends EaseChatMessagePresenter {
         if(!isMessageId(msgId)) {
             throw new IllegalArgumentException("please check if set correct msg id");
         }
-        EMMessage message = conversation.getMessage(msgId, false);
+        EMMessage message = conversation.getMessage(msgId, true);
         List<EMMessage> messages = conversation.searchMsgFromDB(message.getMsgTime() - 1,
                                                                 pageSize, direction);
         if(isActive()) {
@@ -209,7 +209,7 @@ public class EaseChatMessagePresenterImpl extends EaseChatMessagePresenter {
             //可以允许消息id为空
             return true;
         }
-        EMMessage message = conversation.getMessage(msgId, false);
+        EMMessage message = conversation.getMessage(msgId, true);
         return message != null;
     }
 
