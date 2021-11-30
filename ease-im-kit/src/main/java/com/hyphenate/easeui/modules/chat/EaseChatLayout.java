@@ -1,11 +1,9 @@
 package com.hyphenate.easeui.modules.chat;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -49,6 +47,7 @@ import com.hyphenate.easeui.modules.chat.interfaces.OnChatLayoutListener;
 import com.hyphenate.easeui.modules.chat.interfaces.OnChatRecordTouchListener;
 import com.hyphenate.easeui.modules.chat.interfaces.OnMenuChangeListener;
 import com.hyphenate.easeui.modules.chat.interfaces.OnRecallMessageResultListener;
+import com.hyphenate.easeui.modules.chat.interfaces.OnTranslateMessageListener;
 import com.hyphenate.easeui.modules.chat.presenter.EaseHandleMessagePresenter;
 import com.hyphenate.easeui.modules.chat.presenter.EaseHandleMessagePresenterImpl;
 import com.hyphenate.easeui.modules.chat.presenter.IHandleMessageView;
@@ -139,11 +138,13 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
      * 是否是首次发送，默认true
      */
     private boolean isNotFirstSend;
-
+    /**
+     * 翻译监听
+     */
+    private OnTranslateMessageListener translateListener;
     /**
      *  翻译目标语言，默认英文
      */
-
     private String targetLanguageCode = "en";
 
     public EaseChatLayout(Context context) {
@@ -475,6 +476,17 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
     }
 
     @Override
+    public void translateMessage(EMMessage message, boolean isTranslate){
+        presenter.translateMessage(message, targetLanguageCode, isTranslate);
+    }
+
+    @Override
+    public void hideTranslate(EMMessage message){
+        presenter.hideTranslate(message);
+        messageListLayout.refreshMessage(message);
+    }
+
+    @Override
     public void addMessageAttributes(EMMessage message) {
         presenter.addMessageAttributes(message);
     }
@@ -497,6 +509,11 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
     @Override
     public void setOnAddMsgAttrsBeforeSendEvent(OnAddMsgAttrsBeforeSendEvent sendMsgEvent) {
         this.sendMsgEvent = sendMsgEvent;
+    }
+
+    @Override
+    public void setOnTranslateListener(OnTranslateMessageListener translateListener) {
+        this.translateListener = translateListener;
     }
 
     /**
@@ -760,6 +777,23 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
     }
 
     @Override
+    public void translateMessageSuccess(EMMessage message) {
+        EMLog.i(TAG, "translateMessageSuccess");
+        messageListLayout.lastMsgScrollToBottom(message);
+        if(translateListener != null){
+            translateListener.translateMessageSuccess(message);
+        }
+    }
+
+    @Override
+    public void translateMessageFail(EMMessage message, int code, String error) {
+        EMLog.i(TAG, "translateMessageFail:" + code + ":" + error);
+        if(translateListener != null){
+            translateListener.translateMessageFail(message, code, error);
+        }
+    }
+
+    @Override
     public void onTouchItemOutside(View v, int position) {
         inputMenu.hideSoftKeyboard();
         inputMenu.showExtendMenu(false);
@@ -962,18 +996,11 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
                     }else if(itemId == R.id.action_chat_recall) {
                         recallMessage(message);
                     }else if(itemId == R.id.action_chat_translate) {
-                        messageListLayout.translateMessage(message, targetLanguageCode, true);
-                    }else if(itemId == R.id.action_chat_reTranslate) {
-                        new AlertDialog.Builder(getContext())
-                                .setTitle("Using Translate")
-                                .setMessage("Each translation can be retranslated only once. The translation provided is for reference only.")
-                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        messageListLayout.translateMessage(message, targetLanguageCode, false);
-                                    }
-                                }).show();
+                        translateMessage(message, true);
+                    }else if(itemId == R.id.action_chat_reTranslate){
+                        translateMessage(message, false);
                     }else if(itemId == R.id.action_chat_hide) {
-                        messageListLayout.hideMessage(message);
+                        hideTranslate(message);
                     }
                     return true;
                 }
@@ -1013,7 +1040,6 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
         menuHelper.findItemVisible(R.id.action_chat_reTranslate, false);
         menuHelper.findItemVisible(R.id.action_chat_hide, false);
         menuHelper.findItem(R.id.action_chat_delete).setTitle(getContext().getString(R.string.action_delete));
-        EMLog.e("setMenuByMsgType:", (v.getId() == R.id.subBubble) + "");
         switch (type) {
             case TXT:
                 EMTranslationResult result = EMClient.getInstance().translationManager().getTranslationResult(message.getMsgId());

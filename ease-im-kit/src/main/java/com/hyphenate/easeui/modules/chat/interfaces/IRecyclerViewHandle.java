@@ -36,5 +36,11 @@ public interface IRecyclerViewHandle {
      * @param position
      */
     void moveToPosition(int position);
+
+    /**
+     * 判断是最后一条消息滚动到底部
+     * @param message
+     */
+    void lastMsgScrollToBottom(EMMessage message);
 }
 

@@ -155,5 +155,19 @@ public abstract class EaseHandleMessagePresenter extends EaseBasePresenter {
     public boolean isGroupChat() {
         return chatType == EaseConstant.CHATTYPE_GROUP;
     }
+
+    /**
+     * 翻译消息
+     * @param message
+     * @param languageCode
+     * @param isTranslation
+     */
+    public abstract void translateMessage(EMMessage message, String languageCode, boolean isTranslation);
+
+    /**
+     * 隐藏翻译
+     * @param message
+     */
+    public abstract void hideTranslate(EMMessage message);
 }
 
