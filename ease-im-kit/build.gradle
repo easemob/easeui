@@ -40,6 +40,7 @@ dependencies {
     //implementation fileTree(dir: 'libs', include: ['*.jar'])
     // baidu
     compileOnly files('libs/BaiduLBS_Android.jar')
+    implementation files('libs/pinyin4j-2.5.0.jar')
 
 //    api project(':hyphenatechatsdk')
 	  implementation 'io.hyphenate:hyphenate-chat:3.8.7'

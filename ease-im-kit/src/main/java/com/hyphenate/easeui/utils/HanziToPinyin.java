@@ -20,6 +20,8 @@ import android.icu.text.Transliterator;
 import android.text.TextUtils;
 import android.util.Log;
 
+import net.sourceforge.pinyin4j.PinyinHelper;
+
 import java.util.ArrayList;
 
 
@@ -183,5 +185,16 @@ public class HanziToPinyin {
         String str = sb.toString();
         tokens.add(new Token(tokenType, str, str));
         sb.setLength(0);
+    }
+
+    public static String getPinyin(String input) {
+        if(TextUtils.isEmpty(input)) {
+            return null;
+        }
+        String[] pinyins = PinyinHelper.toHanyuPinyinStringArray(input.trim().charAt(0));
+        if(pinyins != null) {
+            return pinyins[0].substring(0, 1).toUpperCase();
+        }
+        return input;
     }
 }
