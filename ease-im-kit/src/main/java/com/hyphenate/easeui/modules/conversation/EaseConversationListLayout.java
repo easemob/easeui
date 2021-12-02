@@ -565,6 +565,7 @@ public class EaseConversationListLayout extends EaseBaseLayout implements IConve
         try {
             listAdapter.getData().remove(position);
             listAdapter.notifyItemRemoved(position);
+            listAdapter.notifyItemChanged(position);
         } catch (Exception e) {
             e.printStackTrace();
         }
