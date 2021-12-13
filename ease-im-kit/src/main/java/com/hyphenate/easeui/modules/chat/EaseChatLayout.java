@@ -425,8 +425,8 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
     }
 
     @Override
-    public void sendLocationMessage(double latitude, double longitude, String locationAddress) {
-        presenter.sendLocationMessage(latitude, longitude, locationAddress);
+    public void sendLocationMessage(double latitude, double longitude, String locationAddress, String buildingName) {
+        presenter.sendLocationMessage(latitude, longitude, locationAddress, buildingName);
     }
 
     @Override

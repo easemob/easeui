@@ -91,8 +91,8 @@ public class EaseHandleMessagePresenterImpl extends EaseHandleMessagePresenter {
     }
 
     @Override
-    public void sendLocationMessage(double latitude, double longitude, String locationAddress) {
-        EMMessage message = EMMessage.createLocationSendMessage(latitude, longitude, locationAddress, toChatUsername);
+    public void sendLocationMessage(double latitude, double longitude, String locationAddress, String buildingName) {
+        EMMessage message = EMMessage.createLocationSendMessage(latitude, longitude, locationAddress, buildingName, toChatUsername);
         EMLog.i(TAG, "current = "+EMClient.getInstance().getCurrentUser() + " to = "+toChatUsername);
         EMMessageBody body = message.getBody();
         String msgId = message.getMsgId();

@@ -90,7 +90,7 @@ public interface IChatLayout {
      * @param longitude
      * @param locationAddress
      */
-    void sendLocationMessage(double latitude, double longitude, String locationAddress);
+    void sendLocationMessage(double latitude, double longitude, String locationAddress, String buildingName);
 
     /**
      * 发送视频消息
