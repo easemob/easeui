@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMUserInfo;
 import com.hyphenate.easeui.utils.HanziToPinyin;
+import com.hyphenate.util.EMLog;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -107,9 +108,12 @@ public class EaseUser implements Serializable {
     public String getInitialLetter() {
         if(initialLetter == null || lastModifyTimestamp > modifyInitialLetterTimestamp) {
             if(!TextUtils.isEmpty(nickname)) {
-                return getInitialLetter(nickname);
+                initialLetter = getInitialLetter(nickname);
+            }else {
+                initialLetter = getInitialLetter(username);
             }
-            return getInitialLetter(username);
+            modifyInitialLetterTimestamp = System.currentTimeMillis();
+            return initialLetter;
         }
         return initialLetter;
     }
@@ -302,10 +306,10 @@ public class EaseUser implements Serializable {
             if(Character.isDigit(char0)) {
                 return defaultLetter;
             }
-            ArrayList<HanziToPinyin.Token> l = HanziToPinyin.getInstance().get(name.substring(0, 1));
-            if(l != null && !l.isEmpty() && l.get(0).target.length() > 0) {
-                HanziToPinyin.Token token = l.get(0);
-                String letter = token.target.substring(0, 1).toUpperCase();
+            String pinyin = HanziToPinyin.getPinyin(name);
+            EMLog.e("pinyin", "letter: "+pinyin);
+            if(!TextUtils.isEmpty(pinyin)) {
+                String letter = pinyin.substring(0, 1).toUpperCase();
                 char c = letter.charAt(0);
                 if(c < 'A' || c > 'Z') {
                     return defaultLetter;

@@ -182,13 +182,11 @@ public class EaseCommonUtils {
                 if (Character.isDigit(char0)) {
                     return DefaultLetter;
                 }
-                ArrayList<HanziToPinyin.Token> l = HanziToPinyin.getInstance().get(name.substring(0, 1));
-                if (l != null && l.size() > 0 && l.get(0).target.length() > 0)
-                {
-                    HanziToPinyin.Token token = l.get(0);
-                    String letter = token.target.substring(0, 1).toUpperCase();
+                String pinyin = HanziToPinyin.getPinyin(name);
+                if(!TextUtils.isEmpty(pinyin)) {
+                    String letter = pinyin.substring(0, 1).toUpperCase();
                     char c = letter.charAt(0);
-                    if (c < 'A' || c > 'Z') {
+                    if(c < 'A' || c > 'Z') {
                         return DefaultLetter;
                     }
                     return letter;
@@ -339,10 +337,9 @@ public class EaseCommonUtils {
             if(Character.isDigit(char0)) {
                 return defaultLetter;
             }
-            ArrayList<HanziToPinyin.Token> l = HanziToPinyin.getInstance().get(name.substring(0, 1));
-            if(l != null && !l.isEmpty() && l.get(0).target.length() > 0) {
-                HanziToPinyin.Token token = l.get(0);
-                String letter = token.target.substring(0, 1).toUpperCase();
+            String pinyin = HanziToPinyin.getPinyin(name);
+            if(!TextUtils.isEmpty(pinyin)) {
+                String letter = pinyin.substring(0, 1).toUpperCase();
                 char c = letter.charAt(0);
                 if(c < 'A' || c > 'Z') {
                     return defaultLetter;
