@@ -28,7 +28,7 @@ public class EaseShowNormalFileActivity extends EaseBaseActivity {
 
 		final EMMessage message = getIntent().getParcelableExtra("msg");
         if (!(message.getBody() instanceof EMFileMessageBody)) {
-            Toast.makeText(EaseShowNormalFileActivity.this, "Unsupported message body", Toast.LENGTH_SHORT).show();
+            Toast.makeText(EaseShowNormalFileActivity.this, getApplicationContext().getString(R.string.unsupported_message_body), Toast.LENGTH_SHORT).show();
             finish();
             return;
         }

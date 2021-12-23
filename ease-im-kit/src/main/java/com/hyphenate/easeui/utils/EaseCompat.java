@@ -241,7 +241,7 @@ public class EaseCompat {
         } catch (Exception e) {
             e.printStackTrace();
             EMLog.e(TAG, e.getMessage());
-            Toast.makeText(context, "Can't find proper app to open this file", Toast.LENGTH_LONG).show();
+            Toast.makeText(context, context.getString(R.string.can_not_find_app_open_file), Toast.LENGTH_LONG).show();
         }
     }
 

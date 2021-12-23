@@ -26,6 +26,7 @@ import com.hyphenate.easeui.modules.chat.interfaces.OnAddMsgAttrsBeforeSendEvent
 import com.hyphenate.easeui.modules.chat.interfaces.OnChatLayoutListener;
 import com.hyphenate.easeui.modules.chat.interfaces.OnChatRecordTouchListener;
 import com.hyphenate.easeui.modules.chat.interfaces.OnMenuChangeListener;
+import com.hyphenate.easeui.modules.chat.interfaces.OnTranslateMessageListener;
 import com.hyphenate.easeui.modules.menu.EasePopupWindowHelper;
 import com.hyphenate.easeui.modules.menu.MenuItemBean;
 import com.hyphenate.easeui.ui.EaseBaiduMapActivity;
@@ -39,7 +40,7 @@ import com.hyphenate.util.VersionUtils;
 
 import java.io.File;
 
-public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutListener, OnMenuChangeListener, OnAddMsgAttrsBeforeSendEvent, OnChatRecordTouchListener {
+public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutListener, OnMenuChangeListener, OnAddMsgAttrsBeforeSendEvent, OnChatRecordTouchListener, OnTranslateMessageListener {
     protected static final int REQUEST_CODE_MAP = 1;
     protected static final int REQUEST_CODE_CAMERA = 2;
     protected static final int REQUEST_CODE_LOCAL = 3;
@@ -102,6 +103,7 @@ public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutLi
         chatLayout.setOnPopupWindowItemClickListener(this);
         chatLayout.setOnAddMsgAttrsBeforeSendEvent(this);
         chatLayout.setOnChatRecordTouchListener(this);
+        chatLayout.setOnTranslateListener(this);
     }
 
     public void initData() {
@@ -357,7 +359,7 @@ public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutLi
     }
 
     @Override
-    public void onPreMenu(EasePopupWindowHelper helper, EMMessage message) {
+    public void onPreMenu(EasePopupWindowHelper helper, EMMessage message, View v) {
 
     }
 
@@ -380,6 +382,16 @@ public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutLi
     @Override
     public boolean onRecordTouch(View v, MotionEvent event) {
         return true;
+    }
+
+    @Override
+    public void translateMessageSuccess(EMMessage message) {
+
+    }
+
+    @Override
+    public void translateMessageFail(EMMessage message, int code, String error) {
+
     }
 }
 

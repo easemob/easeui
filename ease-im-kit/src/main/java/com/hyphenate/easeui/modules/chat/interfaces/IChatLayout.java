@@ -136,6 +136,19 @@ public interface IChatLayout {
     void recallMessage(EMMessage message);
 
     /**
+     * 翻译消息
+     * @param message
+     * @param isTranslate
+     */
+    void translateMessage(EMMessage message, boolean isTranslate);
+
+    /**
+     * 隐藏翻译
+     * @param message
+     */
+    void hideTranslate(EMMessage message);
+
+    /**
      * 用于监听消息的变化
      * @param listener
      */
@@ -159,4 +172,9 @@ public interface IChatLayout {
      */
     void setOnAddMsgAttrsBeforeSendEvent(OnAddMsgAttrsBeforeSendEvent sendMsgEvent);
 
+    /**
+     * 设置翻译监听
+     * @param translateListener
+     */
+    void setOnTranslateListener(OnTranslateMessageListener translateListener);
 }

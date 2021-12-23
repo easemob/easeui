@@ -1,7 +1,9 @@
 package com.hyphenate.easeui.modules.chat;
 
 import android.animation.ValueAnimator;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
@@ -602,6 +604,7 @@ public class EaseChatMessageListLayout extends RelativeLayout implements IChatMe
             return;
         }
         conversation.removeMessage(message.getMsgId());
+        EMClient.getInstance().translationManager().removeTranslationResult(message.getMsgId());
         runOnUi(()-> {
             if(presenter.isActive()) {
                 List<EMMessage> messages = messageAdapter.getData();
@@ -621,6 +624,35 @@ public class EaseChatMessageListLayout extends RelativeLayout implements IChatMe
     @Override
     public void moveToPosition(int position) {
         seekToPosition(position);
+    }
+
+    @Override
+    public void lastMsgScrollToBottom(EMMessage message) {
+        List<EMMessage> messages = messageAdapter.getData();
+        int position = messages.lastIndexOf(message);
+        if(position != -1) {
+            messageAdapter.notifyItemChanged(position);
+            boolean isNoBottom = rvList.canScrollVertically(1);
+            if(!isNoBottom){
+                View oldView = rvList.getLayoutManager().findViewByPosition(messageAdapter.getItemCount() - 1);
+                int oldHeight = 0;
+                if( oldView != null){
+                    oldHeight = oldView.getMeasuredHeight();
+                }
+                int finalOldHeight = oldHeight;
+                rvList.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        View v = rvList.getLayoutManager().findViewByPosition(messageAdapter.getItemCount() - 1);
+                        int height = 0;
+                        if( v != null){
+                            height = v.getMeasuredHeight();
+                        }
+                        rvList.smoothScrollBy(0, height - finalOldHeight);
+                    }
+                }, 500);
+            }
+        }
     }
 
     @Override
