@@ -220,6 +220,7 @@ public class EaseBaiduMapActivity extends EaseBaseActivity implements EaseTitleB
 		intent.putExtra("latitude", lastLocation.getLatitude());
 		intent.putExtra("longitude", lastLocation.getLongitude());
 		intent.putExtra("address", lastLocation.getAddrStr());
+		intent.putExtra("buildingName", lastLocation.getBuildingName() == null ? "" : lastLocation.getBuildingName());
 		this.setResult(RESULT_OK, intent);
 		finish();
 	}

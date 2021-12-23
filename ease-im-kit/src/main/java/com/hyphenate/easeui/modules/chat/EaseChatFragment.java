@@ -311,8 +311,9 @@ public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutLi
             double latitude = data.getDoubleExtra("latitude", 0);
             double longitude = data.getDoubleExtra("longitude", 0);
             String locationAddress = data.getStringExtra("address");
+            String buildingName = data.getStringExtra("buildingName");
             if (locationAddress != null && !locationAddress.equals("")) {
-                chatLayout.sendLocationMessage(latitude, longitude, locationAddress);
+                chatLayout.sendLocationMessage(latitude, longitude, locationAddress, buildingName);
             } else {
                 if(listener != null) {
                     listener.onChatError(-1, getResources().getString(R.string.unable_to_get_loaction));

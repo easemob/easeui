@@ -97,7 +97,7 @@ public abstract class EaseHandleMessagePresenter extends EaseBasePresenter {
      * @param longitude
      * @param locationAddress
      */
-    public abstract void sendLocationMessage(double latitude, double longitude, String locationAddress);
+    public abstract void sendLocationMessage(double latitude, double longitude, String locationAddress, String buildingName);
 
     /**
      * 发送视频消息
