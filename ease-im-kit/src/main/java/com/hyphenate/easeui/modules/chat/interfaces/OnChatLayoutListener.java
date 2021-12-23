@@ -54,6 +54,12 @@ public interface OnChatLayoutListener {
     void onTextChanged(CharSequence s, int start, int before, int count);
 
     /**
+     * 发送消息成功后的回调
+     * @param message
+     */
+    default void onChatSuccess(EMMessage message){}
+
+    /**
      * 聊天中错误信息
      * @param code
      * @param errorMsg

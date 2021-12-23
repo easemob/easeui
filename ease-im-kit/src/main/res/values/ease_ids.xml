@@ -12,6 +12,8 @@
     <item name="action_chat_delete" type="id"/>
     <!--撤回-->
     <item name="action_chat_recall" type="id"/>
+    <!--长按事件-->
+    <item name="action_chat_long_click" type="id"/>
 
     <!-- 会话列表长按菜单项id -->
     <!-- 会话列表条目置为已读 -->

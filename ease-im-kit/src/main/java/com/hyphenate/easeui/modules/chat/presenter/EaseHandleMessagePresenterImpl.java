@@ -178,6 +178,10 @@ public class EaseHandleMessagePresenterImpl extends EaseHandleMessagePresenter {
     @Override
     public void resendMessage(EMMessage message) {
         message.setStatus(EMMessage.Status.CREATE);
+        long currentTimeMillis = System.currentTimeMillis();
+        message.setLocalTime(currentTimeMillis);
+        message.setMsgTime(currentTimeMillis);
+        EMClient.getInstance().chatManager().updateMessage(message);
         sendMessage(message);
     }
 

@@ -525,8 +525,11 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
 
     @Override
     public boolean onPressToSpeakBtnTouch(View v, MotionEvent event) {
-        if(recordTouchListener != null && recordTouchListener.onRecordTouch(v, event)) {
-            return recordTouchListener.onRecordTouch(v, event);
+        if(recordTouchListener != null) {
+            boolean onRecordTouch = recordTouchListener.onRecordTouch(v, event);
+            if (!onRecordTouch) {
+                return false;
+            }
         }
         return voiceRecorder.onPressToSpeakBtnTouch(v, event, (this::sendVoiceMessage));
     }
@@ -723,6 +726,9 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
     @Override
     public void onPresenterMessageSuccess(EMMessage message) {
         EMLog.i(TAG, "send message onPresenterMessageSuccess");
+        if(listener != null) {
+            listener.onChatSuccess(message);
+        }
     }
 
     @Override
@@ -817,6 +823,9 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
     @Override
     public void onMessageSuccess(EMMessage message) {
         EMLog.i(TAG, "send message onMessageSuccess");
+        if(listener != null) {
+            listener.onChatSuccess(message);
+        }
     }
 
     @Override

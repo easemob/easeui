@@ -28,12 +28,13 @@ import com.hyphenate.chat.EMConversation;
 import com.hyphenate.chat.EMConversation.EMConversationType;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMTextMessageBody;
+import com.hyphenate.easeui.EaseIM;
 import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.constants.EaseConstant;
 import com.hyphenate.easeui.domain.EaseUser;
+import com.hyphenate.easeui.provider.EaseUserProfileProvider;
+import com.hyphenate.easeui.utils.HanziToPinyin;
 import com.hyphenate.util.EMLog;
-import com.hyphenate.util.HanziToPinyin;
-import com.hyphenate.util.HanziToPinyin.Token;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -89,7 +90,15 @@ public class EaseCommonUtils {
         case LOCATION:
             if (message.direct() == EMMessage.Direct.RECEIVE) {
                 digest = getString(context, R.string.location_recv);
-                digest = String.format(digest, message.getFrom());
+                EaseUserProfileProvider userProvider = EaseIM.getInstance().getUserProvider();
+                String from = message.getFrom();
+                if(userProvider != null && userProvider.getUser(from) != null) {
+                    EaseUser user = userProvider.getUser(from);
+                    if(user != null && !TextUtils.isEmpty(user.getNickname())) {
+                        from = user.getNickname();
+                    }
+                }
+                digest = String.format(digest, from);
                 return digest;
             } else {
                 digest = getString(context, R.string.location_prefix);
@@ -173,10 +182,10 @@ public class EaseCommonUtils {
                 if (Character.isDigit(char0)) {
                     return DefaultLetter;
                 }
-                ArrayList<Token> l = HanziToPinyin.getInstance().get(name.substring(0, 1));
+                ArrayList<HanziToPinyin.Token> l = HanziToPinyin.getInstance().get(name.substring(0, 1));
                 if (l != null && l.size() > 0 && l.get(0).target.length() > 0)
                 {
-                    Token token = l.get(0);
+                    HanziToPinyin.Token token = l.get(0);
                     String letter = token.target.substring(0, 1).toUpperCase();
                     char c = letter.charAt(0);
                     if (c < 'A' || c > 'Z') {
