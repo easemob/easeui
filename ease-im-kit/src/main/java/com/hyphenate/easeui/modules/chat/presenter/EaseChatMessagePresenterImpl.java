@@ -8,6 +8,9 @@ import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMConversation;
 import com.hyphenate.chat.EMCursorResult;
 import com.hyphenate.chat.EMMessage;
+import com.hyphenate.chat.translator.EMTranslationManager;
+import com.hyphenate.chat.translator.EMTranslationMessage;
+import com.hyphenate.chat.translator.EMTranslationResult;
 
 import java.util.List;
 
@@ -215,15 +218,25 @@ public class EaseChatMessagePresenterImpl extends EaseChatMessagePresenter {
 
     /**
      * Check message's status, if is not success or fail, set to {@link com.hyphenate.chat.EMMessage.Status#FAIL}
+     * Also add translation messages if avaliable
      * @param messages
      */
     private void checkMessageStatus(List<EMMessage> messages) {
         if(messages == null || messages.isEmpty()) {
             return;
         }
+
         for (EMMessage message : messages) {
             if(message.status() != EMMessage.Status.SUCCESS && message.status() != EMMessage.Status.FAIL) {
                 message.setStatus(EMMessage.Status.FAIL);
+            }
+
+            if(EMTranslationManager.getInstance().isTranslationPresentForMessage(message.getMsgId())) {
+                EMTranslationResult result = EMTranslationManager.getInstance().getTranslationMessage(message.getMsgId());
+                if(result.getShowTranslation()) {
+                    EMTranslationMessage translationMessage = EMTranslationMessage.createMessage(message, result);
+                    message.setSubMessage(translationMessage);
+                }
             }
         }
     }

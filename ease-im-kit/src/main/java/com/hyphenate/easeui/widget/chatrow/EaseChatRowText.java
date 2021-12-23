@@ -5,6 +5,7 @@ import android.text.Spannable;
 import android.text.Spanned;
 import android.text.style.URLSpan;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.TextView.BufferType;
 
@@ -12,10 +13,16 @@ import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMTextMessageBody;
 import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.manager.EaseDingMessageHelper;
+import com.hyphenate.chat.translator.EMTranslationMessage;
+import com.hyphenate.chat.translator.EMTranslationResult;
 import com.hyphenate.easeui.utils.EaseSmileUtils;
 
 public class EaseChatRowText extends EaseChatRow {
 	private TextView contentView;
+	private TextView translationContentView;
+	private ImageView translationStatusView;
+	private View translationContainer;
+
 
     public EaseChatRowText(Context context, boolean isSender) {
 		super(context, isSender);
@@ -27,13 +34,16 @@ public class EaseChatRowText extends EaseChatRow {
 
 	@Override
 	protected void onInflateView() {
-		inflater.inflate(!showSenderType ? R.layout.ease_row_received_message
+        inflater.inflate(!showSenderType ? R.layout.ease_row_received_message
                 : R.layout.ease_row_sent_message, this);
 	}
 
 	@Override
 	protected void onFindViewById() {
-		contentView = (TextView) findViewById(R.id.tv_chatcontent);
+        contentView = (TextView) findViewById(R.id.tv_chatcontent);
+        translationContentView = (TextView) findViewById(R.id.tv_subContent);
+        translationStatusView = (ImageView) findViewById(R.id.translation_status);
+        translationContainer = (View) findViewById(R.id.subBubble);
 	}
 
     @Override
@@ -53,7 +63,31 @@ public class EaseChatRowText extends EaseChatRow {
                     return false;
                 }
             });
+
             replaceSpan();
+
+            if(message.subMessage() != null) {
+                translationContainer.setVisibility(View.VISIBLE);
+                EMTranslationResult result = ((EMTranslationMessage)message.subMessage()).getTranslationResult();
+                translationContentView.setText(result.getTranslatedText());
+                translationContentView.setOnLongClickListener(new OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        contentView.setTag(R.id.action_chat_long_click,true);
+                        if (itemClickListener != null) {
+                            return itemClickListener.onBubbleLongClick(v, message.subMessage());
+                        }
+                        return false;
+                    }
+                });
+                if(result.isSuccess())
+                    translationStatusView.setImageResource(R.drawable.translation_success);
+                else
+                    translationStatusView.setImageResource(R.drawable.translation_failure);
+            } else {
+                translationContainer.setVisibility(View.GONE);
+            }
+
         }
     }
 

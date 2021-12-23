@@ -4,6 +4,8 @@ import android.text.TextUtils;
 
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMConversation;
+import com.hyphenate.chat.translator.EMTranslationManager;
+import com.hyphenate.chat.translator.EMTranslationResult;
 import com.hyphenate.easeui.constants.EaseConstant;
 import com.hyphenate.easeui.modules.conversation.model.EaseConversationInfo;
 import com.hyphenate.easeui.utils.EaseCommonUtils;
@@ -170,6 +172,7 @@ public class EaseConversationPresenterImpl extends EaseConversationPresenter {
             if(!isDestroy()) {
                 if(isDelete) {
                     mView.deleteItem(position);
+                    EMTranslationManager.getInstance().removeTranslationByConversationId(((EMConversation) info.getInfo()).conversationId());
                 }else {
                     mView.deleteItemFail(position, "");
                 }
