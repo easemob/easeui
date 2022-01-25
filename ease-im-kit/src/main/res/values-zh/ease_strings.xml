@@ -66,6 +66,7 @@
 
     <string name="msg_recall_by_self">您撤回了一条消息</string>
     <string name="msg_recall_by_user">%1$s 撤回了一条消息</string>
+    <string name="msg_recall_by_another">%1$s 撤回了 %2$s 的一条消息</string>
 
     <string name="Video_footage">拍摄录像</string>
     <string name="recording_video">录制视频</string>
