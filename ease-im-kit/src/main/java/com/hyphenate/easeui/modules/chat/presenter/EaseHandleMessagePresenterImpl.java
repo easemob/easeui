@@ -6,13 +6,11 @@ import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.text.TextUtils;
 
-import com.baidu.mapapi.map.MapView;
 import com.hyphenate.EMCallBack;
 import com.hyphenate.EMValueCallBack;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMCmdMessageBody;
 import com.hyphenate.chat.EMGroup;
-import com.hyphenate.chat.EMImageMessageBody;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMMessageBody;
 import com.hyphenate.chat.EMTextMessageBody;
@@ -202,9 +200,11 @@ public class EaseHandleMessagePresenterImpl extends EaseHandleMessagePresenter {
             EMTextMessageBody txtBody = new EMTextMessageBody(mView.context().getResources().getString(R.string.msg_recall_by_self));
             msgNotification.addBody(txtBody);
             msgNotification.setTo(message.getTo());
+            msgNotification.setDirection(message.direct());
             msgNotification.setMsgTime(message.getMsgTime());
             msgNotification.setLocalTime(message.getMsgTime());
             msgNotification.setAttribute(EaseConstant.MESSAGE_TYPE_RECALL, true);
+            msgNotification.setAttribute(EaseConstant.MESSAGE_TYPE_RECALLER, EMClient.getInstance().getCurrentUser());
             msgNotification.setStatus(EMMessage.Status.SUCCESS);
             EMClient.getInstance().chatManager().recallMessage(message);
             EMClient.getInstance().chatManager().saveMessage(msgNotification);
