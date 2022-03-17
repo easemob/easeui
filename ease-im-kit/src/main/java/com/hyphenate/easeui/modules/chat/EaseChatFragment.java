@@ -2,6 +2,7 @@ package com.hyphenate.easeui.modules.chat;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -21,7 +22,6 @@ import com.hyphenate.chat.EMMessage;
 import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.constants.EaseConstant;
 import com.hyphenate.easeui.manager.EaseDingMessageHelper;
-import com.hyphenate.easeui.model.EaseEvent;
 import com.hyphenate.easeui.modules.chat.interfaces.OnAddMsgAttrsBeforeSendEvent;
 import com.hyphenate.easeui.modules.chat.interfaces.OnChatLayoutListener;
 import com.hyphenate.easeui.modules.chat.interfaces.OnChatRecordTouchListener;
@@ -39,6 +39,7 @@ import com.hyphenate.util.PathUtil;
 import com.hyphenate.util.VersionUtils;
 
 import java.io.File;
+import java.io.IOException;
 
 public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutListener, OnMenuChangeListener, OnAddMsgAttrsBeforeSendEvent, OnChatRecordTouchListener, OnTranslateMessageListener {
     protected static final int REQUEST_CODE_MAP = 1;
@@ -210,7 +211,25 @@ public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutLi
                 onActivityResultForDingMsg(data);
             }else if(requestCode == REQUEST_CODE_SELECT_FILE) {
                 onActivityResultForLocalFiles(data);
+            }else if(requestCode == REQUEST_CODE_SELECT_VIDEO) {
+                onActivityResultForLocalVideos(data);
             }
+        }
+    }
+
+    private void onActivityResultForLocalVideos(Intent data) {
+        if (data != null) {
+            Uri uri = data.getData();
+            MediaPlayer mediaPlayer = new MediaPlayer();
+            try {
+                mediaPlayer.setDataSource(mContext,uri);
+                mediaPlayer.prepare();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            int duration = mediaPlayer.getDuration();
+            EMLog.d(TAG, "path = "+uri.getPath()+",duration="+duration );
+            chatLayout.sendVideoMessage(uri, duration);
         }
     }
 
@@ -249,6 +268,21 @@ public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutLi
      * select local video
      */
     protected void selectVideoFromLocal() {
+        Intent intent = new Intent();
+        if(VersionUtils.isTargetQ(getActivity())) {
+            intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
+        }else {
+            if(Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+            }else {
+                intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
+            }
+        }
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("video/*");
+
+        startActivityForResult(intent, REQUEST_CODE_SELECT_VIDEO);
 
     }
 
