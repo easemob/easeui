@@ -44,6 +44,7 @@ public interface EaseConstant {
     String MESSAGE_TYPE_FILE = "file";
     String MESSAGE_TYPE_CMD = "cmd";
     String MESSAGE_TYPE_RECALL = "message_recall";
+    String MESSAGE_TYPE_RECALLER = "message_recaller";
     String MESSAGE_TYPE_VOICE_CALL = "voice_call";
     String MESSAGE_TYPE_VIDEO_CALL = "video_call";
     String MESSAGE_TYPE_CONFERENCE_INVITE = "conference_invite";

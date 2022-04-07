@@ -66,6 +66,7 @@
 
     <string name="msg_recall_by_self">You recalled a message</string>
     <string name="msg_recall_by_user">%1$s recalled a message</string>
+    <string name="msg_recall_by_another">%1$s recalled a message from %2$s</string>
 
     <string name="Video_footage">Shoot video</string>
     <string name="recording_video">Record video</string>
