@@ -161,6 +161,21 @@ public abstract class EaseChatRow extends LinearLayout {
         onFindViewById();
     }
 
+    public void resetViewState() {
+        if (null != progressBar) {
+            progressBar.setVisibility(GONE);
+        }
+        if (null != statusView) {
+            statusView.setVisibility(GONE);
+        }
+        if (null != ackedView) {
+            ackedView.setVisibility(GONE);
+        }
+        if (null != deliveredView) {
+            deliveredView.setVisibility(GONE);
+        }
+    }
+
     protected void setLayoutStyle() {
         EaseChatItemStyleHelper helper = getItemStyleHelper();
         if(helper != null) {
@@ -214,12 +229,7 @@ public abstract class EaseChatRow extends LinearLayout {
             chatCallback = new EaseChatCallback();
         }
         msg.setMessageStatusCallback(chatCallback);
-        mainThreadHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                onViewUpdate(msg);
-            }
-        });
+        onViewUpdate(msg);
     }
 
     /**
