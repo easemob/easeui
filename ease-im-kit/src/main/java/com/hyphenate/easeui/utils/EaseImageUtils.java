@@ -15,11 +15,10 @@ package com.hyphenate.easeui.utils;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
@@ -37,7 +36,10 @@ import com.hyphenate.util.EMLog;
 import com.hyphenate.util.ImageUtils;
 import com.hyphenate.util.PathUtil;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Optional;
 
 public class EaseImageUtils extends com.hyphenate.util.ImageUtils{
 	
@@ -307,4 +309,32 @@ public class EaseImageUtils extends com.hyphenate.util.ImageUtils{
 		return params;
 	}
 
+	/**
+	 * image转jpeg图片
+	 *
+	 * @param context  上下文
+	 * @param srcImg   原image uri
+	 * @param destFile 目标文件
+	 * @return Uri 图片URI
+	 */
+	public static Uri imageToJpeg(Context context, Uri srcImg, File destFile) throws IOException {
+		Bitmap bitmap;
+		final String filePath = EaseFileUtils.getFilePath(context, srcImg);
+		if (!TextUtils.isEmpty(filePath) && new File(filePath).exists()) {
+			bitmap = BitmapFactory.decodeFile(filePath, null);
+		} else {
+			bitmap = ImageUtils.getBitmapByUri(context, srcImg, null);
+		}
+		if (null != bitmap && null != destFile) {
+			if (destFile.exists()) {
+				destFile.delete();
+			}
+			FileOutputStream out = new FileOutputStream(destFile);
+			bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+			out.flush();
+			out.close();
+			return Uri.fromFile(destFile);
+		}
+		return srcImg;
+	}
 }
