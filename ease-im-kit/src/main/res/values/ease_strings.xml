@@ -164,5 +164,6 @@
     <string name="action_translate">Translate</string>
     <string name="action_reTranslate">Retranslate</string>
     <string name="action_hide">Hide</string>
+    <string name="action_label">Label</string>
 
 </resources>

@@ -20,6 +20,8 @@
     <item name="action_chat_hide" type="id"/>
     <!--长按事件-->
     <item name="action_chat_long_click" type="id"/>
+    <!--标记-->
+    <item name="action_chat_label" type="id"/>
 
     <!-- 会话列表长按菜单项id -->
     <!-- 会话列表条目置为已读 -->

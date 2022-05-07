@@ -135,7 +135,8 @@ public class EaseChatRowText extends EaseChatRow {
         }
 
         // Set ack-user list change listener.
-        EaseDingMessageHelper.get().setUserUpdateListener(message, userUpdateListener);
+        // Only use the group ack count from message. - 2022.04.27
+        //EaseDingMessageHelper.get().setUserUpdateListener(message, userUpdateListener);
     }
 
     @Override

@@ -83,6 +83,7 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
     private EaseChatMessageListLayout messageListLayout;
     private EaseChatInputMenu inputMenu;
     private EaseVoiceRecorderView voiceRecorder;
+    private boolean isReportYourSelf = false;
     /**
      * "正在输入"功能的开关，打开后本设备发送消息将持续发送cmd类型消息通知对方"正在输入"
      */
@@ -877,6 +878,7 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
 
     @Override
     public void onMessageError(EMMessage message, int code, String error) {
+        EMLog.i(TAG, "send message onMessageSuccess");
         if(listener != null) {
             listener.onChatError(code, error);
         }
@@ -1040,6 +1042,10 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
         menuHelper.findItemVisible(R.id.action_chat_reTranslate, false);
         menuHelper.findItemVisible(R.id.action_chat_hide, false);
         menuHelper.findItem(R.id.action_chat_delete).setTitle(getContext().getString(R.string.action_delete));
+        menuHelper.findItemVisible(com.hyphenate.easeui.R.id.action_chat_label,true);
+        if (!isReportYourSelf){
+            menuHelper.findItemVisible(com.hyphenate.easeui.R.id.action_chat_label, message.direct() == EMMessage.Direct.RECEIVE ? true : false);
+        }
         switch (type) {
             case TXT:
                 EMTranslationResult result = EMClient.getInstance().translationManager().getTranslationResult(message.getMsgId());
@@ -1130,6 +1136,13 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
         if(getContext() instanceof Activity) {
             ((Activity) getContext()).finish();
         }
+    }
+
+    /**
+     * Set whether you are allowed to report your own messages
+     */
+    public void setReportYourSelf(boolean isReport){
+        this.isReportYourSelf = isReport;
     }
 
 }
