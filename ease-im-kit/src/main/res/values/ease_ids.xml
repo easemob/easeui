@@ -12,8 +12,16 @@
     <item name="action_chat_delete" type="id"/>
     <!--撤回-->
     <item name="action_chat_recall" type="id"/>
+    <!--翻译-->
+    <item name="action_chat_translate" type="id"/>
+    <!--重译-->
+    <item name="action_chat_reTranslate" type="id"/>
+    <!--隐藏-->
+    <item name="action_chat_hide" type="id"/>
     <!--长按事件-->
     <item name="action_chat_long_click" type="id"/>
+    <!--标记-->
+    <item name="action_chat_label" type="id"/>
 
     <!-- 会话列表长按菜单项id -->
     <!-- 会话列表条目置为已读 -->

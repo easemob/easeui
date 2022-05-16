@@ -93,6 +93,9 @@ public class EaseRecyclerView extends RecyclerView {
                 adapter.registerAdapterDataObserver(mObserver);
             }
             mAdapter = new WrapperRecyclerViewAdapter(adapter);
+            if(adapter != null) {
+                mAdapter.setHasStableIds(adapter.hasStableIds());
+            }
         }
         super.setAdapter(mAdapter);
         if(isShouldSpan) {

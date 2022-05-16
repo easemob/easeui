@@ -1,28 +1,31 @@
 package com.hyphenate.easeui.modules.chat.presenter;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.text.TextUtils;
 
-import com.baidu.mapapi.map.MapView;
 import com.hyphenate.EMCallBack;
+import com.hyphenate.EMValueCallBack;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMCmdMessageBody;
 import com.hyphenate.chat.EMGroup;
-import com.hyphenate.chat.EMImageMessageBody;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMMessageBody;
 import com.hyphenate.chat.EMTextMessageBody;
+import com.hyphenate.chat.EMTranslationResult;
 import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.constants.EaseConstant;
 import com.hyphenate.easeui.manager.EaseAtMessageHelper;
 import com.hyphenate.easeui.modules.chat.EaseChatLayout;
 import com.hyphenate.easeui.utils.EaseCommonUtils;
 import com.hyphenate.easeui.utils.EaseFileUtils;
+import com.hyphenate.easeui.utils.EaseImageUtils;
 import com.hyphenate.exceptions.HyphenateException;
 import com.hyphenate.util.EMLog;
+import com.hyphenate.util.ImageUtils;
 import com.hyphenate.util.PathUtil;
 
 import java.io.File;
@@ -86,13 +89,16 @@ public class EaseHandleMessagePresenterImpl extends EaseHandleMessagePresenter {
 
     @Override
     public void sendImageMessage(Uri imageUri, boolean sendOriginalImage) {
+        //Compatible with web and does not support heif image terminal
+        //convert heif format to jpeg general image format
+        imageUri = handleImageHeifToJpeg(imageUri);
         EMMessage message = EMMessage.createImageSendMessage(imageUri, sendOriginalImage, toChatUsername);
         sendMessage(message);
     }
 
     @Override
-    public void sendLocationMessage(double latitude, double longitude, String locationAddress) {
-        EMMessage message = EMMessage.createLocationSendMessage(latitude, longitude, locationAddress, toChatUsername);
+    public void sendLocationMessage(double latitude, double longitude, String locationAddress, String buildingName) {
+        EMMessage message = EMMessage.createLocationSendMessage(latitude, longitude, locationAddress, buildingName, toChatUsername);
         EMLog.i(TAG, "current = "+EMClient.getInstance().getCurrentUser() + " to = "+toChatUsername);
         EMMessageBody body = message.getBody();
         String msgId = message.getMsgId();
@@ -200,9 +206,11 @@ public class EaseHandleMessagePresenterImpl extends EaseHandleMessagePresenter {
             EMTextMessageBody txtBody = new EMTextMessageBody(mView.context().getResources().getString(R.string.msg_recall_by_self));
             msgNotification.addBody(txtBody);
             msgNotification.setTo(message.getTo());
+            msgNotification.setDirection(message.direct());
             msgNotification.setMsgTime(message.getMsgTime());
             msgNotification.setLocalTime(message.getMsgTime());
             msgNotification.setAttribute(EaseConstant.MESSAGE_TYPE_RECALL, true);
+            msgNotification.setAttribute(EaseConstant.MESSAGE_TYPE_RECALLER, EMClient.getInstance().getCurrentUser());
             msgNotification.setStatus(EMMessage.Status.SUCCESS);
             EMClient.getInstance().chatManager().recallMessage(message);
             EMClient.getInstance().chatManager().saveMessage(msgNotification);
@@ -215,6 +223,48 @@ public class EaseHandleMessagePresenterImpl extends EaseHandleMessagePresenter {
                 runOnUI(()->mView.recallMessageFail(e.getErrorCode(), e.getDescription()));
             }
         }
+    }
+
+    @Override
+    public void translateMessage(EMMessage message, String languageCode, boolean isTranslation) {
+        EMTextMessageBody body = (EMTextMessageBody) message.getBody();
+        if(isTranslation) {
+            EMTranslationResult result = EMClient.getInstance().translationManager().getTranslationResult(message.getMsgId());
+            if (result != null) {
+                result.setShowTranslation(true);
+                EMClient.getInstance().translationManager().updateTranslationResult(result);
+                if(isActive()) {
+                    runOnUI(()->mView.translateMessageSuccess(message));
+                }
+                return;
+            }
+        }
+        EMClient.getInstance().translationManager().translate(message.getMsgId(),
+                message.conversationId(),
+                body.getMessage(),
+                languageCode,
+                new EMValueCallBack<EMTranslationResult>() {
+                    @Override
+                    public void onSuccess(EMTranslationResult value) {
+                        if(isActive()) {
+                            runOnUI(()->mView.translateMessageSuccess(message));
+                        }
+                    }
+
+                    @Override
+                    public void onError(int error, String errorMsg) {
+                        if(isActive()) {
+                            runOnUI(()->mView.translateMessageFail(message, error, errorMsg));
+                        }
+                    }
+                });
+    }
+
+    @Override
+    public void hideTranslate(EMMessage message) {
+        EMTranslationResult result = EMClient.getInstance().translationManager().getTranslationResult(message.getMsgId());
+        result.setShowTranslation(false);
+        EMClient.getInstance().translationManager().updateTranslationResult(result);
     }
 
     /**
@@ -261,6 +311,30 @@ public class EaseHandleMessagePresenterImpl extends EaseHandleMessagePresenter {
             }
         }
         return createSuccess ? file.getAbsolutePath() : "";
+    }
+
+    /**
+     * 图片heif转jpeg
+     *
+     * @param imageUri 图片Uri
+     * @return Uri
+     */
+    private Uri handleImageHeifToJpeg(Uri imageUri) {
+        try {
+            BitmapFactory.Options options;
+            String filePath = EaseFileUtils.getFilePath(mView.context(), imageUri);
+            if (!TextUtils.isEmpty(filePath) && new File(filePath).exists()) {
+                options = ImageUtils.getBitmapOptions(filePath);
+            } else {
+                options = ImageUtils.getBitmapOptions(mView.context(), imageUri);
+            }
+            if ("image/heif".equalsIgnoreCase(options.outMimeType)) {
+                imageUri = EaseImageUtils.imageToJpeg(mView.context(), imageUri, new File(PathUtil.getInstance().getImagePath(), "image_message_temp.jpeg"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return imageUri;
     }
 }
 

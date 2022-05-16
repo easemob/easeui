@@ -67,7 +67,7 @@
             android:paddingLeft="15dp"
             android:textSize="@dimen/em_toolbar_title_right_size"
             android:maxLines="1"
-            android:maxLength="5"
+            android:maxLength="10"
             android:textColor="@color/em_toolbar_color_title_right"/>
 
     </RelativeLayout>

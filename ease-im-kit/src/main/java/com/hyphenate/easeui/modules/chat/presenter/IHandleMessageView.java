@@ -67,4 +67,18 @@ public interface IHandleMessageView extends ILoadDataView {
      * @param progress
      */
     void onPresenterMessageInProgress(EMMessage message, int progress);
+
+    /**
+     * 翻译消息成功
+     * @param message
+     */
+    void translateMessageSuccess(EMMessage message);
+
+    /**
+     * 翻译消息失败
+     * @param message
+     * @param code
+     * @param error
+     */
+    void translateMessageFail(EMMessage message, int code, String error);
 }

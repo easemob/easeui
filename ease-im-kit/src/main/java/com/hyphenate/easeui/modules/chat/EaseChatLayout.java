@@ -28,6 +28,7 @@ import com.hyphenate.chat.EMCmdMessageBody;
 import com.hyphenate.chat.EMConversation;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMTextMessageBody;
+import com.hyphenate.chat.EMTranslationResult;
 import com.hyphenate.chat.adapter.EMAChatRoomManagerListener;
 import com.hyphenate.easeui.EaseIM;
 import com.hyphenate.easeui.R;
@@ -46,6 +47,7 @@ import com.hyphenate.easeui.modules.chat.interfaces.OnChatLayoutListener;
 import com.hyphenate.easeui.modules.chat.interfaces.OnChatRecordTouchListener;
 import com.hyphenate.easeui.modules.chat.interfaces.OnMenuChangeListener;
 import com.hyphenate.easeui.modules.chat.interfaces.OnRecallMessageResultListener;
+import com.hyphenate.easeui.modules.chat.interfaces.OnTranslateMessageListener;
 import com.hyphenate.easeui.modules.chat.presenter.EaseHandleMessagePresenter;
 import com.hyphenate.easeui.modules.chat.presenter.EaseHandleMessagePresenterImpl;
 import com.hyphenate.easeui.modules.chat.presenter.IHandleMessageView;
@@ -81,6 +83,7 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
     private EaseChatMessageListLayout messageListLayout;
     private EaseChatInputMenu inputMenu;
     private EaseVoiceRecorderView voiceRecorder;
+    private boolean isReportYourSelf = false;
     /**
      * "正在输入"功能的开关，打开后本设备发送消息将持续发送cmd类型消息通知对方"正在输入"
      */
@@ -136,6 +139,14 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
      * 是否是首次发送，默认true
      */
     private boolean isNotFirstSend;
+    /**
+     * 翻译监听
+     */
+    private OnTranslateMessageListener translateListener;
+    /**
+     *  翻译目标语言，默认英文
+     */
+    private String targetLanguageCode = "en";
 
     public EaseChatLayout(Context context) {
         this(context, null);
@@ -250,6 +261,10 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
     public void loadData(String msgId) {
         sendChannelAck();
         messageListLayout.loadData(msgId);
+    }
+
+    public void setTargetLanguageCode(String lanugageCode) {
+        targetLanguageCode = lanugageCode;
     }
 
     private void initTypingHandler() {
@@ -425,8 +440,8 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
     }
 
     @Override
-    public void sendLocationMessage(double latitude, double longitude, String locationAddress) {
-        presenter.sendLocationMessage(latitude, longitude, locationAddress);
+    public void sendLocationMessage(double latitude, double longitude, String locationAddress, String buildingName) {
+        presenter.sendLocationMessage(latitude, longitude, locationAddress, buildingName);
     }
 
     @Override
@@ -462,6 +477,17 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
     }
 
     @Override
+    public void translateMessage(EMMessage message, boolean isTranslate){
+        presenter.translateMessage(message, targetLanguageCode, isTranslate);
+    }
+
+    @Override
+    public void hideTranslate(EMMessage message){
+        presenter.hideTranslate(message);
+        messageListLayout.refreshMessage(message);
+    }
+
+    @Override
     public void addMessageAttributes(EMMessage message) {
         presenter.addMessageAttributes(message);
     }
@@ -484,6 +510,11 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
     @Override
     public void setOnAddMsgAttrsBeforeSendEvent(OnAddMsgAttrsBeforeSendEvent sendMsgEvent) {
         this.sendMsgEvent = sendMsgEvent;
+    }
+
+    @Override
+    public void setOnTranslateListener(OnTranslateMessageListener translateListener) {
+        this.translateListener = translateListener;
     }
 
     /**
@@ -747,6 +778,23 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
     }
 
     @Override
+    public void translateMessageSuccess(EMMessage message) {
+        EMLog.i(TAG, "translateMessageSuccess");
+        messageListLayout.lastMsgScrollToBottom(message);
+        if(translateListener != null){
+            translateListener.translateMessageSuccess(message);
+        }
+    }
+
+    @Override
+    public void translateMessageFail(EMMessage message, int code, String error) {
+        EMLog.i(TAG, "translateMessageFail:" + code + ":" + error);
+        if(translateListener != null){
+            translateListener.translateMessageFail(message, code, error);
+        }
+    }
+
+    @Override
     public void onTouchItemOutside(View v, int position) {
         inputMenu.hideSoftKeyboard();
         inputMenu.showExtendMenu(false);
@@ -830,6 +878,7 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
 
     @Override
     public void onMessageError(EMMessage message, int code, String error) {
+        EMLog.i(TAG, "send message onMessageSuccess");
         if(listener != null) {
             listener.onChatError(code, error);
         }
@@ -927,9 +976,9 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
         menuHelper.initMenu(getContext());
         menuHelper.setDefaultMenus();
         menuHelper.setOutsideTouchable(true);
-        setMenuByMsgType(message);
+        setMenuByMsgType(v, message);
         if(menuChangeListener != null) {
-            menuChangeListener.onPreMenu(menuHelper, message);
+            menuChangeListener.onPreMenu(menuHelper, message, v);
         }
         menuHelper.setOnPopupMenuItemClickListener(new EasePopupWindow.OnPopupWindowItemClickListener() {
             @Override
@@ -948,6 +997,12 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
                         EMLog.i(TAG,"currentMsgId = "+message.getMsgId() + " timestamp = "+message.getMsgTime());
                     }else if(itemId == R.id.action_chat_recall) {
                         recallMessage(message);
+                    }else if(itemId == R.id.action_chat_translate) {
+                        translateMessage(message, true);
+                    }else if(itemId == R.id.action_chat_reTranslate){
+                        translateMessage(message, false);
+                    }else if(itemId == R.id.action_chat_hide) {
+                        hideTranslate(message);
                     }
                     return true;
                 }
@@ -965,15 +1020,50 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
         menuHelper.show(this, v);
     }
 
-    private void setMenuByMsgType(EMMessage message) {
+    private boolean showTranslation(EMMessage message) {
+        if(!EMClient.getInstance().translationManager().isInitialized())
+            return false;
+
+        if(!EMClient.getInstance().translationManager().isTranslationResultForMessage(message.getMsgId()))
+            return true;
+
+        EMTranslationResult result = EMClient.getInstance().translationManager().getTranslationResult(message.getMsgId());
+        if(result.showTranslation())
+            return false;
+
+        return true;
+    }
+
+    private void setMenuByMsgType(View v, EMMessage message) {
         EMMessage.Type type = message.getType();
         menuHelper.findItemVisible(R.id.action_chat_copy, false);
         menuHelper.findItemVisible(R.id.action_chat_recall, false);
+        menuHelper.findItemVisible(R.id.action_chat_translate, false);
+        menuHelper.findItemVisible(R.id.action_chat_reTranslate, false);
+        menuHelper.findItemVisible(R.id.action_chat_hide, false);
         menuHelper.findItem(R.id.action_chat_delete).setTitle(getContext().getString(R.string.action_delete));
+        menuHelper.findItemVisible(com.hyphenate.easeui.R.id.action_chat_label,true);
+        if (!isReportYourSelf){
+            menuHelper.findItemVisible(com.hyphenate.easeui.R.id.action_chat_label, message.direct() == EMMessage.Direct.RECEIVE ? true : false);
+        }
         switch (type) {
             case TXT:
-                menuHelper.findItemVisible(R.id.action_chat_copy, true);
-                menuHelper.findItemVisible(R.id.action_chat_recall, true);
+                EMTranslationResult result = EMClient.getInstance().translationManager().getTranslationResult(message.getMsgId());
+                if(v.getId() == R.id.subBubble && result != null) {
+                    menuHelper.findItemVisible(R.id.action_chat_delete, false);
+
+                    if(result.translateCount() < 2)
+                        menuHelper.findItemVisible(R.id.action_chat_reTranslate, true);
+
+                    menuHelper.findItemVisible(R.id.action_chat_hide, true);
+                } else {
+                    menuHelper.findItemVisible(R.id.action_chat_copy, true);
+                    menuHelper.findItemVisible(R.id.action_chat_recall, true);
+                    menuHelper.findItemVisible(R.id.action_chat_delete, true);
+
+                    if (showTranslation(message))
+                        menuHelper.findItemVisible(R.id.action_chat_translate, true);
+                }
                 break;
             case LOCATION:
             case FILE:
@@ -1046,6 +1136,13 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
         if(getContext() instanceof Activity) {
             ((Activity) getContext()).finish();
         }
+    }
+
+    /**
+     * Set whether you are allowed to report your own messages
+     */
+    public void setReportYourSelf(boolean isReport){
+        this.isReportYourSelf = isReport;
     }
 
 }

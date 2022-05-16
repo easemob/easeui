@@ -46,7 +46,7 @@ public class EaseShowVideoActivity extends EaseBaseActivity {
 
 		final EMMessage message = getIntent().getParcelableExtra("msg");
 		if (!(message.getBody() instanceof EMVideoMessageBody)) {
-			Toast.makeText(EaseShowVideoActivity.this, "Unsupported message body", Toast.LENGTH_SHORT).show();
+			Toast.makeText(EaseShowVideoActivity.this, getApplicationContext().getString(R.string.unsupported_message_body), Toast.LENGTH_SHORT).show();
 			finish();
 			return;
 		}

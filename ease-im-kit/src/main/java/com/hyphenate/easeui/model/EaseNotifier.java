@@ -30,6 +30,7 @@ import androidx.core.app.NotificationCompat;
 
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.easeui.EaseIM;
+import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.provider.EaseSettingsProvider;
 import com.hyphenate.easeui.utils.EaseCommonUtils;
 import com.hyphenate.util.EMLog;
@@ -52,9 +53,6 @@ import java.util.Locale;
  */
 public class EaseNotifier {
     private final static String TAG = "EaseNotifier";
-
-    protected final static String MSG_ENG = "%s contacts sent %s messages";
-    protected final static String MSG_CH = "%s个联系人发来%s条消息";
 
     protected static int NOTIFY_ID = 0525; // start notification id
 
@@ -88,11 +86,7 @@ public class EaseNotifier {
         }
 
         packageName = appContext.getApplicationInfo().packageName;
-        if (Locale.getDefault().getLanguage().equals("zh")) {
-            msg = MSG_CH;
-        } else {
-            msg = MSG_ENG;
-        }
+        msg = context.getString(R.string.contact_send_message);
 
         audioManager = (AudioManager) appContext.getSystemService(Context.AUDIO_SERVICE);
         vibrator = (Vibrator) appContext.getSystemService(Context.VIBRATOR_SERVICE);

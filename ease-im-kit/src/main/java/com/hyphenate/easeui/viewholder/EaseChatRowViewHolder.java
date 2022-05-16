@@ -38,6 +38,7 @@ public class EaseChatRowViewHolder extends EaseMessageAdapter.ViewHolder<EMMessa
 
     @Override
     public void setData(EMMessage item, int position) {
+        chatRow.resetViewState();
         message = item;
         chatRow.setUpView(item, position, mItemClickListener, this);
         handleMessage();

@@ -1,5 +1,6 @@
 package com.hyphenate.easeui.modules.chat.interfaces;
 
+import android.view.View;
 import android.widget.PopupWindow;
 
 import com.hyphenate.chat.EMMessage;
@@ -15,7 +16,7 @@ public interface OnMenuChangeListener {
      * @param helper
      * @param message
      */
-    void onPreMenu(EasePopupWindowHelper helper, EMMessage message);
+    void onPreMenu(EasePopupWindowHelper helper, EMMessage message, View v);
 
     /**
      * 点击条目

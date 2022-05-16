@@ -97,7 +97,7 @@ public abstract class EaseHandleMessagePresenter extends EaseBasePresenter {
      * @param longitude
      * @param locationAddress
      */
-    public abstract void sendLocationMessage(double latitude, double longitude, String locationAddress);
+    public abstract void sendLocationMessage(double latitude, double longitude, String locationAddress, String buildingName);
 
     /**
      * 发送视频消息
@@ -155,5 +155,19 @@ public abstract class EaseHandleMessagePresenter extends EaseBasePresenter {
     public boolean isGroupChat() {
         return chatType == EaseConstant.CHATTYPE_GROUP;
     }
+
+    /**
+     * 翻译消息
+     * @param message
+     * @param languageCode
+     * @param isTranslation
+     */
+    public abstract void translateMessage(EMMessage message, String languageCode, boolean isTranslation);
+
+    /**
+     * 隐藏翻译
+     * @param message
+     */
+    public abstract void hideTranslate(EMMessage message);
 }
 
