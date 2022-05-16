@@ -43,7 +43,7 @@ dependencies {
     implementation files('libs/pinyin4j-2.5.0.jar')
 
 //    api project(':hyphenatechatsdk')
-	  implementation 'io.hyphenate:hyphenate-chat:3.9.1'
+	  implementation 'io.hyphenate:hyphenate-chat:3.9.2'
 
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
