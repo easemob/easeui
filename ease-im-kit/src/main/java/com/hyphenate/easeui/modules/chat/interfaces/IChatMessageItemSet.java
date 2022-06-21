@@ -27,6 +27,18 @@ public interface IChatMessageItemSet {
     void showNickname(boolean showNickname);
 
     /**
+     * 设置昵称字体大小
+     * @param textSize
+     */
+    void setNicknameTextSize(int textSize);
+
+    /**
+     * 设置昵称字体颜色
+     * @param textColor
+     */
+    void setNicknameTextColor(@ColorInt int textColor);
+
+    /**
      * 设置条目发送者的背景
      * @param bgDrawable
      */

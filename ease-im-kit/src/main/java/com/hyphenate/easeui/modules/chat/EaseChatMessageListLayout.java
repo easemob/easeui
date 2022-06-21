@@ -662,6 +662,16 @@ public class EaseChatMessageListLayout extends RelativeLayout implements IChatMe
     }
 
     @Override
+    public void setNicknameTextSize(int textSize) {
+        chatSetHelper.setNicknameTextSize(textSize);
+    }
+
+    @Override
+    public void setNicknameTextColor(int textColor) {
+        chatSetHelper.setNicknameTextColor(textColor);
+    }
+
+    @Override
     public void setItemSenderBackground(Drawable bgDrawable) {
         chatSetHelper.setSenderBgDrawable(bgDrawable);
         notifyDataSetChanged();

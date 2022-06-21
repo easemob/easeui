@@ -13,6 +13,8 @@ public class EaseChatSetStyle extends EaseBaseSetStyle {
     private Drawable timeBgDrawable;
     private Drawable avatarDefaultSrc;
     private boolean showNickname;
+    private int nicknameTextSize;
+    private int nicknameTextColor;
     private boolean showAvatar;
     private Drawable receiverBgDrawable;
     private Drawable senderBgDrawable;
@@ -80,6 +82,22 @@ public class EaseChatSetStyle extends EaseBaseSetStyle {
 
     public void setShowNickname(boolean showNickname) {
         this.showNickname = showNickname;
+    }
+
+    public int getNicknameTextSize() {
+        return nicknameTextSize;
+    }
+
+    public void setNicknameTextSize(int nicknameTextSize) {
+        this.nicknameTextSize = nicknameTextSize;
+    }
+
+    public int getNicknameTextColor() {
+        return nicknameTextColor;
+    }
+
+    public void setNicknameTextColor(int nicknameTextColor) {
+        this.nicknameTextColor = nicknameTextColor;
     }
 
     public boolean isShowAvatar() {

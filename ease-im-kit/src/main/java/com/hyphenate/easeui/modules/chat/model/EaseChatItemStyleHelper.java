@@ -93,6 +93,14 @@ public class EaseChatItemStyleHelper {
         style.setShowNickname(showNickname);
     }
 
+    public void setNicknameTextSize(int nicknameTextSize) {
+        style.setNicknameTextSize(nicknameTextSize);
+    }
+
+    public void setNicknameTextColor(int nicknameTextColor) {
+        style.setNicknameTextColor(nicknameTextColor);
+    }
+
     public void setShowAvatar(boolean showAvatar) {
         style.setShowAvatar(showAvatar);
     }
