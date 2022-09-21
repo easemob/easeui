@@ -116,7 +116,10 @@ public class EaseChatRowVoicePlayer {
         if (speakerOn) {
             audioManager.setMode(AudioManager.MODE_NORMAL);
             audioManager.setSpeakerphoneOn(true);
-            mediaPlayer.setAudioStreamType(AudioManager.STREAM_RING);
+            //mediaPlayer.setAudioStreamType(AudioManager.STREAM_RING);
+            //切换到媒体音量
+            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+
         } else {
             audioManager.setSpeakerphoneOn(false);// 关闭扬声器
             // 把声音设定成Earpiece（听筒）出来，设定为正在通话中
