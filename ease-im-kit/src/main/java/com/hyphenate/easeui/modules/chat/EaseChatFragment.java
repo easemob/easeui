@@ -35,6 +35,7 @@ import com.hyphenate.easeui.utils.EaseCommonUtils;
 import com.hyphenate.easeui.utils.EaseCompat;
 import com.hyphenate.easeui.utils.EaseFileUtils;
 import com.hyphenate.util.EMLog;
+import com.hyphenate.util.ImageUtils;
 import com.hyphenate.util.PathUtil;
 import com.hyphenate.util.VersionUtils;
 
@@ -313,7 +314,9 @@ public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutLi
      */
     protected void onActivityResultForCamera(Intent data) {
         if (cameraFile != null && cameraFile.exists()) {
-            chatLayout.sendImageMessage(Uri.parse(cameraFile.getAbsolutePath()));
+            //检查图片是否被旋转并调整回来
+            Uri restoreImageUri = ImageUtils.checkDegreeAndRestoreImage(mContext, Uri.parse(cameraFile.getAbsolutePath()));
+            chatLayout.sendImageMessage(restoreImageUri);
         }
     }
 
