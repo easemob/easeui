@@ -39,6 +39,14 @@ task javadoc(type: Javadoc) {
     }
     source = android.sourceSets.main.java.srcDirs
     classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    android.libraryVariants.all { variant ->
+        if (variant.name == 'release') {
+            owner.source = variant.javaCompiler.source
+            owner.classpath = files(android.bootClasspath.join(File.pathSeparator))
+            owner.classpath += variant.javaCompiler.classpath
+        }
+    }
+    failOnError false
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
