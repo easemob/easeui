@@ -2,13 +2,13 @@ apply plugin: 'com.android.library'
 //group = "com.hyphenate"//groupId
 
 android {
-    compileSdkVersion 29
-    buildToolsVersion "29.0.3"
+    compileSdkVersion 31
+//    buildToolsVersion "29.0.3"
 
 
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 29
+        targetSdkVersion 31
         versionCode 100
         versionName '1.0.0'
 
@@ -43,8 +43,7 @@ dependencies {
     implementation files('libs/pinyin4j-2.5.0.jar')
 
 //  api project(':hyphenatechatsdk')
-    implementation 'io.hyphenate:hyphenate-chat:3.9.7'
-
+    implementation 'io.hyphenate:hyphenate-chat:3.9.8'
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     api 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
