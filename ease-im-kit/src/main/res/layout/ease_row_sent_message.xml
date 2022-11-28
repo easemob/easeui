@@ -122,6 +122,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="60dp"
         android:padding="8dp"
+        android:visibility="gone"
         android:background="@drawable/ease_chat_bubble_translate_bg"
         >
 
