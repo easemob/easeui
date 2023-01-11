@@ -138,14 +138,14 @@ public class EaseBaiduMapActivity extends EaseBaseActivity implements EaseTitleB
 
 	private void initData() {
 		if(latitude == 0) {
-			mapView = new MapView(this, new BaiduMapOptions());
+			//mapView = new MapView(this, new BaiduMapOptions());
 			baiduMap.setMyLocationConfigeration(
 					new MyLocationConfiguration(MyLocationConfiguration.LocationMode.NORMAL, true, null));
 			showMapWithLocationClient();
 		}else {
-			LatLng lng = new LatLng(latitude, longtitude);
-			mapView = new MapView(this,
-					new BaiduMapOptions().mapStatus(new MapStatus.Builder().target(lng).build()));
+			//LatLng lng = new LatLng(latitude, longtitude);
+//			mapView = new MapView(this,
+//					new BaiduMapOptions().mapStatus(new MapStatus.Builder().target(lng).build()));
 			showMap(latitude, longtitude);
 		}
 		IntentFilter iFilter = new IntentFilter();
