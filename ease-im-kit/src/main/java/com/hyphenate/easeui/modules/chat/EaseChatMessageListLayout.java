@@ -17,8 +17,10 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.ConcatAdapter;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.hyphenate.chat.EMChatRoom;
@@ -83,6 +85,7 @@ public class EaseChatMessageListLayout extends RelativeLayout implements IChatMe
      * 条目具体控件的点击事件
      */
     private MessageListItemClickListener messageListItemClickListener;
+    private OnChatListSlideListener itemRangeListener;
     private EaseChatItemStyleHelper chatSetHelper;
 
     public EaseChatMessageListLayout(@NonNull Context context) {
@@ -341,6 +344,7 @@ public class EaseChatMessageListLayout extends RelativeLayout implements IChatMe
                        //加载更多
                        loadMoreHistoryData();
                    }
+                    rangeMeasurement();
                 }else {
                     //if recyclerView not idle should hide keyboard
                     if(messageTouchListener != null) {
@@ -882,6 +886,10 @@ public class EaseChatMessageListLayout extends RelativeLayout implements IChatMe
         this.messageListItemClickListener = listener;
     }
 
+    public void setCurrentScreenRangeListener(OnChatListSlideListener listener){
+        this.itemRangeListener = listener;
+    }
+
     /**
      * 是否滑动到底部
      * @param recyclerView
@@ -908,6 +916,59 @@ public class EaseChatMessageListLayout extends RelativeLayout implements IChatMe
         EaseThreadManager.getInstance().runOnMainThread(runnable);
     }
 
+    private int[] finRangeLinear(LinearLayoutManager manager){
+        int[] range = new int[2];
+        range[0] = manager.findFirstVisibleItemPosition();
+        range[1] = manager.findLastVisibleItemPosition();
+        return range;
+    }
+
+    private int[] finRangeGrid(GridLayoutManager manager){
+        int[] range = new int[2];
+        range[0] = manager.findFirstVisibleItemPosition();
+        range[1] = manager.findLastVisibleItemPosition();
+        return range;
+    }
+
+    private int[] finRangeStaggeredGrid(StaggeredGridLayoutManager manager){
+        int[] startPos = new int[manager.getSpanCount()];
+        int[] endPos = new int[manager.getSpanCount()];
+        manager.findFirstVisibleItemPositions(startPos);
+        manager.findLastVisibleItemPositions(endPos);
+        return finRange(startPos,endPos);
+    }
+
+    private int[] finRange(int[] startPos,int[] endPos){
+        int start = startPos[0];
+        int end = endPos[0];
+        for (int i = 1; i < startPos.length; i++) {
+            if (start > startPos[i]){
+                start = startPos[i];
+            }
+        }
+        for (int i = 1; i < endPos.length; i++) {
+            if (end < endPos[i]){
+                end = endPos[i];
+            }
+        }
+        return new int[]{start,end};
+    }
+
+    private void rangeMeasurement(){
+        int[] range = new int[2];
+        RecyclerView.LayoutManager manager = rvList.getLayoutManager();
+        if (manager instanceof LinearLayoutManager){
+            range = finRangeLinear((LinearLayoutManager)manager);
+        }else if (manager instanceof GridLayoutManager){
+            range = finRangeGrid((GridLayoutManager)manager);
+        }else if (manager instanceof StaggeredGridLayoutManager){
+            range = finRangeStaggeredGrid((StaggeredGridLayoutManager)manager);
+        }
+        if (conType == EMConversation.EMConversationType.GroupChat && itemRangeListener != null){
+            itemRangeListener.onCurrentScreenRange(range[0],range[1]);
+        }
+    }
+
     /**
      * 消息列表接口
      */
@@ -932,6 +993,15 @@ public class EaseChatMessageListLayout extends RelativeLayout implements IChatMe
          * @param errorMsg
          */
         void onChatError(int code, String errorMsg);
+    }
+
+    public interface OnChatListSlideListener{
+        /**
+         * 聊天当前屏幕展示条目
+         * @param start
+         * @param end
+         */
+        void onCurrentScreenRange(int start,int end);
     }
 
     /**
