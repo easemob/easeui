@@ -23,22 +23,19 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import com.baidu.location.BDAbstractLocationListener;
 import com.baidu.location.BDLocation;
-import com.baidu.location.BDLocationListener;
 import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
 import com.baidu.mapapi.SDKInitializer;
 import com.baidu.mapapi.map.BaiduMap;
-import com.baidu.mapapi.map.BaiduMapOptions;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
-import com.baidu.mapapi.map.MapStatus;
 import com.baidu.mapapi.map.MapStatusUpdate;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
@@ -51,7 +48,6 @@ import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.ui.base.EaseBaseActivity;
 import com.hyphenate.easeui.utils.EaseCommonUtils;
 import com.hyphenate.easeui.widget.EaseTitleBar;
-import com.hyphenate.util.EMLog;
 
 public class EaseBaiduMapActivity extends EaseBaseActivity implements EaseTitleBar.OnBackPressListener,
 																		EaseTitleBar.OnRightClickListener{
@@ -138,14 +134,14 @@ public class EaseBaiduMapActivity extends EaseBaseActivity implements EaseTitleB
 
 	private void initData() {
 		if(latitude == 0) {
-			mapView = new MapView(this, new BaiduMapOptions());
+			//mapView = new MapView(this, new BaiduMapOptions());
 			baiduMap.setMyLocationConfigeration(
 					new MyLocationConfiguration(MyLocationConfiguration.LocationMode.NORMAL, true, null));
 			showMapWithLocationClient();
 		}else {
-			LatLng lng = new LatLng(latitude, longtitude);
-			mapView = new MapView(this,
-					new BaiduMapOptions().mapStatus(new MapStatus.Builder().target(lng).build()));
+			//LatLng lng = new LatLng(latitude, longtitude);
+//			mapView = new MapView(this,
+//					new BaiduMapOptions().mapStatus(new MapStatus.Builder().target(lng).build()));
 			showMap(latitude, longtitude);
 		}
 		IntentFilter iFilter = new IntentFilter();
@@ -156,21 +152,25 @@ public class EaseBaiduMapActivity extends EaseBaseActivity implements EaseTitleB
 	}
 
 	protected void showMapWithLocationClient() {
-		mLocClient = new LocationClient(this);
-		mLocClient.registerLocationListener(new EaseBDLocationListener());
-		LocationClientOption option = new LocationClientOption();
-		// open gps
-		option.setOpenGps(true);
-		// option.setCoorType("bd09ll");
-		// Johnson change to use gcj02 coordination. chinese national standard
-		// so need to conver to bd09 everytime when draw on baidu map
-		option.setCoorType("gcj02");
-		option.setScanSpan(30000);
-		option.setAddrType("all");
-		option.setIgnoreKillProcess(true);
-		mLocClient.setLocOption(option);
-		if(!mLocClient.isStarted()) {
-			mLocClient.start();
+		try {
+			mLocClient = new LocationClient(this);
+			mLocClient.registerLocationListener(new EaseBDLocationListener());
+			LocationClientOption option = new LocationClientOption();
+			// open gps
+			option.setOpenGps(true);
+			// option.setCoorType("bd09ll");
+			// Johnson change to use gcj02 coordination. chinese national standard
+			// so need to conver to bd09 everytime when draw on baidu map
+			option.setCoorType("gcj02");
+			option.setScanSpan(30000);
+			option.setAddrType("all");
+			option.setIgnoreKillProcess(true);
+			mLocClient.setLocOption(option);
+			if(!mLocClient.isStarted()) {
+				mLocClient.start();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -268,7 +268,7 @@ public class EaseBaiduMapActivity extends EaseBaseActivity implements EaseTitleB
 		}
 	}
 
-	public class EaseBDLocationListener implements BDLocationListener {
+	public class EaseBDLocationListener extends BDAbstractLocationListener {
 
 		@Override
 		public void onReceiveLocation(BDLocation bdLocation) {
