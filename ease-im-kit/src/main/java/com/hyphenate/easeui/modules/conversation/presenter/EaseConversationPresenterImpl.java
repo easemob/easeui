@@ -37,7 +37,7 @@ public class EaseConversationPresenterImpl extends EaseConversationPresenter {
         synchronized (this) {
             EaseConversationInfo info = null;
             for (EMConversation conversation : conversations.values()) {
-                if(conversation.getAllMessages().size() != 0) {
+                //if(conversation.getAllMessages().size() != 0) {
                     //如果不展示系统消息，则移除相关系统消息
                     if(!showSystemMessage) {
                         if(TextUtils.equals(conversation.conversationId(), EaseConstant.DEFAULT_SYSTEM_MESSAGE_ID)) {
@@ -47,7 +47,7 @@ public class EaseConversationPresenterImpl extends EaseConversationPresenter {
                     info = new EaseConversationInfo();
                     info.setInfo(conversation);
                     String extField = conversation.getExtField();
-                    long lastMsgTime=conversation.getLastMessage().getMsgTime();
+                    long lastMsgTime=conversation.getLastMessage() == null ? 0: conversation.getLastMessage().getMsgTime();
                     if(!TextUtils.isEmpty(extField) && EaseCommonUtils.isTimestamp(extField)) {
                         info.setTop(true);
                         long makeTopTime=Long.parseLong(extField);
@@ -60,7 +60,7 @@ public class EaseConversationPresenterImpl extends EaseConversationPresenter {
                         info.setTimestamp(lastMsgTime);
                     }
                     infos.add(info);
-                }
+                //}
             }
         }
         if(isActive()) {
@@ -154,7 +154,7 @@ public class EaseConversationPresenterImpl extends EaseConversationPresenter {
         if(info.getInfo() instanceof EMConversation) {
             ((EMConversation) info.getInfo()).setExtField("");
             info.setTop(false);
-            info.setTimestamp(((EMConversation) info.getInfo()).getLastMessage().getMsgTime());
+            info.setTimestamp(((EMConversation) info.getInfo()).getLastMessage() == null ? 0:((EMConversation) info.getInfo()).getLastMessage().getMsgTime());
         }
         if(!isDestroy()) {
             mView.refreshList();

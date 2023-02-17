@@ -59,8 +59,8 @@ public class EaseSystemMsgDelegate extends EaseDefaultConversationDelegate {
             showUnreadNum(holder, item.getUnreadMsgCount());
         }
 
-        if(item.getAllMsgCount() != 0) {
-            EMMessage lastMessage = item.getLastMessage();
+        EMMessage lastMessage = item.getLastMessage();
+        if(lastMessage != null) {
             holder.message.setText(EaseSmileUtils.getSmiledText(context, EaseCommonUtils.getMessageDigest(lastMessage, context)));
             holder.time.setText(EaseDateUtils.getTimestampString(holder.itemView.getContext(), new Date(lastMessage.getMsgTime())));
         }
