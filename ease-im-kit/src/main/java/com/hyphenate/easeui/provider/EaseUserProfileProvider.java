@@ -13,4 +13,8 @@ public interface EaseUserProfileProvider {
      * @return
      */
     EaseUser getUser(String username);
+
+    default EaseUser getGroupUser(String groupId,String userId){
+        return getUser(userId);
+    }
 }

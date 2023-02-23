@@ -1,9 +1,7 @@
 package com.hyphenate.easeui.modules.chat;
 
 import android.animation.ValueAnimator;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
@@ -17,7 +15,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.ConcatAdapter;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
@@ -923,13 +920,6 @@ public class EaseChatMessageListLayout extends RelativeLayout implements IChatMe
         return range;
     }
 
-    private int[] finRangeGrid(GridLayoutManager manager){
-        int[] range = new int[2];
-        range[0] = manager.findFirstVisibleItemPosition();
-        range[1] = manager.findLastVisibleItemPosition();
-        return range;
-    }
-
     private int[] finRangeStaggeredGrid(StaggeredGridLayoutManager manager){
         int[] startPos = new int[manager.getSpanCount()];
         int[] endPos = new int[manager.getSpanCount()];
@@ -959,12 +949,10 @@ public class EaseChatMessageListLayout extends RelativeLayout implements IChatMe
         RecyclerView.LayoutManager manager = rvList.getLayoutManager();
         if (manager instanceof LinearLayoutManager){
             range = finRangeLinear((LinearLayoutManager)manager);
-        }else if (manager instanceof GridLayoutManager){
-            range = finRangeGrid((GridLayoutManager)manager);
         }else if (manager instanceof StaggeredGridLayoutManager){
             range = finRangeStaggeredGrid((StaggeredGridLayoutManager)manager);
         }
-        if (conType == EMConversation.EMConversationType.GroupChat && itemRangeListener != null){
+        if (itemRangeListener != null){
             itemRangeListener.onCurrentScreenRange(range[0],range[1]);
         }
     }
