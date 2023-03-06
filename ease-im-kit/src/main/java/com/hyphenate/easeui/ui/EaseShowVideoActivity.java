@@ -62,8 +62,13 @@ public class EaseShowVideoActivity extends EaseBaseActivity {
 		if(EaseFileUtils.isFileExistByUri(this, localFilePath)) {
 		    showLocalVideo(localFilePath);
 		} else {
-			EMLog.d(TAG, "download remote video file");
-			downloadVideo(message);
+			if(message.status() != EMMessage.Status.SUCCESS) {
+				EMLog.d(TAG, "download remote video file");
+				downloadVideo(message);
+			}else {
+				EMLog.d(TAG, "video file not exist, localFilePath: "+localFilePath);
+				finish();
+			}
 		}
 	}
 
