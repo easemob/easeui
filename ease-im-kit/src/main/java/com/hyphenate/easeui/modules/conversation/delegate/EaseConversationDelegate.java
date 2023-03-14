@@ -99,8 +99,8 @@ public class EaseConversationDelegate extends EaseDefaultConversationDelegate {
             showUnreadNum(holder, item.getUnreadMsgCount());
         }
 
-        if(item.getAllMsgCount() != 0) {
-            EMMessage lastMessage = item.getLastMessage();
+        EMMessage lastMessage = item.getLastMessage();
+        if(lastMessage != null) {
             holder.message.setText(EaseSmileUtils.getSmiledText(context, EaseCommonUtils.getMessageDigest(lastMessage, context)));
             holder.time.setText(EaseDateUtils.getTimestampString(context, new Date(lastMessage.getMsgTime())));
             if (lastMessage.direct() == EMMessage.Direct.SEND && lastMessage.status() == EMMessage.Status.FAIL) {
@@ -108,6 +108,10 @@ public class EaseConversationDelegate extends EaseDefaultConversationDelegate {
             } else {
                 holder.mMsgState.setVisibility(View.GONE);
             }
+        }else {
+            holder.message.setText("");
+            holder.time.setText("");
+            holder.mMsgState.setVisibility(View.GONE);
         }
 
         if(holder.mentioned.getVisibility() != View.VISIBLE) {

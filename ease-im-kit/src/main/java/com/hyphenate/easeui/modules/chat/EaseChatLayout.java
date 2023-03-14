@@ -997,10 +997,6 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
                         EMLog.i(TAG,"currentMsgId = "+message.getMsgId() + " timestamp = "+message.getMsgTime());
                     }else if(itemId == R.id.action_chat_recall) {
                         recallMessage(message);
-                    }else if(itemId == R.id.action_chat_translate) {
-                        translateMessage(message, true);
-                    }else if(itemId == R.id.action_chat_reTranslate){
-                        translateMessage(message, false);
                     }else if(itemId == R.id.action_chat_hide) {
                         hideTranslate(message);
                     }

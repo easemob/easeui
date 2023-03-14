@@ -113,8 +113,8 @@ public class ConversationDelegate extends EaseBaseDelegate<EMConversation, Conve
                 mUnreadMsgNumber.setVisibility(View.GONE);
             }
 
-            if(item.getAllMsgCount() != 0) {
-                EMMessage lastMessage = item.getLastMessage();
+            EMMessage lastMessage = item.getLastMessage();
+            if(lastMessage != null) {
                 message.setText(EaseSmileUtils.getSmiledText(mContext, EaseCommonUtils.getMessageDigest(lastMessage, mContext)));
                 time.setText(EaseDateUtils.getTimestampString(mContext, new Date(lastMessage.getMsgTime())));
                 if (lastMessage.direct() == EMMessage.Direct.SEND && lastMessage.status() == EMMessage.Status.FAIL) {

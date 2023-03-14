@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.hyphenate.EMCallBack;
 import com.hyphenate.EMError;
 import com.hyphenate.chat.EMClient;
+import com.hyphenate.chat.EMFileMessageBody;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMVideoMessageBody;
 import com.hyphenate.easeui.R;
@@ -55,6 +56,8 @@ public class EaseShowVideoActivity extends EaseBaseActivity {
 		localFilePath = messageBody.getLocalUri();
 		EMLog.d(TAG, "localFilePath = "+localFilePath);
 		EMLog.d(TAG, "local filename = "+messageBody.getFileName());
+		EMMessage.Status status = message.status();
+		EMLog.e(TAG, "message status: "+status);
 
 		//检查Uri读权限
 		EaseFileUtils.takePersistableUriPermission(this, localFilePath);
@@ -62,8 +65,13 @@ public class EaseShowVideoActivity extends EaseBaseActivity {
 		if(EaseFileUtils.isFileExistByUri(this, localFilePath)) {
 		    showLocalVideo(localFilePath);
 		} else {
-			EMLog.d(TAG, "download remote video file");
-			downloadVideo(message);
+			if(message.status() == EMMessage.Status.SUCCESS) {
+				EMLog.d(TAG, "download remote video file");
+				downloadVideo(message);
+			}else {
+				EMLog.d(TAG, "video file not exist, localFilePath: "+localFilePath);
+				finish();
+			}
 		}
 	}
 
