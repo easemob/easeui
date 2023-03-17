@@ -387,14 +387,24 @@ public abstract class EaseChatRow extends LinearLayout {
      */
     protected void setAvatarAndNick() {
         if (isSender()) {
-            EaseUserUtils.setUserAvatar(context, EMClient.getInstance().getCurrentUser(), userAvatarView);
             //只要不是常规布局形式，就展示昵称
             if(EaseChatItemStyleHelper.getInstance().getStyle().getItemShowType() != EaseChatMessageListLayout.ShowType.NORMAL.ordinal()) {
-                EaseUserUtils.setUserNick(message.getFrom(), usernickView);
+                if (message.getChatType() == EMMessage.ChatType.GroupChat){
+                    EaseUserUtils.setUserAvatar(context, message.conversationId(), message.getFrom(), userAvatarView);
+                    EaseUserUtils.setUserNick(message.conversationId(),message.getFrom(),usernickView);
+                }else {
+                    EaseUserUtils.setUserNick(message.getFrom(), usernickView);
+                    EaseUserUtils.setUserAvatar(context, message.getFrom(), userAvatarView);
+                }
             }
         } else {
-            EaseUserUtils.setUserAvatar(context, message.getFrom(), userAvatarView);
-            EaseUserUtils.setUserNick(message.getFrom(), usernickView);
+            if (message.getChatType() == EMMessage.ChatType.GroupChat){
+                EaseUserUtils.setUserNick(message.conversationId(),message.getFrom(), usernickView);
+                EaseUserUtils.setUserAvatar(context, message.conversationId(), message.getFrom(), userAvatarView);
+            }else {
+                EaseUserUtils.setUserNick(message.getFrom(), usernickView);
+                EaseUserUtils.setUserAvatar(context, message.getFrom(), userAvatarView);
+            }
         }
     }
 

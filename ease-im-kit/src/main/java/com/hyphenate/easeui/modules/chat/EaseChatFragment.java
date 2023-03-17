@@ -230,6 +230,7 @@ public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutLi
             }
             int duration = mediaPlayer.getDuration();
             EMLog.d(TAG, "path = "+uri.getPath()+",duration="+duration );
+            EaseFileUtils.saveUriPermission(mContext, uri, data);
             chatLayout.sendVideoMessage(uri, duration);
         }
     }

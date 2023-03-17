@@ -311,14 +311,14 @@ public abstract class EaseBaseRecyclerViewAdapter<T> extends EaseBaseAdapter<Eas
      * 获取数据
      * @return
      */
-    public List<T> getData() {
+    public synchronized List<T> getData() {
         return mData;
     }
 
     /**
      * 清除数据
      */
-    public void clearData() {
+    public synchronized void clearData() {
         if(mData != null) {
             mData.clear();
             notifyDataSetChanged();
