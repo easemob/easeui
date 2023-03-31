@@ -47,17 +47,17 @@ public class EaseChatMessagePresenterImpl extends EaseChatMessagePresenter {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        if(messages == null || messages.isEmpty()) {
-            if(isActive()) {
-                runOnUI(()->mView.loadNoLocalMsg());
+        List<EMMessage> finalMessages = messages;
+        runOnUI(()->{
+            if(isActive() && mView != null) {
+                if(finalMessages == null || finalMessages.isEmpty()) {
+                    mView.loadNoLocalMsg();
+                    return;
+                }
+                checkMessageStatus(finalMessages);
+                mView.loadLocalMsgSuccess(finalMessages);
             }
-            return;
-        }
-        if(isActive()) {
-            checkMessageStatus(messages);
-            List<EMMessage> finalMessages = messages;
-            runOnUI(()->mView.loadLocalMsgSuccess(finalMessages));
-        }
+        });
     }
 
     @Override
@@ -74,17 +74,17 @@ public class EaseChatMessagePresenterImpl extends EaseChatMessagePresenter {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        if(moreMsgs == null || moreMsgs.isEmpty()) {
-            if(isActive()) {
-                runOnUI(()->mView.loadNoMoreLocalMsg());
+        List<EMMessage> finalMoreMsgs = moreMsgs;
+        runOnUI(()->{
+            if(isActive() && mView != null) {
+                if(finalMoreMsgs == null || finalMoreMsgs.isEmpty()) {
+                    mView.loadNoMoreLocalMsg();
+                    return;
+                }
+                checkMessageStatus(finalMoreMsgs);
+                mView.loadMoreLocalMsgSuccess(finalMoreMsgs);
             }
-            return;
-        }
-        if(isActive()) {
-            checkMessageStatus(moreMsgs);
-            List<EMMessage> finalMoreMsgs = moreMsgs;
-            runOnUI(()->mView.loadMoreLocalMsgSuccess(finalMoreMsgs));
-        }
+        });
     }
 
     @Override
@@ -96,18 +96,16 @@ public class EaseChatMessagePresenterImpl extends EaseChatMessagePresenter {
             throw new IllegalArgumentException("please check if set correct msg id");
         }
         EMMessage message = conversation.getMessage(msgId, true);
-        List<EMMessage> messages = conversation.searchMsgFromDB(message.getMsgTime() - 1,
-                                                                pageSize, direction);
-        if(isActive()) {
-            runOnUI(()-> {
+        List<EMMessage> messages = conversation.searchMsgFromDB(message.getMsgTime() - 1, pageSize, direction);
+        runOnUI(()-> {
+            if(isActive() && mView != null) {
                 if(messages == null || messages.isEmpty()) {
                     mView.loadNoMoreLocalHistoryMsg();
                 }else {
                     mView.loadMoreLocalHistoryMsgSuccess(messages, direction);
                 }
-            });
-
-        }
+            }
+        });
     }
 
     @Override
@@ -182,9 +180,11 @@ public class EaseChatMessagePresenterImpl extends EaseChatMessagePresenter {
         }
         conversation.markAllMessagesAsRead();
         List<EMMessage> allMessages = conversation.getAllMessages();
-        if(isActive()) {
-            runOnUI(()->mView.refreshCurrentConSuccess(allMessages, false));
-        }
+        runOnUI(()->{
+            if(isActive() && mView != null) {
+                mView.refreshCurrentConSuccess(allMessages, false);
+            }
+        });
     }
 
     @Override
@@ -194,9 +194,11 @@ public class EaseChatMessagePresenterImpl extends EaseChatMessagePresenter {
         }
         conversation.markAllMessagesAsRead();
         List<EMMessage> allMessages = conversation.getAllMessages();
-        if(isActive()) {
-            runOnUI(()->mView.refreshCurrentConSuccess(allMessages, true));
-        }
+        runOnUI(()->{
+            if(isActive() && mView != null) {
+                mView.refreshCurrentConSuccess(allMessages, true);
+            }
+        });
     }
 
     /**
