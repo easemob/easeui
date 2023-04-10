@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -431,7 +432,13 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
 
     @Override
     public void sendImageMessage(Uri imageUri) {
-        presenter.sendImageMessage(imageUri);
+        boolean sendOriginalImage = false;
+        try {
+            sendOriginalImage = getResources().getBoolean(R.bool.ease_enable_send_origin_image);
+        } catch (Resources.NotFoundException e) {
+            e.printStackTrace();
+        }
+        presenter.sendImageMessage(imageUri, sendOriginalImage);
     }
 
     @Override
