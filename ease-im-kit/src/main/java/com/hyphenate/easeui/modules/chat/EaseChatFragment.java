@@ -23,10 +23,12 @@ import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.constants.EaseConstant;
 import com.hyphenate.easeui.manager.EaseDingMessageHelper;
 import com.hyphenate.easeui.modules.chat.interfaces.OnAddMsgAttrsBeforeSendEvent;
+import com.hyphenate.easeui.modules.chat.interfaces.OnChatFinishListener;
 import com.hyphenate.easeui.modules.chat.interfaces.OnChatLayoutListener;
 import com.hyphenate.easeui.modules.chat.interfaces.OnChatRecordTouchListener;
 import com.hyphenate.easeui.modules.chat.interfaces.OnMenuChangeListener;
 import com.hyphenate.easeui.modules.chat.interfaces.OnTranslateMessageListener;
+import com.hyphenate.easeui.modules.menu.EaseChatFinishReason;
 import com.hyphenate.easeui.modules.menu.EasePopupWindowHelper;
 import com.hyphenate.easeui.modules.menu.MenuItemBean;
 import com.hyphenate.easeui.ui.EaseBaiduMapActivity;
@@ -42,7 +44,8 @@ import com.hyphenate.util.VersionUtils;
 import java.io.File;
 import java.io.IOException;
 
-public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutListener, OnMenuChangeListener, OnAddMsgAttrsBeforeSendEvent, OnChatRecordTouchListener, OnTranslateMessageListener {
+public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutListener, OnMenuChangeListener,
+        OnAddMsgAttrsBeforeSendEvent, OnChatRecordTouchListener, OnTranslateMessageListener, OnChatFinishListener {
     protected static final int REQUEST_CODE_MAP = 1;
     protected static final int REQUEST_CODE_CAMERA = 2;
     protected static final int REQUEST_CODE_LOCAL = 3;
@@ -106,6 +109,7 @@ public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutLi
         chatLayout.setOnAddMsgAttrsBeforeSendEvent(this);
         chatLayout.setOnChatRecordTouchListener(this);
         chatLayout.setOnTranslateListener(this);
+        chatLayout.setOnChatFinishListener(this);
     }
 
     public void initData() {
@@ -431,6 +435,13 @@ public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutLi
     @Override
     public void translateMessageFail(EMMessage message, int code, String error) {
 
+    }
+
+    @Override
+    public void onChatFinish(EaseChatFinishReason reason, String id) {
+        if(mContext != null) {
+            mContext.finish();
+        }
     }
 }
 

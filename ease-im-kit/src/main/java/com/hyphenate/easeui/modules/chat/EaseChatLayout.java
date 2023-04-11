@@ -44,6 +44,7 @@ import com.hyphenate.easeui.manager.EaseThreadManager;
 import com.hyphenate.easeui.modules.chat.interfaces.ChatInputMenuListener;
 import com.hyphenate.easeui.modules.chat.interfaces.IChatLayout;
 import com.hyphenate.easeui.modules.chat.interfaces.OnAddMsgAttrsBeforeSendEvent;
+import com.hyphenate.easeui.modules.chat.interfaces.OnChatFinishListener;
 import com.hyphenate.easeui.modules.chat.interfaces.OnChatLayoutListener;
 import com.hyphenate.easeui.modules.chat.interfaces.OnChatRecordTouchListener;
 import com.hyphenate.easeui.modules.chat.interfaces.OnMenuChangeListener;
@@ -53,6 +54,7 @@ import com.hyphenate.easeui.modules.chat.presenter.EaseHandleMessagePresenter;
 import com.hyphenate.easeui.modules.chat.presenter.EaseHandleMessagePresenterImpl;
 import com.hyphenate.easeui.modules.chat.presenter.IHandleMessageView;
 import com.hyphenate.easeui.modules.interfaces.IPopupWindow;
+import com.hyphenate.easeui.modules.menu.EaseChatFinishReason;
 import com.hyphenate.easeui.modules.menu.EasePopupWindow;
 import com.hyphenate.easeui.modules.menu.EasePopupWindowHelper;
 import com.hyphenate.easeui.modules.menu.MenuItemBean;
@@ -144,6 +146,10 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
      * 翻译监听
      */
     private OnTranslateMessageListener translateListener;
+    /**
+     * 会话结束监听
+     */
+    private OnChatFinishListener chatFinishListener;
     /**
      *  翻译目标语言，默认英文
      */
@@ -522,6 +528,11 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
     @Override
     public void setOnTranslateListener(OnTranslateMessageListener translateListener) {
         this.translateListener = translateListener;
+    }
+
+    @Override
+    public void setOnChatFinishListener(OnChatFinishListener listener) {
+        this.chatFinishListener = listener;
     }
 
     /**
@@ -1092,7 +1103,7 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
 
         @Override
         public void onChatRoomDestroyed(String roomId, String roomName) {
-            finishCurrent();
+            finishCurrent(EaseChatFinishReason.onChatRoomDestroyed, roomId);
         }
 
         @Override
@@ -1101,7 +1112,7 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
                 return;
             }
             if(reason == EMAChatRoomManagerListener.BE_KICKED) {
-                finishCurrent();
+                finishCurrent(EaseChatFinishReason.onChatRoomUserRemoved, roomId);
             }
         }
 
@@ -1123,21 +1134,23 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
 
         @Override
         public void onUserRemoved(String groupId, String groupName) {
-            finishCurrent();
+            finishCurrent(EaseChatFinishReason.onGroupUserRemoved, groupId);
         }
 
         @Override
         public void onGroupDestroyed(String groupId, String groupName) {
-            finishCurrent();
+            finishCurrent(EaseChatFinishReason.onGroupDestroyed, groupId);
         }
     }
 
     /**
      * finish current activity
+     * @param reason
+     * @param id
      */
-    private void finishCurrent() {
-        if(getContext() instanceof Activity) {
-            ((Activity) getContext()).finish();
+    private void finishCurrent(EaseChatFinishReason reason, String id) {
+        if(chatFinishListener != null) {
+            chatFinishListener.onChatFinish(reason, id);
         }
     }
 
