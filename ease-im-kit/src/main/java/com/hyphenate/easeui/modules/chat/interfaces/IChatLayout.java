@@ -177,4 +177,11 @@ public interface IChatLayout {
      * @param translateListener
      */
     void setOnTranslateListener(OnTranslateMessageListener translateListener);
+
+    /**
+     * 设置会话结束的监听。
+     * 因为群组销毁，被群管理员踢出群等原因。
+     * @param listener
+     */
+    void setOnChatFinishListener(OnChatFinishListener listener);
 }
