@@ -45,6 +45,45 @@ public class EaseDefaultEmojiconDatas {
         EaseSmileUtils.ee_35,
        
     };
+
+    private static String[] systemEmojis = new String[]{
+            EaseSmileUtils.e_1,
+            EaseSmileUtils.e_2,
+            EaseSmileUtils.e_3,
+            EaseSmileUtils.e_4,
+            EaseSmileUtils.e_5,
+            EaseSmileUtils.e_6,
+            EaseSmileUtils.e_7,
+            EaseSmileUtils.e_8,
+            EaseSmileUtils.e_9,
+            EaseSmileUtils.e_10,
+            EaseSmileUtils.e_11,
+            EaseSmileUtils.e_12,
+            EaseSmileUtils.e_13,
+            EaseSmileUtils.e_14,
+            EaseSmileUtils.e_15,
+            EaseSmileUtils.e_16,
+            EaseSmileUtils.e_17,
+            EaseSmileUtils.e_18,
+            EaseSmileUtils.e_19,
+            EaseSmileUtils.e_20,
+            EaseSmileUtils.e_21,
+            EaseSmileUtils.e_22,
+            EaseSmileUtils.e_23,
+            EaseSmileUtils.e_24,
+            EaseSmileUtils.e_25,
+            EaseSmileUtils.e_26,
+            EaseSmileUtils.e_27,
+            EaseSmileUtils.e_28,
+            EaseSmileUtils.e_29,
+            EaseSmileUtils.e_30,
+            EaseSmileUtils.e_31,
+            EaseSmileUtils.e_32,
+            EaseSmileUtils.e_33,
+            EaseSmileUtils.e_34,
+            EaseSmileUtils.e_35,
+
+    };
     
     private static int[] icons = new int[]{
         R.drawable.ee_1,  
@@ -88,9 +127,12 @@ public class EaseDefaultEmojiconDatas {
     private static final EaseEmojicon[] DATA = createData();
     
     private static EaseEmojicon[] createData(){
-        EaseEmojicon[] datas = new EaseEmojicon[icons.length];
+        EaseEmojicon[] datas = new EaseEmojicon[icons.length * 2];
         for(int i = 0; i < icons.length; i++){
             datas[i] = new EaseEmojicon(icons[i], emojis[i], Type.NORMAL);
+        }
+        for (int i = 0; i < icons.length; i++) {
+            datas[i + icons.length] = new EaseEmojicon(icons[i], systemEmojis[i], Type.NORMAL);
         }
         return datas;
     }
