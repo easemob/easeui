@@ -127,7 +127,19 @@ public class EaseDefaultEmojiconDatas {
     private static final EaseEmojicon[] DATA = createData();
     
     private static EaseEmojicon[] createData(){
-        EaseEmojicon[] datas = new EaseEmojicon[icons.length * 2];
+        EaseEmojicon[] datas = new EaseEmojicon[icons.length];
+        for(int i = 0; i < icons.length; i++){
+            datas[i] = new EaseEmojicon(icons[i], emojis[i], Type.NORMAL);
+        }
+        return datas;
+    }
+    
+    public static EaseEmojicon[] getData(){
+        return DATA;
+    }
+
+    public static EaseEmojicon[] getDefaultData(){
+        EaseEmojicon[] datas = new EaseEmojicon[icons.length*2];
         for(int i = 0; i < icons.length; i++){
             datas[i] = new EaseEmojicon(icons[i], emojis[i], Type.NORMAL);
         }
@@ -135,9 +147,5 @@ public class EaseDefaultEmojiconDatas {
             datas[i + icons.length] = new EaseEmojicon(icons[i], systemEmojis[i], Type.NORMAL);
         }
         return datas;
-    }
-    
-    public static EaseEmojicon[] getData(){
-        return DATA;
     }
 }

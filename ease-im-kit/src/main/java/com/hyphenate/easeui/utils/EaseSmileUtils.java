@@ -114,7 +114,7 @@ public class EaseSmileUtils {
 	
 
 	static {
-	    EaseEmojicon[] emojicons = EaseDefaultEmojiconDatas.getData();
+	    EaseEmojicon[] emojicons = EaseDefaultEmojiconDatas.getDefaultData();
 		for (EaseEmojicon emojicon : emojicons) {
 			addPattern(emojicon.getEmojiText(), emojicon.getIcon());
 		}
