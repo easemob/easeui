@@ -2,4 +2,7 @@
 <resources>
     <!--是否使用发送channel_ack消息功能，此功能启动旨在减少发送read_ack消息，默认为开启-->
     <bool name="ease_enable_send_channel_ack">true</bool>
+
+    <!-- 是否发送原图，默认为不发送原图 -->
+    <bool name="ease_enable_send_origin_image">false</bool>
 </resources>
