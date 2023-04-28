@@ -180,7 +180,7 @@ public class EaseTitleBar extends RelativeLayout implements View.OnClickListener
             if(getContext() instanceof AppCompatActivity) {
                 AppCompatActivity activity = (AppCompatActivity) getContext();
                 ActionBar supportActionBar = activity.getSupportActionBar();
-                if(!(supportActionBar instanceof WindowDecorActionBar)) {
+                if(supportActionBar==null||!(supportActionBar instanceof WindowDecorActionBar)) {
                     activity.setSupportActionBar(toolbar);
                     if(activity.getSupportActionBar() != null) {
                         // 显示返回按钮
