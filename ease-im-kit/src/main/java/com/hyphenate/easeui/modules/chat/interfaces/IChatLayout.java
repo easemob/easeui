@@ -136,6 +136,12 @@ public interface IChatLayout {
     void recallMessage(EMMessage message);
 
     /**
+     * 编辑消息
+     * @param messageModified
+     */
+    void modifyMessage(EMMessage messageModified);
+
+    /**
      * 翻译消息
      * @param message
      * @param isTranslate
@@ -184,4 +190,10 @@ public interface IChatLayout {
      * @param listener
      */
     void setOnChatFinishListener(OnChatFinishListener listener);
+
+    /**
+     * 设置编辑消息的监听
+     * @param listener
+     */
+    void setOnEditMessageListener(OnEditMessageListener listener);
 }

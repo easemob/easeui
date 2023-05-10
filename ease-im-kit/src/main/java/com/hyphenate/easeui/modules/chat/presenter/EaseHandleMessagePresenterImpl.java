@@ -226,6 +226,44 @@ public class EaseHandleMessagePresenterImpl extends EaseHandleMessagePresenter {
     }
 
     @Override
+    public void modifyMessage(EMMessage messageModified) {
+        if(messageModified == null) {
+            runOnUI(() ->{
+                if(isActive()) {
+                    mView.sendMessageFail("messageModified is null!");
+                }
+            });
+            return;
+        }
+        if (chatType == EaseConstant.CHATTYPE_GROUP){
+            messageModified.setChatType(EMMessage.ChatType.GroupChat);
+        }else if(chatType == EaseConstant.CHATTYPE_CHATROOM){
+            messageModified.setChatType(EMMessage.ChatType.ChatRoom);
+        }
+        messageModified.setMessageStatusCallback(new EMCallBack() {
+            @Override
+            public void onSuccess() {
+                runOnUI(() ->{
+                    if(isActive()) {
+                        mView.onModifyMessageSuccess(messageModified);
+                    }
+                });
+            }
+
+            @Override
+            public void onError(int code, String error) {
+                runOnUI(() ->{
+                    if(isActive()) {
+                        mView.onModifyMessageFailure(messageModified, code, error);
+                    }
+                });
+            }
+        });
+        // modify message
+        EMClient.getInstance().chatManager().modifyMessage(messageModified);
+    }
+
+    @Override
     public void translateMessage(EMMessage message, String languageCode, boolean isTranslation) {
         EMTextMessageBody body = (EMTextMessageBody) message.getBody();
         if(isTranslation) {

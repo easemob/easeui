@@ -26,6 +26,7 @@ import com.hyphenate.easeui.modules.chat.interfaces.OnAddMsgAttrsBeforeSendEvent
 import com.hyphenate.easeui.modules.chat.interfaces.OnChatFinishListener;
 import com.hyphenate.easeui.modules.chat.interfaces.OnChatLayoutListener;
 import com.hyphenate.easeui.modules.chat.interfaces.OnChatRecordTouchListener;
+import com.hyphenate.easeui.modules.chat.interfaces.OnEditMessageListener;
 import com.hyphenate.easeui.modules.chat.interfaces.OnMenuChangeListener;
 import com.hyphenate.easeui.modules.chat.interfaces.OnTranslateMessageListener;
 import com.hyphenate.easeui.modules.menu.EaseChatFinishReason;
@@ -45,7 +46,7 @@ import java.io.File;
 import java.io.IOException;
 
 public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutListener, OnMenuChangeListener,
-        OnAddMsgAttrsBeforeSendEvent, OnChatRecordTouchListener, OnTranslateMessageListener, OnChatFinishListener {
+        OnAddMsgAttrsBeforeSendEvent, OnChatRecordTouchListener, OnTranslateMessageListener, OnChatFinishListener, OnEditMessageListener {
     protected static final int REQUEST_CODE_MAP = 1;
     protected static final int REQUEST_CODE_CAMERA = 2;
     protected static final int REQUEST_CODE_LOCAL = 3;
@@ -110,6 +111,7 @@ public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutLi
         chatLayout.setOnChatRecordTouchListener(this);
         chatLayout.setOnTranslateListener(this);
         chatLayout.setOnChatFinishListener(this);
+        chatLayout.setOnEditMessageListener(this);
     }
 
     public void initData() {
@@ -442,6 +444,16 @@ public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutLi
         if(mContext != null) {
             mContext.finish();
         }
+    }
+
+    @Override
+    public void onModifyMessageSuccess(EMMessage messageModified) {
+
+    }
+
+    @Override
+    public void onModifyMessageFailure(EMMessage message, int code, String error) {
+
     }
 }
 

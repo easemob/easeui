@@ -148,6 +148,13 @@ public abstract class EaseHandleMessagePresenter extends EaseBasePresenter {
      */
     public abstract void recallMessage(EMMessage message);
 
+
+    /**
+     * 编辑消息
+     * @param messageModified
+     */
+    public abstract void modifyMessage(EMMessage messageModified);
+
     /**
      * 是否是群聊
      * @return
