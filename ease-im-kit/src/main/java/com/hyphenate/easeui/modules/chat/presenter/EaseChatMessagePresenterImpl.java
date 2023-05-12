@@ -2,6 +2,7 @@ package com.hyphenate.easeui.modules.chat.presenter;
 
 import android.text.TextUtils;
 
+import com.hyphenate.EMCallBack;
 import com.hyphenate.EMValueCallBack;
 import com.hyphenate.chat.EMChatRoom;
 import com.hyphenate.chat.EMClient;
@@ -61,7 +62,7 @@ public class EaseChatMessagePresenterImpl extends EaseChatMessagePresenter {
     }
 
     @Override
-    public void loadMoreLocalMessages(String msgId, int pageSize) {
+    public void loadMoreLocalMessages(String msgId, int pageSize, boolean isJumpFirst) {
         if(conversation == null) {
             throw new NullPointerException("should first set up with conversation");
         }
@@ -82,7 +83,32 @@ public class EaseChatMessagePresenterImpl extends EaseChatMessagePresenter {
                     return;
                 }
                 checkMessageStatus(finalMoreMsgs);
-                mView.loadMoreLocalMsgSuccess(finalMoreMsgs);
+                mView.loadMoreLocalMsgSuccess(finalMoreMsgs,isJumpFirst);
+            }
+        });
+    }
+
+    @Override
+    public void loadMoreLocalMessages(String msgId, int pageSize, boolean isJumpFirst, EMCallBack callBack) {
+        if(conversation == null) {
+            throw new NullPointerException("should first set up with conversation");
+        }
+        if(!isMessageId(msgId)) {
+            throw new IllegalArgumentException("please check if set correct msg id");
+        }
+        List<EMMessage> moreMsgs = null;
+        try {
+            moreMsgs = conversation.loadMoreMsgFromDB(msgId, pageSize);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        List<EMMessage> finalMoreMsgs = moreMsgs;
+        runOnUI(()->{
+            if(isActive() && mView != null) {
+                if(finalMoreMsgs != null && finalMoreMsgs.size() > 0) {
+                    checkMessageStatus(finalMoreMsgs);
+                }
+                callBack.onSuccess();
             }
         });
     }
@@ -166,7 +192,7 @@ public class EaseChatMessagePresenterImpl extends EaseChatMessagePresenter {
                         runOnUI(() -> {
                             if(isActive()) {
                                 mView.loadMsgFail(error, errorMsg);
-                                loadMoreLocalMessages(msgId, pageSize);
+                                loadMoreLocalMessages(msgId, pageSize,true);
                             }
                         });
                     }

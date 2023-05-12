@@ -48,7 +48,7 @@ public interface IChatMessageListView extends ILoadDataView {
      * 加载本地更多数据成功
      * @param data
      */
-    void loadMoreLocalMsgSuccess(List<EMMessage> data);
+    void loadMoreLocalMsgSuccess(List<EMMessage> data,boolean isJumpFirst);
 
     /**
      * 没有加载到更多数据

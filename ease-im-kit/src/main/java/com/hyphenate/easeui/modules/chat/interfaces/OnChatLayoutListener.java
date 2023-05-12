@@ -72,4 +72,19 @@ public interface OnChatLayoutListener {
      */
     default void onOtherTyping(String action){}
 
+    /**
+     * 点击消息引用区域
+     * @param message
+     * @return
+     */
+    void onQuoteClick(EMMessage message);
+
+    /**
+     * 长按消息引用区域
+     * @param v
+     * @param message
+     * @return
+     */
+    boolean onQuoteLongClick(View v, EMMessage message);
+
 }

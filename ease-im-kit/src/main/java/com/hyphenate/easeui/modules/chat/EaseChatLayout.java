@@ -863,6 +863,26 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
     }
 
     @Override
+    public void onQuoteViewClick(EMMessage message) {
+        if (listener != null){
+            listener.onQuoteClick(message);
+        }
+    }
+
+    @Override
+    public boolean onQuoteViewLongClick(View v, EMMessage message) {
+        if (listener != null){
+            return listener.onQuoteLongClick(v,message);
+        }
+        return false;
+    }
+
+    @Override
+    public void onQuoteShowFinish(EMMessage message) {
+        refreshMessage(message);
+    }
+
+    @Override
     public void onUserAvatarClick(String username) {
         if(listener != null) {
             listener.onUserAvatarClick(username);
@@ -1055,6 +1075,7 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
         menuHelper.findItemVisible(R.id.action_chat_translate, false);
         menuHelper.findItemVisible(R.id.action_chat_reTranslate, false);
         menuHelper.findItemVisible(R.id.action_chat_hide, false);
+        menuHelper.findItemVisible(R.id.action_chat_quote,true);
         menuHelper.findItem(R.id.action_chat_delete).setTitle(getContext().getString(R.string.action_delete));
         menuHelper.findItemVisible(com.hyphenate.easeui.R.id.action_chat_label,true);
         if (!isReportYourSelf){
@@ -1074,7 +1095,6 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
                     menuHelper.findItemVisible(R.id.action_chat_copy, true);
                     menuHelper.findItemVisible(R.id.action_chat_recall, true);
                     menuHelper.findItemVisible(R.id.action_chat_delete, true);
-
                     if (showTranslation(message))
                         menuHelper.findItemVisible(R.id.action_chat_translate, true);
                 }
@@ -1091,6 +1111,9 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
             case VIDEO:
                 menuHelper.findItem(R.id.action_chat_delete).setTitle(getContext().getString(R.string.delete_video));
                 menuHelper.findItemVisible(R.id.action_chat_recall, true);
+                break;
+            case CUSTOM:
+                menuHelper.findItemVisible(R.id.action_chat_quote,false);
                 break;
         }
 

@@ -17,8 +17,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
+import com.hyphenate.EMCallBack;
 import com.hyphenate.chat.EMClient;
+import com.hyphenate.chat.EMConversation;
+import com.hyphenate.chat.EMImageMessageBody;
+import com.hyphenate.chat.EMLocationMessageBody;
 import com.hyphenate.chat.EMMessage;
+import com.hyphenate.chat.EMNormalFileMessageBody;
+import com.hyphenate.chat.EMTextMessageBody;
 import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.constants.EaseConstant;
 import com.hyphenate.easeui.manager.EaseDingMessageHelper;
@@ -32,6 +38,9 @@ import com.hyphenate.easeui.modules.menu.EaseChatFinishReason;
 import com.hyphenate.easeui.modules.menu.EasePopupWindowHelper;
 import com.hyphenate.easeui.modules.menu.MenuItemBean;
 import com.hyphenate.easeui.ui.EaseBaiduMapActivity;
+import com.hyphenate.easeui.ui.EaseShowBigImageActivity;
+import com.hyphenate.easeui.ui.EaseShowNormalFileActivity;
+import com.hyphenate.easeui.ui.EaseShowVideoActivity;
 import com.hyphenate.easeui.ui.base.EaseBaseFragment;
 import com.hyphenate.easeui.utils.EaseCommonUtils;
 import com.hyphenate.easeui.utils.EaseCompat;
@@ -41,8 +50,12 @@ import com.hyphenate.util.ImageUtils;
 import com.hyphenate.util.PathUtil;
 import com.hyphenate.util.VersionUtils;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutListener, OnMenuChangeListener,
         OnAddMsgAttrsBeforeSendEvent, OnChatRecordTouchListener, OnTranslateMessageListener, OnChatFinishListener {
@@ -60,6 +73,9 @@ public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutLi
     public boolean isRoam;
     public boolean isMessageInit;
     private OnChatLayoutListener listener;
+    private final JSONObject quoteObject = new JSONObject();
+    private boolean isQuote;
+    private int retrievalSize = 100;
 
     protected File cameraFile;
 
@@ -130,8 +146,10 @@ public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutLi
     @Override
     public void onResume() {
         super.onResume();
-        if(isMessageInit) {
+        if(isMessageInit && chatLayout != null) {
+            isQuote = false;
             chatLayout.getChatMessageListLayout().refreshMessages();
+            chatLayout.getChatInputMenu().getPrimaryMenu().hideQuoteSelect();
         }
     }
 
@@ -191,7 +209,11 @@ public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutLi
 
     @Override
     public void onChatSuccess(EMMessage message) {
+        isQuote = false;
         // you can do something after sending a successful message
+        if (message.getType() == EMMessage.Type.TXT){
+            chatLayout.getChatInputMenu().getPrimaryMenu().hideQuoteSelect();
+        }
     }
 
     @Override
@@ -199,6 +221,137 @@ public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutLi
         if(listener != null) {
             listener.onChatError(code, errorMsg);
         }
+    }
+
+    @Override
+    public void onQuoteClick(EMMessage message) {
+        if (message == null){
+            EMLog.e(TAG,"当前消息列表未找到该引用消息");
+        }else {
+            EMConversation currentConversation = chatLayout.getChatMessageListLayout().getCurrentConversation();
+            List<EMMessage> currentData = currentConversation.getAllMessages();
+            showQuoteByType(currentData,message.getType(),message);
+        }
+    }
+
+    /**
+     * 设置检索条数 建议不超过200
+     * @param pageSize
+     */
+    public void setRetrievalSize(int pageSize){
+        if (pageSize > 200){
+            this.retrievalSize = 200;
+        }else {
+            this.retrievalSize = pageSize;
+        }
+    }
+
+    public void showQuoteByType(List<EMMessage> currentData,EMMessage.Type type,EMMessage message){
+        if (currentData != null && currentData.size() > 0){
+            int dataSize = currentData.size();
+            int position = chatLayout.getChatMessageListLayout().getMessageAdapter().getData().lastIndexOf(message);
+            if (position != -1){
+                if ( dataSize > retrievalSize && type == EMMessage.Type.TXT){
+                    if (position - (dataSize - retrievalSize)  > 0){
+                        chatLayout.getChatMessageListLayout().moveToPosition(position);
+                    }else {
+                        EMLog.e(TAG,"超过 "+ retrievalSize + "条 跳转条数限制");
+                    }
+                }else {
+                    //文本类型引用消息跳转  图片（自定义表情）、视频、语音、文件直接展示
+                    switch (type){
+                        case IMAGE:
+                            EMImageMessageBody imgBody = (EMImageMessageBody) message.getBody();
+                            Intent imageIntent = new Intent(getContext(), EaseShowBigImageActivity.class);
+                            Uri imgUri = imgBody.getLocalUri();
+                            //检查Uri读权限
+                            EaseFileUtils.takePersistableUriPermission(getContext(), imgUri);
+                            if(EaseFileUtils.isFileExistByUri(getContext(), imgUri)) {
+                                imageIntent.putExtra("uri", imgUri);
+                            } else{
+                                String msgId = message.getMsgId();
+                                imageIntent.putExtra("messageId", msgId);
+                                imageIntent.putExtra("filename", imgBody.getFileName());
+                            }
+                            if (getContext() != null){
+                                getContext().startActivity(imageIntent);
+                            }
+                            break;
+                        case VIDEO:
+                            Intent videoIntent = new Intent(getContext(), EaseShowVideoActivity.class);
+                            videoIntent.putExtra("msg", message);
+                            if (getContext() != null){
+                                getContext().startActivity(videoIntent);
+                            }
+                            break;
+                        case FILE:
+                            EMNormalFileMessageBody fileMessageBody = (EMNormalFileMessageBody) message.getBody();
+                            Uri filePath = fileMessageBody.getLocalUri();
+                            //检查Uri读权限
+                            EaseFileUtils.takePersistableUriPermission(getContext(), filePath);
+                            if(EaseFileUtils.isFileExistByUri(getContext(), filePath)){
+                                EaseCompat.openFile(getContext(), filePath);
+                            } else {
+                                if (getContext() != null){
+                                    getContext().startActivity(new Intent(getContext(), EaseShowNormalFileActivity.class).putExtra("msg", message));
+                                }
+                            }
+                            break;
+                        case LOCATION:
+                            EMLocationMessageBody locBody = (EMLocationMessageBody) message.getBody();
+                            EaseBaiduMapActivity.actionStart(getContext(),
+                                    locBody.getLatitude(),
+                                    locBody.getLongitude(),
+                                    locBody.getAddress());
+                            break;
+                        case TXT:
+                            if (message.getBooleanAttribute(EaseConstant.MESSAGE_ATTR_IS_BIG_EXPRESSION, false)){
+                                Intent bigExpressionIntent = new Intent(getContext(), EaseShowBigImageActivity.class);
+                                String emojiIconId = message.getStringAttribute(EaseConstant.MESSAGE_ATTR_EXPRESSION_ID, "");
+                                if (!TextUtils.isEmpty(emojiIconId)){
+                                    bigExpressionIntent.putExtra(EaseConstant.MESSAGE_ATTR_EXPRESSION_ID, emojiIconId);
+                                    if (getContext() != null){
+                                        getContext().startActivity(bigExpressionIntent);
+                                    }
+                                }
+                            }else {
+                                loadMorePrevious(position);
+                            }
+                            break;
+                        case VOICE:
+                            loadMorePrevious(position);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }else {
+                EMLog.e(TAG,"当前消息列表未找到该引用消息");
+            }
+        }
+    }
+
+    private void loadMorePrevious(int position){
+        //当前列表数据 少于 指定条数时 需从本地加载对应条数数据后 在进行跳转
+        chatLayout.getChatMessageListLayout().loadMorePreviousData(retrievalSize, new EMCallBack() {
+            @Override
+            public void onSuccess() {
+                chatLayout.getChatMessageListLayout().moveToPosition(position);
+            }
+
+            @Override
+            public void onError(int code, String error) {
+
+            }
+        });
+    }
+
+    @Override
+    public boolean onQuoteLongClick(View v, EMMessage message) {
+        if (listener != null){
+            return listener.onQuoteLongClick(v,message);
+        }
+        return false;
     }
 
     @Override
@@ -408,12 +561,45 @@ public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutLi
 
     @Override
     public boolean onMenuItemClick(MenuItemBean item, EMMessage message) {
+        if (item.getItemId() == R.id.action_chat_quote) {
+            isQuote = true;
+            if (message.status() == EMMessage.Status.SUCCESS ) {
+                try {
+                    if (message.getBody() != null){
+                        quoteObject.put(EaseConstant.QUOTE_MSG_ID,message.getMsgId());
+                        if (message.getType() == EMMessage.Type.TXT && !TextUtils.isEmpty(((EMTextMessageBody)message.getBody()).getMessage())){
+                            quoteObject.put(EaseConstant.QUOTE_MSG_PREVIEW,((EMTextMessageBody)message.getBody()).getMessage());
+                        }else if (message.getType() == EMMessage.Type.IMAGE){
+                            quoteObject.put(EaseConstant.QUOTE_MSG_PREVIEW,getResources().getString(R.string.quote_image));
+                        }else if (message.getType() == EMMessage.Type.VIDEO){
+                            quoteObject.put(EaseConstant.QUOTE_MSG_PREVIEW,getResources().getString(R.string.quote_video));
+                        }else if (message.getType() == EMMessage.Type.LOCATION){
+                            quoteObject.put(EaseConstant.QUOTE_MSG_PREVIEW,getResources().getString(R.string.quote_location));
+                        }else if (message.getType() == EMMessage.Type.VOICE){
+                            quoteObject.put(EaseConstant.QUOTE_MSG_PREVIEW,getResources().getString(R.string.quote_voice));
+                        }else if (message.getType() == EMMessage.Type.FILE){
+                            quoteObject.put(EaseConstant.QUOTE_MSG_PREVIEW,getResources().getString(R.string.quote_file));
+                        }else {
+                            quoteObject.put(EaseConstant.QUOTE_MSG_PREVIEW,"");
+                        }
+                        quoteObject.put(EaseConstant.QUOTE_MSG_SENDER,message.getFrom());
+                        quoteObject.put(EaseConstant.QUOTE_MSG_TYPE,message.getType().ordinal());
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                chatLayout.getChatInputMenu().getPrimaryMenu().primaryStartQuote(message);
+            }
+            return true;
+        }
         return false;
     }
 
     @Override
     public void addMsgAttrsBeforeSend(EMMessage message) {
-
+        if (message.getType() == EMMessage.Type.TXT && isQuote){
+            message.setAttribute(EaseConstant.QUOTE_MSG_QUOTE,quoteObject.toString());
+        }
     }
 
     /**

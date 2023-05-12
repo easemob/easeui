@@ -17,6 +17,9 @@ import com.hyphenate.chat.EMTranslationResult;
 import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.manager.EaseDingMessageHelper;
 import com.hyphenate.easeui.utils.EaseSmileUtils;
+import com.hyphenate.easeui.widget.EaseChatQuoteView;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class EaseChatRowText extends EaseChatRow {
 	private TextView contentView;
@@ -87,6 +90,47 @@ public class EaseChatRowText extends EaseChatRow {
                 translationContainer.setVisibility(View.GONE);
             }
         }
+
+        quoteView.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (itemClickListener == null){
+                    return;
+                }
+                String msgQuote = message.getStringAttribute("msgQuote","");
+                if (!TextUtils.isEmpty(msgQuote)){
+                    try {
+                        JSONObject jsonObject = new JSONObject(msgQuote);
+                        String quoteMsgID = jsonObject.getString("msgID");
+                        EMMessage showMsg = EMClient.getInstance().chatManager().getMessage(quoteMsgID);
+                        if (itemClickListener != null && showMsg != null) {
+                            itemClickListener.onQuoteViewClick(showMsg);
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+
+        quoteView.setOnLongClickListener(new OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                if (itemClickListener != null) {
+                    return itemClickListener.onQuoteViewLongClick(v, message);
+                }
+                return false;
+            }
+        });
+
+        quoteView.setQuoteEventListener(new EaseChatQuoteView.onQuoteEventListener() {
+            @Override
+            public void onQuoteShowFinish(EMMessage message) {
+                if (itemClickListener != null) {
+                    itemClickListener.onQuoteShowFinish(message);
+                }
+            }
+        });
     }
 
     /**
@@ -137,7 +181,12 @@ public class EaseChatRowText extends EaseChatRow {
         // Set ack-user list change listener.
         // Only use the group ack count from message. - 2022.04.27
         //EaseDingMessageHelper.get().setUserUpdateListener(message, userUpdateListener);
+        onSetUpQuoteView(message);
+        if (itemClickListener != null) {
+            itemClickListener.onQuoteShowFinish(message);
+        }
     }
+
 
     @Override
     protected void onMessageError() {

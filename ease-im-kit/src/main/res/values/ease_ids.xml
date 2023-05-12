@@ -22,6 +22,8 @@
     <item name="action_chat_long_click" type="id"/>
     <!--标记-->
     <item name="action_chat_label" type="id"/>
+    <!--引用-->
+    <item name="action_chat_quote" type="id" />
 
     <!-- 会话列表长按菜单项id -->
     <!-- 会话列表条目置为已读 -->

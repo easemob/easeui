@@ -3,6 +3,7 @@ package com.hyphenate.easeui.modules.chat.interfaces;
 import android.graphics.drawable.Drawable;
 import android.widget.EditText;
 
+import com.hyphenate.chat.EMMessage;
 import com.hyphenate.easeui.modules.chat.EaseInputMenuStyle;
 
 public interface IChatPrimaryMenu {
@@ -87,4 +88,15 @@ public interface IChatPrimaryMenu {
      * @param listener
      */
     void setEaseChatPrimaryMenuListener(EaseChatPrimaryMenuListener listener);
+
+    /**
+     * 设置引用消息
+     * @param message
+     */
+    void primaryStartQuote(EMMessage message);
+
+    /**
+     * 隐藏引用消息
+     */
+    void hideQuoteSelect();
 }
