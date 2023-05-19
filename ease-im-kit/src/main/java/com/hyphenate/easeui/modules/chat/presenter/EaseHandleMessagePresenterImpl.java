@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.text.TextUtils;
 
 import com.hyphenate.EMCallBack;
+import com.hyphenate.EMError;
 import com.hyphenate.EMValueCallBack;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMCmdMessageBody;
@@ -226,41 +227,33 @@ public class EaseHandleMessagePresenterImpl extends EaseHandleMessagePresenter {
     }
 
     @Override
-    public void modifyMessage(EMMessage messageModified) {
-        if(messageModified == null) {
+    public void modifyMessage(String messageId, EMMessageBody messageBodyModified) {
+        if(TextUtils.isEmpty(messageId)||messageBodyModified==null) {
             runOnUI(() ->{
                 if(isActive()) {
-                    mView.sendMessageFail("messageModified is null!");
+                    mView.onModifyMessageFailure(messageId, EMError.GENERAL_ERROR,"messageId or messageModified is empty !");
                 }
             });
             return;
         }
-        if (chatType == EaseConstant.CHATTYPE_GROUP){
-            messageModified.setChatType(EMMessage.ChatType.GroupChat);
-        }else if(chatType == EaseConstant.CHATTYPE_CHATROOM){
-            messageModified.setChatType(EMMessage.ChatType.ChatRoom);
-        }
-        messageModified.setMessageStatusCallback(new EMCallBack() {
+        // modify message
+        EMClient.getInstance().chatManager().modifyMessage(messageId, messageBodyModified, new EMCallBack() {
             @Override
             public void onSuccess() {
                 runOnUI(() ->{
                     if(isActive()) {
-                        mView.onModifyMessageSuccess(messageModified);
+                        mView.onModifyMessageSuccess(messageId);
                     }
                 });
             }
 
             @Override
             public void onError(int code, String error) {
-                runOnUI(() ->{
-                    if(isActive()) {
-                        mView.onModifyMessageFailure(messageModified, code, error);
-                    }
-                });
+                if(isActive()) {
+                    mView.onModifyMessageFailure(messageId, code, error);
+                }
             }
         });
-        // modify message
-        EMClient.getInstance().chatManager().modifyMessage(messageModified);
     }
 
     @Override

@@ -27,6 +27,7 @@ import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMCmdMessageBody;
 import com.hyphenate.chat.EMConversation;
 import com.hyphenate.chat.EMMessage;
+import com.hyphenate.chat.EMMessageBody;
 import com.hyphenate.chat.EMTextMessageBody;
 import com.hyphenate.chat.EMTranslationResult;
 import com.hyphenate.chat.adapter.EMAChatRoomManagerListener;
@@ -46,7 +47,7 @@ import com.hyphenate.easeui.modules.chat.interfaces.OnAddMsgAttrsBeforeSendEvent
 import com.hyphenate.easeui.modules.chat.interfaces.OnChatFinishListener;
 import com.hyphenate.easeui.modules.chat.interfaces.OnChatLayoutListener;
 import com.hyphenate.easeui.modules.chat.interfaces.OnChatRecordTouchListener;
-import com.hyphenate.easeui.modules.chat.interfaces.OnEditMessageListener;
+import com.hyphenate.easeui.modules.chat.interfaces.OnModifyMessageListener;
 import com.hyphenate.easeui.modules.chat.interfaces.OnMenuChangeListener;
 import com.hyphenate.easeui.modules.chat.interfaces.OnRecallMessageResultListener;
 import com.hyphenate.easeui.modules.chat.interfaces.OnTranslateMessageListener;
@@ -157,7 +158,7 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
     /**
      * 编辑消息的监听
      */
-    private OnEditMessageListener editMessageListener;
+    private OnModifyMessageListener modifyMessageListener;
 
     public EaseChatLayout(Context context) {
         this(context, null);
@@ -502,8 +503,8 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
     }
 
     @Override
-    public void modifyMessage(EMMessage messageModified) {
-        presenter.modifyMessage(messageModified);
+    public void modifyMessage(String messageId, EMMessageBody messageBodyModified) {
+        presenter.modifyMessage(messageId,messageBodyModified);
     }
 
     @Override
@@ -553,8 +554,8 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
     }
 
     @Override
-    public void setOnEditMessageListener(OnEditMessageListener listener) {
-        this.editMessageListener = listener;
+    public void setOnEditMessageListener(OnModifyMessageListener listener) {
+        this.modifyMessageListener = listener;
     }
 
     /**
@@ -839,18 +840,19 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
     }
 
     @Override
-    public void onModifyMessageSuccess(EMMessage messageModified) {
-        refreshMessage(messageModified);
-        if (editMessageListener != null) {
-            editMessageListener.onModifyMessageSuccess(messageModified);
+    public void onModifyMessageSuccess(String messageId) {
+        EMMessage message = getChatManager().getMessage(messageId);
+        refreshMessage(message);
+        if (modifyMessageListener != null) {
+            modifyMessageListener.onModifyMessageSuccess(messageId);
         }
     }
 
     @Override
-    public void onModifyMessageFailure(EMMessage message, int code, String error) {
+    public void onModifyMessageFailure(String messageId, int code, String error) {
         EMLog.i(TAG, "onModifyMessageFailure:" + code + ":" + error);
-        if (editMessageListener != null) {
-            editMessageListener.onModifyMessageFailure(message,code,error);
+        if (modifyMessageListener != null) {
+            modifyMessageListener.onModifyMessageFailure(messageId,code,error);
         }
     }
 

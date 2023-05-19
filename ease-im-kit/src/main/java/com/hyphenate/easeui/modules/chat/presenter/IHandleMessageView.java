@@ -84,15 +84,15 @@ public interface IHandleMessageView extends ILoadDataView {
 
     /**
      * 变更消息成功
-     * @param messageModified
+     * @param messageId
      */
-    void onModifyMessageSuccess(EMMessage messageModified);
+    void onModifyMessageSuccess(String messageId);
 
     /**
      * 变更消息失败
-     * @param message
+     * @param messageId
      * @param code
      * @param error
      */
-    void onModifyMessageFailure(EMMessage message, int code, String error);
+    void onModifyMessageFailure(String messageId, int code, String error);
 }

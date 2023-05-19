@@ -3,6 +3,7 @@ package com.hyphenate.easeui.modules.chat.interfaces;
 import android.net.Uri;
 
 import com.hyphenate.chat.EMMessage;
+import com.hyphenate.chat.EMMessageBody;
 import com.hyphenate.easeui.modules.chat.EaseChatInputMenu;
 import com.hyphenate.easeui.modules.chat.EaseChatMessageListLayout;
 
@@ -137,9 +138,10 @@ public interface IChatLayout {
 
     /**
      * 编辑消息
-     * @param messageModified
+     * @param messageId
+     * @param messageBodyModified
      */
-    void modifyMessage(EMMessage messageModified);
+    void modifyMessage(String messageId, EMMessageBody messageBodyModified);
 
     /**
      * 翻译消息
@@ -195,5 +197,5 @@ public interface IChatLayout {
      * 设置编辑消息的监听
      * @param listener
      */
-    void setOnEditMessageListener(OnEditMessageListener listener);
+    void setOnEditMessageListener(OnModifyMessageListener listener);
 }

@@ -26,7 +26,7 @@ import com.hyphenate.easeui.modules.chat.interfaces.OnAddMsgAttrsBeforeSendEvent
 import com.hyphenate.easeui.modules.chat.interfaces.OnChatFinishListener;
 import com.hyphenate.easeui.modules.chat.interfaces.OnChatLayoutListener;
 import com.hyphenate.easeui.modules.chat.interfaces.OnChatRecordTouchListener;
-import com.hyphenate.easeui.modules.chat.interfaces.OnEditMessageListener;
+import com.hyphenate.easeui.modules.chat.interfaces.OnModifyMessageListener;
 import com.hyphenate.easeui.modules.chat.interfaces.OnMenuChangeListener;
 import com.hyphenate.easeui.modules.chat.interfaces.OnTranslateMessageListener;
 import com.hyphenate.easeui.modules.menu.EaseChatFinishReason;
@@ -46,7 +46,7 @@ import java.io.File;
 import java.io.IOException;
 
 public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutListener, OnMenuChangeListener,
-        OnAddMsgAttrsBeforeSendEvent, OnChatRecordTouchListener, OnTranslateMessageListener, OnChatFinishListener, OnEditMessageListener {
+        OnAddMsgAttrsBeforeSendEvent, OnChatRecordTouchListener, OnTranslateMessageListener, OnChatFinishListener, OnModifyMessageListener {
     protected static final int REQUEST_CODE_MAP = 1;
     protected static final int REQUEST_CODE_CAMERA = 2;
     protected static final int REQUEST_CODE_LOCAL = 3;
@@ -447,12 +447,12 @@ public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutLi
     }
 
     @Override
-    public void onModifyMessageSuccess(EMMessage messageModified) {
+    public void onModifyMessageSuccess(String messageId) {
 
     }
 
     @Override
-    public void onModifyMessageFailure(EMMessage message, int code, String error) {
+    public void onModifyMessageFailure(String messageId, int code, String error) {
 
     }
 }
