@@ -3,6 +3,8 @@ package com.hyphenate.easeui.modules.chat.interfaces;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.hyphenate.chat.EMMessage;
+
 public interface EaseChatPrimaryMenuListener{
         /**
          * when send button clicked
@@ -52,5 +54,11 @@ public interface EaseChatPrimaryMenuListener{
          * if edit text has focus
          */
         void onEditTextHasFocus(boolean hasFocus);
+
+        /**
+         * custom show quote
+         * @param message
+         */
+        default void showCustomQuote(EMMessage message){}
 
 }

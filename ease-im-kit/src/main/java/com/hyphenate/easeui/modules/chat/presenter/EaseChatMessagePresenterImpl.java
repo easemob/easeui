@@ -109,6 +109,7 @@ public class EaseChatMessagePresenterImpl extends EaseChatMessagePresenter {
                     checkMessageStatus(finalMoreMsgs);
                 }
                 callBack.onSuccess();
+                mView.loadMoreLocalMsgSuccess(finalMoreMsgs,false);
             }
         });
     }

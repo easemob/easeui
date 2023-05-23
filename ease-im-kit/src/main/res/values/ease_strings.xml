@@ -172,7 +172,10 @@
     <string name="quote_file">[File]</string>
     <string name="quote_image">[Image]</string>
     <string name="quote_location">[Location]</string>
-    <string name="quote_emoji">[ emoji ]</string>
+    <string name="quote_emoji">[Emoji]</string>
+    <string name="quote_card">[Card]</string>
+
+    <string name="quote_limitation">Exceeding the limit of %1$d jump entry</string>
 
 
 </resources>

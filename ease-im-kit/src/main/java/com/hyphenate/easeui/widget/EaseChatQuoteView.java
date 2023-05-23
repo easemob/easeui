@@ -23,6 +23,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.hyphenate.chat.EMClient;
+import com.hyphenate.chat.EMCustomMessageBody;
 import com.hyphenate.chat.EMFileMessageBody;
 import com.hyphenate.chat.EMImageMessageBody;
 import com.hyphenate.chat.EMLocationMessageBody;
@@ -37,9 +38,10 @@ import com.hyphenate.easeui.domain.EaseUser;
 import com.hyphenate.easeui.utils.EaseEditTextUtils;
 import com.hyphenate.easeui.utils.EaseSmileUtils;
 import com.hyphenate.easeui.utils.EaseUserUtils;
-
 import org.json.JSONException;
 import org.json.JSONObject;
+import java.util.HashMap;
+import java.util.Map;
 
 public class EaseChatQuoteView extends LinearLayout {
     private final Context mContext;
@@ -56,6 +58,7 @@ public class EaseChatQuoteView extends LinearLayout {
     private EaseImageView quoteImageView;
     private TextView quoteLocationAddress;
     private TextView quoteBigExpressionTitle;
+    private TextView quoteCardTitle;
     private EaseImageView quoteBigExpressionImg;
     private RelativeLayout quoteTextLayout;
     private RelativeLayout quoteVoiceLayout;
@@ -64,7 +67,10 @@ public class EaseChatQuoteView extends LinearLayout {
     private RelativeLayout quoteLocationLayout;
     private ConstraintLayout quoteImageLayout;
     private ConstraintLayout quoteBigExpressionLayout;
-    private onQuoteEventListener listener;
+    private RelativeLayout quoteCardLayout;
+    private EMMessage message;
+    private EMMessage quoteMessage;
+    private final Map<String,String> receiveMsgTypes = new HashMap<String,String>();
 
     public EaseChatQuoteView(Context context) {
         this(context, null);
@@ -77,7 +83,7 @@ public class EaseChatQuoteView extends LinearLayout {
     public EaseChatQuoteView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         this.mContext = context;
-
+        initMsgType();
         @SuppressLint("CustomViewStyleable")
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.ease_quote_style);
         boolean isSender = typedArray.getBoolean(R.styleable.ease_quote_style_ease_chat_item_sender, false);
@@ -110,6 +116,8 @@ public class EaseChatQuoteView extends LinearLayout {
         quoteBigExpressionTitle =  findViewById(R.id.tv_bigExpression_subContent);
         quoteBigExpressionImg = findViewById(R.id.iv_bigExpression_picture);
 
+        quoteCardTitle = findViewById(R.id.tv_card);
+
         /////////// layout //////////
         quoteTextLayout = findViewById(R.id.subBubble_text_layout);
         quoteVoiceLayout = findViewById(R.id.subBubble_audio_layout);
@@ -118,10 +126,12 @@ public class EaseChatQuoteView extends LinearLayout {
         quoteImageLayout = findViewById(R.id.subBubble_image_layout);
         quoteLocationLayout = findViewById(R.id.subBubble_location_layout);
         quoteBigExpressionLayout = findViewById(R.id.subBubble_bigExpression_layout);
+        quoteCardLayout = findViewById(R.id.subBubble_card_layout);
 
     }
 
-    public void updateMessageInfo(EMMessage message){
+    public void updateMessageInfo(EMMessage quoteMsg){
+        this.message = quoteMsg;
         if (message != null && message.status() == EMMessage.Status.SUCCESS){
             String msgQuote = message.getStringAttribute("msgQuote","");
             if (!TextUtils.isEmpty(msgQuote)){
@@ -129,7 +139,7 @@ public class EaseChatQuoteView extends LinearLayout {
                     JSONObject jsonObject = new JSONObject(msgQuote);
                     String quoteMsgID = jsonObject.getString("msgID");
                     String quoteSender = jsonObject.getString("msgSender");
-                    int quoteType = jsonObject.getInt("msgType");
+                    String quoteType = jsonObject.getString("msgType");
                     String quoteContent = jsonObject.getString("msgPreview");
 
                     String quoteSenderNick = "";
@@ -146,8 +156,8 @@ public class EaseChatQuoteView extends LinearLayout {
                         }
                     }
 
-                    EMMessage showMsg = EMClient.getInstance().chatManager().getMessage(quoteMsgID);
-                    isShowType(quoteSenderNick,getQuoteMessageType(quoteType),message,showMsg,quoteContent);
+                    quoteMessage = EMClient.getInstance().chatManager().getMessage(quoteMsgID);
+                    isShowType(quoteSenderNick,getQuoteMessageType(quoteType),quoteContent);
 
                     this.setVisibility(VISIBLE);
                 } catch (JSONException e) {
@@ -158,26 +168,20 @@ public class EaseChatQuoteView extends LinearLayout {
             }
         }
     }
+    private void initMsgType(){
+        receiveMsgTypes.put("text",EMMessage.Type.TXT.name());
+        receiveMsgTypes.put("img",EMMessage.Type.IMAGE.name());
+        receiveMsgTypes.put("video",EMMessage.Type.VIDEO.name());
+        receiveMsgTypes.put("location",EMMessage.Type.LOCATION.name());
+        receiveMsgTypes.put("audio",EMMessage.Type.VOICE.name());
+        receiveMsgTypes.put("file",EMMessage.Type.FILE.name());
+        receiveMsgTypes.put("cmd",EMMessage.Type.CMD.name());
+        receiveMsgTypes.put("custom",EMMessage.Type.CUSTOM.name());
+    }
 
-    private EMMessage.Type getQuoteMessageType(int type){
-        switch (type){
-            case 1:
-                return EMMessage.Type.IMAGE;
-            case 2:
-                return EMMessage.Type.VIDEO;
-            case 3:
-                return EMMessage.Type.LOCATION;
-            case 4:
-                return EMMessage.Type.VOICE;
-            case 5:
-                return EMMessage.Type.FILE;
-            case 6:
-                return EMMessage.Type.CMD;
-            case 7:
-                return EMMessage.Type.CUSTOM;
-            default:
-                return EMMessage.Type.TXT;
-        }
+    private EMMessage.Type getQuoteMessageType(String quoteType){
+        if (receiveMsgTypes.get(quoteType) == null) return EMMessage.Type.TXT;
+        return EMMessage.Type.valueOf(receiveMsgTypes.get(quoteType));
     }
 
     private void reSet(){
@@ -188,9 +192,10 @@ public class EaseChatQuoteView extends LinearLayout {
         quoteImageLayout.setVisibility(GONE);
         quoteLocationLayout.setVisibility(GONE);
         quoteBigExpressionLayout.setVisibility(GONE);
+        quoteCardLayout.setVisibility(GONE);
     }
 
-    private void isShowType(String quoteSender,EMMessage.Type quoteMsgType,EMMessage message,EMMessage quoteMessage,String content){
+    private void isShowType(String quoteSender,EMMessage.Type quoteMsgType,String content){
         StringBuilder builder = new StringBuilder();
             switch (quoteMsgType){
                 case TXT:
@@ -206,9 +211,6 @@ public class EaseChatQuoteView extends LinearLayout {
                         quoteContent.setText(textSpan, TextView.BufferType.SPANNABLE);
                         quoteTextLayout.setVisibility(View.VISIBLE);
                     }
-                    if (listener != null){
-                        listener.onQuoteShowFinish(message);
-                    }
                     break;
                 case IMAGE:
                     reSet();
@@ -222,9 +224,6 @@ public class EaseChatQuoteView extends LinearLayout {
                     SpannableString imageSpan = new SpannableString(builder.toString());
                     quoteImageName.setText(imageSpan);
                     quoteImageLayout.setVisibility(View.VISIBLE);
-                    if (listener != null){
-                        listener.onQuoteShowFinish(message);
-                    }
                     break;
                 case VIDEO:
                     reSet();
@@ -234,13 +233,15 @@ public class EaseChatQuoteView extends LinearLayout {
                     }else {
                         Uri imageUri = null;
                         String imageUrl = "";
-                        EMVideoMessageBody videoMessageBody = (EMVideoMessageBody) quoteMessage.getBody();
-                        if (videoMessageBody != null){
-                            if ( quoteMessage.direct() == EMMessage.Direct.SEND){
-                                imageUri = videoMessageBody.getLocalThumbUri();
-                                videoMessageBody.getLocalThumb();
-                            }else {
-                                imageUrl = videoMessageBody.getThumbnailUrl();
+                        if (quoteMessage.getBody() instanceof EMVideoMessageBody){
+                            EMVideoMessageBody videoMessageBody = (EMVideoMessageBody) quoteMessage.getBody();
+                            if (videoMessageBody != null){
+                                if ( quoteMessage.direct() == EMMessage.Direct.SEND){
+                                    imageUri = videoMessageBody.getLocalThumbUri();
+                                    videoMessageBody.getLocalThumb();
+                                }else {
+                                    imageUrl = videoMessageBody.getThumbnailUrl();
+                                }
                             }
                         }
                         builder.append(quoteSender).append(": ");
@@ -249,9 +250,6 @@ public class EaseChatQuoteView extends LinearLayout {
                         showVideoThumbView(imageUrl,imageUri);
                     }
                     quoteVideoLayout.setVisibility(View.VISIBLE);
-                    if (listener != null){
-                        listener.onQuoteShowFinish(message);
-                    }
                     break;
                 case LOCATION:
                     reSet();
@@ -260,17 +258,18 @@ public class EaseChatQuoteView extends LinearLayout {
                     if (quoteMessage == null){
                         title = quoteSender + ": " + content;
                     }else {
-                        EMLocationMessageBody locationMessageBody = (EMLocationMessageBody)quoteMessage.getBody();
-                        title = quoteSender + ": " + locationMessageBody.getAddress();
+                        if (quoteMessage.getBody() instanceof EMLocationMessageBody){
+                            EMLocationMessageBody locationMessageBody = (EMLocationMessageBody)quoteMessage.getBody();
+                            title = quoteSender + ": " + locationMessageBody.getAddress();
+                        }
                     }
-                    SpannableStringBuilder sb = new SpannableStringBuilder(title);
+                    SpannableStringBuilder locationSb = new SpannableStringBuilder(title);
                     CenterImageSpan span = new CenterImageSpan(mContext, R.drawable.ease_chat_item_menu_location);
-                    sb.setSpan(span, startIndex, startIndex + 2, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
-                    quoteLocationAddress.setText(sb);
-                    quoteLocationLayout.setVisibility(View.VISIBLE);
-                    if (listener != null){
-                        listener.onQuoteShowFinish(message);
+                    if (locationSb.length() >= startIndex + 2){
+                        locationSb.setSpan(span, startIndex, startIndex + 2, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
                     }
+                    quoteLocationAddress.setText(locationSb);
+                    quoteLocationLayout.setVisibility(View.VISIBLE);
                     break;
                 case VOICE:
                     reSet();
@@ -279,42 +278,78 @@ public class EaseChatQuoteView extends LinearLayout {
                         quoteVoiceIcon.setVisibility(View.GONE);
                     }else {
                         String voiceLength = "";
-                        EMVoiceMessageBody voiceMessageBody = (EMVoiceMessageBody) quoteMessage.getBody();
-                        if (voiceMessageBody != null && voiceMessageBody.getLength() > 0){
-                            voiceLength = voiceMessageBody.getLength() + "\"";
+                        if (quoteMessage.getBody() instanceof EMVoiceMessageBody){
+                            EMVoiceMessageBody voiceMessageBody = (EMVoiceMessageBody) quoteMessage.getBody();
+                            if (voiceMessageBody != null && voiceMessageBody.getLength() > 0){
+                                voiceLength = voiceMessageBody.getLength() + "\"";
+                            }
+                            builder.append(quoteSender).append(": ");
                         }
-                        builder.append(quoteSender).append(": ");
                         quoteVoiceLength.setText(voiceLength);
                     }
                     SpannableString voiceSpan = new SpannableString(builder.toString());
                     quoteVoiceName.setText(voiceSpan);
                     quoteVoiceLayout.setVisibility(View.VISIBLE);
-                    if (listener != null){
-                        listener.onQuoteShowFinish(message);
-                    }
                     break;
                 case FILE:
                     reSet();
                     if (quoteMessage == null){
-                        builder.append(quoteSender).append(": ").append(content);
-                        quoteFileIcon.setVisibility(View.GONE);
+                        builder.append(quoteSender).append(": ");
+                        quoteFileIcon.setVisibility(View.VISIBLE);
+                        quoteFileName.setText(content);
                     }else {
                         String fileName = "";
-                        EMFileMessageBody fileMessageBody = (EMFileMessageBody) quoteMessage.getBody();
-                        if (fileMessageBody != null && !TextUtils.isEmpty(fileMessageBody.getFileName())){
-                            fileName = EaseEditTextUtils.ellipsizeMiddleString(quoteFileName,
-                                    fileMessageBody.getFileName(),
-                                    1,
-                                    quoteFileName.getWidth() - quoteFileName.getPaddingLeft() - quoteFileName.getPaddingRight());
+                        if (quoteMessage.getBody() instanceof EMFileMessageBody){
+                            EMFileMessageBody fileMessageBody = (EMFileMessageBody) quoteMessage.getBody();
+                            if (fileMessageBody != null && !TextUtils.isEmpty(fileMessageBody.getFileName())){
+                                fileName = EaseEditTextUtils.ellipsizeMiddleString(quoteFileName,
+                                        fileMessageBody.getFileName(),
+                                        1,
+                                        quoteFileName.getWidth() - quoteFileName.getPaddingLeft() - quoteFileName.getPaddingRight());
+                            }
+                            builder.append(quoteSender).append(": ");
                         }
-                        builder.append(quoteSender).append(": ");
                         quoteFileName.setText(fileName);
                     }
                     SpannableString fileSpan = new SpannableString(builder.toString());
                     quoteFileTitle.setText(fileSpan);
                     quoteFileLayout.setVisibility(View.VISIBLE);
-                    if (listener != null){
-                        listener.onQuoteShowFinish(message);
+                    break;
+                case CUSTOM:
+                    reSet();
+                    if (quoteMessage.getBody() instanceof EMCustomMessageBody){
+                        EMCustomMessageBody customMessageBody = (EMCustomMessageBody)quoteMessage.getBody();
+                        Map<String, String> params = customMessageBody.getParams();
+                        if (params.size() > 0 && customMessageBody.event().equals(EaseConstant.USER_CARD_EVENT)){
+                            String uId = params.get(EaseConstant.USER_CARD_ID);
+                            String nickName = params.get(EaseConstant.USER_CARD_NICK);
+                            String customContent = "";
+                            if(uId != null && uId.length() > 0){
+                                if(uId.equals(EMClient.getInstance().getCurrentUser())){
+                                    customContent = quoteSender;
+                                }else{
+                                    EaseUser user = EaseUserUtils.getUserInfo(uId);
+                                    if(user == null){
+                                        user = new EaseUser(uId);
+                                        user.setNickname(nickName);
+                                    }
+                                    if (user.getNickname().isEmpty()){
+                                        customContent = uId;
+                                    }else {
+                                        customContent = user.getNickname();
+                                    }
+                                }
+                            }
+                            int cardIndex = quoteSender.length() + 1;
+                            String cardTitle = quoteSender + ":  " + customContent;
+                            SpannableStringBuilder cardSb = new SpannableStringBuilder(cardTitle);
+                            CenterImageSpan cardSpan = new CenterImageSpan(mContext, R.drawable.ease_chat_item_menu_card);
+                            if (cardSb.length() > 0){
+                                cardSb.setSpan(cardSpan, cardIndex, cardIndex + 2, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+                            }
+                            quoteCardTitle.setText(cardSb);
+                            quoteCardLayout.setVisibility(View.VISIBLE);
+                        }
                     }
                     break;
                 default:
@@ -386,12 +421,9 @@ public class EaseChatQuoteView extends LinearLayout {
         }
     }
 
-    public interface onQuoteEventListener{
-        void onQuoteShowFinish(EMMessage message);
-    }
-
-    public void setQuoteEventListener(onQuoteEventListener listener){
-        this.listener = listener;
+    public void clear(){
+        message = null;
+        quoteMessage = null;
     }
 
 }

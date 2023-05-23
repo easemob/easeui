@@ -566,6 +566,13 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
     }
 
     @Override
+    public void showCustomQuote(EMMessage message) {
+       if (listener != null){
+           listener.showCustomQuote(message);
+       }
+    }
+
+    @Override
     public void onExpressionClicked(Object emojicon) {
         if(emojicon instanceof EaseEmojicon) {
             presenter.sendBigExpressionMessage(((EaseEmojicon) emojicon).getName(), ((EaseEmojicon) emojicon).getIdentityCode());
@@ -864,6 +871,7 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
 
     @Override
     public void onQuoteViewClick(EMMessage message) {
+        EMLog.e("apex","onQuoteViewClick2: " + message);
         if (listener != null){
             listener.onQuoteClick(message);
         }
@@ -877,10 +885,6 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
         return false;
     }
 
-    @Override
-    public void onQuoteShowFinish(EMMessage message) {
-        refreshMessage(message);
-    }
 
     @Override
     public void onUserAvatarClick(String username) {
@@ -916,7 +920,7 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
 
     @Override
     public void onMessageError(EMMessage message, int code, String error) {
-        EMLog.i(TAG, "send message onMessageSuccess");
+        EMLog.i(TAG, "send message onMessageError");
         if(listener != null) {
             listener.onChatError(code, error);
         }
@@ -1075,7 +1079,7 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
         menuHelper.findItemVisible(R.id.action_chat_translate, false);
         menuHelper.findItemVisible(R.id.action_chat_reTranslate, false);
         menuHelper.findItemVisible(R.id.action_chat_hide, false);
-        menuHelper.findItemVisible(R.id.action_chat_quote,true);
+        menuHelper.findItemVisible(R.id.action_chat_quote, message.status() == EMMessage.Status.SUCCESS);
         menuHelper.findItem(R.id.action_chat_delete).setTitle(getContext().getString(R.string.action_delete));
         menuHelper.findItemVisible(com.hyphenate.easeui.R.id.action_chat_label,true);
         if (!isReportYourSelf){
@@ -1111,9 +1115,6 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
             case VIDEO:
                 menuHelper.findItem(R.id.action_chat_delete).setTitle(getContext().getString(R.string.delete_video));
                 menuHelper.findItemVisible(R.id.action_chat_recall, true);
-                break;
-            case CUSTOM:
-                menuHelper.findItemVisible(R.id.action_chat_quote,false);
                 break;
         }
 

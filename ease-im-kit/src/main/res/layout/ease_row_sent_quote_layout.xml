@@ -99,7 +99,7 @@
             android:lineSpacingExtra="2dp"
             android:minHeight="@dimen/ease_chat_text_min_height"
             android:textColor="#808080"
-            android:maxWidth="80dp"
+            android:maxWidth="120dp"
             android:textSize="15sp"
             android:minWidth="30dp"
             tools:text="环信: " />
@@ -282,6 +282,32 @@
             />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <RelativeLayout
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:id="@+id/subBubble_card_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="30dp"
+        android:padding="8dp"
+        android:layout_marginTop="2dp"
+        android:background="@drawable/ease_chat_bubble_quote_bg"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tv_card"
+            style="@style/chat_text_name_style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxWidth="238dp"
+            android:layout_marginStart="6dp"
+            tools:text="apex:"
+            android:maxLines="2"
+            android:layout_centerVertical="true"
+            android:gravity="start" />
+
+    </RelativeLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -40,6 +40,7 @@ import com.hyphenate.easeui.modules.chat.presenter.EaseChatMessagePresenter;
 import com.hyphenate.easeui.modules.chat.presenter.EaseChatMessagePresenterImpl;
 import com.hyphenate.easeui.modules.chat.presenter.IChatMessageListView;
 import com.hyphenate.easeui.utils.EaseCommonUtils;
+import com.hyphenate.util.EMLog;
 
 import java.util.List;
 
@@ -413,6 +414,7 @@ public class EaseChatMessageListLayout extends RelativeLayout implements IChatMe
 
             @Override
             public void onQuoteViewClick(EMMessage message) {
+                EMLog.e("apex","onQuoteViewClick1: " + message);
                 if(messageListItemClickListener != null) {
                    messageListItemClickListener.onQuoteViewClick(message);
                 }
@@ -424,13 +426,6 @@ public class EaseChatMessageListLayout extends RelativeLayout implements IChatMe
                     return messageListItemClickListener.onQuoteViewLongClick(v,message);
                 }
                 return false;
-            }
-
-            @Override
-            public void onQuoteShowFinish(EMMessage message) {
-                if(messageListItemClickListener != null) {
-                    messageListItemClickListener.onQuoteShowFinish(message);
-                }
             }
 
             @Override

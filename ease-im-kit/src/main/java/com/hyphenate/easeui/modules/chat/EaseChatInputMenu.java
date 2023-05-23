@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import com.hyphenate.chat.EMMessage;
 import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.domain.EaseEmojicon;
 import com.hyphenate.easeui.modules.chat.interfaces.ChatInputMenuListener;
@@ -212,6 +213,13 @@ public class EaseChatInputMenu extends LinearLayout implements IChatInputMenu, E
         EMLog.i(TAG, "onSendBtnClicked content:"+content);
         if(menuListener != null) {
             menuListener.onSendMessage(content);
+        }
+    }
+
+    @Override
+    public void showCustomQuote(EMMessage message) {
+        if(menuListener != null) {
+            menuListener.showCustomQuote(message);
         }
     }
 

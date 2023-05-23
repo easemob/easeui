@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -73,9 +74,10 @@ public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutLi
     public boolean isRoam;
     public boolean isMessageInit;
     private OnChatLayoutListener listener;
-    private final JSONObject quoteObject = new JSONObject();
+    private JSONObject quoteObject = null;
     private boolean isQuote;
     private int retrievalSize = 100;
+    private boolean isLoad = false;
 
     protected File cameraFile;
 
@@ -117,6 +119,8 @@ public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutLi
         chatLayout = findViewById(R.id.layout_chat);
         chatLayout.getChatMessageListLayout().setItemShowType(EaseChatMessageListLayout.ShowType.NORMAL);
         chatLayout.getChatMessageListLayout().setBackgroundColor(ContextCompat.getColor(mContext, R.color.gray));
+        chatLayout.getChatInputMenu().getPrimaryMenu().setShowDefaultQuote(true);
+        chatLayout.getChatInputMenu().getPrimaryMenu().getQuoteLayout();
     }
 
     public void initListener() {
@@ -225,12 +229,25 @@ public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutLi
 
     @Override
     public void onQuoteClick(EMMessage message) {
-        if (message == null){
-            EMLog.e(TAG,"当前消息列表未找到该引用消息");
+        if (!isLoad){
+            chatLayout.getChatMessageListLayout().loadMorePreviousData(retrievalSize, new EMCallBack() {
+                @Override
+                public void onSuccess() {
+                    isLoad = true;
+                    EMConversation currentConversation = chatLayout.getChatMessageListLayout().getCurrentConversation();
+                    List<EMMessage> currentData = currentConversation.getAllMessages();
+                    showQuoteByType(currentData,message);
+                }
+
+                @Override
+                public void onError(int code, String error) {
+                    isLoad = false;
+                }
+            });
         }else {
             EMConversation currentConversation = chatLayout.getChatMessageListLayout().getCurrentConversation();
             List<EMMessage> currentData = currentConversation.getAllMessages();
-            showQuoteByType(currentData,message.getType(),message);
+            showQuoteByType(currentData,message);
         }
     }
 
@@ -246,7 +263,12 @@ public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutLi
         }
     }
 
-    public void showQuoteByType(List<EMMessage> currentData,EMMessage.Type type,EMMessage message){
+    protected void addCustomQuote(List<EMMessage> currentData,EMMessage.Type type,EMMessage message){
+
+    }
+
+    public void showQuoteByType(List<EMMessage> currentData,EMMessage message){
+        EMMessage.Type type = message.getType();
         if (currentData != null && currentData.size() > 0){
             int dataSize = currentData.size();
             int position = chatLayout.getChatMessageListLayout().getMessageAdapter().getData().lastIndexOf(message);
@@ -255,10 +277,17 @@ public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutLi
                     if (position - (dataSize - retrievalSize)  > 0){
                         chatLayout.getChatMessageListLayout().moveToPosition(position);
                     }else {
-                        EMLog.e(TAG,"超过 "+ retrievalSize + "条 跳转条数限制");
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (getContext() != null){
+                                    Toast.makeText(getContext(),getContext().getString(R.string.quote_limitation),Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
                     }
                 }else {
-                    //文本类型引用消息跳转  图片（自定义表情）、视频、语音、文件直接展示
+                    //文本、语音类型引用消息跳转  图片（自定义表情）、视频、文件直接展示
                     switch (type){
                         case IMAGE:
                             EMImageMessageBody imgBody = (EMImageMessageBody) message.getBody();
@@ -315,11 +344,14 @@ public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutLi
                                     }
                                 }
                             }else {
-                                loadMorePrevious(position);
+                                chatLayout.getChatMessageListLayout().moveToPosition(position);
                             }
                             break;
                         case VOICE:
-                            loadMorePrevious(position);
+                            chatLayout.getChatMessageListLayout().moveToPosition(position);
+                            break;
+                        case CUSTOM:
+                            addCustomQuote(currentData,type,message);
                             break;
                         default:
                             break;
@@ -329,21 +361,6 @@ public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutLi
                 EMLog.e(TAG,"当前消息列表未找到该引用消息");
             }
         }
-    }
-
-    private void loadMorePrevious(int position){
-        //当前列表数据 少于 指定条数时 需从本地加载对应条数数据后 在进行跳转
-        chatLayout.getChatMessageListLayout().loadMorePreviousData(retrievalSize, new EMCallBack() {
-            @Override
-            public void onSuccess() {
-                chatLayout.getChatMessageListLayout().moveToPosition(position);
-            }
-
-            @Override
-            public void onError(int code, String error) {
-
-            }
-        });
     }
 
     @Override
@@ -563,33 +580,41 @@ public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutLi
     public boolean onMenuItemClick(MenuItemBean item, EMMessage message) {
         if (item.getItemId() == R.id.action_chat_quote) {
             isQuote = true;
-            if (message.status() == EMMessage.Status.SUCCESS ) {
-                try {
-                    if (message.getBody() != null){
-                        quoteObject.put(EaseConstant.QUOTE_MSG_ID,message.getMsgId());
-                        if (message.getType() == EMMessage.Type.TXT && !TextUtils.isEmpty(((EMTextMessageBody)message.getBody()).getMessage())){
-                            quoteObject.put(EaseConstant.QUOTE_MSG_PREVIEW,((EMTextMessageBody)message.getBody()).getMessage());
-                        }else if (message.getType() == EMMessage.Type.IMAGE){
-                            quoteObject.put(EaseConstant.QUOTE_MSG_PREVIEW,getResources().getString(R.string.quote_image));
-                        }else if (message.getType() == EMMessage.Type.VIDEO){
-                            quoteObject.put(EaseConstant.QUOTE_MSG_PREVIEW,getResources().getString(R.string.quote_video));
-                        }else if (message.getType() == EMMessage.Type.LOCATION){
-                            quoteObject.put(EaseConstant.QUOTE_MSG_PREVIEW,getResources().getString(R.string.quote_location));
-                        }else if (message.getType() == EMMessage.Type.VOICE){
-                            quoteObject.put(EaseConstant.QUOTE_MSG_PREVIEW,getResources().getString(R.string.quote_voice));
-                        }else if (message.getType() == EMMessage.Type.FILE){
-                            quoteObject.put(EaseConstant.QUOTE_MSG_PREVIEW,getResources().getString(R.string.quote_file));
-                        }else {
-                            quoteObject.put(EaseConstant.QUOTE_MSG_PREVIEW,"");
-                        }
-                        quoteObject.put(EaseConstant.QUOTE_MSG_SENDER,message.getFrom());
-                        quoteObject.put(EaseConstant.QUOTE_MSG_TYPE,message.getType().ordinal());
+            quoteObject = new JSONObject();
+            try {
+                if (message.getBody() != null){
+                    quoteObject.put(EaseConstant.QUOTE_MSG_ID,message.getMsgId());
+                    if (message.getType() == EMMessage.Type.TXT && !TextUtils.isEmpty(((EMTextMessageBody)message.getBody()).getMessage())){
+                        quoteObject.put(EaseConstant.QUOTE_MSG_PREVIEW,((EMTextMessageBody)message.getBody()).getMessage());
+                        quoteObject.put(EaseConstant.QUOTE_MSG_TYPE,"txt");
+                    }else if (message.getType() == EMMessage.Type.IMAGE){
+                        quoteObject.put(EaseConstant.QUOTE_MSG_PREVIEW,getResources().getString(R.string.quote_image));
+                        quoteObject.put(EaseConstant.QUOTE_MSG_TYPE,"img");
+                    }else if (message.getType() == EMMessage.Type.VIDEO){
+                        quoteObject.put(EaseConstant.QUOTE_MSG_PREVIEW,getResources().getString(R.string.quote_video));
+                        quoteObject.put(EaseConstant.QUOTE_MSG_TYPE,"video");
+                    }else if (message.getType() == EMMessage.Type.LOCATION){
+                        quoteObject.put(EaseConstant.QUOTE_MSG_PREVIEW,getResources().getString(R.string.quote_location));
+                        quoteObject.put(EaseConstant.QUOTE_MSG_TYPE,"location");
+                    }else if (message.getType() == EMMessage.Type.VOICE){
+                        quoteObject.put(EaseConstant.QUOTE_MSG_PREVIEW,getResources().getString(R.string.quote_voice));
+                        quoteObject.put(EaseConstant.QUOTE_MSG_TYPE,"audio");
+                    }else if (message.getType() == EMMessage.Type.FILE){
+                        quoteObject.put(EaseConstant.QUOTE_MSG_PREVIEW,getResources().getString(R.string.quote_file));
+                        quoteObject.put(EaseConstant.QUOTE_MSG_TYPE,"file");
+                    }else if (message.getType() == EMMessage.Type.CUSTOM){
+                        quoteObject.put(EaseConstant.QUOTE_MSG_PREVIEW,getResources().getString(R.string.quote_card));
+                        quoteObject.put(EaseConstant.QUOTE_MSG_TYPE,"custom");
+                    }else {
+                        quoteObject.put(EaseConstant.QUOTE_MSG_PREVIEW,"");
+                        quoteObject.put(EaseConstant.QUOTE_MSG_TYPE,"txt");
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                    quoteObject.put(EaseConstant.QUOTE_MSG_SENDER,message.getFrom());
                 }
-                chatLayout.getChatInputMenu().getPrimaryMenu().primaryStartQuote(message);
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
+            chatLayout.getChatInputMenu().getPrimaryMenu().primaryStartQuote(message);
             return true;
         }
         return false;
@@ -628,6 +653,15 @@ public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutLi
         if(mContext != null) {
             mContext.finish();
         }
+    }
+
+    /**
+     * 添加自定义引用展示逻辑
+     * @param message
+     */
+    @Override
+    public void showCustomQuote(EMMessage message) {
+
     }
 }
 

@@ -17,7 +17,6 @@ import com.hyphenate.chat.EMTranslationResult;
 import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.manager.EaseDingMessageHelper;
 import com.hyphenate.easeui.utils.EaseSmileUtils;
-import com.hyphenate.easeui.widget.EaseChatQuoteView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -123,14 +122,6 @@ public class EaseChatRowText extends EaseChatRow {
             }
         });
 
-        quoteView.setQuoteEventListener(new EaseChatQuoteView.onQuoteEventListener() {
-            @Override
-            public void onQuoteShowFinish(EMMessage message) {
-                if (itemClickListener != null) {
-                    itemClickListener.onQuoteShowFinish(message);
-                }
-            }
-        });
     }
 
     /**
@@ -182,9 +173,6 @@ public class EaseChatRowText extends EaseChatRow {
         // Only use the group ack count from message. - 2022.04.27
         //EaseDingMessageHelper.get().setUserUpdateListener(message, userUpdateListener);
         onSetUpQuoteView(message);
-        if (itemClickListener != null) {
-            itemClickListener.onQuoteShowFinish(message);
-        }
     }
 
 

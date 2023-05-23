@@ -87,4 +87,10 @@ public interface OnChatLayoutListener {
      */
     boolean onQuoteLongClick(View v, EMMessage message);
 
+    /**
+     * custom show quote
+     * @param message
+     */
+    default void showCustomQuote(EMMessage message){}
+
 }

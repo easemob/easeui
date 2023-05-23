@@ -56,6 +56,7 @@ public class EaseChatPrimaryMenu extends RelativeLayout implements IChatPrimaryM
     private EaseInputMenuStyle menuType = EaseInputMenuStyle.All;//菜单展示形式
     protected InputMethodManager inputManager;
     protected Activity activity;
+    private boolean isShowDefaultQuote = true;
 
     public EaseChatPrimaryMenu(Context context) {
         this(context, null);
@@ -125,6 +126,16 @@ public class EaseChatPrimaryMenu extends RelativeLayout implements IChatPrimaryM
             buttonMore.setVisibility(GONE);
             buttonSend.setVisibility(VISIBLE);
         }
+    }
+
+    @Override
+    public ConstraintLayout getQuoteLayout() {
+        return quoteLayout;
+    }
+
+    @Override
+    public void setShowDefaultQuote(boolean isShowDefaultQuote){
+        this.isShowDefaultQuote = isShowDefaultQuote;
     }
 
     @Override
@@ -289,7 +300,7 @@ public class EaseChatPrimaryMenu extends RelativeLayout implements IChatPrimaryM
         quoteTitle.setText("");
     }
 
-    public void startQuote(EMMessage message){
+    public void showDefaultQuote(EMMessage message){
         Spannable span = null;
         EaseUser user = EaseUserUtils.getUserInfo(message.getFrom());
         String from = "";
@@ -328,6 +339,9 @@ public class EaseChatPrimaryMenu extends RelativeLayout implements IChatPrimaryM
                 break;
             case LOCATION:
                 span = Spannable.Factory.getInstance().newSpannable(from + ": " + getResources().getString(R.string.quote_location));
+                break;
+            case CUSTOM:
+                span = Spannable.Factory.getInstance().newSpannable(from + ": " + getResources().getString(R.string.quote_card));
                 break;
             default:
                 break;
@@ -427,7 +441,13 @@ public class EaseChatPrimaryMenu extends RelativeLayout implements IChatPrimaryM
 
     @Override
     public void primaryStartQuote(EMMessage message) {
-        startQuote(message);
+        if (isShowDefaultQuote){
+            showDefaultQuote(message);
+        }else {
+            if (listener != null){
+                listener.showCustomQuote(message);
+            }
+        }
     }
 
     @Override

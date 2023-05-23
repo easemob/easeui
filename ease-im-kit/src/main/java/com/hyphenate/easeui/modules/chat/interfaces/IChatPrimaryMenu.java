@@ -3,6 +3,8 @@ package com.hyphenate.easeui.modules.chat.interfaces;
 import android.graphics.drawable.Drawable;
 import android.widget.EditText;
 
+import androidx.constraintlayout.widget.ConstraintLayout;
+
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.easeui.modules.chat.EaseInputMenuStyle;
 
@@ -99,4 +101,16 @@ public interface IChatPrimaryMenu {
      * 隐藏引用消息
      */
     void hideQuoteSelect();
+
+    /**
+     * 获取 quote layout
+     * @return ConstraintLayout
+     */
+    ConstraintLayout getQuoteLayout();
+
+    /**
+     * 设置是否使用默认quote样式
+     * @param isShowDefault
+     */
+    void setShowDefaultQuote(boolean isShowDefault);
 }

@@ -241,6 +241,7 @@ public abstract class EaseChatRow extends LinearLayout {
             return;
         }
         quoteView.setVisibility(GONE);
+        quoteView.clear();
         quoteView.updateMessageInfo(message);
     }
 

@@ -46,13 +46,6 @@ public interface MessageListItemClickListener{
 	boolean onQuoteViewLongClick(View v,EMMessage message);
 
 	/**
-	 * on quote show finish
-	 * @param message
-	 * @return
-	 */
-	void onQuoteShowFinish(EMMessage message);
-
-	/**
 	 * click the user avatar
 	 * @param username
 	 */

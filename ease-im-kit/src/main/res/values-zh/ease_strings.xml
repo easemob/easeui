@@ -172,6 +172,9 @@
     <string name="quote_file">[ 文件 ]</string>
     <string name="quote_image">[ 图片 ]</string>
     <string name="quote_location">[ 位置 ]</string>
-    <string name="quote_emoji">[ 表情消息 ]</string>
+    <string name="quote_emoji">[ 表情 ]</string>
+    <string name="quote_card">[ 名片 ]</string>
+
+    <string name="quote_limitation">超过%1$d条跳转条数限制</string>
 
 </resources>

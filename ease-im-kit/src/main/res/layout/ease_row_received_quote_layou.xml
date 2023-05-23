@@ -290,5 +290,34 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <RelativeLayout
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:id="@+id/subBubble_card_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="30dp"
+        android:padding="8dp"
+        android:layout_marginTop="2dp"
+        android:background="@drawable/ease_chat_bubble_quote_bg"
+        android:visibility="gone"
+        >
+
+        <TextView
+            android:id="@+id/tv_card"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:paddingStart="6dp"
+            android:paddingEnd="5dp"
+            android:maxWidth="238dp"
+            android:gravity="start"
+            tools:text="apex:"
+            style="@style/chat_text_name_style"
+            />
+
+    </RelativeLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
