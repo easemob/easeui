@@ -3,7 +3,6 @@ package com.hyphenate.easeui.modules.chat;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -25,6 +24,7 @@ import com.hyphenate.easeui.modules.chat.interfaces.IChatExtendMenu;
 import com.hyphenate.easeui.widget.chatextend.HorizontalPageLayoutManager;
 import com.hyphenate.easeui.widget.chatextend.PagingScrollHelper;
 import com.hyphenate.util.DensityUtil;
+import com.hyphenate.util.EMLog;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,6 +38,7 @@ import java.util.Map;
  *
  */
 public class EaseChatExtendMenu extends FrameLayout implements PagingScrollHelper.onPageChangeListener, IChatExtendMenu, OnItemClickListener {
+    private final String TAG=getClass().getSimpleName();
     protected Context context;
     private RecyclerView rvExtendMenu;
     private RecyclerView rvIndicator;
@@ -49,13 +50,14 @@ public class EaseChatExtendMenu extends FrameLayout implements PagingScrollHelpe
     private int currentPosition;
     private PagingScrollHelper helper;
     private EaseChatExtendMenuIndicatorAdapter indicatorAdapter;
-    private EaseChatExtendMenuItemClickListener itemListener;
+    private List<EaseChatExtendMenuItemClickListener> itemListeners;
 
     private int[] itemStrings = { R.string.attach_take_pic, R.string.attach_picture,
             R.string.attach_location, R.string.attach_video, R.string.attach_file};
     private int[] itemdrawables = { R.drawable.ease_chat_takepic_selector, R.drawable.ease_chat_image_selector,
             R.drawable.ease_chat_location_selector, R.drawable.em_chat_video_selector, R.drawable.em_chat_file_selector};
     private int[] itemIds = { R.id.extend_item_take_picture, R.id.extend_item_picture, R.id.extend_item_location, R.id.extend_item_video, R.id.extend_item_file};
+
 
     public EaseChatExtendMenu(Context context) {
         this(context, null);
@@ -73,6 +75,7 @@ public class EaseChatExtendMenu extends FrameLayout implements PagingScrollHelpe
 
     private void init(Context context, AttributeSet attrs){
         this.context = context;
+        itemListeners=new ArrayList<>();
         TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.EaseChatExtendMenu);
         numColumns = ta.getInt(R.styleable.EaseChatExtendMenu_numColumns, 4);
         numRows = ta.getInt(R.styleable.EaseChatExtendMenu_numRows, 2);
@@ -155,7 +158,7 @@ public class EaseChatExtendMenu extends FrameLayout implements PagingScrollHelpe
 
     /**
      * register menu item
-     * 
+     *
      * @param name
      *            item name
      * @param drawableRes
@@ -213,7 +216,7 @@ public class EaseChatExtendMenu extends FrameLayout implements PagingScrollHelpe
 
     /**
      * register menu item
-     * 
+     *
      * @param nameRes
      *            resource id of item name
      * @param drawableRes
@@ -271,8 +274,15 @@ public class EaseChatExtendMenu extends FrameLayout implements PagingScrollHelpe
     @Override
     public void onItemClick(View view, int position) {
         ChatMenuItemModel itemModel = itemModels.get(position);
-        if(itemListener != null) {
-            itemListener.onChatExtendMenuItemClick(itemModel.id, view);
+        for (int i = 0; i < itemListeners.size(); i++) {
+            EaseChatExtendMenuItemClickListener itemListener = itemListeners.get(i);
+            try {
+                if(itemListener != null) {
+                    itemListener.onChatExtendMenuItemClick(itemModel.id, view);
+                }
+            }catch (Exception e){
+                EMLog.e(TAG,"onItemClick Exception:"+e.getMessage());
+            }
         }
     }
 
@@ -298,7 +308,36 @@ public class EaseChatExtendMenu extends FrameLayout implements PagingScrollHelpe
 
     @Override
     public void setEaseChatExtendMenuItemClickListener(EaseChatExtendMenuItemClickListener listener) {
-        this.itemListener = listener;
+        addEaseChatExtendMenuItemClickListener(listener);
+    }
+
+    @Override
+    public void addEaseChatExtendMenuItemClickListener(EaseChatExtendMenuItemClickListener listener) {
+        if(listener==null) {
+            EMLog.e(TAG,"addEaseChatExtendMenuItemClickListener()  param listener is null");
+            return;
+        }
+        if(itemListeners!=null&&!itemListeners.contains(listener)) {
+            itemListeners.add(listener);
+        }
+    }
+
+    @Override
+    public void removeEaseChatExtendMenuItemClickListener(EaseChatExtendMenuItemClickListener listener) {
+        if(listener==null) {
+            EMLog.e(TAG,"removeEaseChatExtendMenuItemClickListener()  param listener is null");
+            return;
+        }
+        if(itemListeners!=null) {
+            itemListeners.remove(listener);
+        }
+    }
+
+    @Override
+    public void clearEaseChatExtendMenuItemClickListener() {
+        if(itemListeners!=null) {
+            itemListeners.clear();
+        }
     }
 
     @Override
@@ -329,7 +368,7 @@ public class EaseChatExtendMenu extends FrameLayout implements PagingScrollHelpe
         public int order;
         public EaseChatExtendMenuItemClickListener clickListener;
     }
-    
+
     class ChatMenuItem extends LinearLayout {
         private ImageView imageView;
         private TextView textView;
