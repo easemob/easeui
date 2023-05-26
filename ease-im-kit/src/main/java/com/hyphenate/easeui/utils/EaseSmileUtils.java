@@ -69,6 +69,43 @@ public class EaseSmileUtils {
 	public static final String ee_33 = "[(F)]";
 	public static final String ee_34 = "[(W)]";
 	public static final String ee_35 = "[(D)]";
+
+	public static final String e_1 = "\uD83D\uDE0A";
+	public static final String e_2 = "\uD83D\uDE03";
+	public static final String e_3 = "\uD83D\uDE09";
+	public static final String e_4 = "\uD83D\uDE2E";
+	public static final String e_5 = "\uD83D\uDE0B";
+	public static final String e_6 = "\uD83D\uDE0E";
+	public static final String e_7 = "\uD83D\uDE21";
+	public static final String e_8 = "\uD83D\uDE16";
+	public static final String e_9 = "\uD83D\uDE33";
+	public static final String e_10 = "\uD83D\uDE1E";
+	public static final String e_11 = "\uD83D\uDE2D";
+	public static final String e_12 = "\uD83D\uDE10";
+	public static final String e_13 = "\uD83D\uDE07";
+	public static final String e_14 = "\uD83D\uDE2C";
+	public static final String e_15 = "\uD83D\uDE06";
+	public static final String e_16 = "\uD83D\uDE31";
+	public static final String e_17 = "\uD83C\uDF85";
+	public static final String e_18 = "\uD83D\uDE34";
+	public static final String e_19 = "\uD83D\uDE15";
+	public static final String e_20 = "\uD83D\uDE37";
+	public static final String e_21 = "\uD83D\uDE2F";
+	public static final String e_22 = "\uD83D\uDE0F";
+	public static final String e_23 = "\uD83D\uDE11";
+	public static final String e_24 = "\uD83D\uDC96";
+	public static final String e_25 = "\uD83D\uDC94";
+	public static final String e_26 = "\uD83C\uDF19";
+	public static final String e_27 = "\uD83C\uDF1F";
+	public static final String e_28 = "\uD83C\uDF1E";
+	public static final String e_29 = "\uD83C\uDF08";
+	public static final String e_30 = "\uD83D\uDE0D";
+	public static final String e_31 = "\uD83D\uDE1A";
+	public static final String e_32 = "\uD83D\uDC8B";
+	public static final String e_33 = "\uD83C\uDF39";
+	public static final String e_34 = "\uD83C\uDF42";
+	public static final String e_35 = "\uD83D\uDC4D";
+
 	
 	private static final Factory spannableFactory = Factory
 	        .getInstance();
@@ -77,7 +114,7 @@ public class EaseSmileUtils {
 	
 
 	static {
-	    EaseEmojicon[] emojicons = EaseDefaultEmojiconDatas.getData();
+	    EaseEmojicon[] emojicons = EaseDefaultEmojiconDatas.getDefaultData();
 		for (EaseEmojicon emojicon : emojicons) {
 			addPattern(emojicon.getEmojiText(), emojicon.getIcon());
 		}
