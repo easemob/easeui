@@ -201,11 +201,11 @@ public class EaseImageUtils extends com.hyphenate.util.ImageUtils{
 		Uri imageUri = ((EMImageMessageBody) body).getLocalUri();
 		// 获取Uri的读权限
 		EaseFileUtils.takePersistableUriPermission(context, imageUri);
-		EMLog.e("tag", "current show small view big file: uri:"+imageUri + " exist: "+EaseFileUtils.isFileExistByUri(context, imageUri));
+		EMLog.d("tag", "current show small view big file: uri:"+imageUri + " exist: "+EaseFileUtils.isFileExistByUri(context, imageUri));
 		if(!EaseFileUtils.isFileExistByUri(context, imageUri)) {
 			imageUri = ((EMImageMessageBody) body).thumbnailLocalUri();
 			EaseFileUtils.takePersistableUriPermission(context, imageUri);
-			EMLog.e("tag", "current show small view thumbnail file: uri:"+imageUri + " exist: "+EaseFileUtils.isFileExistByUri(context, imageUri));
+			EMLog.d("tag", "current show small view thumbnail file: uri:"+imageUri + " exist: "+EaseFileUtils.isFileExistByUri(context, imageUri));
 			if(!EaseFileUtils.isFileExistByUri(context, imageUri)) {
 				//context.revokeUriPermission(imageUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
 			    imageUri = null;

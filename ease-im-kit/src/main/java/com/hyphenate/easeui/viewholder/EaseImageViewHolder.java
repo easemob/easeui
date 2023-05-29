@@ -53,7 +53,7 @@ public class EaseImageViewHolder extends EaseChatRowViewHolder {
         Uri imgUri = imgBody.getLocalUri();
         //检查Uri读权限
         EaseFileUtils.takePersistableUriPermission(getContext(), imgUri);
-        EMLog.e("Tag", "big image uri: " + imgUri + "  exist: "+EaseFileUtils.isFileExistByUri(getContext(), imgUri));
+        EMLog.d("Tag", "big image uri: " + imgUri + "  exist: "+EaseFileUtils.isFileExistByUri(getContext(), imgUri));
         if(EaseFileUtils.isFileExistByUri(getContext(), imgUri)) {
             intent.putExtra("uri", imgUri);
         } else{
