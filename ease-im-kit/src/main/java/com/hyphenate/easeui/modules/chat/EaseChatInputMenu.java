@@ -179,13 +179,13 @@ public class EaseChatInputMenu extends LinearLayout implements IChatInputMenu, E
             extendMenuContainer.setVisibility(VISIBLE);
             extendMenuContainer.removeAllViews();
             extendMenuContainer.addView((View) extendMenu);
-            extendMenu.setEaseChatExtendMenuItemClickListener(this);
+            extendMenu.addEaseChatExtendMenuItemClickListener(this);
         }
         if(extendMenu instanceof Fragment && getContext() instanceof AppCompatActivity) {
             extendMenuContainer.setVisibility(VISIBLE);
             FragmentManager manager = ((AppCompatActivity) getContext()).getSupportFragmentManager();
             manager.beginTransaction().replace(R.id.extend_menu_container, (Fragment) extendMenu).commitAllowingStateLoss();
-            extendMenu.setEaseChatExtendMenuItemClickListener(this);
+            extendMenu.addEaseChatExtendMenuItemClickListener(this);
         }
     }
 

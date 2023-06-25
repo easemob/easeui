@@ -18,7 +18,9 @@ import android.widget.TextView;
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.StringRes;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.WindowDecorActionBar;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 
@@ -177,25 +179,28 @@ public class EaseTitleBar extends RelativeLayout implements View.OnClickListener
         }else {
             if(getContext() instanceof AppCompatActivity) {
                 AppCompatActivity activity = (AppCompatActivity) getContext();
-                activity.setSupportActionBar(toolbar);
-                if(activity.getSupportActionBar() != null) {
-                    // 显示返回按钮
-                    activity.getSupportActionBar().setDisplayHomeAsUpEnabled(mDisplayHomeAsUpEnabled);
-                    // 不显示标题
-                    activity.getSupportActionBar().setDisplayShowTitleEnabled(false);
-                }
-                toolbar.setNavigationOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if(mBackPressListener != null) {
-                            mBackPressListener.onBackPress(v);
-                        }
+                ActionBar supportActionBar = activity.getSupportActionBar();
+                if(supportActionBar==null||!(supportActionBar instanceof WindowDecorActionBar)) {
+                    activity.setSupportActionBar(toolbar);
+                    if(activity.getSupportActionBar() != null) {
+                        // 显示返回按钮
+                        activity.getSupportActionBar().setDisplayHomeAsUpEnabled(mDisplayHomeAsUpEnabled);
+                        // 不显示标题
+                        activity.getSupportActionBar().setDisplayShowTitleEnabled(false);
                     }
-                });
-                if(mArrowColorId != -1) {
-                    setToolbarCustomColor(mArrowColorId);
-                }else {
-                    setToolbarCustomColorDefault(mArrowColor);
+                    toolbar.setNavigationOnClickListener(new OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if(mBackPressListener != null) {
+                                mBackPressListener.onBackPress(v);
+                            }
+                        }
+                    });
+                    if(mArrowColorId != -1) {
+                        setToolbarCustomColor(mArrowColorId);
+                    }else {
+                        setToolbarCustomColorDefault(mArrowColor);
+                    }
                 }
             }
         }
