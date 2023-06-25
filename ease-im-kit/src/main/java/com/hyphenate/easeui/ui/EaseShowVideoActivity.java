@@ -57,7 +57,7 @@ public class EaseShowVideoActivity extends EaseBaseActivity {
 		EMLog.d(TAG, "localFilePath = "+localFilePath);
 		EMLog.d(TAG, "local filename = "+messageBody.getFileName());
 		EMMessage.Status status = message.status();
-		EMLog.e(TAG, "message status: "+status);
+		EMLog.d(TAG, "message status: "+status);
 
 		//检查Uri读权限
 		EaseFileUtils.takePersistableUriPermission(this, localFilePath);

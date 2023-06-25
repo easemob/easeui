@@ -321,7 +321,7 @@ public class EaseNotifier {
 
             // check if in silent mode
             if (audioManager.getRingerMode() == AudioManager.RINGER_MODE_SILENT) {
-                EMLog.e(TAG, "in slient mode now");
+                EMLog.e(TAG, "in silent mode now");
                 return;
             }
             if (settingsProvider.isMsgVibrateAllowed(message)) {

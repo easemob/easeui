@@ -50,6 +50,24 @@ public interface IChatExtendMenu {
     /**
      * 设置条目监听
      * @param listener
+     * @deprecated 已废弃。请用 {@link #addEaseChatExtendMenuItemClickListener} 代替。
      */
     void setEaseChatExtendMenuItemClickListener(EaseChatExtendMenuItemClickListener listener);
+
+    /**
+     * 添加条目监听
+     * @param listener
+     */
+    default void addEaseChatExtendMenuItemClickListener(EaseChatExtendMenuItemClickListener listener){}
+
+    /**
+     * 移除条目监听
+     * @param listener
+     */
+    default void removeEaseChatExtendMenuItemClickListener(EaseChatExtendMenuItemClickListener listener){}
+
+    /**
+     * 清除所有条目监听
+     */
+    default void clearEaseChatExtendMenuItemClickListener(){}
 }
