@@ -15,6 +15,7 @@ import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMTextMessageBody;
 import com.hyphenate.chat.EMTranslationResult;
 import com.hyphenate.easeui.R;
+import com.hyphenate.easeui.constants.EaseConstant;
 import com.hyphenate.easeui.manager.EaseDingMessageHelper;
 import com.hyphenate.easeui.utils.EaseSmileUtils;
 import org.json.JSONException;
@@ -96,11 +97,11 @@ public class EaseChatRowText extends EaseChatRow {
                 if (itemClickListener == null){
                     return;
                 }
-                String msgQuote = message.getStringAttribute("msgQuote","");
+                String msgQuote = message.getStringAttribute(EaseConstant.QUOTE_MSG_QUOTE,"");
                 if (!TextUtils.isEmpty(msgQuote)){
                     try {
                         JSONObject jsonObject = new JSONObject(msgQuote);
-                        String quoteMsgID = jsonObject.getString("msgID");
+                        String quoteMsgID = jsonObject.getString(EaseConstant.QUOTE_MSG_ID);
                         EMMessage showMsg = EMClient.getInstance().chatManager().getMessage(quoteMsgID);
                         if (itemClickListener != null && showMsg != null) {
                             itemClickListener.onQuoteViewClick(showMsg);

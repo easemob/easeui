@@ -29,6 +29,8 @@
             android:lineSpacingExtra="2dp"
             android:minHeight="@dimen/ease_chat_text_min_height"
             android:textColor="#808080"
+            android:ellipsize="end"
+            android:maxLines="2"
             android:textSize="15sp"
             tools:text="环信: 撒打算大撒打算撒打算大阿斯顿撒撒打算阿斯顿" />
 
