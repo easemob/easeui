@@ -1,6 +1,5 @@
 package com.hyphenate.easeui.modules.chat;
 
-import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -204,7 +203,7 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
             EMClient.getInstance().groupManager().removeGroupChangeListener(groupListener);
         }
         if(isChatRoomCon()) {
-            EMClient.getInstance().chatroomManager().leaveChatRoom(conversationId);
+            EMClient.getInstance().chatroomManager().leaveChatRoom(conversationId,null);
         }
         if(isGroupCon()) {
             EaseAtMessageHelper.get().removeAtMeGroup(conversationId);
