@@ -17,6 +17,7 @@
 
     <string name="text_ack_msg">已读</string>
     <string name="text_delivered_msg">送达</string>
+    <string name="text_edit_msg">已编辑</string>
     <string name="not_download">未下载:</string>
     <string name="have_downloaded">已下载</string>
     <string name="did_not_download">未下载</string>
