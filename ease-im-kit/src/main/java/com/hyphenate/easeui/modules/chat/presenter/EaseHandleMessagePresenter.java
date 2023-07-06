@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMConversation;
 import com.hyphenate.chat.EMMessage;
+import com.hyphenate.chat.EMMessageBody;
 import com.hyphenate.easeui.constants.EaseConstant;
 import com.hyphenate.easeui.modules.EaseBasePresenter;
 import com.hyphenate.easeui.modules.ILoadDataView;
@@ -147,6 +148,14 @@ public abstract class EaseHandleMessagePresenter extends EaseBasePresenter {
      * @param message
      */
     public abstract void recallMessage(EMMessage message);
+
+
+    /**
+     * 编辑消息
+     * @param messageId
+     * @param messageBodyModified
+     */
+    public abstract void modifyMessage(String messageId, EMMessageBody messageBodyModified);
 
     /**
      * 是否是群聊
