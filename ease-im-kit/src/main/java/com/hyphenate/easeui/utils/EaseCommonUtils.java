@@ -24,6 +24,7 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.WindowManager;
 
+import com.hyphenate.chat.EMCombineMessageBody;
 import com.hyphenate.chat.EMConversation;
 import com.hyphenate.chat.EMConversation.EMConversationType;
 import com.hyphenate.chat.EMMessage;
@@ -136,6 +137,9 @@ public class EaseCommonUtils {
             break;
         case FILE:
             digest = getString(context, R.string.file);
+            break;
+        case COMBINE:
+            digest = getString(context, R.string.combine);
             break;
         default:
             EMLog.e(TAG, "error, unknow type");

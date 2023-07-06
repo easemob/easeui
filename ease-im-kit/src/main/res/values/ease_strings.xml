@@ -6,6 +6,7 @@
     <string name="picture">[Image]</string>
     <string name="video">[Video]</string>
     <string name="file">[File]</string>
+    <string name="combine">[Chat history]</string>
     <string name="custom">[Custom message]</string>
     <string name="voice_prefix">[Voice]</string>
     <string name="voice_call">[Voice call]</string>
