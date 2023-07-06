@@ -74,16 +74,18 @@ public class EaseChatRowVoice extends EaseChatRowFile {
             }
 
             EMLog.d(TAG, "it is receive msg");
-            if (voiceBody.downloadStatus() == EMFileMessageBody.EMDownloadStatus.DOWNLOADING ||
-                    voiceBody.downloadStatus() == EMFileMessageBody.EMDownloadStatus.PENDING) {
-                if (EMClient.getInstance().getOptions().getAutodownloadThumbnail()) {
-                    progressBar.setVisibility(View.VISIBLE);
+            if(progressBar != null) {
+                if (voiceBody.downloadStatus() == EMFileMessageBody.EMDownloadStatus.DOWNLOADING ||
+                        voiceBody.downloadStatus() == EMFileMessageBody.EMDownloadStatus.PENDING) {
+                    if (EMClient.getInstance().getOptions().getAutodownloadThumbnail()) {
+                        progressBar.setVisibility(View.VISIBLE);
+                    } else {
+                        progressBar.setVisibility(View.INVISIBLE);
+                    }
+
                 } else {
                     progressBar.setVisibility(View.INVISIBLE);
                 }
-
-            } else {
-                progressBar.setVisibility(View.INVISIBLE);
             }
         }else {
             // hide the unread icon
@@ -106,12 +108,14 @@ public class EaseChatRowVoice extends EaseChatRowFile {
             return;
         }
 
-        EMVoiceMessageBody voiceBody = (EMVoiceMessageBody) msg.getBody();
-        if (voiceBody.downloadStatus() == EMFileMessageBody.EMDownloadStatus.DOWNLOADING ||
-                voiceBody.downloadStatus() == EMFileMessageBody.EMDownloadStatus.PENDING) {
-            progressBar.setVisibility(View.VISIBLE);
-        } else {
-            progressBar.setVisibility(View.INVISIBLE);
+        if(progressBar != null) {
+            EMVoiceMessageBody voiceBody = (EMVoiceMessageBody) msg.getBody();
+            if (voiceBody.downloadStatus() == EMFileMessageBody.EMDownloadStatus.DOWNLOADING ||
+                    voiceBody.downloadStatus() == EMFileMessageBody.EMDownloadStatus.PENDING) {
+                progressBar.setVisibility(View.VISIBLE);
+            } else {
+                progressBar.setVisibility(View.INVISIBLE);
+            }
         }
     }
 
