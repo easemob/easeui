@@ -165,36 +165,19 @@ public class EaseConversationPresenterImpl extends EaseConversationPresenter {
     public void deleteConversation(int position, EaseConversationInfo info) {
         if(info.getInfo() instanceof EMConversation) {
             //如果是系统通知，则不删除系统消息
-            EMClient.getInstance().chatManager().deleteConversationFromServer(((EMConversation) info.getInfo()).conversationId(),
-                    ((EMConversation) info.getInfo()).getType(),
-                    !TextUtils.equals(((EMConversation) info.getInfo()).conversationId(), EaseConstant.DEFAULT_SYSTEM_MESSAGE_ID),
-                    new EMCallBack() {
-                        @Override
-                        public void onSuccess() {
-                            boolean isDelete = EMClient.getInstance().chatManager()
-                                    .deleteConversation(((EMConversation) info.getInfo()).conversationId()
-                                            , !TextUtils.equals(((EMConversation) info.getInfo()).conversationId(), EaseConstant.DEFAULT_SYSTEM_MESSAGE_ID));
-                            if(isActive()) {
-                                runOnUI(()-> {
-                                    if(isDelete) {
-                                        mView.deleteItem(position);
-                                        EMClient.getInstance().translationManager().removeResultsByConversationId(((EMConversation) info.getInfo()).conversationId());
-                                    }else {
-                                        mView.deleteItemFail(position, "");
-                                    }
-                                });
-                            }
-                        }
-
-                        @Override
-                        public void onError(int code, String error) {
-                            if(isActive()) {
-                                runOnUI(()-> {
-                                    mView.deleteItemFail(position, error);
-                                });
-                            }
-                        }
-                    });
+            boolean isDelete = EMClient.getInstance().chatManager()
+                    .deleteConversation(((EMConversation) info.getInfo()).conversationId()
+                            , !TextUtils.equals(((EMConversation) info.getInfo()).conversationId(), EaseConstant.DEFAULT_SYSTEM_MESSAGE_ID));
+            runOnUI(()-> {
+                if(isActive()) {
+                    if(isDelete) {
+                        mView.deleteItem(position);
+                        EMClient.getInstance().translationManager().removeResultsByConversationId(((EMConversation) info.getInfo()).conversationId());
+                    }else {
+                        mView.deleteItemFail(position, "");
+                    }
+                }
+            });
         }
     }
 }

@@ -307,7 +307,6 @@ public class EaseUser implements Serializable {
                 return defaultLetter;
             }
             String pinyin = HanziToPinyin.getPinyin(name);
-            EMLog.e("pinyin", "letter: "+pinyin);
             if(!TextUtils.isEmpty(pinyin)) {
                 String letter = pinyin.substring(0, 1).toUpperCase();
                 char c = letter.charAt(0);
