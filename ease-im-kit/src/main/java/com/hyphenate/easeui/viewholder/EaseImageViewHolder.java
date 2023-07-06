@@ -62,6 +62,7 @@ public class EaseImageViewHolder extends EaseChatRowViewHolder {
             // first
             String msgId = message.getMsgId();
             intent.putExtra("messageId", msgId);
+            intent.putExtra("msg", message);
             intent.putExtra("filename", imgBody.getFileName());
         }
         if(!EaseIM.getInstance().getConfigsManager().enableSendChannelAck()) {

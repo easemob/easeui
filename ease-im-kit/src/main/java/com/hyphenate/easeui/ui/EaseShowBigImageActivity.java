@@ -68,7 +68,21 @@ public class EaseShowBigImageActivity extends EaseBaseActivity {
 		if (EaseFileUtils.isFileExistByUri(this, uri)) {
             Glide.with(this).load(uri).into(image);
 		} else if(msgId != null) {
-		    downloadImage(msgId);
+			EMMessage msg = EMClient.getInstance().chatManager().getMessage(msgId);
+			if(msg == null) {
+				msg = getIntent().getParcelableExtra("msg");
+				if(msg == null) {
+					EMLog.e(TAG, "message is null, messageId: " + msgId);
+					finish();
+					return;
+				}
+			}
+			EMImageMessageBody body = (EMImageMessageBody) msg.getBody();
+			if(EaseFileUtils.isFileExistByUri(this, body.getLocalUri())) {
+				Glide.with(this).load(body.getLocalUri()).into(image);
+			}else {
+				downloadImage(msg);
+			}
 		}else {
 			image.setImageResource(default_res);
 		}
@@ -84,18 +98,17 @@ public class EaseShowBigImageActivity extends EaseBaseActivity {
 	/**
 	 * download image
 	 * 
-	 * @param msgId
+	 * @param msg
 	 */
 	@SuppressLint("NewApi")
-	private void downloadImage(final String msgId) {
-        EMLog.e(TAG, "download with messageId: " + msgId);
+	private void downloadImage(final EMMessage msg) {
+        EMLog.e(TAG, "download with messageId: " + msg.getMsgId());
 		String str1 = getResources().getString(R.string.Download_the_pictures);
 		pd = new ProgressDialog(this);
 		pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 		pd.setCanceledOnTouchOutside(false);
 		pd.setMessage(str1);
 		pd.show();
-        final EMMessage msg = EMClient.getInstance().chatManager().getMessage(msgId);
         final EMCallBack callback = new EMCallBack() {
 			public void onSuccess() {
 			    EMLog.e(TAG, "onSuccess" );
