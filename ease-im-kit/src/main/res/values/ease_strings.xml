@@ -17,6 +17,7 @@
 
     <string name="text_ack_msg">Read</string>
     <string name="text_delivered_msg">Delivered</string>
+    <string name="text_edit_msg">Edited</string>
     <string name="not_download">Not downloaded:</string>
     <string name="have_downloaded">Downloaded</string>
     <string name="did_not_download">Not downloaded</string>

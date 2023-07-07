@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.text.TextUtils;
 
 import com.hyphenate.EMCallBack;
+import com.hyphenate.EMError;
 import com.hyphenate.EMValueCallBack;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMCmdMessageBody;
@@ -223,6 +224,36 @@ public class EaseHandleMessagePresenterImpl extends EaseHandleMessagePresenter {
                 runOnUI(()->mView.recallMessageFail(e.getErrorCode(), e.getDescription()));
             }
         }
+    }
+
+    @Override
+    public void modifyMessage(String messageId, EMMessageBody messageBodyModified) {
+        if(TextUtils.isEmpty(messageId)||messageBodyModified==null) {
+            runOnUI(() ->{
+                if(isActive()) {
+                    mView.onModifyMessageFailure(messageId, EMError.GENERAL_ERROR,"messageId or messageModified is empty !");
+                }
+            });
+            return;
+        }
+        // modify message
+        EMClient.getInstance().chatManager().asyncModifyMessage(messageId, messageBodyModified, new EMCallBack() {
+            @Override
+            public void onSuccess() {
+                runOnUI(() ->{
+                    if(isActive()) {
+                        mView.onModifyMessageSuccess(messageId);
+                    }
+                });
+            }
+
+            @Override
+            public void onError(int code, String error) {
+                if(isActive()) {
+                    mView.onModifyMessageFailure(messageId, code, error);
+                }
+            }
+        });
     }
 
     @Override
