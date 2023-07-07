@@ -28,6 +28,7 @@ import com.hyphenate.easeui.modules.chat.EaseChatMessageListLayout;
 import com.hyphenate.easeui.modules.chat.model.EaseChatSetStyle;
 import com.hyphenate.easeui.utils.EaseDateUtils;
 import com.hyphenate.easeui.utils.EaseUserUtils;
+import com.hyphenate.easeui.widget.EaseChatQuoteView;
 import com.hyphenate.easeui.widget.EaseImageView;
 import com.hyphenate.util.EMLog;
 
@@ -92,6 +93,7 @@ public abstract class EaseChatRow extends LinearLayout {
      * if delivered
      */
     protected TextView deliveredView;
+    protected EaseChatQuoteView quoteView;
     /**
      * if is sender
      */
@@ -110,7 +112,7 @@ public abstract class EaseChatRow extends LinearLayout {
     private Handler mainThreadHandler;
 
     protected MessageListItemClickListener itemClickListener;
-    private EaseChatRowActionCallback itemActionCallback;
+    protected EaseChatRowActionCallback itemActionCallback;
 
     public EaseChatRow(Context context, boolean isSender) {
         super(context);
@@ -160,6 +162,7 @@ public abstract class EaseChatRow extends LinearLayout {
         ackedView = (TextView) findViewById(R.id.tv_ack);
         editView = (TextView) findViewById(R.id.tv_edit);
         deliveredView = (TextView) findViewById(R.id.tv_delivered);
+        quoteView = (EaseChatQuoteView)findViewById(R.id.chat_quote_view);
 
         setLayoutStyle();
 
@@ -241,6 +244,17 @@ public abstract class EaseChatRow extends LinearLayout {
         msg.setMessageStatusCallback(chatCallback);
         onViewUpdate(msg);
     }
+
+    public void onSetUpQuoteView(EMMessage message) {
+        if (null == message || null == quoteView) {
+            EMLog.e(TAG, "view is null, don't setup quote view");
+            return;
+        }
+        quoteView.setVisibility(GONE);
+        quoteView.clear();
+        quoteView.updateMessageInfo(message);
+    }
+
 
     /**
      * set property according message and position
@@ -677,5 +691,7 @@ public abstract class EaseChatRow extends LinearLayout {
          * when view detach from window
          */
         void onDetachedFromWindow();
+
+        default void refreshView(){}
     }
 }

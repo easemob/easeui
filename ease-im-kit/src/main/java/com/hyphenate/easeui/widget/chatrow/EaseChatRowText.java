@@ -15,8 +15,11 @@ import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMTextMessageBody;
 import com.hyphenate.chat.EMTranslationResult;
 import com.hyphenate.easeui.R;
+import com.hyphenate.easeui.constants.EaseConstant;
 import com.hyphenate.easeui.manager.EaseDingMessageHelper;
 import com.hyphenate.easeui.utils.EaseSmileUtils;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class EaseChatRowText extends EaseChatRow {
 	private TextView contentView;
@@ -87,6 +90,39 @@ public class EaseChatRowText extends EaseChatRow {
                 translationContainer.setVisibility(View.GONE);
             }
         }
+
+        quoteView.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (itemClickListener == null){
+                    return;
+                }
+                String msgQuote = message.getStringAttribute(EaseConstant.QUOTE_MSG_QUOTE,"");
+                if (!TextUtils.isEmpty(msgQuote)){
+                    try {
+                        JSONObject jsonObject = new JSONObject(msgQuote);
+                        String quoteMsgID = jsonObject.getString(EaseConstant.QUOTE_MSG_ID);
+                        EMMessage showMsg = EMClient.getInstance().chatManager().getMessage(quoteMsgID);
+                        if (itemClickListener != null && showMsg != null) {
+                            itemClickListener.onQuoteViewClick(showMsg);
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+
+        quoteView.setOnLongClickListener(new OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                if (itemClickListener != null) {
+                    return itemClickListener.onQuoteViewLongClick(v, message);
+                }
+                return false;
+            }
+        });
+
     }
 
     /**
@@ -137,7 +173,9 @@ public class EaseChatRowText extends EaseChatRow {
         // Set ack-user list change listener.
         // Only use the group ack count from message. - 2022.04.27
         //EaseDingMessageHelper.get().setUserUpdateListener(message, userUpdateListener);
+        onSetUpQuoteView(message);
     }
+
 
     @Override
     protected void onMessageError() {

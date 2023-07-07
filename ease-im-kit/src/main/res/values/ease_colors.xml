@@ -47,4 +47,6 @@
     <color name="ease_contact_color_item_header">#ff333333</color>
     <color name="ease_contact_color_item_header_bg">#fff2f2f2</color>
     <color name="ease_contact_color_item_title">#ff333333</color>
+    <color name="ease_E6E6E6">#E6E6E6</color>
+    <color name="ease_808080">#808080</color>
 </resources>

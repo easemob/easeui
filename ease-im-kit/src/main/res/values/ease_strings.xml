@@ -157,6 +157,7 @@
     <string name="action_multi_select">Choose multiple</string>
     <string name="delete_voice">Delete voice</string>
     <string name="delete_video">Delete video </string>
+    <string name="action_quote">Quote</string>
 
     <string name="contact_send_message">You have %2$s message(s) from %1$s contact(s)</string>
     <string name="unsupported_message_body">Unsupported message body</string>
@@ -166,5 +167,17 @@
     <string name="action_reTranslate">Retranslate</string>
     <string name="action_hide">Hide</string>
     <string name="action_label">Label</string>
+
+    <string name="quote_voice">[Voice]</string>
+    <string name="quote_video">[Video]</string>
+    <string name="quote_file">[File]</string>
+    <string name="quote_image">[Image]</string>
+    <string name="quote_location">[Location]</string>
+    <string name="quote_emoji">[Emoji]</string>
+    <string name="quote_card">[Card]</string>
+
+    <string name="quote_limitation">Exceeding the limit of %1$d jump entry</string>
+    <string name="quote_not_found">The reference message was not found in the current message list</string>
+
 
 </resources>

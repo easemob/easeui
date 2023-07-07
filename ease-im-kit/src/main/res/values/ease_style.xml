@@ -85,4 +85,9 @@
         <item name="android:padding">5dp</item>
     </style>
 
+    <declare-styleable name="ease_quote_style">
+        <!-- whether is sender -->
+        <attr name="ease_chat_item_sender" format="boolean" />
+    </declare-styleable>
+
 </resources>

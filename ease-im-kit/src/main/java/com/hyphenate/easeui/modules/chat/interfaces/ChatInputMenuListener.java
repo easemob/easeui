@@ -3,6 +3,8 @@ package com.hyphenate.easeui.modules.chat.interfaces;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.hyphenate.chat.EMMessage;
+
 public interface ChatInputMenuListener {
     /**
      * when typing on the edit-text layout.
@@ -37,4 +39,10 @@ public interface ChatInputMenuListener {
      * @param view
      */
     void onChatExtendMenuItemClick(int itemId, View view);
+
+    /**
+     * custom show quote
+     * @param message
+     */
+    default void showCustomQuote(EMMessage message){}
 }

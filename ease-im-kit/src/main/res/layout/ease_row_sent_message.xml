@@ -146,8 +146,9 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_chat_activity"
-        android:gravity="end">
+        android:layout_marginTop="@dimen/margin_chat_bottom_activity"
+        android:gravity="end"
+        >
 
         <LinearLayout
             android:id="@+id/subBubble"
@@ -177,5 +178,13 @@
 
         </LinearLayout>
     </RelativeLayout>
+
+    <com.hyphenate.easeui.widget.EaseChatQuoteView
+        android:id="@+id/chat_quote_view"
+        android:layout_marginEnd="70dp"
+        android:layout_gravity="end"
+        app:ease_chat_item_sender="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
 
 </LinearLayout>
