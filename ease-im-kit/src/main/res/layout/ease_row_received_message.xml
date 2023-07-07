@@ -150,4 +150,12 @@
             tools:text="环信" />
     </RelativeLayout>
 
+    <com.hyphenate.easeui.widget.EaseChatQuoteView
+        android:id="@+id/chat_quote_view"
+        android:layout_marginStart="70dp"
+        android:layout_gravity="start"
+        app:ease_chat_item_sender="false"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
 </LinearLayout>

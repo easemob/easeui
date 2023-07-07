@@ -1,5 +1,6 @@
 package com.hyphenate.easeui.modules.chat.presenter;
 
+import com.hyphenate.EMCallBack;
 import com.hyphenate.chat.EMConversation;
 import com.hyphenate.easeui.modules.EaseBasePresenter;
 import com.hyphenate.easeui.modules.ILoadDataView;
@@ -44,7 +45,13 @@ public abstract class EaseChatMessagePresenter extends EaseBasePresenter {
      * 加载更多本地数据
      * @param pageSize
      */
-    public abstract void loadMoreLocalMessages(String msgId, int pageSize);
+    public abstract void loadMoreLocalMessages(String msgId, int pageSize,boolean isJumpFirst);
+
+    /**
+     * 加载更多本地数据
+     * @param pageSize
+     */
+    public abstract void loadMoreLocalMessages(String msgId, int pageSize, boolean isJumpFirst, EMCallBack callBack);
 
     /**
      * 从本地加载更多历史数据

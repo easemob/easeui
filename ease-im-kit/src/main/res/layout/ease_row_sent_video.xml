@@ -45,7 +45,7 @@
                 android:layout_height="match_parent"
                 android:background="@drawable/ease_chat_video_mask_to"
                 android:gravity="bottom"
-                android:orientation="horizontal" >
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/chatting_size_iv"
@@ -67,11 +67,11 @@
 
             <ImageView
                 android:id="@+id/chatting_status_btn"
-                android:clickable="false"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                android:background="@drawable/ease_video_play_btn_small_nor" />
+                android:background="@drawable/ease_video_play_btn_small_nor"
+                android:clickable="false" />
         </RelativeLayout>
 
         <LinearLayout

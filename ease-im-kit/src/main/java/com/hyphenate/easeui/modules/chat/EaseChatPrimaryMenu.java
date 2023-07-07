@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.text.Editable;
+import android.text.Spannable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
@@ -21,10 +22,19 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
+import androidx.constraintlayout.widget.ConstraintLayout;
+import com.hyphenate.chat.EMMessage;
+import com.hyphenate.chat.EMTextMessageBody;
+import com.hyphenate.chat.EMVoiceMessageBody;
 import com.hyphenate.easeui.R;
+import com.hyphenate.easeui.constants.EaseConstant;
+import com.hyphenate.easeui.domain.EaseUser;
 import com.hyphenate.easeui.modules.chat.interfaces.EaseChatPrimaryMenuListener;
 import com.hyphenate.easeui.modules.chat.interfaces.IChatPrimaryMenu;
+import com.hyphenate.easeui.utils.EaseSmileUtils;
+import com.hyphenate.easeui.utils.EaseUserUtils;
 
 public class EaseChatPrimaryMenu extends RelativeLayout implements IChatPrimaryMenu, View.OnClickListener, EaseInputEditText.OnEditTextChangeListener, TextWatcher {
     private LinearLayout rlBottom;
@@ -38,11 +48,15 @@ public class EaseChatPrimaryMenu extends RelativeLayout implements IChatPrimaryM
     private ImageView faceChecked;
     private CheckBox buttonMore;
     private Button buttonSend;
+    private ConstraintLayout quoteLayout;
+    private ImageView cancelSelect;
+    private TextView quoteTitle;
 
     private EaseChatPrimaryMenuListener listener;
     private EaseInputMenuStyle menuType = EaseInputMenuStyle.All;//菜单展示形式
     protected InputMethodManager inputManager;
     protected Activity activity;
+    private boolean isShowDefaultQuote = true;
 
     public EaseChatPrimaryMenu(Context context) {
         this(context, null);
@@ -72,6 +86,9 @@ public class EaseChatPrimaryMenu extends RelativeLayout implements IChatPrimaryM
         faceChecked = findViewById(R.id.iv_face_checked);
         buttonMore = findViewById(R.id.btn_more);
         buttonSend = findViewById(R.id.btn_send);
+        quoteLayout = findViewById(R.id.quote_layout);
+        cancelSelect = findViewById(R.id.cancel_select);
+        quoteTitle = findViewById(R.id.quote_title);
 
         editText.requestFocus();
 
@@ -89,6 +106,7 @@ public class EaseChatPrimaryMenu extends RelativeLayout implements IChatPrimaryM
         editText.setOnClickListener(this);
         editText.setOnEditTextChangeListener(this);
         editText.addTextChangedListener(this);
+        cancelSelect.setOnClickListener(this);
         buttonPressToSpeak.setOnTouchListener(new OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -108,6 +126,16 @@ public class EaseChatPrimaryMenu extends RelativeLayout implements IChatPrimaryM
             buttonMore.setVisibility(GONE);
             buttonSend.setVisibility(VISIBLE);
         }
+    }
+
+    @Override
+    public ConstraintLayout getQuoteLayout() {
+        return quoteLayout;
+    }
+
+    @Override
+    public void setShowDefaultQuote(boolean isShowDefaultQuote){
+        this.isShowDefaultQuote = isShowDefaultQuote;
     }
 
     @Override
@@ -262,7 +290,65 @@ public class EaseChatPrimaryMenu extends RelativeLayout implements IChatPrimaryM
             showTextStatus();
         }else if (id == R.id.rl_face) {//切换到表情模式
             showEmojiconStatus();
+        }else if (id == R.id.cancel_select){//取消引用
+            cancelQuote();
         }
+    }
+
+    private void cancelQuote(){
+        quoteLayout.setVisibility(View.GONE);
+        quoteTitle.setText("");
+    }
+
+    public void showDefaultQuote(EMMessage message){
+        Spannable span = null;
+        EaseUser user = EaseUserUtils.getUserInfo(message.getFrom());
+        String from = "";
+        if (user == null){
+            from = message.getFrom();
+        }else {
+            if (TextUtils.isEmpty(user.getNickname())){
+                from = user.getUsername();
+            }else {
+                from = user.getNickname();
+            }
+        }
+        switch (message.getType()){
+            case TXT:
+                if (message.getBooleanAttribute(EaseConstant.MESSAGE_ATTR_IS_BIG_EXPRESSION, false)){
+                    span = Spannable.Factory.getInstance().newSpannable(from + ": " + getResources().getString(R.string.quote_emoji));
+                }else {
+                    EMTextMessageBody textBody = (EMTextMessageBody) message.getBody();
+                    span = EaseSmileUtils.getSmiledText(activity, textBody != null ? from + ": " + textBody.getMessage() : "");
+                }
+                break;
+            case VOICE:
+                EMVoiceMessageBody voiceBody = (EMVoiceMessageBody) message.getBody();
+                String voiceContent = from + ": "+ getResources().getString(R.string.quote_voice) +
+                        ((voiceBody != null && voiceBody.getLength() > 0)? voiceBody.getLength() : 0) + "\"";
+                span = Spannable.Factory.getInstance().newSpannable(voiceContent);
+                break;
+            case VIDEO:
+                span = Spannable.Factory.getInstance().newSpannable(from + ": " + getResources().getString(R.string.quote_video));
+                break;
+            case FILE:
+                span = Spannable.Factory.getInstance().newSpannable(from + ": " + getResources().getString(R.string.quote_file));
+                break;
+            case IMAGE:
+                span = Spannable.Factory.getInstance().newSpannable(from + ": " + getResources().getString(R.string.quote_image));
+                break;
+            case LOCATION:
+                span = Spannable.Factory.getInstance().newSpannable(from + ": " + getResources().getString(R.string.quote_location));
+                break;
+            case CUSTOM:
+                span = Spannable.Factory.getInstance().newSpannable(from + ": " + getResources().getString(R.string.quote_card));
+                break;
+            default:
+                break;
+        }
+        // 设置内容
+        quoteTitle.setText(span, TextView.BufferType.SPANNABLE);
+        quoteLayout.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -351,6 +437,22 @@ public class EaseChatPrimaryMenu extends RelativeLayout implements IChatPrimaryM
     @Override
     public void setEaseChatPrimaryMenuListener(EaseChatPrimaryMenuListener listener) {
         this.listener = listener;
+    }
+
+    @Override
+    public void primaryStartQuote(EMMessage message) {
+        if (isShowDefaultQuote){
+            showDefaultQuote(message);
+        }else {
+            if (listener != null){
+                listener.showCustomQuote(message);
+            }
+        }
+    }
+
+    @Override
+    public void hideQuoteSelect() {
+        cancelQuote();
     }
 
     @Override
