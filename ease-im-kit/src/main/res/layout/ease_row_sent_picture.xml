@@ -36,9 +36,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:scaleType="fitCenter"
-                tools:src="@drawable/ease_default_image"
+                app:ease_radius="@dimen/ease_chat_image_corner_radius"
                 app:ease_shape_type="rectangle"
-                app:ease_radius="@dimen/ease_chat_image_corner_radius" />
+                tools:src="@drawable/ease_default_image" />
 
         </RelativeLayout>	
         <LinearLayout

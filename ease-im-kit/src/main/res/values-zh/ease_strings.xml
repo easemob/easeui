@@ -17,6 +17,7 @@
 
     <string name="text_ack_msg">已读</string>
     <string name="text_delivered_msg">送达</string>
+    <string name="text_edit_msg">已编辑</string>
     <string name="not_download">未下载:</string>
     <string name="have_downloaded">已下载</string>
     <string name="did_not_download">未下载</string>
@@ -156,6 +157,7 @@
     <string name="action_multi_select">多选</string>
     <string name="delete_voice">删除语音</string>
     <string name="delete_video">删除视频</string>
+    <string name="action_quote">引用</string>
 
     <string name="contact_send_message">%1$s个联系人发来%2$s条消息</string>
     <string name="unsupported_message_body">不支持的消息体</string>
@@ -166,5 +168,15 @@
     <string name="action_hide">隐藏</string>
     <string name="action_label">标记</string>
 
+    <string name="quote_voice">[ 语音 ]</string>
+    <string name="quote_video">[ 视频 ]</string>
+    <string name="quote_file">[ 文件 ]</string>
+    <string name="quote_image">[ 图片 ]</string>
+    <string name="quote_location">[ 位置 ]</string>
+    <string name="quote_emoji">[ 表情 ]</string>
+    <string name="quote_card">[ 名片 ]</string>
+
+    <string name="quote_limitation">超过%1$d条跳转条数限制</string>
+    <string name="quote_not_found">当前消息列表未找到该引用消息</string>
 
 </resources>

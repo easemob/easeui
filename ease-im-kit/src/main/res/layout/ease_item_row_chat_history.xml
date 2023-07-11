@@ -69,8 +69,8 @@
 
     <ImageView
         android:id="@+id/msg_state"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:layout_width="15dp"
+        android:layout_height="15dp"
         app:layout_constraintLeft_toRightOf="@id/avatar"
         app:layout_constraintTop_toTopOf="@id/message"
         app:layout_constraintBottom_toBottomOf="@id/message"

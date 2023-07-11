@@ -81,4 +81,18 @@ public interface IHandleMessageView extends ILoadDataView {
      * @param error
      */
     void translateMessageFail(EMMessage message, int code, String error);
+
+    /**
+     * 变更消息成功
+     * @param messageId
+     */
+    void onModifyMessageSuccess(String messageId);
+
+    /**
+     * 变更消息失败
+     * @param messageId
+     * @param code
+     * @param error
+     */
+    void onModifyMessageFailure(String messageId, int code, String error);
 }
