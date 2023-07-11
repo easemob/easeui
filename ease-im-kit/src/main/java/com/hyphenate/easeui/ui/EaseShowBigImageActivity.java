@@ -18,9 +18,6 @@ import android.app.ProgressDialog;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
-import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -72,13 +69,6 @@ public class EaseShowBigImageActivity extends EaseBaseActivity {
 		}else {
 			image.setImageResource(default_res);
 		}
-
-		image.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				finish();
-			}
-		});
 	}
 	
 	/**
