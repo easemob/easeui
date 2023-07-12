@@ -38,6 +38,8 @@ import com.hyphenate.easeui.domain.EaseUser;
 import com.hyphenate.easeui.utils.EaseEditTextUtils;
 import com.hyphenate.easeui.utils.EaseSmileUtils;
 import com.hyphenate.easeui.utils.EaseUserUtils;
+import com.hyphenate.exceptions.HyphenateException;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.util.HashMap;
@@ -71,6 +73,7 @@ public class EaseChatQuoteView extends LinearLayout {
     private EMMessage message;
     private EMMessage quoteMessage;
     private final Map<String,String> receiveMsgTypes = new HashMap<String,String>();
+    private JSONObject jsonObject;
 
     public EaseChatQuoteView(Context context) {
         this(context, null);
@@ -133,41 +136,53 @@ public class EaseChatQuoteView extends LinearLayout {
     public void updateMessageInfo(EMMessage quoteMsg){
         this.message = quoteMsg;
         if (message != null && message.status() == EMMessage.Status.SUCCESS){
-            String msgQuote = message.getStringAttribute(EaseConstant.QUOTE_MSG_QUOTE,"");
-            if (!TextUtils.isEmpty(msgQuote)){
-                try {
-                    JSONObject jsonObject = new JSONObject(msgQuote);
-                    String quoteMsgID = jsonObject.getString(EaseConstant.QUOTE_MSG_ID);
-                    String quoteSender = jsonObject.getString(EaseConstant.QUOTE_MSG_SENDER);
-                    String quoteType = jsonObject.getString(EaseConstant.QUOTE_MSG_TYPE);
-                    String quoteContent = jsonObject.getString(EaseConstant.QUOTE_MSG_PREVIEW);
-
-                    String quoteSenderNick = "";
-                    if (!TextUtils.isEmpty(quoteSender)){
-                        EaseUser user = EaseUserUtils.getUserInfo(quoteSender);
-                        if (user == null){
-                            quoteSenderNick = quoteSender;
-                        }else {
-                            if (TextUtils.isEmpty(user.getNickname())){
-                                quoteSenderNick = user.getUsername();
-                            }else {
-                                quoteSenderNick = user.getNickname();
-                            }
-                        }
-                    }
-
-                    quoteMessage = EMClient.getInstance().chatManager().getMessage(quoteMsgID);
-                    isShowType(quoteSenderNick,getQuoteMessageType(quoteType),quoteContent);
-
-                    this.setVisibility(VISIBLE);
-                } catch (JSONException e) {
-                    e.printStackTrace();
+            try {
+                String msgQuote = message.getStringAttribute(EaseConstant.QUOTE_MSG_QUOTE,"");
+                if (!TextUtils.isEmpty(msgQuote)){
+                    jsonObject = new JSONObject(msgQuote);
+                }else {
+                    jsonObject = message.getJSONObjectAttribute(EaseConstant.QUOTE_MSG_QUOTE);
                 }
-            }else {
-                this.setVisibility(GONE);
+
+                if (jsonObject != null){
+                    setContent();
+                    this.setVisibility(VISIBLE);
+                }else {
+                    this.setVisibility(GONE);
+                }
+            } catch (JSONException | HyphenateException e) {
+                e.printStackTrace();
             }
         }
     }
+
+    private void setContent(){
+        try {
+            String quoteMsgID = jsonObject.getString(EaseConstant.QUOTE_MSG_ID);
+            String quoteSender = jsonObject.getString(EaseConstant.QUOTE_MSG_SENDER);
+            String quoteType = jsonObject.getString(EaseConstant.QUOTE_MSG_TYPE);
+            String quoteContent = jsonObject.getString(EaseConstant.QUOTE_MSG_PREVIEW);
+
+            String quoteSenderNick = "";
+            if (!TextUtils.isEmpty(quoteSender)){
+                EaseUser user = EaseUserUtils.getUserInfo(quoteSender);
+                if (user == null){
+                    quoteSenderNick = quoteSender;
+                }else {
+                    if (TextUtils.isEmpty(user.getNickname())){
+                        quoteSenderNick = user.getUsername();
+                    }else {
+                        quoteSenderNick = user.getNickname();
+                    }
+                }
+            }
+            quoteMessage = EMClient.getInstance().chatManager().getMessage(quoteMsgID);
+            isShowType(quoteSenderNick,getQuoteMessageType(quoteType),quoteContent);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void initMsgType(){
         receiveMsgTypes.put("text",EMMessage.Type.TXT.name());
         receiveMsgTypes.put("img",EMMessage.Type.IMAGE.name());
