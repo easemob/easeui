@@ -586,7 +586,7 @@ public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutLi
     @Override
     public void addMsgAttrsBeforeSend(EMMessage message) {
         if (message.getType() == EMMessage.Type.TXT && isQuote){
-            message.setAttribute(EaseConstant.QUOTE_MSG_QUOTE,quoteObject.toString());
+            message.setAttribute(EaseConstant.QUOTE_MSG_QUOTE,quoteObject);
         }
     }
 
