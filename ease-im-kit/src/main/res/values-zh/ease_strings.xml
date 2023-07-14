@@ -180,4 +180,6 @@
     <string name="quote_limitation">超过%1$d条跳转条数限制</string>
     <string name="quote_not_found">当前消息列表未找到该引用消息</string>
 
+    <string name="ease_error_message_not_exist">消息不存在。</string>
+
 </resources>

@@ -185,6 +185,7 @@
         android:layout_gravity="end"
         app:ease_chat_item_sender="true"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
 
 </LinearLayout>

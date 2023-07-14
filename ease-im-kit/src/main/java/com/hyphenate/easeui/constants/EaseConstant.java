@@ -79,4 +79,7 @@ public interface EaseConstant {
     String QUOTE_MSG_SENDER = "msgSender";
     String QUOTE_MSG_TYPE = "msgType";
     String QUOTE_MSG_QUOTE = "msgQuote";
+
+    // interface tag
+    String INTERFACE_QUOTE_MESSAGE_TAG = "quote_message_tag";
 }

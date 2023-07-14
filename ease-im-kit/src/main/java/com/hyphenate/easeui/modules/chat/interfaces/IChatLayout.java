@@ -4,6 +4,7 @@ import android.net.Uri;
 
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMMessageBody;
+import com.hyphenate.easeui.interfaces.ChatQuoteMessageProvider;
 import com.hyphenate.easeui.modules.chat.EaseChatInputMenu;
 import com.hyphenate.easeui.modules.chat.EaseChatMessageListLayout;
 
@@ -198,4 +199,10 @@ public interface IChatLayout {
      * @param listener
      */
     void setOnEditMessageListener(OnModifyMessageListener listener);
+
+    /**
+     * Set quote message provider
+     * @param provider
+     */
+    void setChatQuoteMessageProvider(ChatQuoteMessageProvider provider);
 }

@@ -180,5 +180,6 @@
     <string name="quote_limitation">Exceeding the limit of %1$d jump entry</string>
     <string name="quote_not_found">The reference message was not found in the current message list</string>
 
+    <string name="ease_error_message_not_exist">Message does not exist.</string>
 
 </resources>

@@ -57,7 +57,7 @@ public class EaseTextViewHolder extends EaseChatRowViewHolder{
                 return;
             }
         }
-        getChatRow().onSetUpQuoteView(message);
+        ((EaseChatRowText)getChatRow()).onSetUpQuoteView(message);
         // Send the group-ack cmd type msg if this msg is a ding-type msg.
         EaseDingMessageHelper.get().sendAckMessage(message);
     }
