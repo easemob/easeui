@@ -242,8 +242,6 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     public void onResume() {
         Log.i(TAG, this.toString() +" onResume");
-        isQuote = false;
-        getChatInputMenu().getPrimaryMenu().hideQuoteSelect();
     }
 
     @Override
