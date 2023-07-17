@@ -8,6 +8,8 @@ import com.hyphenate.easeui.interfaces.ChatQuoteMessageProvider;
 import com.hyphenate.easeui.modules.chat.EaseChatInputMenu;
 import com.hyphenate.easeui.modules.chat.EaseChatMessageListLayout;
 
+import org.json.JSONObject;
+
 public interface IChatLayout {
     /**
      * 获取聊天列表
@@ -156,6 +158,13 @@ public interface IChatLayout {
      * @param message
      */
     void hideTranslate(EMMessage message);
+
+    /**
+     * Set message quote info.
+     * Should call it before sendMessage.
+     * @param quoteInfo
+     */
+    void setMessageQuoteInfo(JSONObject quoteInfo);
 
     /**
      * 用于监听消息的变化

@@ -568,6 +568,12 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
     }
 
     @Override
+    public void setMessageQuoteInfo(JSONObject quoteInfo) {
+        isQuote = true;
+        quoteObject = quoteInfo;
+    }
+
+    @Override
     public void addMessageAttributes(EMMessage message) {
         presenter.addMessageAttributes(message);
     }
@@ -1316,11 +1322,11 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
                     quoteObject.put(EaseConstant.QUOTE_MSG_PREVIEW,getResources().getString(R.string.quote_file));
                     quoteObject.put(EaseConstant.QUOTE_MSG_TYPE,"file");
                 }else if (message.getType() == EMMessage.Type.CUSTOM){
-                    quoteObject.put(EaseConstant.QUOTE_MSG_PREVIEW,getResources().getString(R.string.quote_card));
+                    quoteObject.put(EaseConstant.QUOTE_MSG_PREVIEW,getResources().getString(R.string.custom));
                     quoteObject.put(EaseConstant.QUOTE_MSG_TYPE,"custom");
                 }else {
                     quoteObject.put(EaseConstant.QUOTE_MSG_PREVIEW,"");
-                    quoteObject.put(EaseConstant.QUOTE_MSG_TYPE,"txt");
+                    quoteObject.put(EaseConstant.QUOTE_MSG_TYPE, message.getType().name().toLowerCase());
                 }
                 quoteObject.put(EaseConstant.QUOTE_MSG_SENDER,message.getFrom());
             }
