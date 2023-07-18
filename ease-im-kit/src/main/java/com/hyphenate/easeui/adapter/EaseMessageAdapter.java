@@ -1,6 +1,14 @@
 package com.hyphenate.easeui.adapter;
 
+import android.animation.ArgbEvaluator;
+import android.animation.ValueAnimator;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.easeui.R;
@@ -13,6 +21,7 @@ import com.hyphenate.easeui.delegate.EaseMessageAdapterDelegate;
  */
 public class EaseMessageAdapter extends EaseBaseDelegateAdapter<EMMessage> {
     public MessageListItemClickListener itemClickListener;
+    private int highlightPosition = -1;
 
     public EaseMessageAdapter() {}
 
@@ -79,6 +88,32 @@ public class EaseMessageAdapter extends EaseBaseDelegateAdapter<EMMessage> {
         return super.setFallbackDelegate(delegate);
     }
 
+    @Override
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        super.onBindViewHolder(holder, position);
+        if(position == highlightPosition) {
+            startAnimator(holder.itemView);
+            highlightPosition = -1;
+        }
+    }
+
+    private void startAnimator(View view) {
+        Drawable background = view.getBackground();
+        int darkColor = ContextCompat.getColor(mContext, R.color.ease_chat_item_bg_dark);
+        ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), Color.TRANSPARENT, darkColor);
+        colorAnimation.setDuration(500);
+        colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animator) {
+                view.setBackgroundColor((int)animator.getAnimatedValue());
+                if((int)animator.getAnimatedValue() == darkColor) {
+                    view.setBackground(background);
+                }
+            }
+        });
+        colorAnimation.start();
+    }
+
     /**
      * get item message
      * @param position
@@ -108,6 +143,15 @@ public class EaseMessageAdapter extends EaseBaseDelegateAdapter<EMMessage> {
      */
     public void setListItemClickListener(MessageListItemClickListener itemClickListener) {
         this.itemClickListener = itemClickListener;
+    }
+
+    /**
+     * Highlight the item view.
+     * @param position
+     */
+    public void highlightItem(int position) {
+        this.highlightPosition = position;
+        notifyItemChanged(position);
     }
 
 }

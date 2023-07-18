@@ -1007,6 +1007,7 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
                             //如果 position 再限制条数以内 则直接跳转指定位置
                             if (position - (dataSize - retrievalSize)  > 0){
                                 getChatMessageListLayout().moveToPosition(position);
+                                getChatMessageListLayout().highlightItem(position);
                             }else {
                                 EaseThreadManager.getInstance().runOnMainThread(new Runnable() {
                                     @Override
@@ -1038,6 +1039,7 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
             //如果 position 再限制条数以内 则直接跳转指定位置
             if (position - ( size - retrievalSize)  > 0){
                 getChatMessageListLayout().moveToPosition(position);
+                getChatMessageListLayout().highlightItem(position);
             }else {
                 EaseThreadManager.getInstance().runOnMainThread(new Runnable() {
                     @Override

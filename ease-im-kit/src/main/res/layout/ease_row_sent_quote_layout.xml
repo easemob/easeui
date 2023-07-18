@@ -295,7 +295,7 @@
         android:padding="8dp"
         android:layout_marginTop="2dp"
         android:background="@drawable/ease_chat_bubble_quote_bg"
-        android:visibility="visible">
+        android:visibility="gone">
 
         <TextView
             android:id="@+id/tv_default"

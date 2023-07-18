@@ -685,6 +685,15 @@ public class EaseChatMessageListLayout extends RelativeLayout implements IChatMe
     }
 
     @Override
+    public void highlightItem(int position) {
+        runOnUi(()-> {
+            if(messageAdapter != null) {
+                messageAdapter.highlightItem(position);
+            }
+        });
+    }
+
+    @Override
     public void showNickname(boolean showNickname) {
         chatSetHelper.setShowNickname(showNickname);
         notifyDataSetChanged();

@@ -98,6 +98,8 @@ public class EaseChatRowText extends EaseChatRow {
             }
         }
 
+        quoteView.setVisibility(GONE);
+
         quoteView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {

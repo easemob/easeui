@@ -42,5 +42,11 @@ public interface IRecyclerViewHandle {
      * @param message
      */
     void lastMsgScrollToBottom(EMMessage message);
+
+    /**
+     * Highlight item to attract user.
+     * @param position
+     */
+    void highlightItem(int position);
 }
 

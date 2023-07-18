@@ -137,7 +137,7 @@ public class EaseChatQuoteView extends LinearLayout {
     public void updateMessageInfo(EMMessage quoteMsg){
         this.message = quoteMsg;
         JSONObject jsonObject;
-        if (message != null && message.status() == EMMessage.Status.SUCCESS){
+        if (message != null){
             try {
                 String msgQuote = message.getStringAttribute(EaseConstant.QUOTE_MSG_QUOTE,"");
                 if (!TextUtils.isEmpty(msgQuote)){
@@ -257,7 +257,10 @@ public class EaseChatQuoteView extends LinearLayout {
             quoteBigExpressionLayout.setVisibility(View.VISIBLE);
         }else {
             Spannable textSpan = EaseSmileUtils.getSmiledText(mContext, quoteSender + ": "+content);
-            quoteContent.setText(textSpan, TextView.BufferType.SPANNABLE);
+            SpannableString spannableString = new SpannableString(textSpan);
+            quoteContent.setText(spannableString);
+            quoteContent.setEllipsize(TextUtils.TruncateAt.END);
+            quoteContent.setMaxLines(2);
             quoteTextLayout.setVisibility(View.VISIBLE);
         }
     }
