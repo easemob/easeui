@@ -133,7 +133,7 @@ public class EaseChatRowText extends EaseChatRow {
                 return false;
             }
         });
-
+        onSetUpQuoteView(message);
     }
 
     /**
@@ -184,7 +184,6 @@ public class EaseChatRowText extends EaseChatRow {
         // Set ack-user list change listener.
         // Only use the group ack count from message. - 2022.04.27
         //EaseDingMessageHelper.get().setUserUpdateListener(message, userUpdateListener);
-        onSetUpQuoteView(message);
     }
 
 

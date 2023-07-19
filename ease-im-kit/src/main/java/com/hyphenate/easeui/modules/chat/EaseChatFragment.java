@@ -212,9 +212,6 @@ public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutLi
     @Override
     public void onChatSuccess(EMMessage message) {
         // you can do something after sending a successful message
-        if (message.getType() == EMMessage.Type.TXT){
-            chatLayout.getChatInputMenu().getPrimaryMenu().hideQuoteSelect();
-        }
     }
 
     @Override

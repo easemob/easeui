@@ -24,6 +24,7 @@
 
     <dimen name="ease_chat_image_corner_radius">8dp</dimen>
     <dimen name="ease_chat_primary_margin_right">16dp</dimen>
+    <dimen name="ease_chat_quote_video_thumbain_corner_radius">2dp</dimen>
 
     <dimen name="ease_chat_text_min_height">22dp</dimen>
 

@@ -40,6 +40,7 @@
             android:layout_marginStart="10dp"
             android:layout_width="0dp"
             android:maxLines="1"
+            android:ellipsize="end"
             android:gravity="center_vertical"
             tools:text="昵称：[视频]"
             android:textColor="@color/ease_808080"

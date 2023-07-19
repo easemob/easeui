@@ -37,7 +37,6 @@ import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMCmdMessageBody;
 import com.hyphenate.chat.EMConversation;
 import com.hyphenate.chat.EMImageMessageBody;
-import com.hyphenate.chat.EMLocationMessageBody;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMMessageBody;
 import com.hyphenate.chat.EMNormalFileMessageBody;
@@ -74,7 +73,6 @@ import com.hyphenate.easeui.modules.menu.EaseChatFinishReason;
 import com.hyphenate.easeui.modules.menu.EasePopupWindow;
 import com.hyphenate.easeui.modules.menu.EasePopupWindowHelper;
 import com.hyphenate.easeui.modules.menu.MenuItemBean;
-import com.hyphenate.easeui.ui.EaseBaiduMapActivity;
 import com.hyphenate.easeui.ui.EaseShowBigImageActivity;
 import com.hyphenate.easeui.ui.EaseShowNormalFileActivity;
 import com.hyphenate.easeui.ui.EaseShowVideoActivity;
@@ -217,7 +215,7 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
         messageListLayout = findViewById(R.id.layout_chat_message);
         inputMenu = findViewById(R.id.layout_menu);
         voiceRecorder = findViewById(R.id.voice_recorder);
-
+        messageListLayout.getListView().addItemDecoration(new EaseMarginBottomDecoration());
         presenter.attachView(this);
 
         menuHelper = new EasePopupWindowHelper();
@@ -825,6 +823,7 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
     public void addMsgAttrBeforeSend(EMMessage message) {
         if (message.getType() == EMMessage.Type.TXT && isQuote){
             message.setAttribute(EaseConstant.QUOTE_MSG_QUOTE, quoteObject);
+            cancelQuote(message);
         }
         //发送消息前，添加消息属性，比如设置ext
         if (sendMsgEvent != null) {
@@ -871,7 +870,6 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
 
     @Override
     public void onPresenterMessageSuccess(EMMessage message) {
-        isQuote = false;
         EMLog.i(TAG, "send message onPresenterMessageSuccess");
         if (listener != null) {
             listener.onChatSuccess(message);
@@ -1142,7 +1140,6 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
 
     @Override
     public void onMessageSuccess(EMMessage message) {
-        isQuote = false;
         EMLog.i(TAG, "send message onMessageSuccess");
         if (listener != null) {
             listener.onChatSuccess(message);
@@ -1460,5 +1457,11 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
         this.isReportYourSelf = isReport;
     }
 
+    private void cancelQuote(EMMessage message) {
+        if(message != null && message.getType() == EMMessage.Type.TXT && isQuote) {
+            isQuote = false;
+            getChatInputMenu().getPrimaryMenu().hideQuoteSelect();
+        }
+    }
 }
 

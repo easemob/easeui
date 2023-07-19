@@ -143,4 +143,21 @@ public class EaseUserUtils {
         }
         textView.setText(user.getNickname());
     }
+
+    /**
+     * Get a limited-length username.
+     * @param username
+     * @return
+     */
+    public static String getLimitName(String username) {
+        int characterCount = EaseCommonUtils.getCharacterCount(username);
+        if(characterCount > 32) {
+            if(EaseCommonUtils.isChinese(username)) {
+                username = username.substring(0, 16)+"...";
+            }else {
+                username = username.substring(0, 32)+"...";
+            }
+        }
+        return username;
+    }
 }
