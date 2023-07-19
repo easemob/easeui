@@ -906,6 +906,11 @@ public class EaseChatMessageListLayout extends RelativeLayout implements IChatMe
     }
 
     @Override
+    public RecyclerView getListView() {
+        return rvList;
+    }
+
+    @Override
     public void setOnMessageTouchListener(OnMessageTouchListener listener) {
         this.messageTouchListener = listener;
     }

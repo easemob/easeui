@@ -19,16 +19,18 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.OnLifecycleEvent;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.hyphenate.EMCallBack;
 import com.hyphenate.EMConversationListener;
+import com.hyphenate.EMError;
 import com.hyphenate.EMMessageListener;
 import com.hyphenate.chat.EMChatManager;
 import com.hyphenate.chat.EMClient;
@@ -1009,25 +1011,15 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
                                 getChatMessageListLayout().moveToPosition(position);
                                 getChatMessageListLayout().highlightItem(position);
                             }else {
-                                EaseThreadManager.getInstance().runOnMainThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        if (getContext() != null){
-                                            Toast.makeText(getContext(),getContext().getString(R.string.quote_limitation),Toast.LENGTH_SHORT).show();
-                                        }
-                                    }
-                                });
+                                if(listener != null) {
+                                    listener.onChatError(EMError.GENERAL_ERROR, getContext().getString(R.string.quote_limitation, retrievalSize));
+                                }
                             }
                             //如果还没查到
                         }else{
-                            EaseThreadManager.getInstance().runOnMainThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    if (getContext() != null){
-                                        Toast.makeText(getContext(),getContext().getString(R.string.quote_not_found),Toast.LENGTH_SHORT).show();
-                                    }
-                                }
-                            });
+                            if(listener != null) {
+                                listener.onChatError(EMError.GENERAL_ERROR, getContext().getString(R.string.quote_not_found));
+                            }
                         }
                     }
                 }
@@ -1038,17 +1030,21 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
         }else {
             //如果 position 再限制条数以内 则直接跳转指定位置
             if (position - ( size - retrievalSize)  > 0){
-                getChatMessageListLayout().moveToPosition(position);
+                RecyclerView.LayoutManager manager = getChatMessageListLayout().getListView().getLayoutManager();
+                if(manager instanceof LinearLayoutManager) {
+                    int firstVisiblePosition = ((LinearLayoutManager) manager).findFirstCompletelyVisibleItemPosition();
+                    int lastVisiblePosition = ((LinearLayoutManager) manager).findLastCompletelyVisibleItemPosition();
+                    if(position < firstVisiblePosition || position > lastVisiblePosition) {
+                        getChatMessageListLayout().moveToPosition(position);
+                    }
+                }else {
+                    getChatMessageListLayout().moveToPosition(position);
+                }
                 getChatMessageListLayout().highlightItem(position);
             }else {
-                EaseThreadManager.getInstance().runOnMainThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (getContext() != null){
-                            Toast.makeText(getContext(),getContext().getString(R.string.quote_limitation),Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
+                if(listener != null) {
+                    listener.onChatError(EMError.GENERAL_ERROR, getContext().getString(R.string.quote_limitation, retrievalSize));
+                }
             }
         }
     }

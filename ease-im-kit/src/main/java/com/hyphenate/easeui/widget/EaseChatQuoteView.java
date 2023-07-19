@@ -96,7 +96,7 @@ public class EaseChatQuoteView extends LinearLayout {
         if (isSender) {
             LayoutInflater.from(context).inflate(R.layout.ease_row_sent_quote_layout, this);
         } else {
-            LayoutInflater.from(context).inflate(R.layout.ease_row_received_quote_layou, this);
+            LayoutInflater.from(context).inflate(R.layout.ease_row_received_quote_layout, this);
         }
 
         quoteContent = findViewById(R.id.tv_subContent);

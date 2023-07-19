@@ -92,7 +92,13 @@ public class EaseMessageAdapter extends EaseBaseDelegateAdapter<EMMessage> {
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         super.onBindViewHolder(holder, position);
         if(position == highlightPosition) {
-            startAnimator(holder.itemView);
+            View outLayout = holder.itemView.findViewById(R.id.rl_bubble_out);
+            if(outLayout != null) {
+                startAnimator(outLayout);
+            }else {
+                startAnimator(holder.itemView);
+            }
+
             highlightPosition = -1;
         }
     }
@@ -108,6 +114,8 @@ public class EaseMessageAdapter extends EaseBaseDelegateAdapter<EMMessage> {
                 view.setBackgroundColor((int)animator.getAnimatedValue());
                 if((int)animator.getAnimatedValue() == darkColor) {
                     view.setBackground(background);
+                }else if((int)animator.getAnimatedValue() == 0) {
+                    view.setBackground(null);
                 }
             }
         });

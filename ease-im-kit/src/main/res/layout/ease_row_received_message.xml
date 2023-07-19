@@ -15,6 +15,7 @@
         android:layout_gravity="center" />
 
     <RelativeLayout
+        android:id="@+id/rl_bubble_out"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin_chat_activity">
