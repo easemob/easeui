@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.text.Editable;
 import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
@@ -33,6 +34,8 @@ import com.hyphenate.easeui.constants.EaseConstant;
 import com.hyphenate.easeui.domain.EaseUser;
 import com.hyphenate.easeui.modules.chat.interfaces.EaseChatPrimaryMenuListener;
 import com.hyphenate.easeui.modules.chat.interfaces.IChatPrimaryMenu;
+import com.hyphenate.easeui.utils.EaseCommonUtils;
+import com.hyphenate.easeui.utils.EaseEditTextUtils;
 import com.hyphenate.easeui.utils.EaseSmileUtils;
 import com.hyphenate.easeui.utils.EaseUserUtils;
 
@@ -55,7 +58,7 @@ public class EaseChatPrimaryMenu extends RelativeLayout implements IChatPrimaryM
     private EaseChatPrimaryMenuListener listener;
     private EaseInputMenuStyle menuType = EaseInputMenuStyle.All;//菜单展示形式
     protected InputMethodManager inputManager;
-    protected Activity activity;
+    protected Context activity;
     private boolean isShowDefaultQuote = true;
 
     public EaseChatPrimaryMenu(Context context) {
@@ -69,7 +72,7 @@ public class EaseChatPrimaryMenu extends RelativeLayout implements IChatPrimaryM
     public EaseChatPrimaryMenu(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         LayoutInflater.from(context).inflate(R.layout.ease_widget_chat_primary_menu, this);
-        activity = (Activity) context;
+        activity = context;
         inputManager = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
         initViews();
     }
@@ -313,6 +316,7 @@ public class EaseChatPrimaryMenu extends RelativeLayout implements IChatPrimaryM
                 from = user.getNickname();
             }
         }
+        from = EaseUserUtils.getLimitName(from);
         switch (message.getType()){
             case TXT:
                 if (message.getBooleanAttribute(EaseConstant.MESSAGE_ATTR_IS_BIG_EXPRESSION, false)){
@@ -324,7 +328,7 @@ public class EaseChatPrimaryMenu extends RelativeLayout implements IChatPrimaryM
                 break;
             case VOICE:
                 EMVoiceMessageBody voiceBody = (EMVoiceMessageBody) message.getBody();
-                String voiceContent = from + ": "+ getResources().getString(R.string.quote_voice) +
+                String voiceContent = from + ": "+ getResources().getString(R.string.quote_voice) + " "+
                         ((voiceBody != null && voiceBody.getLength() > 0)? voiceBody.getLength() : 0) + "\"";
                 span = Spannable.Factory.getInstance().newSpannable(voiceContent);
                 break;
@@ -347,7 +351,10 @@ public class EaseChatPrimaryMenu extends RelativeLayout implements IChatPrimaryM
                 break;
         }
         // 设置内容
-        quoteTitle.setText(span, TextView.BufferType.SPANNABLE);
+        SpannableString spannableString = new SpannableString(span);
+        quoteTitle.setText(spannableString);
+        quoteTitle.setEllipsize(TextUtils.TruncateAt.END);
+        quoteTitle.setMaxLines(1);
         quoteLayout.setVisibility(View.VISIBLE);
     }
 
@@ -416,9 +423,11 @@ public class EaseChatPrimaryMenu extends RelativeLayout implements IChatPrimaryM
             return;
         }
         editText.requestFocus();
-        if (activity.getWindow().getAttributes().softInputMode != WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN) {
-            if (activity.getCurrentFocus() != null)
-                inputManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+        if(activity instanceof Activity) {
+            if (((Activity)activity).getWindow().getAttributes().softInputMode != WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN) {
+                if (((Activity)activity).getCurrentFocus() != null)
+                    inputManager.hideSoftInputFromWindow(((Activity)activity).getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+            }
         }
     }
 
@@ -443,6 +452,7 @@ public class EaseChatPrimaryMenu extends RelativeLayout implements IChatPrimaryM
     public void primaryStartQuote(EMMessage message) {
         if (isShowDefaultQuote){
             showDefaultQuote(message);
+            quoteLayout.postDelayed(()-> showSoftKeyboard(editText), 100);
         }else {
             if (listener != null){
                 listener.showCustomQuote(message);

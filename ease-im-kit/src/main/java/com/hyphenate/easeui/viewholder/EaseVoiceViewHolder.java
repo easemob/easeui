@@ -9,6 +9,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 
 import com.hyphenate.chat.EMClient;
+import com.hyphenate.chat.EMFileMessageBody;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMVoiceMessageBody;
 import com.hyphenate.easeui.R;
@@ -54,10 +55,10 @@ public class EaseVoiceViewHolder extends EaseChatRowViewHolder{
                 return;
             }
         }
-
+        EMVoiceMessageBody voiceBody = (EMVoiceMessageBody) message.getBody();
         if (message.direct() == EMMessage.Direct.SEND) {
             // Play the voice
-            String localPath = ((EMVoiceMessageBody) message.getBody()).getLocalUrl();
+            String localPath = voiceBody.getLocalUrl();
             File file = new File(localPath);
             if (file.exists() && file.isFile()) {
                 playVoice(message);
@@ -69,10 +70,9 @@ public class EaseVoiceViewHolder extends EaseChatRowViewHolder{
         } else {
             final String st = getContext().getResources().getString(R.string.Is_download_voice_click_later);
             if (message.status() == EMMessage.Status.SUCCESS) {
-                if (EMClient.getInstance().getOptions().getAutodownloadThumbnail()) {
+                if (EMClient.getInstance().getOptions().getAutodownloadThumbnail() && voiceBody.downloadStatus() != EMFileMessageBody.EMDownloadStatus.FAILED) {
                     play(message);
                 } else {
-                    EMVoiceMessageBody voiceBody = (EMVoiceMessageBody) message.getBody();
                     EMLog.i(TAG, "Voice body download status: " + voiceBody.downloadStatus());
                     switch (voiceBody.downloadStatus()) {
                         case PENDING:// Download not begin

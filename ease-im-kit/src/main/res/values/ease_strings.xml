@@ -6,6 +6,7 @@
     <string name="picture">[Image]</string>
     <string name="video">[Video]</string>
     <string name="file">[File]</string>
+    <string name="combine">[Chat history]</string>
     <string name="custom">[Custom message]</string>
     <string name="voice_prefix">[Voice]</string>
     <string name="voice_call">[Voice call]</string>
@@ -179,5 +180,6 @@
     <string name="quote_limitation">Exceeding the limit of %1$d jump entry</string>
     <string name="quote_not_found">The reference message was not found in the current message list</string>
 
+    <string name="ease_error_message_not_exist">Message does not exist.</string>
 
 </resources>

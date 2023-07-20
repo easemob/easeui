@@ -31,11 +31,11 @@
             android:maxLines="2"
             android:textColor="#808080"
             android:textSize="15sp"
-            tools:text="环信: 撒打算大撒打算撒打算大阿斯顿撒撒打算阿斯顿" />
+            tools:text="环信: " />
 
     </RelativeLayout>
 
-    <RelativeLayout
+    <LinearLayout
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         android:id="@+id/subBubble_audio_layout"
@@ -50,12 +50,16 @@
 
         <TextView
             android:id="@+id/iv_voice_name"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
             android:paddingStart="6dp"
             android:paddingEnd="5dp"
+            android:maxLines="2"
+            android:ellipsize="end"
+            android:layout_marginTop="4dp"
             tools:text="apex"
             tools:textColor="@color/black" />
 
@@ -65,7 +69,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:src="@drawable/ease_chatto_voice_playing" />
+            android:src="@drawable/ease_chatfrom_voice_playing" />
 
         <TextView
             android:id="@+id/tv_voice_length"
@@ -74,15 +78,16 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="10dp"
             android:layout_marginStart="6dp"
+            android:layout_marginTop="4dp"
             android:layout_toEndOf="@id/iv_voice"
             tools:text="12''"
             android:maxLines="1"
             android:layout_centerVertical="true"
             android:gravity="center" />
 
-    </RelativeLayout>
+    </LinearLayout>
 
-    <RelativeLayout
+    <LinearLayout
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         android:id="@+id/subBubble_video_layout"
@@ -92,34 +97,36 @@
         android:padding="8dp"
         android:layout_marginTop="2dp"
         android:background="@drawable/ease_chat_bubble_quote_bg"
+        android:orientation="horizontal"
         android:visibility="gone">
 
         <TextView
             app:layout_constraintTop_toTopOf="parent"
             android:id="@+id/tv_video_subContent"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="wrap_content"
             android:lineSpacingExtra="2dp"
             android:minHeight="@dimen/ease_chat_text_min_height"
             android:textColor="#808080"
-            android:maxWidth="80dp"
             android:textSize="15sp"
             android:minWidth="30dp"
+            android:maxLines="2"
+            android:ellipsize="end"
             tools:text="环信: " />
 
         <RelativeLayout
             android:id="@+id/iv_video_layout"
             android:layout_toEndOf="@+id/tv_video_subContent"
-            android:layout_width="36dp"
-            android:layout_height="36dp">
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
 
             <com.hyphenate.easeui.widget.EaseImageView
                 android:id="@+id/chatting_content_iv"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_width="36dp"
+                android:layout_height="wrap_content"
                 app:ease_shape_type="rectangle"
-                app:ease_radius="@dimen/ease_chat_image_corner_radius"
-                android:scaleType="fitCenter" />
+                app:ease_radius="@dimen/ease_chat_quote_video_thumbain_corner_radius" />
 
             <ImageView
                 android:id="@+id/chatting_status_btn"
@@ -128,11 +135,12 @@
                 android:layout_height="20dp"
                 android:layout_centerInParent="true"
                 android:background="@drawable/ease_video_play_btn_small_nor" />
+
         </RelativeLayout>
 
-    </RelativeLayout>
+    </LinearLayout>
 
-    <RelativeLayout
+    <LinearLayout
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         android:id="@+id/subBubble_file_layout"
@@ -147,12 +155,15 @@
 
         <TextView
             android:id="@+id/iv_file_title"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
             android:paddingStart="6dp"
             android:paddingEnd="5dp"
+            android:maxLines="2"
+            android:ellipsize="end"
             tools:text="apex"
             tools:textColor="@color/black" />
 
@@ -178,7 +189,7 @@
             android:layout_centerVertical="true"
             android:gravity="center" />
 
-    </RelativeLayout>
+    </LinearLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         app:layout_constraintTop_toTopOf="parent"
@@ -189,19 +200,20 @@
         android:padding="8dp"
         android:layout_marginTop="2dp"
         android:background="@drawable/ease_chat_bubble_quote_bg"
-        android:visibility="gone"
-        >
+        android:visibility="gone">
 
         <TextView
-            app:layout_constraintRight_toLeftOf="@+id/iv_quote_picture"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/iv_quote_picture"
+            app:layout_constraintTop_toTopOf="@id/iv_quote_picture"
             android:id="@+id/tv_image_subContent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
             android:lineSpacingExtra="2dp"
-            android:maxWidth="80dip"
-            android:maxLines="4"
+            app:layout_constrainedWidth="true"
+            android:maxLines="2"
+            android:ellipsize="end"
             android:minHeight="@dimen/ease_chat_text_min_height"
             android:textColor="#808080"
             android:textSize="15sp"
@@ -210,14 +222,14 @@
 
         <com.hyphenate.easeui.widget.EaseImageView
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/tv_image_subContent"
             android:id="@+id/iv_quote_picture"
             app:ease_radius="4dp"
             app:ease_shape_type="rectangle"
             android:layout_width="36dp"
-            android:layout_height="36dp"
-            />
+            tools:src="@drawable/ease_default_image"
+            android:layout_height="wrap_content"/>
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -243,8 +255,9 @@
             android:layout_centerVertical="true"
             android:paddingStart="6dp"
             android:paddingEnd="5dp"
-            android:maxWidth="238dp"
             android:gravity="start"
+            android:maxLines="2"
+            android:ellipsize="end"
             tools:text="apex: 北京市朝阳区广顺南大街16号嘉美中心写字楼2909环信即..."
             style="@style/chat_text_name_style"
             />
@@ -264,14 +277,17 @@
         >
 
         <TextView
-            app:layout_constraintRight_toLeftOf="@+id/iv_bigExpression_picture"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/iv_bigExpression_picture"
             app:layout_constraintTop_toTopOf="parent"
             android:id="@+id/tv_bigExpression_subContent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
             android:lineSpacingExtra="2dp"
-            android:maxLines="4"
+            app:layout_constrainedWidth="true"
+            android:maxLines="2"
+            android:ellipsize="end"
             android:minHeight="@dimen/ease_chat_text_min_height"
             android:textColor="#808080"
             android:textSize="15sp"
@@ -281,7 +297,8 @@
         <com.hyphenate.easeui.widget.EaseImageView
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintStart_toEndOf="@id/tv_bigExpression_subContent"
+            app:layout_constraintEnd_toEndOf="parent"
             android:id="@+id/iv_bigExpression_picture"
             app:ease_radius="4dp"
             app:ease_shape_type="rectangle"
@@ -295,7 +312,7 @@
     <RelativeLayout
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:id="@+id/subBubble_card_layout"
+        android:id="@+id/subBubble_default_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:minWidth="30dp"
@@ -306,14 +323,13 @@
         >
 
         <TextView
-            android:id="@+id/tv_card"
+            android:id="@+id/tv_default"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
             android:paddingStart="6dp"
             android:paddingEnd="5dp"
-            android:maxWidth="238dp"
             android:gravity="start"
             tools:text="apex:"
             style="@style/chat_text_name_style"

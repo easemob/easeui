@@ -76,7 +76,7 @@ public interface OnChatLayoutListener {
      * @param message
      * @return
      */
-    void onQuoteClick(EMMessage message);
+    boolean onQuoteClick(EMMessage message);
 
     /**
      * 长按消息引用区域

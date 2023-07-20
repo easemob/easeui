@@ -2,6 +2,7 @@ package com.hyphenate.easeui.widget.chatrow;
 
 import android.content.Context;
 import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.URLSpan;
@@ -10,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.TextView.BufferType;
 
+import com.hyphenate.EMError;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMTextMessageBody;
@@ -18,6 +20,9 @@ import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.constants.EaseConstant;
 import com.hyphenate.easeui.manager.EaseDingMessageHelper;
 import com.hyphenate.easeui.utils.EaseSmileUtils;
+import com.hyphenate.easeui.widget.EaseChatQuoteView;
+import com.hyphenate.util.EMLog;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -26,6 +31,7 @@ public class EaseChatRowText extends EaseChatRow {
     private TextView translationContentView;
     private ImageView translationStatusView;
     private View translationContainer;
+    private EaseChatQuoteView quoteView;
 
     public EaseChatRowText(Context context, boolean isSender) {
 		super(context, isSender);
@@ -47,6 +53,7 @@ public class EaseChatRowText extends EaseChatRow {
         translationContentView = (TextView) findViewById(R.id.tv_subContent);
         translationStatusView = (ImageView) findViewById(R.id.translation_status);
         translationContainer = (View) findViewById(R.id.subBubble);
+        quoteView = (EaseChatQuoteView)findViewById(R.id.chat_quote_view);
 	}
 
     @Override
@@ -91,6 +98,8 @@ public class EaseChatRowText extends EaseChatRow {
             }
         }
 
+        quoteView.setVisibility(GONE);
+
         quoteView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -103,9 +112,11 @@ public class EaseChatRowText extends EaseChatRow {
                         JSONObject jsonObject = new JSONObject(msgQuote);
                         String quoteMsgID = jsonObject.getString(EaseConstant.QUOTE_MSG_ID);
                         EMMessage showMsg = EMClient.getInstance().chatManager().getMessage(quoteMsgID);
-                        if (itemClickListener != null && showMsg != null) {
-                            itemClickListener.onQuoteViewClick(showMsg);
+                        if(showMsg == null) {
+                            itemClickListener.onMessageError(null, EMError.GENERAL_ERROR, context.getString(R.string.ease_error_message_not_exist));
+                            return;
                         }
+                        itemClickListener.onQuoteViewClick(showMsg);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -122,7 +133,7 @@ public class EaseChatRowText extends EaseChatRow {
                 return false;
             }
         });
-
+        onSetUpQuoteView(message);
     }
 
     /**
@@ -173,7 +184,6 @@ public class EaseChatRowText extends EaseChatRow {
         // Set ack-user list change listener.
         // Only use the group ack count from message. - 2022.04.27
         //EaseDingMessageHelper.get().setUserUpdateListener(message, userUpdateListener);
-        onSetUpQuoteView(message);
     }
 
 
@@ -186,6 +196,20 @@ public class EaseChatRowText extends EaseChatRow {
     @Override
     protected void onMessageInProgress() {
         setStatus(View.VISIBLE, View.GONE);
+    }
+
+    public void onSetUpQuoteView(EMMessage message) {
+        if(quoteView == null) {
+            EMLog.e(TAG, "view is null, don't setup quote view");
+            return;
+        }
+        quoteView.setVisibility(GONE);
+        if (null == message) {
+            EMLog.e(TAG, "message is null, don't setup quote view");
+            return;
+        }
+        quoteView.clear();
+        quoteView.updateMessageInfo(message);
     }
 
     /**

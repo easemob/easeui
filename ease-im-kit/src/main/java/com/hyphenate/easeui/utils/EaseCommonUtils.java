@@ -24,6 +24,7 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.WindowManager;
 
+import com.hyphenate.chat.EMCombineMessageBody;
 import com.hyphenate.chat.EMConversation;
 import com.hyphenate.chat.EMConversation.EMConversationType;
 import com.hyphenate.chat.EMMessage;
@@ -136,6 +137,9 @@ public class EaseCommonUtils {
             break;
         case FILE:
             digest = getString(context, R.string.file);
+            break;
+        case COMBINE:
+            digest = getString(context, R.string.combine);
             break;
         default:
             EMLog.e(TAG, "error, unknow type");
@@ -310,6 +314,52 @@ public class EaseCommonUtils {
             e.printStackTrace();
         }
         return timestamp > 0;
+    }
+
+    /**
+     * Get the number of character in a string, a Chinese character is two characters and an English character is one.
+     * @param content
+     * @return
+     */
+    public static int getCharacterCount(String content) {
+        int count = 0;
+        for(int i = 0; i < content.length(); i++) {
+            char c = content.charAt(i);
+            // Judge if a chinese character
+            if ((c >= 0x4E00) && (c <= 0x9FA5)) {
+                count += 2;
+            } else {
+                count += 1;
+            }
+        }
+        return count;
+    }
+
+    /**
+     * Judge whether it is a chinese string.
+     * @param content
+     * @return
+     */
+    public static boolean isChinese(String content) {
+        char[] ch = content.toCharArray();
+        for (int i = 0; i < ch.length; i++) {
+            char c = ch[i];
+            if (isChinese(c)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean isChinese(char c) {
+        Character.UnicodeBlock ub = Character.UnicodeBlock.of(c);
+        return ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS
+                || ub == Character.UnicodeBlock.CJK_COMPATIBILITY_IDEOGRAPHS
+                || ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_A
+                || ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_B
+                || ub == Character.UnicodeBlock.CJK_SYMBOLS_AND_PUNCTUATION
+                || ub == Character.UnicodeBlock.HALFWIDTH_AND_FULLWIDTH_FORMS
+                || ub == Character.UnicodeBlock.GENERAL_PUNCTUATION;
     }
 
     /**

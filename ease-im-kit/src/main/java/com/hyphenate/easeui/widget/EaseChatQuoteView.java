@@ -3,7 +3,9 @@ package com.hyphenate.easeui.widget;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.text.LineBreaker;
 import android.net.Uri;
+import android.os.Build;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
@@ -12,6 +14,7 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -35,7 +38,11 @@ import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.constants.EaseConstant;
 import com.hyphenate.easeui.domain.EaseEmojicon;
 import com.hyphenate.easeui.domain.EaseUser;
+import com.hyphenate.easeui.interfaces.IUIKitInterface;
+import com.hyphenate.easeui.manager.EaseChatInterfaceManager;
+import com.hyphenate.easeui.utils.EaseCommonUtils;
 import com.hyphenate.easeui.utils.EaseEditTextUtils;
+import com.hyphenate.easeui.utils.EaseFileUtils;
 import com.hyphenate.easeui.utils.EaseSmileUtils;
 import com.hyphenate.easeui.utils.EaseUserUtils;
 import com.hyphenate.exceptions.HyphenateException;
@@ -46,6 +53,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class EaseChatQuoteView extends LinearLayout {
+    private static final float IMAGE_DEFAULT_WIDTH = 36;
     private final Context mContext;
     private TextView quoteContent;
     private ImageView quoteVoiceIcon;
@@ -60,20 +68,19 @@ public class EaseChatQuoteView extends LinearLayout {
     private EaseImageView quoteImageView;
     private TextView quoteLocationAddress;
     private TextView quoteBigExpressionTitle;
-    private TextView quoteCardTitle;
+    private TextView quoteDefaultView;
     private EaseImageView quoteBigExpressionImg;
-    private RelativeLayout quoteTextLayout;
-    private RelativeLayout quoteVoiceLayout;
-    private RelativeLayout quoteVideoLayout;
-    private RelativeLayout quoteFileLayout;
-    private RelativeLayout quoteLocationLayout;
-    private ConstraintLayout quoteImageLayout;
-    private ConstraintLayout quoteBigExpressionLayout;
-    private RelativeLayout quoteCardLayout;
+    private ViewGroup quoteTextLayout;
+    private ViewGroup quoteVoiceLayout;
+    private ViewGroup quoteVideoLayout;
+    private ViewGroup quoteFileLayout;
+    private ViewGroup quoteLocationLayout;
+    private ViewGroup quoteImageLayout;
+    private ViewGroup quoteBigExpressionLayout;
+    private ViewGroup quoteDefaultLayout;
     private EMMessage message;
     private EMMessage quoteMessage;
     private final Map<String,String> receiveMsgTypes = new HashMap<String,String>();
-    private JSONObject jsonObject;
 
     public EaseChatQuoteView(Context context) {
         this(context, null);
@@ -95,7 +102,7 @@ public class EaseChatQuoteView extends LinearLayout {
         if (isSender) {
             LayoutInflater.from(context).inflate(R.layout.ease_row_sent_quote_layout, this);
         } else {
-            LayoutInflater.from(context).inflate(R.layout.ease_row_received_quote_layou, this);
+            LayoutInflater.from(context).inflate(R.layout.ease_row_received_quote_layout, this);
         }
 
         quoteContent = findViewById(R.id.tv_subContent);
@@ -119,7 +126,7 @@ public class EaseChatQuoteView extends LinearLayout {
         quoteBigExpressionTitle =  findViewById(R.id.tv_bigExpression_subContent);
         quoteBigExpressionImg = findViewById(R.id.iv_bigExpression_picture);
 
-        quoteCardTitle = findViewById(R.id.tv_card);
+        quoteDefaultView = findViewById(R.id.tv_default);
 
         /////////// layout //////////
         quoteTextLayout = findViewById(R.id.subBubble_text_layout);
@@ -129,13 +136,28 @@ public class EaseChatQuoteView extends LinearLayout {
         quoteImageLayout = findViewById(R.id.subBubble_image_layout);
         quoteLocationLayout = findViewById(R.id.subBubble_location_layout);
         quoteBigExpressionLayout = findViewById(R.id.subBubble_bigExpression_layout);
-        quoteCardLayout = findViewById(R.id.subBubble_card_layout);
+        quoteDefaultLayout = findViewById(R.id.subBubble_default_layout);
 
+        setTextBreakStrategy(quoteContent);
+        setTextBreakStrategy(quoteVoiceName);
+        setTextBreakStrategy(quoteVideoName);
+        setTextBreakStrategy(quoteFileTitle);
+        setTextBreakStrategy(quoteImageName);
+        setTextBreakStrategy(quoteLocationAddress);
+        setTextBreakStrategy(quoteBigExpressionTitle);
+        setTextBreakStrategy(quoteDefaultView);
+    }
+
+    private void setTextBreakStrategy(TextView textView) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            textView.setBreakStrategy(LineBreaker.BREAK_STRATEGY_SIMPLE);
+        }
     }
 
     public void updateMessageInfo(EMMessage quoteMsg){
         this.message = quoteMsg;
-        if (message != null && message.status() == EMMessage.Status.SUCCESS){
+        JSONObject jsonObject;
+        if (message != null){
             try {
                 String msgQuote = message.getStringAttribute(EaseConstant.QUOTE_MSG_QUOTE,"");
                 if (!TextUtils.isEmpty(msgQuote)){
@@ -145,7 +167,7 @@ public class EaseChatQuoteView extends LinearLayout {
                 }
 
                 if (jsonObject != null){
-                    setContent();
+                    setContent(jsonObject);
                     this.setVisibility(VISIBLE);
                 }else {
                     this.setVisibility(GONE);
@@ -156,7 +178,7 @@ public class EaseChatQuoteView extends LinearLayout {
         }
     }
 
-    private void setContent(){
+    private void setContent(JSONObject jsonObject){
         try {
             String quoteMsgID = jsonObject.getString(EaseConstant.QUOTE_MSG_ID);
             String quoteSender = jsonObject.getString(EaseConstant.QUOTE_MSG_SENDER);
@@ -207,35 +229,41 @@ public class EaseChatQuoteView extends LinearLayout {
         quoteImageLayout.setVisibility(GONE);
         quoteLocationLayout.setVisibility(GONE);
         quoteBigExpressionLayout.setVisibility(GONE);
-        quoteCardLayout.setVisibility(GONE);
+        quoteDefaultLayout.setVisibility(GONE);
     }
 
     private void isShowType(String quoteSender,EMMessage.Type quoteMsgType,String content){
         reSetLayout();
-            switch (quoteMsgType){
-                case TXT:
-                    txtTypeDisplay(quoteMessage,quoteSender,content);
-                    break;
-                case IMAGE:
-                    imageTypeDisplay(quoteMessage,quoteSender,content);
-                    break;
-                case VIDEO:
-                    videoTypeDisplay(quoteMessage,quoteSender,content);
-                    break;
-                case LOCATION:
-                    locationTypeDisplay(quoteMessage,quoteSender,content);
-                    break;
-                case VOICE:
-                    voiceTypeDisplay(quoteMessage,quoteSender,content);
-                    break;
-                case FILE:
-                    fileTypeDisplay(quoteMessage,quoteSender,content);
-                    break;
-                case CUSTOM:
-                    customTypeDisplay(quoteMessage,quoteSender,content);
-                    break;
-                default:
-                    break;
+        switch (quoteMsgType){
+            case TXT:
+                txtTypeDisplay(quoteMessage,quoteSender,content);
+                break;
+            case IMAGE:
+                imageTypeDisplay(quoteMessage,quoteSender,content);
+                break;
+            case VIDEO:
+                videoTypeDisplay(quoteMessage,quoteSender,content);
+                break;
+            case LOCATION:
+                locationTypeDisplay(quoteMessage,quoteSender,content);
+                break;
+            case VOICE:
+                voiceTypeDisplay(quoteMessage,quoteSender,content);
+                break;
+            case FILE:
+                fileTypeDisplay(quoteMessage,quoteSender,content);
+                break;
+            default:
+                IUIKitInterface listener = EaseChatInterfaceManager.getInstance().getInterface(EaseConstant.INTERFACE_QUOTE_MESSAGE_TAG);
+                if(listener instanceof IChatQuoteMessageShow) {
+                    SpannableString result = ((IChatQuoteMessageShow)listener).itemQuoteMessageShow(quoteMessage, quoteMsgType, quoteSender, content);
+                    if(result != null) {
+                        reSetLayout();
+                        quoteDefaultView.setText(result);
+                        quoteDefaultLayout.setVisibility(VISIBLE);
+                    }
+                }
+                break;
         }
     }
 
@@ -249,7 +277,10 @@ public class EaseChatQuoteView extends LinearLayout {
             quoteBigExpressionLayout.setVisibility(View.VISIBLE);
         }else {
             Spannable textSpan = EaseSmileUtils.getSmiledText(mContext, quoteSender + ": "+content);
-            quoteContent.setText(textSpan, TextView.BufferType.SPANNABLE);
+            SpannableString spannableString = new SpannableString(textSpan);
+            quoteContent.setText(spannableString);
+            quoteContent.setEllipsize(TextUtils.TruncateAt.END);
+            quoteContent.setMaxLines(2);
             quoteTextLayout.setVisibility(View.VISIBLE);
         }
     }
@@ -257,8 +288,10 @@ public class EaseChatQuoteView extends LinearLayout {
     protected void imageTypeDisplay(EMMessage quoteMessage,String quoteSender,String content){
         StringBuilder builder = new StringBuilder();
         if (quoteMessage == null){
-            builder.append(quoteSender).append(": ").append(content);
+            builder.append(quoteSender).append(": ");
             quoteImageView.setImageResource(R.drawable.ease_default_image);
+            ViewGroup.LayoutParams layoutParams = quoteImageView.getLayoutParams();
+            layoutParams.height = layoutParams.width;
         }else {
             builder.append(quoteSender).append(": ");
             showImageView(quoteMessage);
@@ -274,23 +307,11 @@ public class EaseChatQuoteView extends LinearLayout {
             builder.append(quoteSender).append(": ");
             quoteImageView.setImageResource(R.drawable.ease_default_image);
         }else {
-            Uri imageUri = null;
-            String imageUrl = "";
-            if (quoteMessage.getBody() instanceof EMVideoMessageBody){
-                EMVideoMessageBody videoMessageBody = (EMVideoMessageBody) quoteMessage.getBody();
-                if (videoMessageBody != null){
-                    if ( quoteMessage.direct() == EMMessage.Direct.SEND){
-                        imageUri = videoMessageBody.getLocalThumbUri();
-                        videoMessageBody.getLocalThumb();
-                    }else {
-                        imageUrl = videoMessageBody.getThumbnailUrl();
-                    }
-                }
-            }
+
             builder.append(quoteSender).append(": ");
             SpannableString videoSpan = new SpannableString(builder.toString());
             quoteVideoName.setText(videoSpan);
-            showVideoThumbView(imageUrl,imageUri);
+            showVideoThumbView(quoteMessage);
         }
         quoteVideoLayout.setVisibility(View.VISIBLE);
     }
@@ -392,8 +413,8 @@ public class EaseChatQuoteView extends LinearLayout {
                 if (cardSb.length() > 0){
                     cardSb.setSpan(cardSpan, cardIndex, cardIndex + 2, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
                 }
-                quoteCardTitle.setText(cardSb);
-                quoteCardLayout.setVisibility(View.VISIBLE);
+                quoteDefaultView.setText(cardSb);
+                quoteDefaultLayout.setVisibility(View.VISIBLE);
             }
         }
     }
@@ -401,12 +422,27 @@ public class EaseChatQuoteView extends LinearLayout {
 
     /**
      * show video thumbnails
-     * @param imageUrl
-     * @param imageUri
+     * @param quoteMessage
      */
-    private void showVideoThumbView(String imageUrl,Uri imageUri) {
+    private void showVideoThumbView(EMMessage quoteMessage) {
+        String imageUri = null;
+        String imageUrl = "";
+        int width = 0;
+        int height = 0;
+        if (quoteMessage.getBody() instanceof EMVideoMessageBody){
+            EMVideoMessageBody videoMessageBody = (EMVideoMessageBody) quoteMessage.getBody();
+            if (videoMessageBody != null){
+                imageUri = videoMessageBody.getLocalThumb();
+                imageUrl = videoMessageBody.getThumbnailUrl();
+                int thumbnailHeight = videoMessageBody.getThumbnailHeight();
+                int thumbnailWidth = videoMessageBody.getThumbnailWidth();
+                width = (int) EaseCommonUtils.dip2px(mContext, IMAGE_DEFAULT_WIDTH);
+                height = (int) (width * 1.0f * thumbnailHeight / thumbnailWidth);
+            }
+        }
         Glide.with(mContext)
-                .load(imageUri == null ? imageUrl : imageUri)
+                .load(EaseFileUtils.isFileExistByUri(getContext(), Uri.parse(imageUri)) ? imageUri : imageUrl)
+                .override(width, height)
                 .apply(new RequestOptions()
                         .error(R.drawable.ease_default_image))
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
@@ -421,17 +457,20 @@ public class EaseChatQuoteView extends LinearLayout {
         if (message.getType() == EMMessage.Type.IMAGE){
             Uri imageUri = null;
             String imageUrl = "";
+            int width = 0;
+            int height = 0;
             EMImageMessageBody imageMessageBody = (EMImageMessageBody) message.getBody();
             if (imageMessageBody != null){
-                if ( message.direct() == EMMessage.Direct.SEND){
-                    imageUri = imageMessageBody.getLocalUri();
-                    imageUrl = imageMessageBody.getLocalUrl();
-                }else {
-                    imageUrl = imageMessageBody.getRemoteUrl();
-                }
+                imageUri = imageMessageBody.getLocalUri();
+                imageUrl = imageMessageBody.getRemoteUrl();
+                int thumbnailHeight = imageMessageBody.getHeight();
+                int thumbnailWidth = imageMessageBody.getWidth();
+                width = (int) EaseCommonUtils.dip2px(mContext, IMAGE_DEFAULT_WIDTH);
+                height = (int) (width * 1.0f * thumbnailHeight / thumbnailWidth);
             }
             Glide.with(mContext)
-                    .load(imageUri == null ? imageUrl : imageUri)
+                    .load(!EaseFileUtils.isFileExistByUri(getContext(), imageUri) ? imageUrl : imageUri)
+                    .override(width, height)
                     .apply(new RequestOptions()
                             .error(R.drawable.ease_default_image))
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
@@ -464,6 +503,10 @@ public class EaseChatQuoteView extends LinearLayout {
     public void clear(){
         message = null;
         quoteMessage = null;
+    }
+
+    public interface IChatQuoteMessageShow extends IUIKitInterface {
+        SpannableString itemQuoteMessageShow(EMMessage quoteMessage, EMMessage.Type quoteMsgType, String quoteSender, String quoteContent);
     }
 
 }
