@@ -95,13 +95,6 @@ public class EaseShowBigImageActivity extends EaseBaseActivity {
 		}else {
 			image.setImageResource(default_res);
 		}
-
-		image.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				finish();
-			}
-		});
 	}
 
 	/**
