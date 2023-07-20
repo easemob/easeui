@@ -162,7 +162,7 @@
             android:paddingEnd="5dp"
             android:ellipsize="end"
             android:maxLines="2"
-            tools:text="apex: 手里的发空间啊是老师的积分了卡就是的；发空间啊；看就是肯定肌肤；啊空间老师独家开发"
+            tools:text="apex: "
             tools:textColor="@color/black" />
 
         <ImageView
