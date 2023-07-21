@@ -347,8 +347,8 @@ public class EaseChatQuoteView extends LinearLayout {
     protected void voiceTypeDisplay(EMMessage quoteMessage,String quoteSender,String content){
         StringBuilder builder = new StringBuilder();
         if (quoteMessage == null){
-            builder.append(quoteSender).append(": ").append(content);
-            quoteVoiceIcon.setVisibility(View.GONE);
+            builder.append(quoteSender).append(": ");
+            quoteVoiceLength.setText(content);
         }else {
             String voiceLength = "";
             if (quoteMessage.getBody() instanceof EMVoiceMessageBody){
@@ -389,44 +389,6 @@ public class EaseChatQuoteView extends LinearLayout {
         quoteFileTitle.setText(fileSpan);
         quoteFileLayout.setVisibility(View.VISIBLE);
     }
-
-    protected void customTypeDisplay(EMMessage quoteMessage,String quoteSender,String content){
-        if (quoteMessage.getBody() instanceof EMCustomMessageBody){
-            EMCustomMessageBody customMessageBody = (EMCustomMessageBody)quoteMessage.getBody();
-            Map<String, String> params = customMessageBody.getParams();
-            if (params.size() > 0 && customMessageBody.event().equals(EaseConstant.USER_CARD_EVENT)){
-                String uId = params.get(EaseConstant.USER_CARD_ID);
-                String nickName = params.get(EaseConstant.USER_CARD_NICK);
-                String customContent = "";
-                if(uId != null && uId.length() > 0){
-                    if(uId.equals(EMClient.getInstance().getCurrentUser())){
-                        customContent = quoteSender;
-                    }else{
-                        EaseUser user = EaseUserUtils.getUserInfo(uId);
-                        if(user == null){
-                            user = new EaseUser(uId);
-                            user.setNickname(nickName);
-                        }
-                        if (user.getNickname().isEmpty()){
-                            customContent = uId;
-                        }else {
-                            customContent = user.getNickname();
-                        }
-                    }
-                }
-                int cardIndex = quoteSender.length() + 1;
-                String cardTitle = quoteSender + ":  " + customContent;
-                SpannableStringBuilder cardSb = new SpannableStringBuilder(cardTitle);
-                CenterImageSpan cardSpan = new CenterImageSpan(mContext, R.drawable.ease_chat_item_menu_card);
-                if (cardSb.length() > 0){
-                    cardSb.setSpan(cardSpan, cardIndex, cardIndex + 2, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
-                }
-                quoteDefaultView.setText(cardSb);
-                quoteDefaultLayout.setVisibility(View.VISIBLE);
-            }
-        }
-    }
-
 
     /**
      * show video thumbnails

@@ -451,6 +451,7 @@ public class EaseChatPrimaryMenu extends RelativeLayout implements IChatPrimaryM
     @Override
     public void primaryStartQuote(EMMessage message) {
         if (isShowDefaultQuote){
+            showTextStatus();
             showDefaultQuote(message);
             quoteLayout.postDelayed(()-> showSoftKeyboard(editText), 100);
         }else {
