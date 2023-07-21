@@ -150,18 +150,22 @@ public class EaseChatQuoteView extends LinearLayout {
 
     private void setTextBreakStrategy(TextView textView) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            textView.setBreakStrategy(LineBreaker.BREAK_STRATEGY_SIMPLE);
+            textView.setBreakStrategy(LineBreaker.BREAK_STRATEGY_BALANCED);
         }
     }
 
     public void updateMessageInfo(EMMessage quoteMsg){
         this.message = quoteMsg;
-        JSONObject jsonObject;
+        JSONObject jsonObject = null;
         if (message != null){
             try {
                 String msgQuote = message.getStringAttribute(EaseConstant.QUOTE_MSG_QUOTE,"");
                 if (!TextUtils.isEmpty(msgQuote)){
-                    jsonObject = new JSONObject(msgQuote);
+                    try {
+                        jsonObject = new JSONObject(msgQuote);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }else {
                     jsonObject = message.getJSONObjectAttribute(EaseConstant.QUOTE_MSG_QUOTE);
                 }
@@ -172,7 +176,7 @@ public class EaseChatQuoteView extends LinearLayout {
                 }else {
                     this.setVisibility(GONE);
                 }
-            } catch (JSONException | HyphenateException e) {
+            } catch (HyphenateException e) {
                 e.printStackTrace();
             }
         }
@@ -276,7 +280,8 @@ public class EaseChatQuoteView extends LinearLayout {
             quoteBigExpressionTitle.setText(bigSpan);
             quoteBigExpressionLayout.setVisibility(View.VISIBLE);
         }else {
-            Spannable textSpan = EaseSmileUtils.getSmiledText(mContext, quoteSender + ": "+content);
+            String text = getContext().getString(R.string.colon_and_space, quoteSender, content);
+            Spannable textSpan = EaseSmileUtils.getSmiledText(mContext, text);
             SpannableString spannableString = new SpannableString(textSpan);
             quoteContent.setText(spannableString);
             quoteContent.setEllipsize(TextUtils.TruncateAt.END);
@@ -305,7 +310,10 @@ public class EaseChatQuoteView extends LinearLayout {
         StringBuilder builder = new StringBuilder();
         if (quoteMessage == null){
             builder.append(quoteSender).append(": ");
-            quoteImageView.setImageResource(R.drawable.ease_default_image);
+            quoteVideoName.setText(builder);
+            quoteVideoIcon.setImageResource(R.drawable.ease_default_image);
+            ViewGroup.LayoutParams layoutParams = quoteVideoIcon.getLayoutParams();
+            layoutParams.height = layoutParams.width;
         }else {
 
             builder.append(quoteSender).append(": ");
