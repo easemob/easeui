@@ -46,6 +46,7 @@ import com.hyphenate.easeui.utils.EaseFileUtils;
 import com.hyphenate.easeui.utils.EaseSmileUtils;
 import com.hyphenate.easeui.utils.EaseUserUtils;
 import com.hyphenate.exceptions.HyphenateException;
+import com.hyphenate.util.EMLog;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -53,6 +54,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class EaseChatQuoteView extends LinearLayout {
+    private static final String TAG = EaseChatQuoteView.class.getSimpleName();
     private static final float IMAGE_DEFAULT_WIDTH = 36;
     private final Context mContext;
     private TextView quoteContent;
@@ -155,30 +157,35 @@ public class EaseChatQuoteView extends LinearLayout {
     }
 
     public void updateMessageInfo(EMMessage quoteMsg){
+        if(quoteMsg == null) {
+            EMLog.e(TAG, getContext().getString(R.string.ease_error_message_not_exist));
+            return;
+        }
+        if(quoteMsg.ext() != null && !quoteMsg.ext().containsKey(EaseConstant.QUOTE_MSG_QUOTE)) {
+            return;
+        }
         this.message = quoteMsg;
         JSONObject jsonObject = null;
-        if (message != null){
-            try {
-                String msgQuote = message.getStringAttribute(EaseConstant.QUOTE_MSG_QUOTE,"");
-                if (!TextUtils.isEmpty(msgQuote)){
-                    try {
-                        jsonObject = new JSONObject(msgQuote);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }else {
-                    jsonObject = message.getJSONObjectAttribute(EaseConstant.QUOTE_MSG_QUOTE);
+        try {
+            String msgQuote = message.getStringAttribute(EaseConstant.QUOTE_MSG_QUOTE,"");
+            if (!TextUtils.isEmpty(msgQuote)){
+                try {
+                    jsonObject = new JSONObject(msgQuote);
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
-
-                if (jsonObject != null){
-                    setContent(jsonObject);
-                    this.setVisibility(VISIBLE);
-                }else {
-                    this.setVisibility(GONE);
-                }
-            } catch (HyphenateException e) {
-                e.printStackTrace();
+            }else {
+                jsonObject = message.getJSONObjectAttribute(EaseConstant.QUOTE_MSG_QUOTE);
             }
+
+            if (jsonObject != null){
+                setContent(jsonObject);
+                this.setVisibility(VISIBLE);
+            }else {
+                this.setVisibility(GONE);
+            }
+        } catch (HyphenateException e) {
+            e.printStackTrace();
         }
     }
 
