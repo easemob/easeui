@@ -181,5 +181,5 @@
     <string name="quote_not_found">当前消息列表未找到该引用消息</string>
 
     <string name="ease_error_message_not_exist">消息不存在。</string>
-
+    <string name="colon_and_space">%1$s:\u0020%2$s</string>
 </resources>

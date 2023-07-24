@@ -181,5 +181,5 @@
     <string name="quote_not_found">The reference message was not found in the current message list</string>
 
     <string name="ease_error_message_not_exist">Message does not exist.</string>
-
+    <string name="colon_and_space">%1$s:\u0020%2$s</string>
 </resources>

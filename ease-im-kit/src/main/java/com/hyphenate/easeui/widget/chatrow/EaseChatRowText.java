@@ -204,10 +204,6 @@ public class EaseChatRowText extends EaseChatRow {
             return;
         }
         quoteView.setVisibility(GONE);
-        if (null == message) {
-            EMLog.e(TAG, "message is null, don't setup quote view");
-            return;
-        }
         quoteView.clear();
         quoteView.updateMessageInfo(message);
     }

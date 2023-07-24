@@ -46,6 +46,7 @@ import com.hyphenate.easeui.utils.EaseFileUtils;
 import com.hyphenate.easeui.utils.EaseSmileUtils;
 import com.hyphenate.easeui.utils.EaseUserUtils;
 import com.hyphenate.exceptions.HyphenateException;
+import com.hyphenate.util.EMLog;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -53,6 +54,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class EaseChatQuoteView extends LinearLayout {
+    private static final String TAG = EaseChatQuoteView.class.getSimpleName();
     private static final float IMAGE_DEFAULT_WIDTH = 36;
     private final Context mContext;
     private TextView quoteContent;
@@ -150,31 +152,40 @@ public class EaseChatQuoteView extends LinearLayout {
 
     private void setTextBreakStrategy(TextView textView) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            textView.setBreakStrategy(LineBreaker.BREAK_STRATEGY_SIMPLE);
+            textView.setBreakStrategy(LineBreaker.BREAK_STRATEGY_BALANCED);
         }
     }
 
     public void updateMessageInfo(EMMessage quoteMsg){
+        if(quoteMsg == null) {
+            EMLog.e(TAG, getContext().getString(R.string.ease_error_message_not_exist));
+            return;
+        }
+        if(quoteMsg.ext() != null && !quoteMsg.ext().containsKey(EaseConstant.QUOTE_MSG_QUOTE)) {
+            return;
+        }
         this.message = quoteMsg;
-        JSONObject jsonObject;
-        if (message != null){
-            try {
-                String msgQuote = message.getStringAttribute(EaseConstant.QUOTE_MSG_QUOTE,"");
-                if (!TextUtils.isEmpty(msgQuote)){
+        JSONObject jsonObject = null;
+        try {
+            String msgQuote = message.getStringAttribute(EaseConstant.QUOTE_MSG_QUOTE,"");
+            if (!TextUtils.isEmpty(msgQuote)){
+                try {
                     jsonObject = new JSONObject(msgQuote);
-                }else {
-                    jsonObject = message.getJSONObjectAttribute(EaseConstant.QUOTE_MSG_QUOTE);
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
-
-                if (jsonObject != null){
-                    setContent(jsonObject);
-                    this.setVisibility(VISIBLE);
-                }else {
-                    this.setVisibility(GONE);
-                }
-            } catch (JSONException | HyphenateException e) {
-                e.printStackTrace();
+            }else {
+                jsonObject = message.getJSONObjectAttribute(EaseConstant.QUOTE_MSG_QUOTE);
             }
+
+            if (jsonObject != null){
+                setContent(jsonObject);
+                this.setVisibility(VISIBLE);
+            }else {
+                this.setVisibility(GONE);
+            }
+        } catch (HyphenateException e) {
+            e.printStackTrace();
         }
     }
 
@@ -276,7 +287,8 @@ public class EaseChatQuoteView extends LinearLayout {
             quoteBigExpressionTitle.setText(bigSpan);
             quoteBigExpressionLayout.setVisibility(View.VISIBLE);
         }else {
-            Spannable textSpan = EaseSmileUtils.getSmiledText(mContext, quoteSender + ": "+content);
+            String text = getContext().getString(R.string.colon_and_space, quoteSender, content);
+            Spannable textSpan = EaseSmileUtils.getSmiledText(mContext, text);
             SpannableString spannableString = new SpannableString(textSpan);
             quoteContent.setText(spannableString);
             quoteContent.setEllipsize(TextUtils.TruncateAt.END);
@@ -305,7 +317,10 @@ public class EaseChatQuoteView extends LinearLayout {
         StringBuilder builder = new StringBuilder();
         if (quoteMessage == null){
             builder.append(quoteSender).append(": ");
-            quoteImageView.setImageResource(R.drawable.ease_default_image);
+            quoteVideoName.setText(builder);
+            quoteVideoIcon.setImageResource(R.drawable.ease_default_image);
+            ViewGroup.LayoutParams layoutParams = quoteVideoIcon.getLayoutParams();
+            layoutParams.height = layoutParams.width;
         }else {
 
             builder.append(quoteSender).append(": ");
@@ -339,8 +354,8 @@ public class EaseChatQuoteView extends LinearLayout {
     protected void voiceTypeDisplay(EMMessage quoteMessage,String quoteSender,String content){
         StringBuilder builder = new StringBuilder();
         if (quoteMessage == null){
-            builder.append(quoteSender).append(": ").append(content);
-            quoteVoiceIcon.setVisibility(View.GONE);
+            builder.append(quoteSender).append(": ");
+            quoteVoiceLength.setText(content);
         }else {
             String voiceLength = "";
             if (quoteMessage.getBody() instanceof EMVoiceMessageBody){
@@ -381,44 +396,6 @@ public class EaseChatQuoteView extends LinearLayout {
         quoteFileTitle.setText(fileSpan);
         quoteFileLayout.setVisibility(View.VISIBLE);
     }
-
-    protected void customTypeDisplay(EMMessage quoteMessage,String quoteSender,String content){
-        if (quoteMessage.getBody() instanceof EMCustomMessageBody){
-            EMCustomMessageBody customMessageBody = (EMCustomMessageBody)quoteMessage.getBody();
-            Map<String, String> params = customMessageBody.getParams();
-            if (params.size() > 0 && customMessageBody.event().equals(EaseConstant.USER_CARD_EVENT)){
-                String uId = params.get(EaseConstant.USER_CARD_ID);
-                String nickName = params.get(EaseConstant.USER_CARD_NICK);
-                String customContent = "";
-                if(uId != null && uId.length() > 0){
-                    if(uId.equals(EMClient.getInstance().getCurrentUser())){
-                        customContent = quoteSender;
-                    }else{
-                        EaseUser user = EaseUserUtils.getUserInfo(uId);
-                        if(user == null){
-                            user = new EaseUser(uId);
-                            user.setNickname(nickName);
-                        }
-                        if (user.getNickname().isEmpty()){
-                            customContent = uId;
-                        }else {
-                            customContent = user.getNickname();
-                        }
-                    }
-                }
-                int cardIndex = quoteSender.length() + 1;
-                String cardTitle = quoteSender + ":  " + customContent;
-                SpannableStringBuilder cardSb = new SpannableStringBuilder(cardTitle);
-                CenterImageSpan cardSpan = new CenterImageSpan(mContext, R.drawable.ease_chat_item_menu_card);
-                if (cardSb.length() > 0){
-                    cardSb.setSpan(cardSpan, cardIndex, cardIndex + 2, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
-                }
-                quoteDefaultView.setText(cardSb);
-                quoteDefaultLayout.setVisibility(View.VISIBLE);
-            }
-        }
-    }
-
 
     /**
      * show video thumbnails
