@@ -487,7 +487,7 @@ public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutLi
     }
 
     @Override
-    public void onModifyMessageSuccess(String messageId) {
+    public void onModifyMessageSuccess(EMMessage messageModified) {
 
     }
 

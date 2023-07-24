@@ -237,12 +237,12 @@ public class EaseHandleMessagePresenterImpl extends EaseHandleMessagePresenter {
             return;
         }
         // modify message
-        EMClient.getInstance().chatManager().asyncModifyMessage(messageId, messageBodyModified, new EMCallBack() {
+        EMClient.getInstance().chatManager().asyncModifyMessage(messageId, messageBodyModified, new EMValueCallBack<EMMessage>() {
             @Override
-            public void onSuccess() {
+            public void onSuccess(EMMessage messageModified) {
                 runOnUI(() ->{
                     if(isActive()) {
-                        mView.onModifyMessageSuccess(messageId);
+                        mView.onModifyMessageSuccess(messageModified);
                     }
                 });
             }
