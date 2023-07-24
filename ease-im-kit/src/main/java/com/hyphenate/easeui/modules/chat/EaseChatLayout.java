@@ -847,11 +847,10 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
     }
 
     @Override
-    public void onModifyMessageSuccess(String messageId) {
-        EMMessage message = getChatManager().getMessage(messageId);
-        refreshMessage(message);
+    public void onModifyMessageSuccess(EMMessage messageModified) {
+        refreshMessage(messageModified);
         if (modifyMessageListener != null) {
-            modifyMessageListener.onModifyMessageSuccess(messageId);
+            modifyMessageListener.onModifyMessageSuccess(messageModified);
         }
     }
 
