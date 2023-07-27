@@ -146,23 +146,25 @@
         android:id="@+id/subBubble_file_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:gravity="top"
         android:minWidth="30dp"
         android:padding="8dp"
         android:layout_marginTop="2dp"
+        android:orientation="horizontal"
         android:background="@drawable/ease_chat_bubble_quote_bg"
         android:visibility="gone"
         >
 
         <TextView
             android:id="@+id/iv_file_title"
-            android:layout_width="0dp"
-            android:layout_weight="1"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
             android:paddingStart="6dp"
             android:paddingEnd="5dp"
             android:maxLines="2"
+            android:maxEms="8"
             android:ellipsize="end"
             tools:text="apex"
             tools:textColor="@color/black" />
@@ -172,6 +174,7 @@
             android:layout_toEndOf="@+id/iv_file_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
             android:layout_centerVertical="true"
             android:src="@drawable/ease_chat_quote_file" />
 
@@ -185,7 +188,8 @@
             android:layout_marginEnd="10dp"
             android:layout_toEndOf="@id/iv_file"
             tools:text="apex.jpeg"
-            android:maxLines="1"
+            android:singleLine="true"
+            android:ellipsize="middle"
             android:layout_centerVertical="true"
             android:gravity="center" />
 

@@ -1367,7 +1367,7 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
                     menuHelper.findItemVisible(R.id.action_chat_hide, true);
                 } else {
                     menuHelper.findItemVisible(R.id.action_chat_copy, true);
-                    menuHelper.findItemVisible(R.id.action_chat_recall, true);
+                    menuHelper.findItemVisible(R.id.action_chat_recall, isSender(message));
                     menuHelper.findItemVisible(R.id.action_chat_delete, true);
                     if (showTranslation(message))
                         menuHelper.findItemVisible(R.id.action_chat_translate, true);
@@ -1376,21 +1376,25 @@ public class EaseChatLayout extends RelativeLayout implements IChatLayout, IHand
             case LOCATION:
             case FILE:
             case IMAGE:
-                menuHelper.findItemVisible(R.id.action_chat_recall, true);
+                menuHelper.findItemVisible(R.id.action_chat_recall, isSender(message));
                 break;
             case VOICE:
                 menuHelper.findItem(R.id.action_chat_delete).setTitle(getContext().getString(R.string.delete_voice));
-                menuHelper.findItemVisible(R.id.action_chat_recall, true);
+                menuHelper.findItemVisible(R.id.action_chat_recall, isSender(message));
                 break;
             case VIDEO:
                 menuHelper.findItem(R.id.action_chat_delete).setTitle(getContext().getString(R.string.delete_video));
-                menuHelper.findItemVisible(R.id.action_chat_recall, true);
+                menuHelper.findItemVisible(R.id.action_chat_recall, isSender(message));
                 break;
         }
 
         if (message.direct() == EMMessage.Direct.RECEIVE) {
             menuHelper.findItemVisible(R.id.action_chat_recall, false);
         }
+    }
+
+    private boolean isSender(@NonNull EMMessage message) {
+        return message.direct() == EMMessage.Direct.SEND;
     }
 
     private class ChatRoomListener extends EaseChatRoomListener {
