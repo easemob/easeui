@@ -2,6 +2,8 @@ package com.hyphenate.easeui.modules.chat.interfaces;
 
 import android.graphics.drawable.Drawable;
 
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.hyphenate.easeui.adapter.EaseMessageAdapter;
 import com.hyphenate.easeui.interfaces.MessageListItemClickListener;
 import com.hyphenate.easeui.modules.chat.EaseChatMessageListLayout;
@@ -21,6 +23,12 @@ public interface IChatMessageListLayout extends IRecyclerView {
      * @return
      */
     EaseMessageAdapter getMessageAdapter();
+
+    /**
+     * Get recyclerView object.
+     * @return
+     */
+    RecyclerView getListView();
 
     /**
      * 设置聊天区域的touch监听，判断是否点击在条目消息外，是否正在拖拽列表

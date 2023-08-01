@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.hyphenate.EMCallBack;
 import com.hyphenate.chat.EMChatRoom;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMConversation;
@@ -39,6 +40,7 @@ import com.hyphenate.easeui.modules.chat.presenter.EaseChatMessagePresenter;
 import com.hyphenate.easeui.modules.chat.presenter.EaseChatMessagePresenterImpl;
 import com.hyphenate.easeui.modules.chat.presenter.IChatMessageListView;
 import com.hyphenate.easeui.utils.EaseCommonUtils;
+import com.hyphenate.util.EMLog;
 
 import java.util.List;
 
@@ -266,8 +268,17 @@ public class EaseChatMessageListLayout extends RelativeLayout implements IChatMe
         }else if(loadDataType == LoadDataType.HISTORY) {
             presenter.loadMoreLocalHistoryMessages(msgId, pageSize, EMConversation.EMSearchDirection.UP);
         }else {
-            presenter.loadMoreLocalMessages(msgId, pageSize);
+            presenter.loadMoreLocalMessages(msgId, pageSize,true);
         }
+    }
+
+    /**
+     * 加载更多的更早一些的数据，下拉加载指定条数
+     */
+    public void loadMorePreviousData(int pageSize, EMCallBack callBack){
+        this.pageSize = pageSize;
+        String msgId = getListFirstMessageId();
+        presenter.loadMoreLocalMessages(msgId, pageSize,false,callBack);
     }
 
     /**
@@ -402,6 +413,22 @@ public class EaseChatMessageListLayout extends RelativeLayout implements IChatMe
             }
 
             @Override
+            public void onQuoteViewClick(EMMessage message) {
+                EMLog.e("apex","onQuoteViewClick1: " + message);
+                if(messageListItemClickListener != null) {
+                   messageListItemClickListener.onQuoteViewClick(message);
+                }
+            }
+
+            @Override
+            public boolean onQuoteViewLongClick(View v, EMMessage message) {
+                if(messageListItemClickListener != null) {
+                    return messageListItemClickListener.onQuoteViewLongClick(v,message);
+                }
+                return false;
+            }
+
+            @Override
             public void onUserAvatarClick(String username) {
                 if(messageListItemClickListener != null) {
                     messageListItemClickListener.onUserAvatarClick(username);
@@ -523,10 +550,12 @@ public class EaseChatMessageListLayout extends RelativeLayout implements IChatMe
     }
 
     @Override
-    public void loadMoreLocalMsgSuccess(List<EMMessage> data) {
+    public void loadMoreLocalMsgSuccess(List<EMMessage> data,boolean isJumpFirst) {
         finishRefresh();
         presenter.refreshCurrentConversation();
-        post(()->smoothSeekToPosition(data.size() - 1));
+        if (isJumpFirst){
+            post(()->smoothSeekToPosition(data.size() - 1));
+        }
     }
 
     @Override
@@ -653,6 +682,15 @@ public class EaseChatMessageListLayout extends RelativeLayout implements IChatMe
                 }, 500);
             }
         }
+    }
+
+    @Override
+    public void highlightItem(int position) {
+        runOnUi(()-> {
+            if(messageAdapter != null) {
+                messageAdapter.highlightItem(position);
+            }
+        });
     }
 
     @Override
@@ -865,6 +903,11 @@ public class EaseChatMessageListLayout extends RelativeLayout implements IChatMe
     @Override
     public EaseMessageAdapter getMessageAdapter() {
         return messageAdapter;
+    }
+
+    @Override
+    public RecyclerView getListView() {
+        return rvList;
     }
 
     @Override

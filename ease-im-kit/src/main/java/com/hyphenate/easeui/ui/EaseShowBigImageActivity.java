@@ -18,7 +18,7 @@ import android.app.ProgressDialog;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ProgressBar;
@@ -31,7 +31,10 @@ import com.hyphenate.EMError;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMImageMessageBody;
 import com.hyphenate.chat.EMMessage;
+import com.hyphenate.easeui.EaseIM;
 import com.hyphenate.easeui.R;
+import com.hyphenate.easeui.constants.EaseConstant;
+import com.hyphenate.easeui.domain.EaseEmojicon;
 import com.hyphenate.easeui.ui.base.EaseBaseActivity;
 import com.hyphenate.easeui.utils.EaseFileUtils;
 import com.hyphenate.easeui.widget.photoview.EasePhotoView;
@@ -48,6 +51,7 @@ public class EaseShowBigImageActivity extends EaseBaseActivity {
 	private int default_res = R.drawable.ease_default_image;
 	private String filename;
 	private Bitmap bitmap;
+	private String emojiIconId = "";
 	private boolean isDownloaded;
 
 	@SuppressLint("NewApi")
@@ -62,40 +66,76 @@ public class EaseShowBigImageActivity extends EaseBaseActivity {
 		Uri uri = getIntent().getParcelableExtra("uri");
 		filename = getIntent().getExtras().getString("filename");
 		String msgId = getIntent().getExtras().getString("messageId");
+		if (getIntent().hasExtra(EaseConstant.MESSAGE_ATTR_EXPRESSION_ID)){
+			emojiIconId = getIntent().getExtras().getString(EaseConstant.MESSAGE_ATTR_EXPRESSION_ID);
+		}
 		EMLog.d(TAG, "show big msgId:" + msgId );
 
 		//show the image if it exist in local path
 		if (EaseFileUtils.isFileExistByUri(this, uri)) {
             Glide.with(this).load(uri).into(image);
+		} else if (!TextUtils.isEmpty(emojiIconId)){
+			showBigExpression(emojiIconId);
 		} else if(msgId != null) {
-		    downloadImage(msgId);
+			EMMessage msg = EMClient.getInstance().chatManager().getMessage(msgId);
+			if(msg == null) {
+				msg = getIntent().getParcelableExtra("msg");
+				if(msg == null) {
+					EMLog.e(TAG, "message is null, messageId: " + msgId);
+					finish();
+					return;
+				}
+			}
+			EMImageMessageBody body = (EMImageMessageBody) msg.getBody();
+			if(EaseFileUtils.isFileExistByUri(this, body.getLocalUri())) {
+				Glide.with(this).load(body.getLocalUri()).into(image);
+			}else {
+				downloadImage(msg);
+			}
 		}else {
 			image.setImageResource(default_res);
 		}
-
-		image.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				finish();
-			}
-		});
 	}
-	
+
+	/**
+	 * 展示自定义表情图片
+	 * @param emojiIconId 表情对应id
+	 */
+	private void showBigExpression(String emojiIconId){
+		EaseEmojicon emojiIcon = null;
+		if(EaseIM.getInstance().getEmojiconInfoProvider() != null){
+			emojiIcon =  EaseIM.getInstance().getEmojiconInfoProvider().getEmojiconInfo(emojiIconId);
+			if(emojiIcon != null){
+				if(emojiIcon.getBigIcon() != 0){
+
+					Glide.with(this).load(emojiIcon.getBigIcon())
+							.apply(RequestOptions.placeholderOf(R.drawable.ease_default_expression))
+							.into(image);
+				}else if(emojiIcon.getBigIconPath() != null){
+					Glide.with(this).load(emojiIcon.getBigIconPath())
+							.apply(RequestOptions.placeholderOf(R.drawable.ease_default_expression))
+							.into(image);
+				}else{
+					image.setImageResource(R.drawable.ease_default_expression);
+				}
+			}
+		}
+	}
+
 	/**
 	 * download image
 	 * 
-	 * @param msgId
+	 * @param msg
 	 */
 	@SuppressLint("NewApi")
-	private void downloadImage(final String msgId) {
-        EMLog.e(TAG, "download with messageId: " + msgId);
+	private void downloadImage(final EMMessage msg) {
+        EMLog.e(TAG, "download with messageId: " + msg.getMsgId());
 		String str1 = getResources().getString(R.string.Download_the_pictures);
 		pd = new ProgressDialog(this);
 		pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 		pd.setCanceledOnTouchOutside(false);
 		pd.setMessage(str1);
 		pd.show();
-        final EMMessage msg = EMClient.getInstance().chatManager().getMessage(msgId);
         final EMCallBack callback = new EMCallBack() {
 			public void onSuccess() {
 			    EMLog.e(TAG, "onSuccess" );

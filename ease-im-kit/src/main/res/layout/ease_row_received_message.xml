@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:paddingTop="13dp">
 
@@ -14,40 +15,97 @@
         android:layout_gravity="center" />
 
     <RelativeLayout
+        android:id="@+id/rl_bubble_out"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_chat_activity" >
+        android:layout_marginTop="@dimen/margin_chat_activity">
 
         <com.hyphenate.easeui.widget.EaseImageView
             android:id="@+id/iv_userhead"
-            style="@style/ease_row_receive_iv_userhead_style"/>
+            style="@style/ease_row_receive_iv_userhead_style" />
 
         <RelativeLayout
             android:id="@+id/bubble"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/tv_userid"
-            android:minWidth="30dp"
             android:layout_marginLeft="@dimen/margin_chat_activity"
-            android:layout_toRightOf="@id/iv_userhead"
-            android:padding="8dp"
             android:layout_marginTop="2dp"
-            android:background="@drawable/ease_chat_bubble_receive_bg">
+            android:layout_toRightOf="@id/iv_userhead"
+            android:background="@drawable/ease_chat_bubble_receive_bg"
+            android:minWidth="30dp"
+            android:padding="8dp">
 
             <TextView
                 android:id="@+id/tv_chatcontent"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:autoLink="web"
                 android:layout_centerInParent="true"
+                android:autoLink="web"
                 android:gravity="center|left"
                 android:lineSpacingExtra="2dp"
-                android:minHeight="@dimen/ease_chat_text_min_height"
                 android:maxWidth="225.0dip"
+                android:minHeight="@dimen/ease_chat_text_min_height"
                 android:textColor="#ff000000"
                 android:textSize="15sp"
-                tools:text="环信"/>
+                tools:text="环信" />
         </RelativeLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/bubble"
+            android:layout_alignBottom="@id/bubble"
+            android:layout_marginLeft="@dimen/ease_chat_ack_margin_bubble"
+            android:layout_toRightOf="@id/bubble">
+
+            <TextView
+                android:id="@+id/tv_ack"
+                style="@style/chat_text_name_style"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/text_ack_msg"
+                android:textSize="12sp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toTopOf="@id/tv_edit"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tv_delivered"
+                style="@style/chat_text_name_style"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/text_delivered_msg"
+                android:textSize="12sp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toTopOf="@id/tv_edit"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/barrier"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="tv_ack,tv_delivered" />
+
+            <TextView
+                android:id="@+id/tv_edit"
+                style="@style/chat_text_name_style"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/text_edit_msg"
+                android:textSize="12sp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/barrier" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <TextView
             android:id="@+id/tv_userid"
@@ -55,38 +113,36 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/chat_nick_margin_left"
-            android:textSize="@dimen/chat_nick_text_size"
-            tools:text="som"
             android:layout_toRightOf="@id/iv_userhead"
-            android:visibility="gone" />
+            android:textSize="@dimen/chat_nick_text_size"
+            android:visibility="gone"
+            tools:text="som" />
     </RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/subBubble"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:minWidth="30dp"
         android:layout_marginStart="60dp"
-        android:padding="8dp"
         android:layout_marginTop="2dp"
         android:background="@drawable/ease_chat_bubble_translate_bg"
         android:gravity="center_horizontal"
-        android:visibility="gone"
-        >
+        android:minWidth="30dp"
+        android:padding="8dp"
+        android:visibility="gone">
 
         <com.hyphenate.easeui.widget.EaseImageView
             android:id="@+id/translation_status"
             android:layout_width="20dp"
-            android:layout_height="20dp"
-            />
+            android:layout_height="20dp" />
 
         <TextView
             android:id="@+id/tv_subContent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:layout_toEndOf="@id/translation_status"
             android:layout_marginStart="5dp"
+            android:layout_toEndOf="@id/translation_status"
             android:lineSpacingExtra="2dp"
             android:maxWidth="225.0dip"
             android:minHeight="@dimen/ease_chat_text_min_height"
@@ -94,5 +150,14 @@
             android:textSize="15sp"
             tools:text="环信" />
     </RelativeLayout>
+
+    <com.hyphenate.easeui.widget.EaseChatQuoteView
+        android:id="@+id/chat_quote_view"
+        android:layout_marginStart="70dp"
+        android:layout_gravity="start"
+        app:ease_chat_item_sender="false"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
 
 </LinearLayout>

@@ -31,6 +31,21 @@ public interface MessageListItemClickListener{
 	boolean onBubbleLongClick(View v, EMMessage message);
 
 	/**
+	 * on quote click for quote
+	 * @param message
+	 * @return
+	 */
+	void onQuoteViewClick(EMMessage message);
+
+	/**
+	 * on long click for quote
+	 * @param v
+	 * @param message
+	 * @return
+	 */
+	boolean onQuoteViewLongClick(View v,EMMessage message);
+
+	/**
 	 * click the user avatar
 	 * @param username
 	 */

@@ -70,4 +70,16 @@ public interface EaseConstant {
     String DEFAULT_SYSTEM_MESSAGE_TYPE = "em_system_type";
 
     String USER_CARD_EVENT = "userCard";
+    String USER_CARD_ID = "uid";
+    String USER_CARD_NICK = "nickname";
+
+    //quote
+    String QUOTE_MSG_ID = "msgID";
+    String QUOTE_MSG_PREVIEW = "msgPreview";
+    String QUOTE_MSG_SENDER = "msgSender";
+    String QUOTE_MSG_TYPE = "msgType";
+    String QUOTE_MSG_QUOTE = "msgQuote";
+
+    // interface tag
+    String INTERFACE_QUOTE_MESSAGE_TAG = "quote_message_tag";
 }

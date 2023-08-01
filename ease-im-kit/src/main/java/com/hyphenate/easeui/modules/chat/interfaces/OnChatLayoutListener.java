@@ -3,7 +3,6 @@ package com.hyphenate.easeui.modules.chat.interfaces;
 import android.view.View;
 
 import com.hyphenate.chat.EMMessage;
-import com.hyphenate.easeui.model.EaseEvent;
 
 /**
  * 用于监听{@link com.hyphenate.easeui.modules.chat.EaseChatLayout}中的变化
@@ -71,5 +70,26 @@ public interface OnChatLayoutListener {
      * @param action 输入事件 TypingBegin为开始 TypingEnd为结束
      */
     default void onOtherTyping(String action){}
+
+    /**
+     * 点击消息引用区域
+     * @param message
+     * @return
+     */
+    boolean onQuoteClick(EMMessage message);
+
+    /**
+     * 长按消息引用区域
+     * @param v
+     * @param message
+     * @return
+     */
+    boolean onQuoteLongClick(View v, EMMessage message);
+
+    /**
+     * custom show quote
+     * @param message
+     */
+    default void showCustomQuote(EMMessage message){}
 
 }

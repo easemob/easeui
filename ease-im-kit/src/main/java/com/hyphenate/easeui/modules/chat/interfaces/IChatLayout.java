@@ -3,8 +3,12 @@ package com.hyphenate.easeui.modules.chat.interfaces;
 import android.net.Uri;
 
 import com.hyphenate.chat.EMMessage;
+import com.hyphenate.chat.EMMessageBody;
+import com.hyphenate.easeui.interfaces.ChatQuoteMessageProvider;
 import com.hyphenate.easeui.modules.chat.EaseChatInputMenu;
 import com.hyphenate.easeui.modules.chat.EaseChatMessageListLayout;
+
+import org.json.JSONObject;
 
 public interface IChatLayout {
     /**
@@ -136,6 +140,13 @@ public interface IChatLayout {
     void recallMessage(EMMessage message);
 
     /**
+     * 编辑消息
+     * @param messageId
+     * @param messageBodyModified
+     */
+    void modifyMessage(String messageId, EMMessageBody messageBodyModified);
+
+    /**
      * 翻译消息
      * @param message
      * @param isTranslate
@@ -147,6 +158,13 @@ public interface IChatLayout {
      * @param message
      */
     void hideTranslate(EMMessage message);
+
+    /**
+     * Set message quote info.
+     * Should call it before sendMessage.
+     * @param quoteInfo
+     */
+    void setMessageQuoteInfo(JSONObject quoteInfo);
 
     /**
      * 用于监听消息的变化
@@ -184,4 +202,16 @@ public interface IChatLayout {
      * @param listener
      */
     void setOnChatFinishListener(OnChatFinishListener listener);
+
+    /**
+     * 设置编辑消息的监听
+     * @param listener
+     */
+    void setOnEditMessageListener(OnModifyMessageListener listener);
+
+    /**
+     * Set quote message provider
+     * @param provider
+     */
+    void setChatQuoteMessageProvider(ChatQuoteMessageProvider provider);
 }

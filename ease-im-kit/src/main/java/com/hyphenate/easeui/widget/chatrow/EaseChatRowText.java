@@ -2,6 +2,7 @@ package com.hyphenate.easeui.widget.chatrow;
 
 import android.content.Context;
 import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.URLSpan;
@@ -10,19 +11,27 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.TextView.BufferType;
 
+import com.hyphenate.EMError;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMTextMessageBody;
 import com.hyphenate.chat.EMTranslationResult;
 import com.hyphenate.easeui.R;
+import com.hyphenate.easeui.constants.EaseConstant;
 import com.hyphenate.easeui.manager.EaseDingMessageHelper;
 import com.hyphenate.easeui.utils.EaseSmileUtils;
+import com.hyphenate.easeui.widget.EaseChatQuoteView;
+import com.hyphenate.util.EMLog;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class EaseChatRowText extends EaseChatRow {
 	private TextView contentView;
     private TextView translationContentView;
     private ImageView translationStatusView;
     private View translationContainer;
+    private EaseChatQuoteView quoteView;
 
     public EaseChatRowText(Context context, boolean isSender) {
 		super(context, isSender);
@@ -44,6 +53,7 @@ public class EaseChatRowText extends EaseChatRow {
         translationContentView = (TextView) findViewById(R.id.tv_subContent);
         translationStatusView = (ImageView) findViewById(R.id.translation_status);
         translationContainer = (View) findViewById(R.id.subBubble);
+        quoteView = (EaseChatQuoteView)findViewById(R.id.chat_quote_view);
 	}
 
     @Override
@@ -87,6 +97,43 @@ public class EaseChatRowText extends EaseChatRow {
                 translationContainer.setVisibility(View.GONE);
             }
         }
+
+        quoteView.setVisibility(GONE);
+
+        quoteView.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (itemClickListener == null){
+                    return;
+                }
+                String msgQuote = message.getStringAttribute(EaseConstant.QUOTE_MSG_QUOTE,"");
+                if (!TextUtils.isEmpty(msgQuote)){
+                    try {
+                        JSONObject jsonObject = new JSONObject(msgQuote);
+                        String quoteMsgID = jsonObject.getString(EaseConstant.QUOTE_MSG_ID);
+                        EMMessage showMsg = EMClient.getInstance().chatManager().getMessage(quoteMsgID);
+                        if(showMsg == null) {
+                            itemClickListener.onMessageError(null, EMError.GENERAL_ERROR, context.getString(R.string.ease_error_message_not_exist));
+                            return;
+                        }
+                        itemClickListener.onQuoteViewClick(showMsg);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+
+        quoteView.setOnLongClickListener(new OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                if (itemClickListener != null) {
+                    return itemClickListener.onQuoteViewLongClick(v, message);
+                }
+                return false;
+            }
+        });
+        onSetUpQuoteView(message);
     }
 
     /**
@@ -139,6 +186,7 @@ public class EaseChatRowText extends EaseChatRow {
         //EaseDingMessageHelper.get().setUserUpdateListener(message, userUpdateListener);
     }
 
+
     @Override
     protected void onMessageError() {
         super.onMessageError();
@@ -148,6 +196,16 @@ public class EaseChatRowText extends EaseChatRow {
     @Override
     protected void onMessageInProgress() {
         setStatus(View.VISIBLE, View.GONE);
+    }
+
+    public void onSetUpQuoteView(EMMessage message) {
+        if(quoteView == null) {
+            EMLog.e(TAG, "view is null, don't setup quote view");
+            return;
+        }
+        quoteView.setVisibility(GONE);
+        quoteView.clear();
+        quoteView.updateMessageInfo(message);
     }
 
     /**

@@ -7,31 +7,44 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.SpannableString;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
+import com.hyphenate.EMCallBack;
 import com.hyphenate.chat.EMClient;
+import com.hyphenate.chat.EMConversation;
+import com.hyphenate.chat.EMImageMessageBody;
+import com.hyphenate.chat.EMLocationMessageBody;
 import com.hyphenate.chat.EMMessage;
+import com.hyphenate.chat.EMNormalFileMessageBody;
+import com.hyphenate.chat.EMTextMessageBody;
 import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.constants.EaseConstant;
+import com.hyphenate.easeui.interfaces.ChatQuoteMessageProvider;
 import com.hyphenate.easeui.manager.EaseDingMessageHelper;
 import com.hyphenate.easeui.modules.chat.interfaces.OnAddMsgAttrsBeforeSendEvent;
 import com.hyphenate.easeui.modules.chat.interfaces.OnChatFinishListener;
 import com.hyphenate.easeui.modules.chat.interfaces.OnChatLayoutListener;
 import com.hyphenate.easeui.modules.chat.interfaces.OnChatRecordTouchListener;
+import com.hyphenate.easeui.modules.chat.interfaces.OnModifyMessageListener;
 import com.hyphenate.easeui.modules.chat.interfaces.OnMenuChangeListener;
 import com.hyphenate.easeui.modules.chat.interfaces.OnTranslateMessageListener;
 import com.hyphenate.easeui.modules.menu.EaseChatFinishReason;
 import com.hyphenate.easeui.modules.menu.EasePopupWindowHelper;
 import com.hyphenate.easeui.modules.menu.MenuItemBean;
 import com.hyphenate.easeui.ui.EaseBaiduMapActivity;
+import com.hyphenate.easeui.ui.EaseShowBigImageActivity;
+import com.hyphenate.easeui.ui.EaseShowNormalFileActivity;
+import com.hyphenate.easeui.ui.EaseShowVideoActivity;
 import com.hyphenate.easeui.ui.base.EaseBaseFragment;
 import com.hyphenate.easeui.utils.EaseCommonUtils;
 import com.hyphenate.easeui.utils.EaseCompat;
@@ -41,11 +54,15 @@ import com.hyphenate.util.ImageUtils;
 import com.hyphenate.util.PathUtil;
 import com.hyphenate.util.VersionUtils;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutListener, OnMenuChangeListener,
-        OnAddMsgAttrsBeforeSendEvent, OnChatRecordTouchListener, OnTranslateMessageListener, OnChatFinishListener {
+        OnAddMsgAttrsBeforeSendEvent, OnChatRecordTouchListener, OnTranslateMessageListener, OnChatFinishListener, OnModifyMessageListener, ChatQuoteMessageProvider {
     protected static final int REQUEST_CODE_MAP = 1;
     protected static final int REQUEST_CODE_CAMERA = 2;
     protected static final int REQUEST_CODE_LOCAL = 3;
@@ -60,7 +77,6 @@ public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutLi
     public boolean isRoam;
     public boolean isMessageInit;
     private OnChatLayoutListener listener;
-
     protected File cameraFile;
 
     @Nullable
@@ -101,6 +117,8 @@ public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutLi
         chatLayout = findViewById(R.id.layout_chat);
         chatLayout.getChatMessageListLayout().setItemShowType(EaseChatMessageListLayout.ShowType.NORMAL);
         chatLayout.getChatMessageListLayout().setBackgroundColor(ContextCompat.getColor(mContext, R.color.gray));
+        chatLayout.getChatInputMenu().getPrimaryMenu().setShowDefaultQuote(true);
+        chatLayout.getChatInputMenu().getPrimaryMenu().getQuoteLayout();
     }
 
     public void initListener() {
@@ -110,6 +128,8 @@ public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutLi
         chatLayout.setOnChatRecordTouchListener(this);
         chatLayout.setOnTranslateListener(this);
         chatLayout.setOnChatFinishListener(this);
+        chatLayout.setOnEditMessageListener(this);
+        chatLayout.setChatQuoteMessageProvider(this);
     }
 
     public void initData() {
@@ -130,7 +150,7 @@ public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutLi
     @Override
     public void onResume() {
         super.onResume();
-        if(isMessageInit) {
+        if(isMessageInit && chatLayout != null) {
             chatLayout.getChatMessageListLayout().refreshMessages();
         }
     }
@@ -199,6 +219,19 @@ public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutLi
         if(listener != null) {
             listener.onChatError(code, errorMsg);
         }
+    }
+
+    @Override
+    public boolean onQuoteClick(EMMessage message) {
+        return false;
+    }
+
+    @Override
+    public boolean onQuoteLongClick(View v, EMMessage message) {
+        if (listener != null){
+            return listener.onQuoteLongClick(v,message);
+        }
+        return false;
     }
 
     @Override
@@ -442,6 +475,30 @@ public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutLi
         if(mContext != null) {
             mContext.finish();
         }
+    }
+
+    /**
+     * 添加自定义引用展示逻辑
+     * @param message
+     */
+    @Override
+    public void showCustomQuote(EMMessage message) {
+
+    }
+
+    @Override
+    public void onModifyMessageSuccess(EMMessage messageModified) {
+
+    }
+
+    @Override
+    public void onModifyMessageFailure(String messageId, int code, String error) {
+
+    }
+
+    @Override
+    public SpannableString providerQuoteMessageContent(EMMessage quoteMessage, EMMessage.Type quoteMsgType, String quoteSender, String quoteContent) {
+        return null;
     }
 }
 

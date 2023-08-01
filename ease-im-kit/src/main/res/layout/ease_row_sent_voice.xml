@@ -14,6 +14,7 @@
         android:layout_height="wrap_content" />
 
     <RelativeLayout
+        android:id="@+id/rl_bubble_out"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin_chat_activity" >
@@ -33,15 +34,16 @@
             android:layout_marginTop="2dp"
              android:background="@drawable/ease_chat_bubble_send_bg"
             >
-	        <ImageView
-	            android:id="@+id/iv_voice"
-	            android:layout_centerVertical="true"
+
+            <ImageView
+                android:id="@+id/iv_voice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
-	            android:paddingLeft="6dp"
-	            android:paddingRight="5dp"
-	            android:layout_width="wrap_content"
-	            android:layout_height="wrap_content"
-	            android:src="@drawable/ease_chatto_voice_playing" />
+                android:layout_centerVertical="true"
+                android:paddingLeft="6dp"
+                android:paddingRight="5dp"
+                android:src="@drawable/ease_chatto_voice_playing" />
 
             <TextView
                 android:id="@+id/tv_length"

@@ -6,6 +6,7 @@
     <dimen name="ease_common_title_bar_height">44dp</dimen>
 
     <dimen name="margin_chat_activity">10dp</dimen>
+    <dimen name="margin_chat_bottom_activity">4dp</dimen>
     <dimen name="size_avatar">42dp</dimen>
     <dimen name="chat_nick_margin_left">12dp</dimen>
     <dimen name="chat_nick_text_size">13sp</dimen>
@@ -23,6 +24,7 @@
 
     <dimen name="ease_chat_image_corner_radius">8dp</dimen>
     <dimen name="ease_chat_primary_margin_right">16dp</dimen>
+    <dimen name="ease_chat_quote_video_thumbain_corner_radius">2dp</dimen>
 
     <dimen name="ease_chat_text_min_height">22dp</dimen>
 
