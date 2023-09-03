@@ -322,6 +322,13 @@ public abstract class EaseChatRow extends LinearLayout {
                     //如果不在同一侧的话，则根据判断是否显示昵称
                     usernickView.setVisibility((itemStyle.isShowNickname() && message.direct() == Direct.RECEIVE) ? VISIBLE : GONE);
                 }
+                //设置昵称样式
+                if (itemStyle.getNicknameTextSize() != 0) {
+                    usernickView.setTextSize(TypedValue.COMPLEX_UNIT_PX, itemStyle.getTextSize());
+                }
+                if (itemStyle.getNicknameTextColor() != 0) {
+                    usernickView.setTextColor(itemStyle.getNicknameTextColor());
+                }
             }
             if (bubbleLayout != null) {
                 if (message.getType() == EMMessage.Type.TXT) {
