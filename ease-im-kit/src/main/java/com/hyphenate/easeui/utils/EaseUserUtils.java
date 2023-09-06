@@ -133,15 +133,41 @@ public class EaseUserUtils {
         setUserNickname(user, username, textView);
     }
 
-    private static void setUserNickname(EaseUser user, String userId, TextView textView) {
+    private static void setUserNickname(EaseUser user, String username, TextView textView) {
+        String remark = getContactRemark(username);
         if(textView == null) {
             return;
         }
+        if(!TextUtils.isEmpty(remark)) {
+            textView.setText(remark);
+            return;
+        }
         if(user == null || TextUtils.isEmpty(user.getNickname())) {
-            textView.setText(userId);
+            textView.setText(username);
             return;
         }
         textView.setText(user.getNickname());
+    }
+
+    private static String getContactRemark(String username) {
+        EaseUserProfileProvider provider = EaseIM.getInstance().getUserProvider();
+        return provider == null ? null : provider.getContactRemark(username);
+    }
+
+    public static String getDisplayName(String username){
+        EaseUserProfileProvider provider = EaseIM.getInstance().getUserProvider();
+        if(provider==null) {
+            return username;
+        }
+        String contactRemark = provider.getContactRemark(username);
+        if(!TextUtils.isEmpty(contactRemark)) {
+            return contactRemark;
+        }
+        EaseUser user = provider.getUser(username);
+        if(user==null||TextUtils.isEmpty(user.getNickname())) {
+            return username;
+        }
+        return user.getNickname();
     }
 
     /**
