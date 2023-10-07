@@ -23,4 +23,8 @@ public interface EaseUserProfileProvider {
     default EaseUser getGroupUser(String groupId,String userId){
         return getUser(userId);
     }
+
+    default String getContactRemark(String username){
+        return null;
+    }
 }

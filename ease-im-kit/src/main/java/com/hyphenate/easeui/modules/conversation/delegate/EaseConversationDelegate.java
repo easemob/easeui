@@ -25,6 +25,7 @@ import com.hyphenate.easeui.provider.EaseUserProfileProvider;
 import com.hyphenate.easeui.utils.EaseCommonUtils;
 import com.hyphenate.easeui.utils.EaseDateUtils;
 import com.hyphenate.easeui.utils.EaseSmileUtils;
+import com.hyphenate.easeui.utils.EaseUserUtils;
 
 import java.util.Date;
 
@@ -64,7 +65,7 @@ public class EaseConversationDelegate extends EaseDefaultConversationDelegate {
             showName = chatRoom != null && !TextUtils.isEmpty(chatRoom.getName()) ? chatRoom.getName() : username;
         }else {
             defaultAvatar = R.drawable.ease_default_avatar;
-            showName = username;
+            showName = EaseUserUtils.getDisplayName(username);
         }
         holder.avatar.setImageResource(defaultAvatar);
         holder.name.setText(showName);
@@ -81,9 +82,6 @@ public class EaseConversationDelegate extends EaseDefaultConversationDelegate {
             if(userProvider != null) {
                 EaseUser user = userProvider.getUser(username);
                 if(user != null) {
-                    if(!TextUtils.isEmpty(user.getNickname())) {
-                        holder.name.setText(user.getNickname());
-                    }
                     if(!TextUtils.isEmpty(user.getAvatar())) {
                         Drawable drawable = holder.avatar.getDrawable();
                         Glide.with(holder.mContext)
