@@ -134,10 +134,10 @@ public class EaseUserUtils {
     }
 
     private static void setUserNickname(EaseUser user, String username, TextView textView) {
-        String remark = getContactRemark(username);
         if(textView == null) {
             return;
         }
+        String remark = getContactRemark(username);
         if(!TextUtils.isEmpty(remark)) {
             textView.setText(remark);
             return;
