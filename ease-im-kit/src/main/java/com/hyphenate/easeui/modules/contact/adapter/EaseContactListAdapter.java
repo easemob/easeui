@@ -146,7 +146,7 @@ public class EaseContactListAdapter extends EaseBaseRecyclerViewAdapter<EaseUser
                     mHeader.setText(header);
                 }
             }
-            mName.setText(item.getNickname());
+            mName.setText(EaseUserUtils.getDisplayName(item.getUsername()));
             Glide.with(mContext)
                     .load(item.getAvatar())
                     .error(contactSetModel.getAvatarDefaultSrc() != null ? contactSetModel.getAvatarDefaultSrc()
