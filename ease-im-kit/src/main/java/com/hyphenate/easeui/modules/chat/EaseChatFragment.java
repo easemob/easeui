@@ -13,20 +13,13 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
-import com.hyphenate.EMCallBack;
 import com.hyphenate.chat.EMClient;
-import com.hyphenate.chat.EMConversation;
-import com.hyphenate.chat.EMImageMessageBody;
-import com.hyphenate.chat.EMLocationMessageBody;
 import com.hyphenate.chat.EMMessage;
-import com.hyphenate.chat.EMNormalFileMessageBody;
-import com.hyphenate.chat.EMTextMessageBody;
 import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.constants.EaseConstant;
 import com.hyphenate.easeui.interfaces.ChatQuoteMessageProvider;
@@ -35,16 +28,13 @@ import com.hyphenate.easeui.modules.chat.interfaces.OnAddMsgAttrsBeforeSendEvent
 import com.hyphenate.easeui.modules.chat.interfaces.OnChatFinishListener;
 import com.hyphenate.easeui.modules.chat.interfaces.OnChatLayoutListener;
 import com.hyphenate.easeui.modules.chat.interfaces.OnChatRecordTouchListener;
-import com.hyphenate.easeui.modules.chat.interfaces.OnModifyMessageListener;
 import com.hyphenate.easeui.modules.chat.interfaces.OnMenuChangeListener;
+import com.hyphenate.easeui.modules.chat.interfaces.OnModifyMessageListener;
 import com.hyphenate.easeui.modules.chat.interfaces.OnTranslateMessageListener;
 import com.hyphenate.easeui.modules.menu.EaseChatFinishReason;
 import com.hyphenate.easeui.modules.menu.EasePopupWindowHelper;
 import com.hyphenate.easeui.modules.menu.MenuItemBean;
 import com.hyphenate.easeui.ui.EaseBaiduMapActivity;
-import com.hyphenate.easeui.ui.EaseShowBigImageActivity;
-import com.hyphenate.easeui.ui.EaseShowNormalFileActivity;
-import com.hyphenate.easeui.ui.EaseShowVideoActivity;
 import com.hyphenate.easeui.ui.base.EaseBaseFragment;
 import com.hyphenate.easeui.utils.EaseCommonUtils;
 import com.hyphenate.easeui.utils.EaseCompat;
@@ -54,12 +44,8 @@ import com.hyphenate.util.ImageUtils;
 import com.hyphenate.util.PathUtil;
 import com.hyphenate.util.VersionUtils;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutListener, OnMenuChangeListener,
         OnAddMsgAttrsBeforeSendEvent, OnChatRecordTouchListener, OnTranslateMessageListener, OnChatFinishListener, OnModifyMessageListener, ChatQuoteMessageProvider {
@@ -212,6 +198,12 @@ public class EaseChatFragment extends EaseBaseFragment implements OnChatLayoutLi
     @Override
     public void onChatSuccess(EMMessage message) {
         // you can do something after sending a successful message
+        if(message!=null&&message.isContentReplaced()) {
+            EaseChatMessageListLayout chatMessageListLayout = chatLayout.getChatMessageListLayout();
+            if(chatMessageListLayout!=null) {
+                chatMessageListLayout.refreshMessage(message);
+            }
+        }
     }
 
     @Override
